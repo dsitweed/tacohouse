@@ -169,7 +169,7 @@ tacohouse/
 - Node.js 18+
 - PostgreSQL 14+
 - Redis 6+
-- npm hoặc yarn
+- pnpm
 
 ### 5.2. Quick Start
 ```bash
