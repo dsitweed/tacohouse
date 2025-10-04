@@ -1,0 +1,30 @@
+{
+  "name": "tacohouse",
+  "version": "1.0.0",
+  "description": "Rental Room Management System",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run start:dev --workspace=backend\"",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "start": "concurrently \"npm run start --workspace=frontend\" \"npm run start:prod --workspace=backend\"",
+    "lint": "npm run lint --workspace=frontend && npm run lint --workspace=backend",
+    "test": "npm run test --workspace=frontend && npm run test --workspace=backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "rental",
+    "room",
+    "management",
+    "nextjs",
+    "nestjs",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}

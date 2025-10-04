@@ -1,0 +1,2270 @@
+openapi: 3.0.3
+info:
+  title: Tacohouse - Rental Room Management System API
+  description: |
+    A comprehensive rental room management system API for managing buildings, rooms, tenants, billing, and payments.
+    
+    ## Features
+    - Multi-role authentication (Admin, Landlord, Tenant)
+    - Building and room management
+    - Complex billing system with utility calculations
+    - Payment processing with dual confirmation
+    - Real-time notifications and messaging
+    - File upload for documents and photos
+    
+    ## Authentication
+    This API uses JWT Bearer tokens for authentication. Include the token in the Authorization header:
+    `Authorization: Bearer <your-jwt-token>`
+    
+    ## Roles
+    - **ADMIN**: Full system access
+    - **LANDLORD**: Manage own buildings and tenants
+    - **TENANT**: View bills, make payments, send requests
+  version: 1.0.0
+  contact:
+    name: Tacohouse API Support
+    email: support@tacohouse.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.tacohouse.com/v1
+    description: Production server
+  - url: https://staging-api.tacohouse.com/v1
+    description: Staging server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management operations
+  - name: Buildings
+    description: Building management operations
+  - name: Rooms
+    description: Room management operations
+  - name: Tenants
+    description: Tenant management operations
+  - name: Billing
+    description: Bill generation and management
+  - name: Payments
+    description: Payment processing and history
+  - name: Utilities
+    description: Utility readings and calculations
+  - name: Requests
+    description: Maintenance and general requests
+  - name: Notifications
+    description: System notifications
+  - name: Messages
+    description: Messaging system
+  - name: Uploads
+    description: File upload operations
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      description: Create a new user account with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, role, firstName, lastName]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: SecurePass123!
+                role:
+                  $ref: '#/components/schemas/UserRole'
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                phone:
+                  type: string
+                  example: +84901234567
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and return JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePass123!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refreshToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+                  expiresIn:
+                    type: number
+                    example: 3600
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  expiresIn:
+                    type: number
+
+  # Buildings Endpoints
+  /buildings:
+    get:
+      tags: [Buildings]
+      summary: List buildings
+      description: Get paginated list of buildings
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: landlordId
+          in: query
+          description: Filter by landlord (Admin only)
+          schema:
+            type: string
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Buildings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Buildings]
+      summary: Create building
+      description: Create a new building (Landlord/Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBuildingDto'
+      responses:
+        '201':
+          description: Building created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  building:
+                    $ref: '#/components/schemas/Building'
+
+  /buildings/{id}:
+    get:
+      tags: [Buildings]
+      summary: Get building details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Building details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+
+    put:
+      tags: [Buildings]
+      summary: Update building
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBuildingDto'
+      responses:
+        '200':
+          description: Building updated successfully
+
+    delete:
+      tags: [Buildings]
+      summary: Delete building
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Building deleted successfully
+
+  # Rooms Endpoints
+  /rooms:
+    get:
+      tags: [Rooms]
+      summary: List rooms
+      parameters:
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/RoomStatus'
+        - name: roomType
+          in: query
+          schema:
+            $ref: '#/components/schemas/RoomType'
+      responses:
+        '200':
+          description: Rooms retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Room'
+
+    post:
+      tags: [Rooms]
+      summary: Create room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomDto'
+      responses:
+        '201':
+          description: Room created successfully
+
+  /rooms/available:
+    get:
+      tags: [Rooms]
+      summary: Get available rooms for public viewing
+      description: Public endpoint for browsing available rooms
+      security: []
+      parameters:
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: district
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: roomType
+          in: query
+          schema:
+            $ref: '#/components/schemas/RoomType'
+      responses:
+        '200':
+          description: Available rooms
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicRoom'
+
+  # Bills Endpoints
+  /bills:
+    get:
+      tags: [Billing]
+      summary: List bills
+      parameters:
+        - name: roomId
+          in: query
+          schema:
+            type: string
+        - name: month
+          in: query
+          schema:
+            type: integer
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/BillStatus'
+      responses:
+        '200':
+          description: Bills retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bill'
+
+    post:
+      tags: [Billing]
+      summary: Generate bill
+      description: Generate monthly bill for a room (Landlord only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBillDto'
+      responses:
+        '201':
+          description: Bill generated successfully
+
+  /bills/{id}/confirm-tenant:
+    patch:
+      tags: [Billing]
+      summary: Tenant confirms payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentProofUrl:
+                  type: string
+                  description: URL to payment proof image
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Payment confirmed by tenant
+
+  /bills/{id}/confirm-landlord:
+    patch:
+      tags: [Billing]
+      summary: Landlord confirms payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment confirmed by landlord
+
+  # Utilities Endpoints
+  /utilities:
+    get:
+      tags: [Utilities]
+      summary: List utility readings
+      parameters:
+        - name: roomId
+          in: query
+          schema:
+            type: string
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+        - name: month
+          in: query
+          schema:
+            type: integer
+        - name: year
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utility readings retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Utility'
+
+    post:
+      tags: [Utilities]
+      summary: Record utility reading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUtilityDto'
+      responses:
+        '201':
+          description: Utility reading recorded
+
+  # File Upload
+  # User Profile Management
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+    
+    put:
+      tags: [Users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileDto'
+      responses:
+        '200':
+          description: Profile updated successfully
+
+  /users/me/change-password:
+    post:
+      tags: [Users]
+      summary: Change user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordDto'
+      responses:
+        '200':
+          description: Password changed successfully
+
+  # Tenant Profile Management
+  /tenants/me/profile:
+    get:
+      tags: [Tenants]
+      summary: Get tenant profile
+      responses:
+        '200':
+          description: Tenant profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantProfile'
+    
+    put:
+      tags: [Tenants]
+      summary: Update tenant profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTenantProfileDto'
+      responses:
+        '200':
+          description: Tenant profile updated
+
+  /tenants/me/documents:
+    post:
+      tags: [Tenants]
+      summary: Upload tenant documents
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                idCardFront:
+                  type: string
+                  format: binary
+                idCardBack:
+                  type: string
+                  format: binary
+                portraitPhoto:
+                  type: string
+                  format: binary
+                contractPhoto:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Documents uploaded successfully
+
+  # Room Tenant Management
+  /rooms/{roomId}/tenants:
+    get:
+      tags: [Rooms]
+      summary: Get room tenants
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room tenants retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomTenant'
+    
+    post:
+      tags: [Rooms]
+      summary: Add tenant to room
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTenantToRoomDto'
+      responses:
+        '201':
+          description: Tenant added to room
+
+  /rooms/{roomId}/tenants/{tenantId}:
+    delete:
+      tags: [Rooms]
+      summary: Remove tenant from room
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tenant removed from room
+
+  # Equipment Management
+  /rooms/{roomId}/equipment:
+    get:
+      tags: [Rooms]
+      summary: Get room equipment
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room equipment retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipment'
+    
+    post:
+      tags: [Rooms]
+      summary: Add equipment to room
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEquipmentDto'
+      responses:
+        '201':
+          description: Equipment added successfully
+
+  /equipment/{id}:
+    get:
+      tags: [Rooms]
+      summary: Get equipment details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Equipment details
+    
+    put:
+      tags: [Rooms]
+      summary: Update equipment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEquipmentDto'
+      responses:
+        '200':
+          description: Equipment updated successfully
+    
+    delete:
+      tags: [Rooms]
+      summary: Delete equipment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Equipment deleted successfully
+
+  # Maintenance Requests
+  /requests:
+    get:
+      tags: [Requests]
+      summary: List maintenance requests
+      parameters:
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestType'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestStatus'
+        - name: roomId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+    
+    post:
+      tags: [Requests]
+      summary: Create maintenance request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestDto'
+      responses:
+        '201':
+          description: Request created successfully
+
+  /requests/{id}:
+    get:
+      tags: [Requests]
+      summary: Get request details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Request details
+    
+    put:
+      tags: [Requests]
+      summary: Update request status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestDto'
+      responses:
+        '200':
+          description: Request updated successfully
+
+  # Move-out Requests
+  /tenants/me/move-out-request:
+    post:
+      tags: [Tenants]
+      summary: Request to move out
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveOutRequestDto'
+      responses:
+        '201':
+          description: Move-out request submitted
+    
+    get:
+      tags: [Tenants]
+      summary: Get current move-out request
+      responses:
+        '200':
+          description: Move-out request details
+
+  # Payment Processing
+  /payments:
+    get:
+      tags: [Payments]
+      summary: List payments
+      parameters:
+        - name: billId
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/PaymentStatus'
+      responses:
+        '200':
+          description: Payments retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+    
+    post:
+      tags: [Payments]
+      summary: Create payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentDto'
+      responses:
+        '201':
+          description: Payment created successfully
+
+  /payments/{id}/confirm:
+    post:
+      tags: [Payments]
+      summary: Confirm payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmPaymentDto'
+      responses:
+        '200':
+          description: Payment confirmed
+
+  /payments/stripe/create-intent:
+    post:
+      tags: [Payments]
+      summary: Create Stripe payment intent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStripeIntentDto'
+      responses:
+        '200':
+          description: Payment intent created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripePaymentIntent'
+
+  # Messaging System
+  /messages:
+    get:
+      tags: [Messages]
+      summary: Get messages
+      parameters:
+        - name: conversationId
+          in: query
+          schema:
+            type: string
+        - name: groupChatId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Messages retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+    
+    post:
+      tags: [Messages]
+      summary: Send message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageDto'
+      responses:
+        '201':
+          description: Message sent successfully
+
+  /messages/conversations:
+    get:
+      tags: [Messages]
+      summary: Get user conversations
+      responses:
+        '200':
+          description: Conversations retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+
+  /group-chats/{buildingId}:
+    get:
+      tags: [Messages]
+      summary: Get building group chat
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Group chat details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupChat'
+
+  # Notifications
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Get user notifications
+      parameters:
+        - name: isRead
+          in: query
+          schema:
+            type: boolean
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notifications retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /notifications/{id}/mark-read:
+    patch:
+      tags: [Notifications]
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notification marked as read
+
+  /notifications/mark-all-read:
+    patch:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      responses:
+        '200':
+          description: All notifications marked as read
+
+  # File Upload
+  /uploads:
+    post:
+      tags: [Uploads]
+      summary: Upload file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                type:
+                  type: string
+                  enum: [avatar, document, room_photo, building_photo, payment_proof]
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Enums
+    UserRole:
+      type: string
+      enum: [ADMIN, LANDLORD, TENANT]
+
+    RoomType:
+      type: string
+      enum: [FULL_SERVICE, SHARED_SERVICE]
+
+    RoomStatus:
+      type: string
+      enum: [AVAILABLE, OCCUPIED, LOOKING_FOR_TENANT_BEFORE_CURRENT_LEAVES, MAINTENANCE]
+
+    BillStatus:
+      type: string
+      enum: [PENDING, TENANT_CONFIRMED, LANDLORD_CONFIRMED, COMPLETED, OVERDUE]
+
+    PaymentMethod:
+      type: string
+      enum: [CASH, BANK_TRANSFER, STRIPE]
+
+    PaymentStatus:
+      type: string
+      enum: [PENDING, COMPLETED, FAILED, REFUNDED]
+
+    RequestType:
+      type: string
+      enum: [MAINTENANCE, MOVE_OUT, COMPLAINT, OTHER]
+
+    RequestStatus:
+      type: string
+      enum: [PENDING, IN_PROGRESS, COMPLETED, REJECTED]
+
+    MessageType:
+      type: string
+      enum: [TEXT, IMAGE, FILE]
+
+    # Core Models
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: usr_1234567890abcdef
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        role:
+          $ref: '#/components/schemas/UserRole'
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        phone:
+          type: string
+          example: +84901234567
+        avatar:
+          type: string
+          nullable: true
+          example: https://storage.tacohouse.com/avatars/user123.jpg
+        isActive:
+          type: boolean
+          example: true
+        isEmailVerified:
+          type: boolean
+          example: true
+        emailVerifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+          example: bld_1234567890abcdef
+        name:
+          type: string
+          example: Sunshine Apartments
+        address:
+          type: string
+          example: 123 Main Street, District 1, Ho Chi Minh City
+        landlordId:
+          type: string
+          example: usr_1234567890abcdef
+        totalFloors:
+          type: integer
+          example: 5
+        totalRooms:
+          type: integer
+          example: 20
+        electricityRate:
+          type: number
+          format: decimal
+          example: 3500.00
+        waterRate:
+          type: number
+          format: decimal
+          example: 25000.00
+        gasRate:
+          type: number
+          format: decimal
+          example: 15000.00
+        managementFee:
+          type: number
+          format: decimal
+          example: 50000.00
+        cleaningFeePerPerson:
+          type: number
+          format: decimal
+          example: 20000.00
+        lightingFee:
+          type: number
+          format: decimal
+          example: 30000.00
+        billingDate:
+          type: integer
+          minimum: 1
+          maximum: 31
+          example: 30
+        photos:
+          type: array
+          items:
+            type: string
+          example: ["https://storage.tacohouse.com/buildings/bld123_1.jpg"]
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          example: room_1234567890abcdef
+        buildingId:
+          type: string
+          example: bld_1234567890abcdef
+        roomNumber:
+          type: string
+          example: "201"
+        floor:
+          type: integer
+          example: 2
+        area:
+          type: number
+          format: decimal
+          example: 25.5
+        capacity:
+          type: integer
+          example: 2
+        currentOccupants:
+          type: integer
+          example: 1
+        monthlyRent:
+          type: number
+          format: decimal
+          example: 3000000.00
+        deposit:
+          type: number
+          format: decimal
+          example: 6000000.00
+        roomType:
+          $ref: '#/components/schemas/RoomType'
+        status:
+          $ref: '#/components/schemas/RoomStatus'
+        availableFrom:
+          type: string
+          format: date
+          nullable: true
+          example: "2024-02-01"
+        description:
+          type: string
+          example: "Spacious room with balcony and city view"
+        amenities:
+          type: array
+          items:
+            type: string
+          example: ["air_conditioning", "wifi", "balcony"]
+        photos:
+          type: array
+          items:
+            type: string
+          example: ["https://storage.tacohouse.com/rooms/room123_1.jpg"]
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Bill:
+      type: object
+      properties:
+        id:
+          type: string
+          example: bill_1234567890abcdef
+        roomId:
+          type: string
+          example: room_1234567890abcdef
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 12
+        year:
+          type: integer
+          example: 2024
+        baseRent:
+          type: number
+          format: decimal
+          example: 3000000.00
+        electricityCost:
+          type: number
+          format: decimal
+          example: 245000.00
+        waterCost:
+          type: number
+          format: decimal
+          example: 150000.00
+        gasCost:
+          type: number
+          format: decimal
+          example: 45000.00
+        managementFee:
+          type: number
+          format: decimal
+          example: 50000.00
+        cleaningFee:
+          type: number
+          format: decimal
+          example: 40000.00
+        lightingFee:
+          type: number
+          format: decimal
+          example: 30000.00
+        debtAmount:
+          type: number
+          format: decimal
+          example: 0.00
+        totalAmount:
+          type: number
+          format: decimal
+          example: 3560000.00
+        dueDate:
+          type: string
+          format: date
+          example: "2024-12-30"
+        status:
+          $ref: '#/components/schemas/BillStatus'
+        tenantConfirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        landlordConfirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        paymentProofUrl:
+          type: string
+          nullable: true
+          example: "https://storage.tacohouse.com/proofs/payment123.jpg"
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Utility:
+      type: object
+      properties:
+        id:
+          type: string
+          example: util_1234567890abcdef
+        roomId:
+          type: string
+          example: room_1234567890abcdef
+        month:
+          type: integer
+          example: 12
+        year:
+          type: integer
+          example: 2024
+        electricityReading:
+          type: number
+          format: decimal
+          example: 3412.50
+        waterReading:
+          type: number
+          format: decimal
+          example: 145.20
+        gasReading:
+          type: number
+          format: decimal
+          example: 23.5
+        electricityUsed:
+          type: number
+          format: decimal
+          example: 70.0
+        waterUsed:
+          type: number
+          format: decimal
+          example: 6.0
+        gasUsed:
+          type: number
+          format: decimal
+          example: 3.0
+        readingDate:
+          type: string
+          format: date
+          example: "2024-12-30"
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # DTOs
+    CreateBuildingDto:
+      type: object
+      required: [name, address]
+      properties:
+        name:
+          type: string
+          example: Sunshine Apartments
+        address:
+          type: string
+          example: 123 Main Street, District 1, Ho Chi Minh City
+        totalFloors:
+          type: integer
+          minimum: 1
+          example: 5
+        electricityRate:
+          type: number
+          format: decimal
+          example: 3500.00
+        waterRate:
+          type: number
+          format: decimal
+          example: 25000.00
+        gasRate:
+          type: number
+          format: decimal
+          example: 15000.00
+        managementFee:
+          type: number
+          format: decimal
+          example: 50000.00
+        cleaningFeePerPerson:
+          type: number
+          format: decimal
+          example: 20000.00
+        lightingFee:
+          type: number
+          format: decimal
+          example: 30000.00
+        billingDate:
+          type: integer
+          minimum: 1
+          maximum: 31
+          example: 30
+
+    UpdateBuildingDto:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        totalFloors:
+          type: integer
+          minimum: 1
+        electricityRate:
+          type: number
+          format: decimal
+        waterRate:
+          type: number
+          format: decimal
+        gasRate:
+          type: number
+          format: decimal
+
+    CreateRoomDto:
+      type: object
+      required: [buildingId, roomNumber, monthlyRent, capacity, roomType]
+      properties:
+        buildingId:
+          type: string
+        roomNumber:
+          type: string
+        floor:
+          type: integer
+        area:
+          type: number
+          format: decimal
+        capacity:
+          type: integer
+          minimum: 1
+        monthlyRent:
+          type: number
+          format: decimal
+        deposit:
+          type: number
+          format: decimal
+        roomType:
+          $ref: '#/components/schemas/RoomType'
+        description:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+
+    CreateBillDto:
+      type: object
+      required: [roomId, month, year]
+      properties:
+        roomId:
+          type: string
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        year:
+          type: integer
+        debtAmount:
+          type: number
+          format: decimal
+          default: 0
+        notes:
+          type: string
+
+    CreateUtilityDto:
+      type: object
+      required: [roomId, month, year, readingDate]
+      properties:
+        roomId:
+          type: string
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        year:
+          type: integer
+        electricityReading:
+          type: number
+          format: decimal
+        waterReading:
+          type: number
+          format: decimal
+        gasReading:
+          type: number
+          format: decimal
+        readingDate:
+          type: string
+          format: date
+        notes:
+          type: string
+
+    # Public Models
+    PublicRoom:
+      type: object
+      properties:
+        id:
+          type: string
+        roomNumber:
+          type: string
+        monthlyRent:
+          type: number
+          format: decimal
+        area:
+          type: number
+          format: decimal
+        capacity:
+          type: integer
+        roomType:
+          $ref: '#/components/schemas/RoomType'
+        availableFrom:
+          type: string
+          format: date
+        description:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        photos:
+          type: array
+          items:
+            type: string
+        building:
+          type: object
+          properties:
+            name:
+              type: string
+            address:
+              type: string
+            landlord:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+
+    # Tenant Profile Models
+    TenantProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        idCardFront:
+          type: string
+          nullable: true
+        idCardBack:
+          type: string
+          nullable: true
+        portraitPhoto:
+          type: string
+          nullable: true
+        dateOfBirth:
+          type: string
+          format: date
+          nullable: true
+        hometown:
+          type: string
+          nullable: true
+        occupation:
+          type: string
+          nullable: true
+        workplace:
+          type: string
+          nullable: true
+        contractPhoto:
+          type: string
+          nullable: true
+        emergencyContact:
+          type: string
+          nullable: true
+        emergencyPhone:
+          type: string
+          nullable: true
+        moveInDate:
+          type: string
+          format: date
+          nullable: true
+        isCurrentTenant:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # Equipment Models
+    Equipment:
+      type: object
+      properties:
+        id:
+          type: string
+        roomId:
+          type: string
+        name:
+          type: string
+          example: "Tủ lạnh"
+        brand:
+          type: string
+          example: "Samsung"
+        model:
+          type: string
+          nullable: true
+        condition:
+          type: string
+          example: "Tốt"
+        installDate:
+          type: string
+          format: date
+          nullable: true
+        warrantyExpiry:
+          type: string
+          format: date
+          nullable: true
+        photos:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    # Request Models
+    Request:
+      type: object
+      properties:
+        id:
+          type: string
+        requesterId:
+          type: string
+        roomId:
+          type: string
+          nullable: true
+        type:
+          $ref: '#/components/schemas/RequestType'
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, URGENT]
+        status:
+          $ref: '#/components/schemas/RequestStatus'
+        photos:
+          type: array
+          items:
+            type: string
+        assignedTo:
+          type: string
+          nullable: true
+        resolvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        response:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    # Payment Models
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        billId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        stripeId:
+          type: string
+          nullable: true
+        transactionRef:
+          type: string
+          nullable: true
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    # Message Models
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        senderId:
+          type: string
+        receiverId:
+          type: string
+          nullable: true
+        groupChatId:
+          type: string
+          nullable: true
+        content:
+          type: string
+        messageType:
+          $ref: '#/components/schemas/MessageType'
+        attachments:
+          type: array
+          items:
+            type: string
+        isRead:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    GroupChat:
+      type: object
+      properties:
+        id:
+          type: string
+        buildingId:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [BUILDING, CUSTOM]
+        isActive:
+          type: boolean
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupChatMember'
+        createdAt:
+          type: string
+          format: date-time
+
+    GroupChatMember:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        joinedAt:
+          type: string
+          format: date-time
+        leftAt:
+          type: string
+          format: date-time
+          nullable: true
+        isActive:
+          type: boolean
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        lastMessage:
+          $ref: '#/components/schemas/Message'
+        unreadCount:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
+
+    # Notification Models
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum: [BILL, PAYMENT, REQUEST, ANNOUNCEMENT, MOVE_OUT]
+        data:
+          type: object
+          nullable: true
+        isRead:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    # Room Tenant Models
+    RoomTenant:
+      type: object
+      properties:
+        id:
+          type: string
+        roomId:
+          type: string
+        tenantId:
+          type: string
+        tenant:
+          $ref: '#/components/schemas/TenantProfile'
+        moveInDate:
+          type: string
+          format: date
+        moveOutDate:
+          type: string
+          format: date
+          nullable: true
+        requestedMoveOutDate:
+          type: string
+          format: date
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    # Extended User Profile
+    UserProfile:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            tenantProfile:
+              $ref: '#/components/schemas/TenantProfile'
+              nullable: true
+            landlordProfile:
+              $ref: '#/components/schemas/LandlordProfile'
+              nullable: true
+
+    LandlordProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        businessName:
+          type: string
+          nullable: true
+        businessLicense:
+          type: string
+          nullable: true
+        taxId:
+          type: string
+          nullable: true
+        bankAccount:
+          type: string
+          nullable: true
+        bankName:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+
+    # DTOs for new APIs
+    UpdateUserProfileDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        avatar:
+          type: string
+
+    ChangePasswordDto:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 6
+
+    UpdateTenantProfileDto:
+      type: object
+      properties:
+        dateOfBirth:
+          type: string
+          format: date
+        hometown:
+          type: string
+        occupation:
+          type: string
+        workplace:
+          type: string
+        emergencyContact:
+          type: string
+        emergencyPhone:
+          type: string
+
+    AddTenantToRoomDto:
+      type: object
+      required: [tenantId, moveInDate]
+      properties:
+        tenantId:
+          type: string
+        moveInDate:
+          type: string
+          format: date
+
+    CreateEquipmentDto:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        condition:
+          type: string
+        installDate:
+          type: string
+          format: date
+        warrantyExpiry:
+          type: string
+          format: date
+        photos:
+          type: array
+          items:
+            type: string
+
+    UpdateEquipmentDto:
+      type: object
+      properties:
+        name:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        condition:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+
+    CreateRequestDto:
+      type: object
+      required: [type, title, description]
+      properties:
+        roomId:
+          type: string
+        type:
+          $ref: '#/components/schemas/RequestType'
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, URGENT]
+          default: MEDIUM
+        photos:
+          type: array
+          items:
+            type: string
+
+    UpdateRequestDto:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/RequestStatus'
+        assignedTo:
+          type: string
+        response:
+          type: string
+
+    MoveOutRequestDto:
+      type: object
+      required: [moveOutDate]
+      properties:
+        moveOutDate:
+          type: string
+          format: date
+        reason:
+          type: string
+        notes:
+          type: string
+
+    CreatePaymentDto:
+      type: object
+      required: [billId, amount, method]
+      properties:
+        billId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        transactionRef:
+          type: string
+        notes:
+          type: string
+
+    ConfirmPaymentDto:
+      type: object
+      properties:
+        paymentProofUrl:
+          type: string
+        notes:
+          type: string
+
+    CreateStripeIntentDto:
+      type: object
+      required: [billId]
+      properties:
+        billId:
+          type: string
+        returnUrl:
+          type: string
+
+    StripePaymentIntent:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+        paymentIntentId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          example: "vnd"
+
+    SendMessageDto:
+      type: object
+      required: [content]
+      properties:
+        receiverId:
+          type: string
+        groupChatId:
+          type: string
+        content:
+          type: string
+        messageType:
+          $ref: '#/components/schemas/MessageType'
+          default: TEXT
+        attachments:
+          type: array
+          items:
+            type: string
+
+    UploadResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          example: "https://storage.tacohouse.com/uploads/file123.jpg"
+        filename:
+          type: string
+        size:
+          type: integer
+        mimeType:
+          type: string
+
+    # Utility Models
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 10
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false
+
+    Error:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Validation failed
+        error:
+          type: string
+          example: Bad Request
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+          example: /api/v1/buildings
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            statusCode: 401
+            message: Unauthorized
+            error: Unauthorized
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
