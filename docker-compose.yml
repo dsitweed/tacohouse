@@ -1,10 +1,17 @@
-version: "3.8"
-
 services:
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - database
+    ports:
+      - 3000:3000
+
   # PostgreSQL Database
-  postgres:
+  database:
     image: postgres:15-alpine
-    container_name: tacohouse_postgres
     environment:
       POSTGRES_DB: tacohouse
       POSTGRES_USER: tacohouse
@@ -77,11 +84,8 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
   redis_data:
-    driver: local
   minio_data:
-    driver: local
 
 networks:
   default:

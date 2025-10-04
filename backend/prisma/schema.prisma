@@ -1,0 +1,539 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(cuid())
+  email    String   @unique
+  password String
+  role     UserRole
+  isActive Boolean  @default(true)
+
+  // Profile information
+  profile UserProfile?
+
+  // Relationships based on role
+  admin    Admin?
+  landlord Landlord?
+  tenant   Tenant?
+
+  // Chat and notifications
+  sentMessages     Message[]      @relation("MessageSender")
+  receivedMessages Message[]      @relation("MessageRecipient")
+  notifications    Notification[]
+
+  // Each ChatGroupMember record links user to a chat group. 
+  // At one time, a tenant can only belong to 1 room - 1 building - 1 chatGroup. 
+  // But a landlord can own many buildings - belong to many chatGroups.
+  chatGroupMember ChatGroupMember[]
+
+  deletedAt DateTime? // softDelete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model UserProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  firstName   String
+  lastName    String
+  phone       String
+  avatar      String
+  dateOfBirth DateTime
+  occupation  String
+  workplace   String
+
+  // Identity documents
+  idCardFrontPhoto String?
+  idCardBackPhoto  String?
+  portraitPhoto    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_profiles")
+}
+
+model Admin {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  permissions String[] // JSON array of specific permissions
+
+  @@map("admins")
+}
+
+model Landlord {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  buildings Building[]
+
+  @@map("landlords")
+}
+
+model Tenant {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rentals              Rental[]
+  maintenanceRequests  MaintenanceRequest[]
+  paymentConfirmations PaymentConfirmation[]
+
+  @@map("tenants")
+}
+
+model Building {
+  id          String  @id @default(cuid())
+  name        String
+  address     String
+  description String?
+  billingDate Int? // Day of month for billing
+
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  rooms Room[]
+
+  // Utility rates for this building
+  electricityRate      Decimal @default(0) // Per kWh
+  waterRate            Decimal @default(0) // Per cubic meter
+  gasRate              Decimal @default(0) // Per cubic meter
+  managementFee        Decimal @default(0) // Fixed monthly fee
+  cleaningFeePerPerson Decimal @default(0) // Per person monthly
+  lightingFee          Decimal @default(0) // Fixed monthly fee
+
+  // Chat group for building residents
+  chatGroup ChatGroup?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("buildings")
+}
+
+model Room {
+  id         String   @id @default(cuid())
+  number     String
+  buildingId String
+  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  // Room details
+  area          Decimal
+  monthlyRent   Decimal
+  deposit       Decimal    @default(0)
+  maxTenants    Int        @default(1)
+  roomType      RoomType
+  description   String?
+  images        String[] // Array of image URLs
+  status        RoomStatus
+  availableFrom DateTime?
+
+  // Current rentals
+  rentals Rental[]
+
+  // Equiment in room
+  equiment RoomEquipment[]
+
+  // Utility consumption records
+  utilityRecords UtilityRecord[]
+
+  // Bill generated for this room
+  bills Bill[]
+
+  // Maintenance requests
+  maintenanceRequests MaintenanceRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([number, buildingId])
+  @@map("rooms")
+}
+
+model RoomEquipment {
+  id     String @id @default(cuid())
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  name               String // washing machine, refrigerator, air conditioner, etc.
+  description        String?
+  brand              String?
+  model              String?
+  installedDate      DateTime?
+  warrantyExpiryDate DateTime?
+  condition          EquipmentCondition @default(GOOD)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("room_equipments")
+}
+
+// Rental Management
+model Rental {
+  id String @id @default(cuid())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  startDate  DateTime
+  endDate    DateTime?
+  noticeDate DateTime? // The date when the tenant officially notified the landlord about moving out
+
+  monthlyRent Decimal
+  depositPaid Decimal @default(0) // Deposit amount paid by the tenant, can be deducted from future rent payments
+
+  status         RentalStatus @default(ACTIVE)
+  contractImages String[] // Contract document images
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("rentals")
+}
+
+// Billing System
+model Bill {
+  id     String @id @default(cuid())
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  billingPeriod DateTime // Start date of the billing cycle (e.g., first day → end of month)
+  dueDate       DateTime
+
+  // Base charges
+  monthlyRent Decimal
+
+  // Utility charges (only for PARTIAL_RIGHTS rooms)
+  electricityUsage  Decimal @default(0)
+  electricityAmount Decimal @default(0)
+
+  waterUsage  Decimal @default(0)
+  waterAmount Decimal @default(0)
+
+  gasUsage  Decimal @default(0)
+  gasAmount Decimal @default(0)
+
+  // Fixed fees
+  managementFee Decimal @default(0)
+  cleaningFee   Decimal @default(0)
+  lightingFee   Decimal @default(0)
+
+  // Outstanding debt
+  previousDebt Decimal @default(0)
+
+  // Total amount
+  totalAmount Decimal
+
+  status BillStatus @default(PENDING)
+
+  // Payment tracking
+  payment      Payment?
+  confirmation PaymentConfirmation?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bills")
+}
+
+model Payment {
+  id     String @id @default(cuid())
+  billId String @unique
+  bill   Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  amount        Decimal
+  paymentMethod PaymentMethod
+  paymentDate   DateTime      @default(now())
+
+  // Payment details
+  stripePaymentId String? // For Stripe payments
+  bankTransferRef String? // For bank transfers
+  notes           String?
+  receiptImage    String? // Receipt/proof image
+
+  status PaymentStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model PaymentConfirmation {
+  id     String @id @default(cuid())
+  billId String @unique
+  bill   Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  tenantConfirmed   Boolean   @default(false)
+  tenantConfirmedAt DateTime?
+
+  landlordConfirmed   Boolean   @default(false)
+  landlordConfirmedAt DateTime?
+
+  proofImages String[] // Payment proof images
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payment_confirmations")
+}
+
+// Utility Tracking
+model UtilityRecord {
+  id     String @id @default(cuid())
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  recordDate  DateTime
+  utilityType UtilityType
+
+  // Meter readings
+  previousReading Decimal @default(0)
+  currentReading  Decimal
+  consumption     Decimal // Calculated: current - previous
+
+  // Rates at time of recording
+  unitRate Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("utility_records")
+}
+
+// Communication System
+model ChatGroup {
+  id         String   @id @default(cuid())
+  buildingId String   @unique
+  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+
+  messages Message[]
+  members  ChatGroupMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chat_groups")
+}
+
+model ChatGroupMember {
+  id          String    @id @default(cuid())
+  chatGroupId String
+  chatGroup   ChatGroup @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
+
+  userId   String
+  building User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([chatGroupId, userId])
+  @@map("chat_group_members")
+}
+
+model Message {
+  id String @id @default(cuid())
+
+  senderId   String
+  senderUser User   @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  content     String
+  messageType MessageType @default(TEXT)
+
+  // For group messages
+  chatGroupId String?
+  chatGroup   ChatGroup? @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
+
+  // For direct messages
+  recipientId   String?
+  recipientUser User?   @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("messages")
+}
+
+// Maintenance System
+model MaintenanceRequest {
+  id String @id @default(cuid())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String
+  priority    PriorityType        @default(MEDIUM)
+  category    MaintenanceCategory
+
+  images String[] // Problem images
+
+  status MaintenanceStatus @default(PENDING)
+
+  // Response from landlord
+  completedAt    DateTime?
+  completionNote String?
+
+  createdAt DateTime @default(now())
+  udpatedAt DateTime @updatedAt
+
+  @@map("maintenance_requests")
+}
+
+// Notification System
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title   String
+  message String
+  type    NotificationType
+
+  isRead Boolean   @default(false)
+  readAt DateTime?
+
+  // Optional reference to related entity
+  relatedId   String?
+  relatedType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notifications")
+}
+
+// Enums - Role
+enum UserRole {
+  ADMIN
+  LANDLORD
+  TENANT
+}
+
+// Enums - Type
+enum RoomType {
+  FULL_RIGHTS // only pay rent
+  PARTIAL_RIGHTS // pay rent + utilities
+}
+
+enum UtilityType {
+  ELECTRICITY
+  WATER
+  GAS
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+}
+
+enum PriorityType {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  BILL_GENERATED
+  PAYMENT_REMINDER
+  MAINTENANCE_UPDATE
+  CHAT_MESSAGE
+  ANNOUNCEMENT
+  SYSTEM
+}
+
+// Enums - Status
+enum RoomStatus {
+  AVAILABLE // Available room
+  OCCUPIED // Currently occupied
+  PENDING_CHECKOUT // Waiting for tenant to move out
+  MAINTENANCE // Under maintenance
+}
+
+enum RentalStatus {
+  ACTIVE // Rental contract is active
+  NOTICE_GIVEN // Tenant has given notice to move out
+  TERMINATED // Rental contract has ended
+}
+
+enum BillStatus {
+  PENDING
+  TENANT_CONFIRMED
+  LANDLORD_CONFIRMED
+  PAID
+  OVERDUE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum MaintenanceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Enums - Other
+enum EquipmentCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  BROKEN
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  STRIPE
+}
+
+enum MaintenanceCategory {
+  PLUMBING
+  ELECTRICAL
+  APPLIANCE
+  FURNITURE
+  CLEANING
+  OTHER
+}

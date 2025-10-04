@@ -265,7 +265,6 @@ npm run test         # Run tests for both applications
 ### 8.5. Database Design Document
 
 - [Tài liệu tiếng Việt](documents/5.dataTableDesignDocument.md)
-- [Tài liệu bổ sung](documents/5.dataTableDesignDocument.md)
 - Trong tương lai sẽ gộp 2 cái vào thành 1. Và có thể trong tương lai sẽ tham chiếu tới file prisma thiết kế và ER diagram luôn 
 
 ### 8.6. API Specification Document
