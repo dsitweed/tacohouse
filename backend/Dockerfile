@@ -16,4 +16,4 @@ RUN pnpm prisma generate
 
 COPY . .
 
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm", "run", "start:dev"]
