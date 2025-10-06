@@ -1,11 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UserService } from './user.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+import type { User } from '@prisma/client';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getCurrentUser(@CurrentUser() user: User) {
+    return user;
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
