@@ -1,0 +1,101 @@
+# ===== DEPENDENCIES STAGE =====
+FROM node:20-alpine AS deps
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy workspace configuration
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+
+# Copy package.json files
+COPY shared/package.json ./shared/
+COPY frontend/package.json ./frontend/
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# ===== BUILDER STAGE =====
+FROM node:20-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy workspace files
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules/
+COPY --from=deps /app/shared/node_modules ./shared/node_modules/
+COPY --from=deps /app/frontend/node_modules ./frontend/node_modules/
+
+# Copy source files
+COPY shared/ ./shared/
+COPY frontend/ ./frontend/
+
+# Build shared package
+WORKDIR /app/shared
+RUN pnpm build
+
+# Build frontend
+WORKDIR /app/frontend
+
+# Set build-time environment variables
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+RUN pnpm build
+
+# ===== RUNNER STAGE =====
+FROM node:20-alpine AS runner
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Create nextjs user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+WORKDIR /app
+
+# Copy workspace configuration
+COPY --from=builder --chown=nextjs:nodejs /app/pnpm-workspace.yaml ./
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/pnpm-lock.yaml ./
+
+# Copy shared package
+COPY --from=builder --chown=nextjs:nodejs /app/shared/package.json ./shared/
+COPY --from=builder --chown=nextjs:nodejs /app/shared/dist ./shared/dist/
+COPY --from=builder --chown=nextjs:nodejs /app/shared/node_modules ./shared/node_modules/
+
+# Copy frontend package.json and built files
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/package.json ./frontend/
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/next.config.ts ./frontend/
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/public ./frontend/public/
+
+# Copy Next.js build output
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./frontend/
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./frontend/.next/static/
+
+# Install production dependencies
+RUN pnpm install --prod --frozen-lockfile
+
+WORKDIR /app/frontend
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Set production environment
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start Next.js
+CMD ["pnpm", "start"]

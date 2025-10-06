@@ -306,22 +306,69 @@ npm run shared:watch     # Watch mode for shared package
 - Setup và workflow phát triển
 - Best practices và examples
 
+### 8.9. Deployment Guide
+- [Deployment Documentation](documents/9.deployment-guide.md)
+- Docker production setup
+- Cloud deployment strategies (Vercel, Railway, AWS, DigitalOcean)
+- CI/CD pipeline với GitHub Actions
+- Health checks và monitoring
+
 ## 9. Deployment
 
-### 9.1. Production Environment
+### 9.1. Quick Deploy với Docker
+
 ```bash
-# Build applications
-npm run build
+# 1. Copy environment variables
+cp .env.production.example .env.production
+# Edit .env.production with your values
 
-# Start with PM2
-pm2 start ecosystem.config.js
+# 2. Deploy all services
+./scripts/deploy.sh all
 
-# Or with Docker
-docker-compose -f docker-compose.prod.yml up -d
+# 3. Check health
+./scripts/health-check.sh
 ```
 
-### 9.2. Environment Variables
-Xem `.env.example` files trong mỗi thư mục để biết các biến môi trường cần thiết.
+### 9.2. Production Environment
+
+**Docker Compose (Recommended):**
+```bash
+# Build and start all services
+docker-compose -f docker-compose.prod.yml up -d
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Stop services
+docker-compose -f docker-compose.prod.yml down
+```
+
+**Individual Services:**
+```bash
+# Deploy backend only
+./scripts/deploy.sh backend
+
+# Deploy frontend only
+./scripts/deploy.sh frontend
+```
+
+### 9.3. Cloud Deployment
+
+**Vercel (Frontend):**
+- Root Directory: `frontend`
+- Build Command: `cd .. && pnpm install && pnpm shared:build && cd frontend && pnpm build`
+- Install Command: `cd .. && pnpm install`
+
+**Railway/Render (Backend):**
+- Build Command: `pnpm install && cd shared && pnpm build && cd ../backend && pnpm prisma generate && pnpm build`
+- Start Command: `cd backend && pnpm prisma migrate deploy && node dist/main.js`
+
+**Full Guide:** See [Deployment Guide](documents/9.deployment-guide.md)
+
+### 9.4. Environment Variables
+- Development: `.env` files trong mỗi package
+- Production: `.env.production` (copy from `.env.production.example`)
+- Required variables: `DATABASE_URL`, `JWT_SECRET`, `NEXT_PUBLIC_API_URL`
 
 ## 10. Contributing
 
