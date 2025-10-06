@@ -1,0 +1,20 @@
+{
+  "name": "@tacohouse/shared",
+  "version": "0.0.1",
+  "description": "Shared types and utilities for Tacohouse",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist node_modules",
+    "prisma:generate": "prisma generate --schema=../backend/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "6.16.3"
+  },
+  "devDependencies": {
+    "prisma": "^6.16.3",
+    "typescript": "^5.7.3"
+  }
+}

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import type { User } from '@prisma/client';
+import type { User } from '@tacohouse/shared';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,7 +23,7 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  getCurrentUser(@CurrentUser() user: User) {
+  getCurrentUser(@CurrentUser() user: User): User {
     return user;
   }
 

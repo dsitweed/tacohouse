@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import type { User } from '@prisma/client';
+import type { User } from '@tacohouse/shared';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 
 import { AuthService } from './auth.service';

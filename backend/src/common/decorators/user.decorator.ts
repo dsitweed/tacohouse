@@ -1,6 +1,6 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
-import { User } from '@prisma/client';
+import { User } from '@tacohouse/shared';
 import { Request } from 'express';
 
 export const CurrentUser = createParamDecorator(

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { User } from '@prisma/client';
+import { User } from '@tacohouse/shared';
 import * as argon from 'argon2';
 import { UserService } from 'src/user/user.service';
 
@@ -47,7 +47,10 @@ export class AuthService {
 
   async register(registerAuthDto: RegisterAuthDto) {}
 
-  async validateUser({ email, password }: LoginAuthDto) {
+  async validateUser({
+    email,
+    password,
+  }: LoginAuthDto): Promise<Omit<User, 'password'> | null> {
     const user = await this.userService.findByEmail(email);
 
     if (user && (await argon.verify(user.password, password))) {

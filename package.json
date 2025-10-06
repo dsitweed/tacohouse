@@ -1,0 +1,16 @@
+{
+  "name": "tacohouse-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+    "build": "pnpm --filter shared build && pnpm --filter backend build && pnpm --filter frontend build",
+    "prisma:generate": "cd backend && prisma generate",
+    "prisma:migrate": "cd backend && prisma migrate dev",
+    "shared:build": "pnpm --filter @tacohouse/shared build",
+    "shared:watch": "pnpm --filter @tacohouse/shared watch"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

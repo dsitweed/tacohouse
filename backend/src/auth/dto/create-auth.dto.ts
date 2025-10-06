@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@tacohouse/shared';
 
 export class CreateAuthDto {
   email: string;

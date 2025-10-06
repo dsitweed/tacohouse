@@ -158,8 +158,16 @@ tacohouse/
 │   │   └── config/         # Configuration
 │   ├── prisma/             # Database schema
 │   └── package.json
-├── docker-compose.yml      # Local development services
-├── package.json           # Root workspace config
+├── shared/                  # 🆕 Shared types package
+│   ├── src/
+│   │   └── index.ts        # Export Prisma types
+│   ├── node_modules/
+│   │   └── .prisma/        # Generated Prisma client
+│   ├── examples/           # Usage examples
+│   └── package.json
+├── docker-compose.yml       # Local development services
+├── pnpm-workspace.yaml     # pnpm workspace config
+├── package.json            # Root workspace config
 └── README.md
 ```
 
@@ -199,11 +207,19 @@ npm run dev
 
 ### 5.3. Available Scripts
 ```bash
-npm run dev          # Start both frontend & backend in development
-npm run build        # Build both applications
-npm run start        # Start both applications in production
-npm run lint         # Lint both applications
-npm run test         # Run tests for both applications
+npm run dev              # Start both frontend & backend in development
+npm run build            # Build all packages (shared, backend, frontend)
+npm run start            # Start both applications in production
+npm run lint             # Lint both applications
+npm run test             # Run tests for both applications
+
+# Prisma commands
+npm run prisma:generate  # Generate Prisma client into shared package
+npm run prisma:migrate   # Run Prisma migrations
+
+# Shared package
+npm run shared:build     # Build shared types package
+npm run shared:watch     # Watch mode for shared package
 ```
 
 ## 6. Database Schema
@@ -283,6 +299,12 @@ npm run test         # Run tests for both applications
   - CSRF, XSS, SQL Injection, v.v.
   - Encryption / Hash / TLS
   - Log & audit
+
+### 8.8. Shared Types Guide
+- [Tài liệu tiếng Việt](documents/8.shared-types-guide.md)
+- Hướng dẫn sử dụng shared types từ Prisma cho cả BE và FE
+- Setup và workflow phát triển
+- Best practices và examples
 
 ## 9. Deployment
 
