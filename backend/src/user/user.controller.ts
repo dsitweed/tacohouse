@@ -6,9 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
 import type { User } from '@tacohouse/shared';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
@@ -21,7 +19,8 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(JwtAuthGuard) // similar
+  // @UseGuards(AuthGuard('jwt')) // similar
   @Get('me')
   getCurrentUser(@CurrentUser() user: User): User {
     return user;
