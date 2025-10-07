@@ -1,12 +1,12 @@
 import Joi from 'joi';
 
 export const envConfig = () => ({
-  nodeEnv: process.env.NODE_ENV,
-  port: parseInt(process.env.PORT, 10),
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN,
-  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
-  jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+  NODE_ENV: process.env.NODE_ENV,
+  PORT: parseInt(process.env.PORT, 10),
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
 });
 
 export const envValidationSchema = Joi.object({
@@ -19,3 +19,5 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().required(),
   JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
 });
+
+export type EnvConfig = ReturnType<typeof envConfig>;

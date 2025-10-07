@@ -54,7 +54,7 @@ model UserProfile {
   firstName   String
   lastName    String
   phone       String
-  avatar      String
+  avatar      String?
   dateOfBirth DateTime
   occupation  String
   workplace   String

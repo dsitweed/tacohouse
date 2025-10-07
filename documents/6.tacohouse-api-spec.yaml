@@ -79,7 +79,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [email, password, role, firstName, lastName]
+              required: [email, password, role, firstName, lastName, avatar, dateOfBirth, occupation, workplace]
               properties:
                 email:
                   type: string
@@ -88,19 +88,44 @@ paths:
                 password:
                   type: string
                   format: password
-                  minLength: 8
+                  minLength: 6
+                  maxLength: 50
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)'
+                  description: Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 number
                   example: SecurePass123!
                 role:
                   $ref: '#/components/schemas/UserRole'
                 firstName:
                   type: string
+                  maxLength: 100
                   example: John
                 lastName:
                   type: string
+                  maxLength: 100
                   example: Doe
                 phone:
                   type: string
+                  maxLength: 10
+                  pattern: '^(\+84|0)[3|5|7|8|9][0-9]{8}$'
+                  description: Vietnamese phone number format
                   example: +84901234567
+                avatar:
+                  type: string
+                  maxLength: 500
+                  description: URL to user avatar image
+                  example: https://i.pravatar.cc/150?u=john.doe@example.com
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: "1990-01-15"
+                occupation:
+                  type: string
+                  maxLength: 100
+                  example: Software Engineer
+                workplace:
+                  type: string
+                  maxLength: 100
+                  example: Tech Company Inc.
       responses:
         '201':
           description: User created successfully
@@ -112,7 +137,7 @@ paths:
                   message:
                     type: string
                     example: User registered successfully
-                  user:
+                  data:
                     $ref: '#/components/schemas/User'
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -146,24 +171,30 @@ paths:
                   format: password
                   example: SecurePass123!
       responses:
-        '200':
+        '201':
           description: Login successful
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  accessToken:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
                     type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                  refreshToken:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                  user:
-                    $ref: '#/components/schemas/User'
-                  expiresIn:
-                    type: number
-                    example: 3600
+                    example: "Success"
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      user:
+                        $ref: '#/components/schemas/User'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -171,31 +202,34 @@ paths:
     post:
       tags: [Authentication]
       summary: Refresh access token
-      description: Get a new access token using refresh token
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [refreshToken]
-              properties:
-                refreshToken:
-                  type: string
-                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      description: Get a new access token using current access token
+      security:
+        - bearerAuth: []
       responses:
-        '200':
+        '201':
           description: Token refreshed successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  accessToken:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
                     type: string
-                  expiresIn:
-                    type: number
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1OTg1MzQxNiwiZXhwIjoxNzU5ODU0MzE2fQ.gkHB2Bx9y20jvfcZ8HwvYjfhozUyVbeRSJtV7EADpWo
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzU5ODUzNDE2LCJleHAiOjE3NjA0NTgyMTYsImp0aSI6IjM2ODQyMzk4LTRjZjQtNDhmNC1iOGU2LTg1ZmY3ZWIxMjcwZiJ9.grLJfy6XpO__zToSyZSbjW6-ejOmztpl2BKqQryeIXU
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   # Buildings Endpoints
   /buildings:
@@ -1132,39 +1166,51 @@ components:
       properties:
         id:
           type: string
-          example: usr_1234567890abcdef
+          example: cmggaxg68001am1z67p68a1fb
         email:
           type: string
           format: email
-          example: john.doe@example.com
+          example: tenant1@example.com
         role:
           $ref: '#/components/schemas/UserRole'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        phone:
-          type: string
-          example: +84901234567
-        avatar:
-          type: string
-          nullable: true
-          example: https://storage.tacohouse.com/avatars/user123.jpg
         isActive:
           type: boolean
           example: true
-        isEmailVerified:
-          type: boolean
-          example: true
-        emailVerifiedAt:
+        deletedAt:
           type: string
           format: date-time
           nullable: true
-        lastLoginAt:
+        firstName:
+          type: string
+          example: Kurtis
+        lastName:
+          type: string
+          example: Stamm
+        phone:
+          type: string
+          example: 981-916-7458 x83220
+        avatar:
+          type: string
+          nullable: true
+          example: https://i.pravatar.cc/150?u=tenant1@example.com
+        dateOfBirth:
           type: string
           format: date-time
+          example: 1983-10-16T13:49:33.977Z
+        occupation:
+          type: string
+          example: International Factors Designer
+        workplace:
+          type: string
+          example: Hirthe and Sons
+        idCardFrontPhoto:
+          type: string
+          nullable: true
+        idCardBackPhoto:
+          type: string
+          nullable: true
+        portraitPhoto:
+          type: string
           nullable: true
         createdAt:
           type: string

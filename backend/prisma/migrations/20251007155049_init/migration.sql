@@ -23,7 +23,7 @@ CREATE TYPE "RoomStatus" AS ENUM ('AVAILABLE', 'OCCUPIED', 'PENDING_CHECKOUT', '
 CREATE TYPE "RentalStatus" AS ENUM ('ACTIVE', 'NOTICE_GIVEN', 'TERMINATED');
 
 -- CreateEnum
-CREATE TYPE "BillStatus" AS ENUM ('PENDING', 'TENANT_CONFIRMED', 'LANDLORD_CONFIRMED', 'PAID', 'OVERDUE');
+CREATE TYPE "BillStatus" AS ENUM ('PENDING', 'PAID', 'TENANT_CONFIRMED', 'LANDLORD_CONFIRMED', 'OVERDUE');
 
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED');
@@ -61,7 +61,7 @@ CREATE TABLE "user_profiles" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
-    "avatar" TEXT NOT NULL,
+    "avatar" TEXT,
     "dateOfBirth" TIMESTAMP(3) NOT NULL,
     "occupation" TEXT NOT NULL,
     "workplace" TEXT NOT NULL,

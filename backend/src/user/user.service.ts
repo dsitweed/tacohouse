@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import type { User } from '@tacohouse/shared';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserWithProfile } from 'src/types';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -30,10 +31,13 @@ export class UserService {
     return `This action removes a #${id} user`;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<UserWithProfile | null> {
     return this.prisma.user.findUnique({
       where: {
         email: email,
+      },
+      include: {
+        profile: true,
       },
     });
   }

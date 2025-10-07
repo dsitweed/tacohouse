@@ -1,56 +1,103 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { User } from '@tacohouse/shared';
 import * as argon from 'argon2';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserWithProfile } from 'src/types';
 import { UserService } from 'src/user/user.service';
+import { flattenUser } from 'src/utils/user.util';
 
-import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { JwtPayload } from './strategies/jwt.strategy';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private prisma: PrismaService,
     private userService: UserService,
     private jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
 
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  async login(user: UserWithProfile) {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
 
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
-
-  login(user: User) {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const { accessToken, refreshToken } = await this.getAuthTokens(payload);
 
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
+      user: flattenUser(user),
     };
   }
 
-  async register(registerAuthDto: RegisterAuthDto) {}
+  async register(registerAuthDto: RegisterAuthDto): Promise<User> {
+    const {
+      email,
+      password,
+      role,
+      firstName,
+      lastName,
+      phone,
+      avatar,
+      dateOfBirth,
+      occupation,
+      workplace,
+    } = registerAuthDto;
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email already exists');
+    }
+
+    const hashedPassword = await argon.hash(password);
+    const newUser = await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role,
+        profile: {
+          create: {
+            firstName,
+            lastName,
+            phone,
+            avatar,
+            dateOfBirth,
+            occupation,
+            workplace,
+          },
+        },
+      },
+      include: { profile: true },
+    });
+
+    return flattenUser(newUser);
+  }
+
+  async refresh(user: UserWithProfile) {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    return this.getAuthTokens(payload);
+  }
 
   async validateUser({
     email,
     password,
-  }: LoginAuthDto): Promise<Omit<User, 'password'> | null> {
+  }: LoginAuthDto): Promise<Omit<UserWithProfile, 'password'> | null> {
     const user = await this.userService.findByEmail(email);
 
     if (user && (await argon.verify(user.password, password))) {
@@ -60,5 +107,27 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  private async getAuthTokens(payload: JwtPayload) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: this.config.get('JWT_SECRET'),
+        expiresIn: this.config.get('JWT_EXPIRES_IN', '15m'),
+      }),
+      this.jwtService.signAsync(
+        { ...payload, type: 'refresh' },
+        {
+          secret: this.config.get('JWT_REFRESH_SECRET'),
+          expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN', '7d'),
+          jwtid: crypto.randomUUID(), // JWT ID - unique identifier
+        },
+      ),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
