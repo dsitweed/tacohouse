@@ -36,9 +36,13 @@
     - [8.5. Database Design Document](#85-database-design-document)
     - [8.6. API Specification Document](#86-api-specification-document)
     - [8.7. Security Design Document](#87-security-design-document)
+    - [8.8. Shared Types Guide](#88-shared-types-guide)
+    - [8.9. Deployment Guide](#89-deployment-guide)
   - [9. Deployment](#9-deployment)
-    - [9.1. Production Environment](#91-production-environment)
-    - [9.2. Environment Variables](#92-environment-variables)
+    - [9.1. Quick Deploy với Docker](#91-quick-deploy-với-docker)
+    - [9.2. Production Environment](#92-production-environment)
+    - [9.3. Cloud Deployment](#93-cloud-deployment)
+    - [9.4. Environment Variables](#94-environment-variables)
   - [10. Contributing](#10-contributing)
   - [11. License](#11-license)
   - [12. Support](#12-support)
@@ -132,7 +136,8 @@ Tacohouse là hệ thống quản lý nhà trọ cho thuê full-stack hiện đ�
   "git": "Husky + lint-staged",
   "testing": "Jest (unit) + Playwright (e2e)",
   "development": "Concurrently (run both servers)",
-  "components": "Storybook (UI documentation)"
+  "components": "Storybook (UI documentation)",
+  "shared": "tRPC + Shared types package with Prisma types"
 }
 ```
 

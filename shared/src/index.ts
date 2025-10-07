@@ -1,3 +1,5 @@
+export { PrismaClient } from ".prisma/client";
+
 // Export all Prisma types and enums
 export type {
   User,
@@ -23,21 +25,22 @@ export type {
 
 // Export all Prisma enums
 export {
+  // Enum Role
   UserRole,
+  // Enum Type
   RoomType,
   UtilityType,
   MessageType,
   PriorityType,
   NotificationType,
+  // Enum Status
   RoomStatus,
   RentalStatus,
   BillStatus,
   PaymentStatus,
   MaintenanceStatus,
+  // Enum other
   EquipmentCondition,
   PaymentMethod,
   MaintenanceCategory,
 } from ".prisma/client";
-
-// Also re-export the PrismaClient if needed in backend
-export { PrismaClient } from ".prisma/client";

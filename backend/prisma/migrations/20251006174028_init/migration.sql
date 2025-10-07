@@ -78,7 +78,6 @@ CREATE TABLE "user_profiles" (
 CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "permissions" TEXT[],
 
     CONSTRAINT "admins_pkey" PRIMARY KEY ("id")
 );

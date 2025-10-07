@@ -75,8 +75,6 @@ model Admin {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  permissions String[] // JSON array of specific permissions
-
   @@map("admins")
 }
 
@@ -494,9 +492,9 @@ enum RentalStatus {
 
 enum BillStatus {
   PENDING
+  PAID
   TENANT_CONFIRMED
   LANDLORD_CONFIRMED
-  PAID
   OVERDUE
 }
 
