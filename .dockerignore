@@ -1,0 +1,100 @@
+# Node modules (all packages)
+**/node_modules/
+node_modules/
+
+# Build artifacts
+**/dist/
+**/build/
+**/*.tsbuildinfo
+dist/
+build/
+
+# Logs
+**/*.log
+**/logs/
+*.log
+logs/
+
+# Environment variables
+**/.env
+**/.env.local
+**/.env.*.local
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+**/.idea/
+**/.vscode/
+.idea/
+.vscode/
+**/*.swp
+**/*.swo
+**/*.bak
+**/*.orig
+*.swp
+*.swo
+*.bak
+*.orig
+
+# Test coverage reports
+**/coverage/
+coverage/
+
+# Test files (không cần trong Docker image)
+**/test/
+test/
+**/*.spec.ts
+**/*.test.ts
+**/*.e2e-spec.ts
+
+# NestJS specific files
+backend/src/**/*.js
+backend/src/**/*.js.map
+
+# Operating System files
+**/.DS_Store
+**/Thumbs.db
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.github/
+.gitignore
+**/.gitignore
+
+# Documentation files (không cần trong runtime)
+**/*.md
+*.md
+!README.md
+documents/
+DEPLOYMENT.md
+quickNote.md
+
+# Docker files
+**/Dockerfile
+**/.dockerignore
+docker-compose*.yml
+backend/Dockerfile
+backend/.dockerignore
+frontend/Dockerfile
+frontend/.dockerignore
+
+# Scripts (không cần trong container)
+scripts/
+
+
+# Config files không cần thiết
+**/.prettierrc*
+**/.eslintrc*
+**/eslint.config.*
+**/.editorconfig
+backend/.prettierrc.yml
+backend/eslint.config.mjs
+
+# Database files (local development)
+**/data/
+**/*.sqlite
+**/*.db
+backend/database/*

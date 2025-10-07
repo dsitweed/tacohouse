@@ -1,19 +1,25 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
-WORKDIR /backend
+WORKDIR /app
 
 RUN corepack enable
 
-COPY package.json pnpm-lock.yaml ./
+# Copy workspace config and lockfile
+COPY pnpm-workspace.yaml pnpm-lock.yaml ./
 
+# Copy all packages (filtered by .dockerignore)
+COPY shared/ ./shared/
+COPY backend/ ./backend/
+
+# Install dependencies for the entire workspace
 RUN pnpm install --frozen-lockfile
 
-# Copy prisma schema first
-COPY prisma ./prisma/
-
 # Generate Prisma client
-RUN pnpm prisma generate
+RUN cd backend && pnpm prisma generate
 
-COPY . .
+# Build shared package
+RUN cd shared && pnpm run build
+
+WORKDIR /app/backend
 
 CMD ["pnpm", "run", "start:dev"]
