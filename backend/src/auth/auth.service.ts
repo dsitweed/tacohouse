@@ -7,11 +7,10 @@ import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserWithProfile } from 'src/types';
 import { UserService } from 'src/user/user.service';
-import { flattenUser } from 'src/utils/user.util';
+import { flattenUser } from 'src/utils';
 
-import { LoginAuthDto } from './dto/login-auth.dto';
-import { RegisterAuthDto } from './dto/register-auth.dto';
-import { JwtPayload } from './strategies/jwt.strategy';
+import { LoginAuthDto, RegisterAuthDto } from './dto';
+import { JwtPayload } from './strategies';
 
 @Injectable()
 export class AuthService {
@@ -94,16 +93,40 @@ export class AuthService {
     return this.getAuthTokens(payload);
   }
 
-  async validateUser({
+  async validateLocalUser({
     email,
     password,
   }: LoginAuthDto): Promise<Omit<UserWithProfile, 'password'> | null> {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      include: { profile: true },
+    });
 
     if (user && (await argon.verify(user.password, password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    }
+
+    return null;
+  }
+
+  async validateJwtUser(
+    payload: JwtPayload,
+  ): Promise<Omit<UserWithProfile, 'password'> | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: payload.sub,
+      },
+      include: { profile: true },
+    });
+
+    if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
     }
 
     return null;

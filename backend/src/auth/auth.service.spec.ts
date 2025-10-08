@@ -10,7 +10,7 @@ import type { UserWithProfile } from 'src/types';
 import { UserService } from 'src/user/user.service';
 
 import { AuthService } from './auth.service';
-import type { RegisterAuthDto } from './dto/register-auth.dto';
+import type { RegisterAuthDto } from './dto';
 
 jest.mock('argon2');
 
@@ -51,9 +51,7 @@ describe('AuthService', () => {
     },
   };
 
-  const mockUserService = {
-    findByEmail: jest.fn(),
-  };
+  const mockUserService = {};
 
   const mockJwtService = {
     signAsync: jest.fn(),
@@ -111,6 +109,32 @@ describe('AuthService', () => {
       });
 
       expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
+      expect(mockJwtService.signAsync).toHaveBeenNthCalledWith(
+        1,
+        {
+          sub: mockUser.id,
+          email: mockUser.email,
+          role: mockUser.role,
+        },
+        {
+          secret: 'secret',
+          expiresIn: '15m',
+        },
+      );
+      expect(mockJwtService.signAsync).toHaveBeenNthCalledWith(
+        2,
+        {
+          sub: mockUser.id,
+          email: mockUser.email,
+          role: mockUser.role,
+          type: 'refresh',
+        },
+        {
+          secret: 'refresh-secret',
+          expiresIn: '7d',
+          jwtid: expect.any(String) as string,
+        },
+      );
     });
   });
 
@@ -163,7 +187,9 @@ describe('AuthService', () => {
 
       expect(result).toEqual(
         expect.objectContaining({
+          id: mockUser.id,
           email: mockUser.email,
+          role: mockUser.role,
         }),
       );
     });
@@ -208,45 +234,88 @@ describe('AuthService', () => {
     });
   });
 
-  describe('validateUser', () => {
+  describe('validateLocalUser', () => {
     const loginDto = {
       email: 'test@example.com',
       password: 'Password123',
     };
 
     it('should return user without password if credentials are valid', async () => {
-      mockUserService.findByEmail.mockResolvedValue(mockUser);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       (argon.verify as jest.Mock).mockResolvedValue(true);
 
-      const result = await service.validateUser(loginDto);
+      const result = await service.validateLocalUser(loginDto);
 
-      expect(mockUserService.findByEmail).toHaveBeenCalledWith(loginDto.email);
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { email: loginDto.email },
+        include: { profile: true },
+      });
+
       expect(argon.verify).toHaveBeenCalledWith(
         mockUser.password,
         loginDto.password,
       );
+
       expect(result).not.toHaveProperty('password');
       expect(result).toEqual(
         expect.objectContaining({
+          id: mockUser.id,
           email: mockUser.email,
+          role: mockUser.role,
         }),
       );
     });
 
     it('should return null if user not found', async () => {
-      mockUserService.findByEmail.mockResolvedValue(null);
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.validateUser(loginDto);
+      const result = await service.validateLocalUser(loginDto);
 
       expect(result).toBeNull();
       expect(argon.verify).not.toHaveBeenCalled();
     });
 
     it('should return null if password is invalid', async () => {
-      mockUserService.findByEmail.mockResolvedValue(mockUser);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       (argon.verify as jest.Mock).mockResolvedValue(false);
 
-      const result = await service.validateUser(loginDto);
+      const result = await service.validateLocalUser(loginDto);
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('validateJwtUser', () => {
+    const jwtPayload = {
+      sub: '1',
+      email: 'test@example.com',
+      role: UserRole.TENANT,
+    };
+
+    it('should return user without password if user exists', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+
+      const result = await service.validateJwtUser(jwtPayload);
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: jwtPayload.sub },
+        include: { profile: true },
+      });
+
+      expect(result).not.toHaveProperty('password');
+      expect(result).toEqual(
+        expect.objectContaining({
+          id: mockUser.id,
+          email: mockUser.email,
+          role: mockUser.role,
+        }),
+      );
+    });
+
+    it('should return null if user not found', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      const result = await service.validateJwtUser(jwtPayload);
 
       expect(result).toBeNull();
     });

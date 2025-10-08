@@ -7,7 +7,7 @@ import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { UserWithProfile } from 'src/types';
 
 import { AuthService } from './auth.service';
-import { RegisterAuthDto } from './dto/register-auth.dto';
+import { RegisterAuthDto } from './dto';
 
 @Controller('auth')
 export class AuthController {

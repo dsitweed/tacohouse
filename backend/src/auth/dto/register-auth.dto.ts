@@ -12,25 +12,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class RegisterAuthDto {
-  @IsNotEmpty()
-  @IsEmail()
-  @Transform(({ value }) => String(value).toLowerCase().trim())
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Length(6, 50)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-    message:
-      'Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 number',
-  })
-  password: string;
-
-  @IsNotEmpty()
-  @IsEnum(UserRole)
-  role: UserRole;
-
+export class UserProfileDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
@@ -68,4 +50,39 @@ export class RegisterAuthDto {
   @MaxLength(100)
   @Transform(({ value }) => String(value).trim())
   workplace: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  idCardFrontPhoto?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  idCardBackPhoto?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  portraitPhoto?: string;
+}
+
+export class RegisterAuthDto extends UserProfileDto {
+  @IsNotEmpty()
+  @IsEmail()
+  @Transform(({ value }) => String(value).toLowerCase().trim())
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 50)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+    message:
+      'Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 number',
+  })
+  password: string;
+
+  @IsNotEmpty()
+  @IsEnum(UserRole)
+  role: UserRole;
 }

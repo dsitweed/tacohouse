@@ -313,7 +313,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Building'
 
-    put:
+    patch:
       tags: [Buildings]
       summary: Update building
       parameters:
@@ -577,9 +577,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfile'
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Success"
+                  data: 
+                    $ref: '#/components/schemas/UserProfile'
     
-    put:
+    patch:
       tags: [Users]
       summary: Update current user profile
       requestBody:
@@ -619,7 +628,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TenantProfile'
     
-    put:
+    patch:
       tags: [Tenants]
       summary: Update tenant profile
       requestBody:
@@ -772,7 +781,7 @@ paths:
         '200':
           description: Equipment details
     
-    put:
+    patch:
       tags: [Rooms]
       summary: Update equipment
       parameters:
@@ -859,7 +868,7 @@ paths:
         '200':
           description: Request details
     
-    put:
+    patch:
       tags: [Requests]
       summary: Update request status
       parameters:
@@ -1989,14 +1998,6 @@ components:
     UserProfile:
       allOf:
         - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            tenantProfile:
-              $ref: '#/components/schemas/TenantProfile'
-              nullable: true
-            landlordProfile:
-              $ref: '#/components/schemas/LandlordProfile'
-              nullable: true
 
     LandlordProfile:
       type: object

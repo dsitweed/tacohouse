@@ -5,7 +5,7 @@ import type { UserWithProfile } from 'src/types';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import type { RegisterAuthDto } from './dto/register-auth.dto';
+import type { RegisterAuthDto } from './dto';
 
 describe('AuthController', () => {
   let controller: AuthController;

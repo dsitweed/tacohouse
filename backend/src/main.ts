@@ -2,8 +2,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
+import {
+  LoggingInterceptor,
+  TransformResponseInterceptor,
+} from './common/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

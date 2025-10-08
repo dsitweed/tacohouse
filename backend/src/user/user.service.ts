@@ -1,44 +1,107 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
-import type { User } from '@tacohouse/shared';
+import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserWithProfile } from 'src/types';
+import { flattenUser } from 'src/utils';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto, UpdateUserProfileDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
-
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
-
-  async findByEmail(email: string): Promise<UserWithProfile | null> {
-    return this.prisma.user.findUnique({
+  async findOne(id: string): Promise<Omit<UserWithProfile, 'password'> | null> {
+    const user = await this.prisma.user.findUnique({
       where: {
-        email: email,
+        id,
       },
       include: {
         profile: true,
       },
     });
+
+    if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    }
+
+    return user;
+  }
+
+  async update(
+    currentUser: UserWithProfile,
+    updateUserDto: UpdateUserProfileDto,
+  ) {
+    const updatedUser = await this.prisma.user.update({
+      where: { id: currentUser.id },
+      data: {
+        profile: {
+          update: updateUserDto,
+        },
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (!updatedUser.profile) {
+      throw new NotFoundException();
+    }
+
+    return flattenUser(updatedUser);
+  }
+
+  async updatePassword(
+    currentUser: UserWithProfile,
+    updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const {
+      currentPassword,
+      confirmPassword,
+      password: newPassword,
+    } = updatePasswordDto;
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: currentUser.id },
+      select: { id: true, password: true },
+    });
+
+    if (!user) {
+      throw new BadRequestException();
+    }
+
+    const isCurrentPasswordValid = await argon.verify(
+      user.password,
+      currentPassword,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException();
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException();
+    }
+
+    const hashedPassword = await argon.hash(newPassword);
+
+  const updatedUser = await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+      include: { profile: true },
+    });
+
+    return flattenUser(updatedUser);
   }
 }
