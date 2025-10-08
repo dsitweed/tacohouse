@@ -2,7 +2,6 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { User } from '@tacohouse/shared';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserWithProfile } from 'src/types';
@@ -35,7 +34,7 @@ export class AuthService {
     };
   }
 
-  async register(registerAuthDto: RegisterAuthDto): Promise<User> {
+  async register(registerAuthDto: RegisterAuthDto) {
     const {
       email,
       password,

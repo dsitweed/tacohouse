@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './common/guards';
 import { envConfig, envValidationSchema } from './config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
+import { BuildingsModule } from './buildings/buildings.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     AuthModule,
     UsersModule,
+    BuildingsModule,
   ],
   controllers: [AppController],
   providers: [

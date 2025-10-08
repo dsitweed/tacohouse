@@ -1,7 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { User } from '@tacohouse/shared';
 import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { UserWithProfile } from 'src/types';
@@ -22,7 +21,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  register(@Body() registerAuthDto: RegisterAuthDto): Promise<User> {
+  register(@Body() registerAuthDto: RegisterAuthDto) {
     return this.authService.register(registerAuthDto);
   }
 
