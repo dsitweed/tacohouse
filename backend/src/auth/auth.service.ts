@@ -6,7 +6,6 @@ import { User } from '@tacohouse/shared';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserWithProfile } from 'src/types';
-import { UserService } from 'src/user/user.service';
 import { flattenUser } from 'src/utils';
 
 import { LoginAuthDto, RegisterAuthDto } from './dto';
@@ -16,7 +15,6 @@ import { JwtPayload } from './strategies';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private userService: UserService,
     private jwtService: JwtService,
     private readonly config: ConfigService,
   ) {}

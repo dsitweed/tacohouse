@@ -10,10 +10,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserWithProfile } from 'src/types';
 import { flattenUser } from 'src/utils';
 
-import { UpdatePasswordDto, UpdateUserProfileDto } from './dto/update-user.dto';
+import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async findOne(id: string): Promise<Omit<UserWithProfile, 'password'> | null> {
@@ -92,7 +92,7 @@ export class UserService {
 
     const hashedPassword = await argon.hash(newPassword);
 
-  const updatedUser = await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: {
         id: user.id,
       },

@@ -5,11 +5,11 @@ import type { UserWithProfile } from 'src/types';
 import { flattenUser } from 'src/utils';
 
 import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 
 @Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
 
   // @UseGuards(JwtAuthGuard) // similar
   // @UseGuards(AuthGuard('jwt')) // similar
@@ -23,7 +23,7 @@ export class UserController {
     @CurrentUser() currentUser: UserWithProfile,
     @Body() updateUserProfileDto: UpdateUserProfileDto,
   ) {
-    return this.userService.update(currentUser, updateUserProfileDto);
+    return this.usersService.update(currentUser, updateUserProfileDto);
   }
 
   @Post('me/change-password')
@@ -31,6 +31,6 @@ export class UserController {
     @CurrentUser() currentUser: UserWithProfile,
     @Body() updatePassword: UpdatePasswordDto,
   ) {
-    return this.userService.updatePassword(currentUser, updatePassword);
+    return this.usersService.updatePassword(currentUser, updatePassword);
   }
 }
