@@ -58,6 +58,7 @@ export class UsersService {
     return flattenUser(updatedUser);
   }
 
+  // TODO: [OPTIONAL] Cancel old token or request re-login
   async updatePassword(
     currentUser: UserWithProfile,
     updatePasswordDto: UpdatePasswordDto,

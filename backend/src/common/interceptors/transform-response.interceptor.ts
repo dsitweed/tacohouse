@@ -31,21 +31,22 @@ export class TransformResponseInterceptor<T> implements NestInterceptor<T> {
 
         let responseData = {};
         let responseMessage = '';
+        let reponsePagination = {};
 
         if (data && typeof data === 'object') {
-          if ('message' in data) {
-            const { message, ...rest } = data;
-            responseMessage = message as string;
-            responseData = rest;
-          }
+          const { message, pagination, ...rest } = data as Record<string, any>;
 
-          if ('data' in data) responseData = data.data as object;
+          if (message) responseMessage = message as string;
+          if (pagination) reponsePagination = pagination as object;
+
+          responseData = (rest.data || rest) as object;
         }
 
         return {
           statusCode: response.statusCode,
           message: responseMessage || 'Success',
           data: Object.keys(responseData).length > 0 ? responseData : data,
+          pagination: reponsePagination,
         };
       }),
     );

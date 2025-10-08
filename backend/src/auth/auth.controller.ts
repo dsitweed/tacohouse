@@ -8,6 +8,7 @@ import type { UserWithProfile } from 'src/types';
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto';
 
+// TODO: Work with redis
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
