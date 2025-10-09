@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Building, Prisma, UserRole } from '@tacohouse/shared';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -17,15 +21,15 @@ export class BuildingsService {
   async create(
     currentUser: UserWithRelations,
     createBuildingDto: CreateBuildingDto,
-  ): Promise<Building> {
+  ) {
     // LANDLORD can creates building for themselves
     // ADMIN can create building for any landlord
     const { landlordId: targetLandlordId } = createBuildingDto;
-    const haveLandlordAccess = this.validateLandlordAccess(
+    const isHasLandlordAccess = this.validateLandlordAccess(
       currentUser,
       targetLandlordId,
     );
-    if (!haveLandlordAccess || !currentUser.landlord) {
+    if (!isHasLandlordAccess || !currentUser.landlord) {
       throw new ForbiddenException();
     }
 
@@ -129,8 +133,24 @@ export class BuildingsService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} building`;
+  async findOne(currentUser: UserWithRelations, id: string) {
+    const building = await this.prisma.building.findUnique({
+      where: { id },
+    });
+    if (!building) {
+      throw new NotFoundException();
+    }
+
+    // const isHasBuildingAccess = await this.validateBuildingAccess(
+    //   currentUser,
+    //   building,
+    // );
+
+    // if (!isHasBuildingAccess) {
+    //   throw new ForbiddenException();
+    // }
+
+    return building;
   }
 
   update(id: number, updateBuildingDto: UpdateBuildingDto) {
@@ -159,5 +179,32 @@ export class BuildingsService {
     }
 
     return currentUser.landlord?.id === targetLandlordId;
+  }
+
+  private async validateBuildingAccess(
+    currentUser: UserWithRelations,
+    building: Building,
+  ) {
+    if (currentUser.role === UserRole.ADMIN) return true;
+
+    if (currentUser.role === UserRole.LANDLORD) {
+      return building.landlordId === currentUser.landlord?.id;
+    }
+
+    if (currentUser.role === UserRole.TENANT && currentUser.tenant) {
+      const hasAccess = await this.prisma.rental.findFirst({
+        where: {
+          tenantId: currentUser.tenant.id,
+          status: 'ACTIVE',
+          room: {
+            buildingId: building.id,
+          },
+        },
+      });
+
+      return !!hasAccess;
+    }
+
+    return false;
   }
 }

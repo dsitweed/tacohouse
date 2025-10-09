@@ -39,8 +39,11 @@ export class BuildingsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.buildingsService.findOne(+id);
+  findOne(
+    @CurrentUser() currentUser: UserWithRelations,
+    @Param('id') id: string,
+  ): Promise<Building> {
+    return this.buildingsService.findOne(currentUser, id);
   }
 
   @Patch(':id')
