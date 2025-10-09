@@ -7,7 +7,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 import { Observable } from 'rxjs';
-import { UserWithProfile } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
@@ -31,7 +31,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest<TUser = UserWithProfile>(err: any, user: TUser): TUser {
+  handleRequest<TUser = UserWithRelations>(err: any, user: TUser): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException('Invalid or expired token');
     }

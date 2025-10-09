@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 
 import { CurrentUser } from 'src/common/decorators';
-import type { UserWithProfile } from 'src/types';
+import type { UserWithRelations } from 'src/types';
 import { flattenUser } from 'src/utils';
 
 import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
@@ -14,13 +14,13 @@ export class UsersController {
   // @UseGuards(JwtAuthGuard) // similar
   // @UseGuards(AuthGuard('jwt')) // similar
   @Get('me')
-  getCurrentUser(@CurrentUser() user: UserWithProfile) {
+  getCurrentUser(@CurrentUser() user: UserWithRelations) {
     return flattenUser(user);
   }
 
   @Patch('me')
   update(
-    @CurrentUser() currentUser: UserWithProfile,
+    @CurrentUser() currentUser: UserWithRelations,
     @Body() updateUserProfileDto: UpdateUserProfileDto,
   ) {
     return this.usersService.update(currentUser, updateUserProfileDto);
@@ -28,7 +28,7 @@ export class UsersController {
 
   @Post('me/change-password')
   changePassword(
-    @CurrentUser() currentUser: UserWithProfile,
+    @CurrentUser() currentUser: UserWithRelations,
     @Body() updatePassword: UpdatePasswordDto,
   ) {
     return this.usersService.updatePassword(currentUser, updatePassword);

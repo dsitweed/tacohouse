@@ -7,7 +7,7 @@ import {
 
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserWithProfile } from 'src/types';
+import { UserWithRelations } from 'src/types';
 import { flattenUser } from 'src/utils';
 
 import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
@@ -16,14 +16,14 @@ import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(id: string): Promise<Omit<UserWithProfile, 'password'> | null> {
+  async findOne(
+    id: string,
+  ): Promise<Omit<UserWithRelations, 'password'> | null> {
     const user = await this.prisma.user.findUnique({
       where: {
         id,
       },
-      include: {
-        profile: true,
-      },
+      include: { profile: true, admin: true, landlord: true, tenant: true },
     });
 
     if (user) {
@@ -36,7 +36,7 @@ export class UsersService {
   }
 
   async update(
-    currentUser: UserWithProfile,
+    currentUser: UserWithRelations,
     updateUserDto: UpdateUserProfileDto,
   ) {
     const updatedUser = await this.prisma.user.update({
@@ -46,9 +46,7 @@ export class UsersService {
           update: updateUserDto,
         },
       },
-      include: {
-        profile: true,
-      },
+      include: { profile: true, admin: true, landlord: true, tenant: true },
     });
 
     if (!updatedUser.profile) {
@@ -60,7 +58,7 @@ export class UsersService {
 
   // TODO: [OPTIONAL] Cancel old token or request re-login
   async updatePassword(
-    currentUser: UserWithProfile,
+    currentUser: UserWithRelations,
     updatePasswordDto: UpdatePasswordDto,
   ) {
     const {
@@ -100,7 +98,7 @@ export class UsersService {
       data: {
         password: hashedPassword,
       },
-      include: { profile: true },
+      include: { profile: true, admin: true, landlord: true, tenant: true },
     });
 
     return flattenUser(updatedUser);

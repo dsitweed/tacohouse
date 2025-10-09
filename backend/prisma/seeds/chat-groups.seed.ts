@@ -7,7 +7,7 @@ import type {
   PrismaClient,
 } from '@tacohouse/shared';
 import { MessageType } from '@tacohouse/shared';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 type ChatGroupData = {
   buildingId: string;
@@ -51,7 +51,7 @@ const LANDLORD_MESSAGES = [
 
 export async function seedChatGroups(
   prisma: PrismaClient,
-  users: UserWithRoles[],
+  users: UserWithRelations[],
   buildings: Building[],
 ): Promise<{
   chatGroups: ChatGroup[];

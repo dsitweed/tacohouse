@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
-import type { UserWithProfile } from 'src/types';
+import type { UserWithRelations } from 'src/types';
 
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto';
@@ -16,7 +16,7 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  login(@CurrentUser() user: UserWithProfile) {
+  login(@CurrentUser() user: UserWithRelations) {
     return this.authService.login(user);
   }
 
@@ -27,7 +27,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  create(@CurrentUser() user: UserWithProfile) {
+  create(@CurrentUser() user: UserWithRelations) {
     return this.authService.refresh(user);
   }
 }

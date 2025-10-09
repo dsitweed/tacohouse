@@ -6,8 +6,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserRole } from '@tacohouse/shared';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
-import type { UserWithProfile } from 'src/types';
-import { UserService } from 'src/user/user.service';
+import type { UserWithRelations } from 'src/types';
+import { UsersService } from 'src/users/users.service';
 
 import { AuthService } from './auth.service';
 import type { RegisterAuthDto } from './dto';
@@ -17,7 +17,7 @@ jest.mock('argon2');
 describe('AuthService', () => {
   let service: AuthService;
 
-  const mockUser: UserWithProfile = {
+  const mockUser: UserWithRelations = {
     id: '1',
     email: 'test@example.com',
     password: 'hashedPassword',
@@ -42,6 +42,9 @@ describe('AuthService', () => {
       idCardBackPhoto: null,
       portraitPhoto: null,
     },
+    admin: null,
+    landlord: null,
+    tenant: null,
   };
 
   const mockPrismaService = {
@@ -66,7 +69,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: PrismaService, useValue: mockPrismaService },
-        { provide: UserService, useValue: mockUserService },
+        { provide: UsersService, useValue: mockUserService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
       ],
@@ -105,7 +108,7 @@ describe('AuthService', () => {
           id: mockUser.id,
           email: mockUser.email,
           role: mockUser.role,
-        }) as UserWithProfile,
+        }) as UserWithRelations,
       });
 
       expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);

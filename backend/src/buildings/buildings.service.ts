@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
-import { Building, Prisma } from '@tacohouse/shared';
+import { Building, Prisma, UserRole } from '@tacohouse/shared';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserWithProfile } from 'src/types';
+import { PaginationType, UserWithRelations } from 'src/types';
 
 import {
   CreateBuildingDto,
@@ -14,23 +14,40 @@ import {
 export class BuildingsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createBuildingDto: CreateBuildingDto) {
-    return 'This action adds a new building';
+  async create(
+    currentUser: UserWithRelations,
+    createBuildingDto: CreateBuildingDto,
+  ): Promise<Building> {
+    // LANDLORD can creates building for themselves
+    // ADMIN can create building for any landlord
+    const { landlordId: targetLandlordId } = createBuildingDto;
+    const haveLandlordAccess = this.validateLandlordAccess(
+      currentUser,
+      targetLandlordId,
+    );
+    if (!haveLandlordAccess || !currentUser.landlord) {
+      throw new ForbiddenException();
+    }
+
+    const landlordId =
+      currentUser.role === UserRole.ADMIN
+        ? targetLandlordId
+        : currentUser.landlord.id;
+
+    return this.prisma.building.create({
+      data: {
+        ...createBuildingDto,
+        landlordId,
+      },
+    });
   }
 
   async findAll(
-    currentUser: UserWithProfile,
+    currentUser: UserWithRelations,
     query: FindAllBuildingsDto,
   ): Promise<{
     data: Building[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-      hasNext: boolean;
-      hasPrev: boolean;
-    };
+    pagination: PaginationType;
   }> {
     const { limit, page, landlordId } = query;
     const skip = (page - 1) * limit;
@@ -122,5 +139,25 @@ export class BuildingsService {
 
   remove(id: number) {
     return `This action removes a #${id} building`;
+  }
+
+  /**
+   * - ADMIN users are always allowed.
+   * - LANDLORD users are only allowed if the target landlordId matches their own landlord.id.
+   * - All other roles are forbidden.
+   * @param currentUser - The authenticated user
+   * @param targetLandlordId  - the ID of the landlord the action is being performed for
+   */
+  private validateLandlordAccess(
+    currentUser: UserWithRelations,
+    targetLandlordId: string,
+  ) {
+    if (currentUser.role === UserRole.ADMIN) return true;
+
+    if (currentUser.role !== UserRole.LANDLORD) {
+      throw new ForbiddenException();
+    }
+
+    return currentUser.landlord?.id === targetLandlordId;
   }
 }

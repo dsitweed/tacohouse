@@ -14,7 +14,7 @@ import {
   PaymentStatus,
   RoomType,
 } from '@tacohouse/shared';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 type BillData = {
   roomId: string;
@@ -67,7 +67,7 @@ const PAYMENT_IMAGES = [
 
 export async function seedBills(
   prisma: PrismaClient,
-  tenants: UserWithRoles[],
+  tenants: UserWithRelations[],
   rooms: Room[],
   rentals: Rental[],
 ): Promise<{
@@ -88,7 +88,7 @@ export async function seedBills(
   type RentalMetadata = {
     rental: Rental;
     room: Room;
-    tenant: UserWithRoles;
+    tenant: UserWithRelations;
     building: Building;
   };
 

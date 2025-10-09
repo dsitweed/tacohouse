@@ -5,7 +5,7 @@ import {
   NotificationType,
   PrismaClient,
 } from '@tacohouse/shared';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 type NotificationData = {
   userId: string;
@@ -20,7 +20,7 @@ type NotificationData = {
 
 export async function seedNotifications(
   prisma: PrismaClient,
-  users: UserWithRoles[],
+  users: UserWithRelations[],
   bills: Bill[],
   maintenanceRequests: MaintenanceRequest[],
 ): Promise<Notification[]> {

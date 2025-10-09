@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient, UserRole } from '@tacohouse/shared';
 import * as argon from 'argon2';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 type UserData = {
   email: string;
@@ -20,9 +20,9 @@ type UserWithProfileData = UserData & {
 const hashPassword = async () => argon.hash('password');
 
 export async function seedUsers(prisma: PrismaClient): Promise<{
-  adminUsers: UserWithRoles[];
-  landlordUsers: UserWithRoles[];
-  tenantUsers: UserWithRoles[];
+  adminUsers: UserWithRelations[];
+  landlordUsers: UserWithRelations[];
+  tenantUsers: UserWithRelations[];
 }> {
   console.log('👤 Seeding users...');
 
@@ -43,7 +43,7 @@ export async function seedUsers(prisma: PrismaClient): Promise<{
 
 export async function seedAdmins(
   prisma: PrismaClient,
-): Promise<UserWithRoles[]> {
+): Promise<UserWithRelations[]> {
   console.log('👤 Seeding Admins...');
 
   const hashedPassword = await hashPassword();
@@ -92,6 +92,7 @@ export async function seedAdmins(
             },
           },
           include: {
+            profile: true,
             admin: true,
             tenant: true,
             landlord: true,
@@ -106,7 +107,7 @@ export async function seedAdmins(
 
 export async function seedLandlords(
   prisma: PrismaClient,
-): Promise<UserWithRoles[]> {
+): Promise<UserWithRelations[]> {
   console.log('🏠 Seeding Landlords...');
 
   const hashedPassword = await hashPassword();
@@ -153,6 +154,7 @@ export async function seedLandlords(
             landlord: { create: {} },
           },
           include: {
+            profile: true,
             landlord: true,
             admin: true,
             tenant: true,
@@ -167,7 +169,7 @@ export async function seedLandlords(
 
 export async function seedTenants(
   prisma: PrismaClient,
-): Promise<UserWithRoles[]> {
+): Promise<UserWithRelations[]> {
   console.log('👥 Seeding Tenants...');
 
   const hashedPassword = await hashPassword();
@@ -215,6 +217,7 @@ export async function seedTenants(
           tenant: { create: {} },
         },
         include: {
+          profile: true,
           tenant: true,
           admin: true,
           landlord: true,

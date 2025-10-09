@@ -10,7 +10,7 @@ import {
   MaintenanceStatus,
   PriorityType,
 } from '@tacohouse/shared';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 type MaintenanceRequestData = {
   tenantId: string;
@@ -152,7 +152,7 @@ const MAINTENANCE_ISSUES = {
 
 export async function seedMaintenanceRequests(
   prisma: PrismaClient,
-  tenants: UserWithRoles[],
+  tenants: UserWithRelations[],
   rooms: Room[],
   rentals: Rental[],
 ): Promise<MaintenanceRequest[]> {

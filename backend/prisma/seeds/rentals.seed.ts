@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { PrismaClient, Rental, Room } from '@tacohouse/shared';
 import { RentalStatus } from '@tacohouse/shared';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 const CONTRACT_IMAGES = [
   'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
@@ -15,7 +15,7 @@ const CONTRACT_IMAGES = [
 
 export async function seedRentals(
   prisma: PrismaClient,
-  users: UserWithRoles[],
+  users: UserWithRelations[],
   rooms: Room[],
 ): Promise<Rental[]> {
   console.log('📝 Seeding rentals...');

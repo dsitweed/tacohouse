@@ -9,8 +9,9 @@ import {
   Query,
 } from '@nestjs/common';
 
+import { Building } from '@tacohouse/shared';
 import { CurrentUser } from 'src/common/decorators';
-import type { UserWithProfile } from 'src/types';
+import type { UserWithRelations } from 'src/types';
 
 import { BuildingsService } from './buildings.service';
 import { FindAllBuildingsDto } from './dto';
@@ -22,13 +23,16 @@ export class BuildingsController {
   constructor(private readonly buildingsService: BuildingsService) {}
 
   @Post()
-  create(@Body() createBuildingDto: CreateBuildingDto) {
-    return this.buildingsService.create(createBuildingDto);
+  create(
+    @CurrentUser() currentUser: UserWithRelations,
+    @Body() createBuildingDto: CreateBuildingDto,
+  ): Promise<Building> {
+    return this.buildingsService.create(currentUser, createBuildingDto);
   }
 
   @Get()
   findAll(
-    @CurrentUser() currentUser: UserWithProfile,
+    @CurrentUser() currentUser: UserWithRelations,
     @Query() query: FindAllBuildingsDto,
   ) {
     return this.buildingsService.findAll(currentUser, query);

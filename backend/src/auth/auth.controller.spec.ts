@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { UserRole } from '@tacohouse/shared';
-import type { UserWithProfile } from 'src/types';
+import type { UserWithRelations } from 'src/types';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -10,7 +10,7 @@ import type { RegisterAuthDto } from './dto';
 describe('AuthController', () => {
   let controller: AuthController;
 
-  const mockUser: UserWithProfile = {
+  const mockUser: UserWithRelations = {
     id: '1',
     email: 'test@example.com',
     password: 'hashedPassword',
@@ -35,6 +35,9 @@ describe('AuthController', () => {
       idCardBackPhoto: null,
       portraitPhoto: null,
     },
+    admin: null,
+    landlord: null,
+    tenant: null,
   };
 
   const mockAuthService = {

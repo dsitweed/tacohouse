@@ -1,1 +1,47 @@
-export class CreateBuildingDto {}
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+
+export class CreateBuildingDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @IsOptional()
+  @IsNumber()
+  billingDate?: number;
+
+  @IsOptional()
+  @IsString()
+  landlordId: string;
+
+  @IsOptional()
+  @IsNumber()
+  electricityRate?: number;
+
+  @IsOptional()
+  @IsNumber()
+  waterRate?: number;
+
+  @IsOptional()
+  @IsNumber()
+  gasRate?: number;
+
+  @IsOptional()
+  @IsNumber()
+  managementFee?: number;
+
+  @IsOptional()
+  @IsNumber()
+  cleaningFeePerson?: number;
+
+  @IsOptional()
+  @IsNumber()
+  lightingFee?: number;
+}

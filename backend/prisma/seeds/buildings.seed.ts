@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Building, PrismaClient } from '@tacohouse/shared';
-import { UserWithRoles } from 'src/types';
+import { UserWithRelations } from 'src/types';
 
 export async function seedBuildings(
   prisma: PrismaClient,
-  landlords: UserWithRoles[],
+  landlords: UserWithRelations[],
 ): Promise<Building[]> {
   console.log('🏢 Seeding buildings...');
 
