@@ -17,7 +17,7 @@ export class CreateBuildingDto {
   @IsNumber()
   billingDate?: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   landlordId: string;
 
@@ -39,7 +39,7 @@ export class CreateBuildingDto {
 
   @IsOptional()
   @IsNumber()
-  cleaningFeePerson?: number;
+  cleaningFeePerPerson?: number;
 
   @IsOptional()
   @IsNumber()

@@ -5,11 +5,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './common/guards';
+import { BuildingsModule } from './buildings/buildings.module';
+import { JwtAuthGuard, RolesGuard } from './common/guards';
 import { envConfig, envValidationSchema } from './config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
-import { BuildingsModule } from './buildings/buildings.module';
 
 @Module({
   imports: [
@@ -29,6 +29,10 @@ import { BuildingsModule } from './buildings/buildings.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

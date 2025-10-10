@@ -9,8 +9,8 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { Building } from '@tacohouse/shared';
-import { CurrentUser } from 'src/common/decorators';
+import { Building, UserRole } from '@tacohouse/shared';
+import { CurrentUser, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 
 import { BuildingsService } from './buildings.service';
@@ -23,6 +23,7 @@ export class BuildingsController {
   constructor(private readonly buildingsService: BuildingsService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   create(
     @CurrentUser() currentUser: UserWithRelations,
     @Body() createBuildingDto: CreateBuildingDto,
@@ -47,15 +48,21 @@ export class BuildingsController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   update(
+    @CurrentUser() currentUser: UserWithRelations,
     @Param('id') id: string,
     @Body() updateBuildingDto: UpdateBuildingDto,
-  ) {
-    return this.buildingsService.update(+id, updateBuildingDto);
+  ): Promise<Building> {
+    return this.buildingsService.update(currentUser, id, updateBuildingDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.buildingsService.remove(+id);
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  remove(
+    @CurrentUser() currentUser: UserWithRelations,
+    @Param('id') id: string,
+  ): Promise<Building> {
+    return this.buildingsService.remove(currentUser, id);
   }
 }

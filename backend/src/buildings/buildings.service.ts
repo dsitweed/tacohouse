@@ -24,19 +24,15 @@ export class BuildingsService {
   ) {
     // LANDLORD can creates building for themselves
     // ADMIN can create building for any landlord
-    const { landlordId: targetLandlordId } = createBuildingDto;
-    const isHasLandlordAccess = this.validateLandlordAccess(
+    const { landlordId } = createBuildingDto;
+    const isHasLandlordAccess = await this.validateLandlordAccess(
       currentUser,
-      targetLandlordId,
+      landlordId,
     );
-    if (!isHasLandlordAccess || !currentUser.landlord) {
+
+    if (!isHasLandlordAccess) {
       throw new ForbiddenException();
     }
-
-    const landlordId =
-      currentUser.role === UserRole.ADMIN
-        ? targetLandlordId
-        : currentUser.landlord.id;
 
     return this.prisma.building.create({
       data: {
@@ -153,12 +149,44 @@ export class BuildingsService {
     return building;
   }
 
-  update(id: number, updateBuildingDto: UpdateBuildingDto) {
-    return `This action updates a #${id} building`;
+  async update(
+    currentUser: UserWithRelations,
+    id: string,
+    updateBuildingDto: UpdateBuildingDto,
+  ) {
+    const building = await this.findOne(currentUser, id);
+
+    const isHasLandlordAccess = await this.validateLandlordAccess(
+      currentUser,
+      building.landlordId,
+    );
+
+    if (!isHasLandlordAccess) {
+      throw new ForbiddenException();
+    }
+
+    return this.prisma.building.update({
+      where: { id: building.id },
+      data: updateBuildingDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} building`;
+  async remove(currentUser: UserWithRelations, id: string) {
+    const building = await this.findOne(currentUser, id);
+    const isHasLandlordAccess = await this.validateLandlordAccess(
+      currentUser,
+      building.landlordId,
+    );
+
+    if (!isHasLandlordAccess) {
+      throw new ForbiddenException();
+    }
+
+    return this.prisma.building.delete({
+      where: {
+        id,
+      },
+    });
   }
 
   /**
@@ -166,19 +194,26 @@ export class BuildingsService {
    * - LANDLORD users are only allowed if the target landlordId matches their own landlord.id.
    * - All other roles are forbidden.
    * @param currentUser - The authenticated user
-   * @param targetLandlordId  - the ID of the landlord the action is being performed for
+   * @param landlordId  - the ID of the landlord the action is being performed for
    */
-  private validateLandlordAccess(
+  private async validateLandlordAccess(
     currentUser: UserWithRelations,
-    targetLandlordId: string,
+    landlordId: string,
   ) {
+    const landlord = await this.prisma.landlord.findUnique({
+      where: { id: landlordId },
+    });
+    if (!landlord) {
+      throw new NotFoundException(`Landlord witdh ID ${landlordId} not found`);
+    }
+
     if (currentUser.role === UserRole.ADMIN) return true;
 
     if (currentUser.role !== UserRole.LANDLORD) {
       throw new ForbiddenException();
     }
 
-    return currentUser.landlord?.id === targetLandlordId;
+    return currentUser.landlord?.id === landlord.id;
   }
 
   private async validateBuildingAccess(
