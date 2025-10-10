@@ -25,12 +25,12 @@ export class BuildingsService {
     // LANDLORD can creates building for themselves
     // ADMIN can create building for any landlord
     const { landlordId } = createBuildingDto;
-    const isHasLandlordAccess = await this.validateLandlordAccess(
+    const canAccessLandlord = await this.canAccessLandlordResource(
       currentUser,
       landlordId,
     );
 
-    if (!isHasLandlordAccess) {
+    if (!canAccessLandlord) {
       throw new ForbiddenException();
     }
 
@@ -137,12 +137,12 @@ export class BuildingsService {
       throw new NotFoundException();
     }
 
-    const isHasBuildingAccess = await this.validateBuildingAccess(
+    const canAccessBuilding = await this.canAccessBuildingResource(
       currentUser,
       building,
     );
 
-    if (!isHasBuildingAccess) {
+    if (!canAccessBuilding) {
       throw new ForbiddenException();
     }
 
@@ -156,12 +156,12 @@ export class BuildingsService {
   ) {
     const building = await this.findOne(currentUser, id);
 
-    const isHasLandlordAccess = await this.validateLandlordAccess(
+    const canAccessLandlord = await this.canAccessLandlordResource(
       currentUser,
       building.landlordId,
     );
 
-    if (!isHasLandlordAccess) {
+    if (!canAccessLandlord) {
       throw new ForbiddenException();
     }
 
@@ -173,12 +173,12 @@ export class BuildingsService {
 
   async remove(currentUser: UserWithRelations, id: string) {
     const building = await this.findOne(currentUser, id);
-    const isHasLandlordAccess = await this.validateLandlordAccess(
+    const canAccessLandlord = await this.canAccessLandlordResource(
       currentUser,
       building.landlordId,
     );
 
-    if (!isHasLandlordAccess) {
+    if (!canAccessLandlord) {
       throw new ForbiddenException();
     }
 
@@ -190,13 +190,14 @@ export class BuildingsService {
   }
 
   /**
+   * Check access rights to resources related to landlord
    * - ADMIN users are always allowed.
    * - LANDLORD users are only allowed if the target landlordId matches their own landlord.id.
    * - All other roles are forbidden.
    * @param currentUser - The authenticated user
-   * @param landlordId  - the ID of the landlord the action is being performed for
+   * @param landlordId  - The ID of the landlord the action is being performed for
    */
-  private async validateLandlordAccess(
+  private async canAccessLandlordResource(
     currentUser: UserWithRelations,
     landlordId: string,
   ) {
@@ -216,7 +217,16 @@ export class BuildingsService {
     return currentUser.landlord?.id === landlord.id;
   }
 
-  private async validateBuildingAccess(
+  /**
+   * Check access rights to building resources
+   * - ADMIN always has rights
+   * - LANDLORD only has rights if the building belongs to him
+   * - TENANT only has rights if he is renting a room in that building
+   * - All other roles (in the future) are deined
+   * @param currentUser - The authenticated user
+   * @param building - The building need to be check permission
+   */
+  private async canAccessBuildingResource(
     currentUser: UserWithRelations,
     building: Building,
   ) {
