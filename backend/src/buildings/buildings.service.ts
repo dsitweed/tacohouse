@@ -141,14 +141,14 @@ export class BuildingsService {
       throw new NotFoundException();
     }
 
-    // const isHasBuildingAccess = await this.validateBuildingAccess(
-    //   currentUser,
-    //   building,
-    // );
+    const isHasBuildingAccess = await this.validateBuildingAccess(
+      currentUser,
+      building,
+    );
 
-    // if (!isHasBuildingAccess) {
-    //   throw new ForbiddenException();
-    // }
+    if (!isHasBuildingAccess) {
+      throw new ForbiddenException();
+    }
 
     return building;
   }
