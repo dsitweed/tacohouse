@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Building, Prisma, Room, UserRole } from '@tacohouse/shared';
+import { Prisma, Room, UserRole } from '@tacohouse/shared';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 
@@ -22,8 +22,25 @@ type RoomWithLandlord = Room & {
 export class RoomsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createRoomDto: CreateRoomDto) {
-    return 'This action adds a new room';
+  async create(
+    currentUser: UserWithRelations,
+    createRoomDto: CreateRoomDto,
+  ): Promise<Room> {
+    // LANDLORD can creates room for themselves
+    // ADMIN can create room for any landlord
+    const { buildingId } = createRoomDto;
+    const canAccessBuilding = await this.canAccessBuildingResource(
+      currentUser,
+      buildingId,
+    );
+
+    if (!canAccessBuilding) {
+      throw new ForbiddenException();
+    }
+
+    return await this.prisma.room.create({
+      data: createRoomDto,
+    });
   }
 
   async findAll(
@@ -99,12 +116,50 @@ export class RoomsService {
     return room;
   }
 
-  update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
+  async update(
+    currentUser: UserWithRelations,
+    id: string,
+    updateRoomDto: UpdateRoomDto,
+  ): Promise<Room> {
+    const room = await this.findOne(currentUser, id);
+    const { buildingId } = updateRoomDto;
+    const building = await this.prisma.building.findUnique({
+      where: { id: buildingId },
+    });
+
+    if (!building) {
+      throw new NotFoundException();
+    }
+
+    const canAccessBuilding = await this.canAccessBuildingResource(
+      currentUser,
+      room.buildingId,
+    );
+
+    if (!canAccessBuilding) {
+      throw new ForbiddenException();
+    }
+
+    return this.prisma.room.update({
+      where: { id: room.id },
+      data: updateRoomDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} room`;
+  async remove(currentUser: UserWithRelations, id: string): Promise<Room> {
+    const room = await this.findOne(currentUser, id);
+    const canAccessBuilding = await this.canAccessBuildingResource(
+      currentUser,
+      room.buildingId,
+    );
+
+    if (!canAccessBuilding) {
+      throw new ForbiddenException();
+    }
+
+    return this.prisma.room.delete({
+      where: { id },
+    });
   }
 
   private async canAccessRoomResource(
@@ -130,5 +185,24 @@ export class RoomsService {
     }
 
     return false;
+  }
+
+  private async canAccessBuildingResource(
+    currentUser: UserWithRelations,
+    buildingId: string,
+  ) {
+    const building = await this.prisma.building.findUnique({
+      where: { id: buildingId },
+    });
+    if (!building) {
+      throw new NotFoundException();
+    }
+
+    if (currentUser.role === UserRole.ADMIN) return true;
+    if (currentUser.role !== UserRole.LANDLORD) {
+      throw new ForbiddenException();
+    }
+
+    return currentUser.landlord?.id === building.landlordId;
   }
 }

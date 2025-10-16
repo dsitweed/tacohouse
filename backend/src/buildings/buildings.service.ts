@@ -35,10 +35,7 @@ export class BuildingsService {
     }
 
     return this.prisma.building.create({
-      data: {
-        ...createBuildingDto,
-        landlordId,
-      },
+      data: createBuildingDto,
     });
   }
 
