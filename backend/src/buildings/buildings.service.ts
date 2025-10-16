@@ -16,7 +16,7 @@ import {
 
 @Injectable()
 export class BuildingsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(
     currentUser: UserWithRelations,
@@ -57,27 +57,16 @@ export class BuildingsService {
     // - TENANT: View buildings where they are renting
     const where: Prisma.BuildingWhereInput = {};
 
-    const userWithRole = await this.prisma.user.findUnique({
-      where: {
-        id: currentUser.id,
-      },
-      include: {
-        admin: true,
-        landlord: true,
-        tenant: true,
-      },
-    });
-
-    if (userWithRole?.admin) {
+    if (currentUser.admin) {
       where.landlordId = landlordId;
-    } else if (userWithRole?.landlord) {
-      where.landlordId = userWithRole.landlord.id;
-    } else if (userWithRole?.tenant) {
+    } else if (currentUser.landlord) {
+      where.landlordId = currentUser.landlord.id;
+    } else if (currentUser.tenant) {
       where.rooms = {
         some: {
           rentals: {
             some: {
-              tenantId: userWithRole.tenant.id,
+              tenantId: currentUser.tenant.id,
               status: 'ACTIVE',
             },
           },

@@ -9,6 +9,7 @@ import { BuildingsModule } from './buildings/buildings.module';
 import { JwtAuthGuard, RolesGuard } from './common/guards';
 import { envConfig, envValidationSchema } from './config';
 import { PrismaModule } from './prisma/prisma.module';
+import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     UsersModule,
     BuildingsModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [
