@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DashboardLayout } from '@/components/layouts';
 import { useMaintenanceRequests } from '@/hooks/api/use-maintenance';
 import { Wrench, Plus, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { MaintenanceStatus, PriorityType, UserRole } from '@tacohouse/shared';
@@ -46,7 +45,7 @@ export default function MaintenancePage() {
   const canCreate = user?.role === UserRole.TENANT;
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -148,7 +147,7 @@ export default function MaintenancePage() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
+    
   );
 }
 

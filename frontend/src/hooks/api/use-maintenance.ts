@@ -17,11 +17,16 @@ import type {
 // Maintenance API functions
 const maintenanceApi = {
   getAll: async (query?: MaintenanceListQuery) => {
-    const response = await apiClient.get<ApiResponse<MaintenanceRequest[]>>(
+    const response = await apiClient.get<ApiResponse<{ data: MaintenanceRequest[]; pagination?: any }>>(
       '/maintenance',
       { params: query }
     );
-    return extractData(response);
+    const result = extractData(response);
+    // Handle paginated response
+    if (result && typeof result === 'object' && 'data' in result) {
+      return result as { data: MaintenanceRequest[]; pagination?: any };
+    }
+    return { data: Array.isArray(result) ? result : [], pagination: undefined };
   },
 
   getById: async (id: string) => {

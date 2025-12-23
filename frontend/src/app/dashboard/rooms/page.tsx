@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { DashboardLayout } from '@/components/layouts';
 import { useRooms } from '@/hooks/api/use-rooms';
 import { formatCurrency } from '@/lib/utils';
 import { DoorOpen, Plus, Search, Edit, Eye } from 'lucide-react';
@@ -16,15 +15,15 @@ import { useAuthStore } from '@/stores/auth-store';
 const statusColors: Record<RoomStatus, 'default' | 'success' | 'warning' | 'error'> = {
   AVAILABLE: 'success',
   OCCUPIED: 'default',
+  PENDING_CHECKOUT: 'warning',
   MAINTENANCE: 'error',
-  RESERVED: 'warning',
 };
 
 const statusLabels: Record<RoomStatus, string> = {
   AVAILABLE: 'Trống',
   OCCUPIED: 'Đang thuê',
+  PENDING_CHECKOUT: 'Chờ trả phòng',
   MAINTENANCE: 'Bảo trì',
-  RESERVED: 'Đã đặt',
 };
 
 export default function RoomsPage() {
@@ -33,13 +32,12 @@ export default function RoomsPage() {
   const { data, isLoading } = useRooms({
     page: 1,
     limit: 20,
-    search,
   });
 
   const canCreate = user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -109,7 +107,7 @@ export default function RoomsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {data.data.map((room) => (
+                    {data.data.map((room: any) => (
                       <tr key={room.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div className="flex items-center space-x-2">
@@ -132,8 +130,8 @@ export default function RoomsPage() {
                           {room.area}m²
                         </td>
                         <td className="px-4 py-3">
-                          <Badge variant={statusColors[room.status]}>
-                            {statusLabels[room.status]}
+                          <Badge variant={statusColors[room.status as RoomStatus]}>
+                            {statusLabels[room.status as RoomStatus]}
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -170,7 +168,7 @@ export default function RoomsPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    
   );
 }
 

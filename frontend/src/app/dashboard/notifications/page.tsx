@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DashboardLayout } from '@/components/layouts';
 import { useNotifications } from '@/hooks/api/use-notifications';
 import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { NotificationType } from '@tacohouse/shared';
@@ -39,7 +38,7 @@ export default function NotificationsPage() {
   });
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -138,7 +137,7 @@ export default function NotificationsPage() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
+    
   );
 }
 

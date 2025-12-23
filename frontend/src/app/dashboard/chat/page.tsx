@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { DashboardLayout } from '@/components/layouts';
 import { MessageSquare, Send, Users } from 'lucide-react';
 
 export default function ChatPage() {
@@ -32,7 +31,7 @@ export default function ChatPage() {
   ];
 
   return (
-    <DashboardLayout>
+    
       <div className="flex h-[calc(100vh-8rem)] space-x-6">
         {/* Chat List */}
         <div className="w-80 flex-shrink-0">
@@ -156,7 +155,7 @@ export default function ChatPage() {
           </Card>
         </div>
       </div>
-    </DashboardLayout>
+    
   );
 }
 

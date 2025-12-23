@@ -1,21 +1,27 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Search, Home, DollarSign, Shield } from 'lucide-react';
+import { useAvailableRooms } from '@/hooks/api/use-rooms';
+import { formatCurrency } from '@/lib/utils';
+import type { Room } from '@tacohouse/shared';
 
 export default function HomePage() {
+  const { data: rooms, isLoading } = useAvailableRooms();
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
+      {/* Header - Public Header */}
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">T</span>
               </div>
               <span className="text-xl font-semibold text-gray-900">Tacohouse</span>
-            </div>
+            </Link>
             <div className="flex items-center space-x-4">
               <Link href="/login">
                 <Button variant="ghost">Đăng nhập</Button>
@@ -110,30 +116,65 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Rooms Grid - Placeholder */}
+      {/* Rooms Grid */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-bold text-gray-900">Phòng đang tuyển</h2>
-        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Placeholder cards */}
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i} padding="none" className="overflow-hidden">
-              <div className="h-48 bg-gray-200" />
-              <div className="p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Phòng {i}01</h3>
-                  <span className="text-lg font-bold text-indigo-600">3.500.000đ</span>
+        {isLoading ? (
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} padding="none" className="overflow-hidden animate-pulse">
+                <div className="h-48 bg-gray-200" />
+                <div className="p-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
                 </div>
-                <p className="text-sm text-gray-600">Diện tích: 25m²</p>
-                <p className="text-sm text-gray-600">Tòa nhà ABC</p>
-                <div className="mt-4">
-                  <Button variant="outline" className="w-full">
-                    Xem chi tiết
-                  </Button>
+              </Card>
+            ))}
+          </div>
+        ) : rooms && rooms.length > 0 ? (
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {rooms.map((room: Room) => (
+              <Card key={room.id} padding="none" className="overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
+                  <Home className="h-16 w-16 text-indigo-400" />
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+                <div className="p-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">
+                      {room.number}
+                    </h3>
+                    <span className="text-lg font-bold text-indigo-600">
+                      {formatCurrency(Number(room.monthlyRent))}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Diện tích: {Number(room.area)}m²
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {'building' in room && room.building ? (room.building as { name?: string }).name : 'N/A'}
+                  </p>
+                  {room.availableFrom && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      Có thể vào: {new Date(room.availableFrom).toLocaleDateString('vi-VN')}
+                    </p>
+                  )}
+                  <div className="mt-4">
+                    <Link href={`/rooms/${room.id}`}>
+                      <Button variant="outline" className="w-full">
+                        Xem chi tiết
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-6 text-center py-12">
+            <Home className="mx-auto h-12 w-12 text-gray-400" />
+            <p className="mt-4 text-sm text-gray-600">Hiện tại không có phòng nào đang tuyển</p>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -18,10 +18,15 @@ import type {
 // Bill API functions
 const billsApi = {
   getAll: async (query?: BillListQuery) => {
-    const response = await apiClient.get<ApiResponse<Bill[]>>('/bills', {
+    const response = await apiClient.get<ApiResponse<{ data: Bill[]; pagination?: any }>>('/bills', {
       params: query,
     });
-    return extractData(response);
+    const result = extractData(response);
+    // Handle paginated response
+    if (result && typeof result === 'object' && 'data' in result) {
+      return result as { data: Bill[]; pagination?: any };
+    }
+    return { data: Array.isArray(result) ? result : [], pagination: undefined };
   },
 
   getById: async (id: string) => {

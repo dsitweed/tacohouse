@@ -20,7 +20,13 @@ const roomsApi = {
     const response = await apiClient.get<ApiResponse<Room[]>>('/rooms', {
       params: query,
     });
-    return extractData(response);
+    const data = extractData(response);
+    // Handle paginated response
+    if (Array.isArray(data)) {
+      return data;
+    }
+    // If response has data property (from pagination)
+    return (data as any)?.data || data;
   },
 
   getById: async (id: string) => {
@@ -37,7 +43,8 @@ const roomsApi = {
 
   getAvailable: async () => {
     const response = await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
-    return extractData(response);
+    const data = extractData(response);
+    return Array.isArray(data) ? data : (data as any)?.data || data;
   },
 
   create: async (data: CreateRoomRequest) => {

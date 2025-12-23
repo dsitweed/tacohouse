@@ -17,10 +17,15 @@ import type {
 // Rental API functions
 const rentalsApi = {
   getAll: async (query?: RentalListQuery) => {
-    const response = await apiClient.get<ApiResponse<Rental[]>>('/rentals', {
+    const response = await apiClient.get<ApiResponse<{ data: Rental[]; pagination?: any }>>('/rentals', {
       params: query,
     });
-    return extractData(response);
+    const result = extractData(response);
+    // Handle paginated response
+    if (result && typeof result === 'object' && 'data' in result) {
+      return result as { data: Rental[]; pagination?: any };
+    }
+    return { data: Array.isArray(result) ? result : [], pagination: undefined };
   },
 
   getById: async (id: string) => {

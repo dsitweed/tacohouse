@@ -11,25 +11,32 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
-  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { Room, UserRole } from '@tacohouse/shared';
-import { CurrentUser, Roles } from 'src/common/decorators';
+import { CurrentUser, Public, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 
 import { CreateRoomDto, FindAllRoomsDto, UpdateRoomDto } from './dto';
 import { RoomsService } from './rooms.service';
 
 @ApiTags('Rooms')
-@ApiBearerAuth('JWT-auth')
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
+  @Get('available')
+  @Public()
+  @ApiOperation({ summary: 'Get available rooms (Public)' })
+  @ApiResponse({ status: 200, description: 'List of available rooms' })
+  getAvailableRooms(): Promise<Room[]> {
+    return this.roomsService.getAvailableRooms();
+  }
+
   @Post()
+  @ApiBearerAuth('JWT-auth')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   create(
     @CurrentUser() currentUser: UserWithRelations,
@@ -39,6 +46,7 @@ export class RoomsController {
   }
 
   @Get()
+  @ApiBearerAuth('JWT-auth')
   findAll(
     @CurrentUser() currentUser: UserWithRelations,
     @Query() query: FindAllRoomsDto,
@@ -47,6 +55,7 @@ export class RoomsController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('JWT-auth')
   findOne(
     @CurrentUser() currentUser: UserWithRelations,
     @Param('id') id: string,

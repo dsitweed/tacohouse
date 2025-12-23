@@ -1,33 +1,75 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DashboardLayout } from '@/components/layouts';
 import { formatCurrency } from '@/lib/utils';
 import {
   Building2,
   DoorOpen,
-  Users,
   DollarSign,
   TrendingUp,
   AlertCircle,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
-import { UserRole } from '@tacohouse/shared';
+import { UserRole, RoomStatus, BillStatus } from '@tacohouse/shared';
+import { useRooms } from '@/hooks/api/use-rooms';
+import { useBills } from '@/hooks/api/use-bills';
+import { useMaintenanceRequests } from '@/hooks/api/use-maintenance';
+import { useRentals } from '@/hooks/api/use-rentals';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const role = user?.role;
 
-  // Mock data - sẽ thay bằng API calls
-  const stats = {
-    totalRooms: 24,
-    occupiedRooms: 18,
-    vacantRooms: 6,
-    monthlyRevenue: 63000000,
-    pendingBills: 3,
-    maintenanceRequests: 2,
-  };
+  // Fetch data from API
+  const { data: roomsData } = useRooms({ page: 1, limit: 1000 });
+  const { data: billsData } = useBills({ page: 1, limit: 100 });
+  const { data: maintenanceData } = useMaintenanceRequests({ page: 1, limit: 100 });
+  const { data: rentalsData } = useRentals({ page: 1, limit: 1000 });
+
+  // Calculate stats from API data
+  const stats = useMemo(() => {
+    const rooms = Array.isArray(roomsData) ? roomsData : roomsData?.data || [];
+    const bills = billsData?.data || [];
+    const maintenance = maintenanceData?.data || [];
+    const rentals = rentalsData?.data || [];
+
+    const totalRooms = rooms.length;
+    const occupiedRooms = rentals.filter((r: any) => r.status === 'ACTIVE').length;
+    const vacantRooms = rooms.filter((r: any) => r.status === RoomStatus.AVAILABLE).length;
+    
+    // Calculate monthly revenue from paid bills this month
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const monthlyRevenue = bills
+      .filter((bill) => {
+        const billDate = new Date(bill.billingPeriod);
+        return (
+          bill.status === BillStatus.PAID &&
+          billDate.getMonth() === currentMonth &&
+          billDate.getFullYear() === currentYear
+        );
+      })
+      .reduce((sum, bill) => sum + Number(bill.totalAmount), 0);
+
+    const pendingBills = bills.filter(
+      (bill) => bill.status === BillStatus.PENDING || bill.status === BillStatus.TENANT_CONFIRMED || bill.status === BillStatus.LANDLORD_CONFIRMED
+    ).length;
+
+    const maintenanceRequests = maintenance.filter(
+      (req) => req.status === 'PENDING' || req.status === 'IN_PROGRESS'
+    ).length;
+
+    return {
+      totalRooms,
+      occupiedRooms,
+      vacantRooms,
+      monthlyRevenue,
+      pendingBills,
+      maintenanceRequests,
+    };
+  }, [roomsData, billsData, maintenanceData, rentalsData]);
 
   const kpiCards = [
     {
@@ -58,8 +100,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -175,7 +216,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
   );
 }
 

@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DashboardLayout } from '@/components/layouts';
 import { usePayments } from '@/hooks/api/use-payments';
 import { formatCurrency } from '@/lib/utils';
 import { CreditCard, CheckCircle, XCircle, Clock } from 'lucide-react';
@@ -37,7 +36,7 @@ export default function PaymentsPage() {
   });
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div>
@@ -137,7 +136,7 @@ export default function PaymentsPage() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
+    
   );
 }
 

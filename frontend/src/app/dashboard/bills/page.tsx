@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DashboardLayout } from '@/components/layouts';
 import { useBills } from '@/hooks/api/use-bills';
 import { formatCurrency } from '@/lib/utils';
 import { Receipt, Plus, Eye, CheckCircle, XCircle } from 'lucide-react';
@@ -38,7 +37,7 @@ export default function BillsPage() {
   const canCreate = user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -164,7 +163,7 @@ export default function BillsPage() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
+    
   );
 }
 

@@ -43,6 +43,27 @@ export class RoomsService {
     });
   }
 
+  async getAvailableRooms(): Promise<Room[]> {
+    return this.prisma.room.findMany({
+      where: {
+        status: 'AVAILABLE',
+      },
+      include: {
+        building: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+          },
+        },
+      },
+      take: 20,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async findAll(
     currentUser: UserWithRelations,
     query: FindAllRoomsDto,

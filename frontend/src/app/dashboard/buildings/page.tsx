@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { DashboardLayout } from '@/components/layouts';
 import { useBuildings } from '@/hooks/api/use-buildings';
 import { formatCurrency } from '@/lib/utils';
 import { Building2, Plus, Search, Edit, Eye } from 'lucide-react';
@@ -25,7 +24,7 @@ export default function BuildingsPage() {
   const canCreate = user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -154,7 +153,7 @@ export default function BuildingsPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    
   );
 }
 

@@ -1,54 +1,76 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { DashboardLayout } from '@/components/layouts';
 import { Users, Search, Eye, Phone, Mail } from 'lucide-react';
-import { UserRole } from '@tacohouse/shared';
+import { UserRole, RentalStatus } from '@tacohouse/shared';
 import { useAuthStore } from '@/stores/auth-store';
+import { useRentals } from '@/hooks/api/use-rentals';
 
 export default function TenantsPage() {
   const { user } = useAuthStore();
   const [search, setSearch] = useState('');
 
-  // Mock data - sẽ thay bằng API call
-  const tenants = [
-    {
-      id: '1',
-      profile: {
-        firstName: 'Nguyễn',
-        lastName: 'Văn A',
-        phone: '0901234567',
-      },
-      email: 'nguyenvana@example.com',
-      room: {
-        roomNumber: '101',
-        building: { name: 'Tòa nhà ABC' },
-      },
-      status: 'ACTIVE',
-    },
-  ];
+  // Fetch rentals from API
+  const { data: rentalsData, isLoading } = useRentals({ 
+    page: 1, 
+    limit: 100,
+    status: RentalStatus.ACTIVE,
+  });
+
+  // Extract tenants from active rentals
+  const tenants = useMemo(() => {
+    if (!rentalsData?.data) return [];
+    
+    return rentalsData.data
+      .filter((rental) => rental.status === RentalStatus.ACTIVE)
+      .map((rental) => ({
+        id: rental.tenantId,
+        rentalId: rental.id,
+        profile: rental.tenant?.user?.profile || {
+          firstName: '',
+          lastName: '',
+          phone: '',
+        },
+        email: rental.tenant?.user?.email || '',
+        room: {
+          roomNumber: rental.room?.roomNumber || '',
+          building: { name: rental.room?.building?.name || '' },
+        },
+        status: rental.status,
+      }))
+      .filter((tenant) => {
+        if (!search) return true;
+        const searchLower = search.toLowerCase();
+        return (
+          tenant.profile.firstName?.toLowerCase().includes(searchLower) ||
+          tenant.profile.lastName?.toLowerCase().includes(searchLower) ||
+          tenant.email.toLowerCase().includes(searchLower) ||
+          tenant.profile.phone?.includes(search)
+        );
+      });
+  }, [rentalsData, search]);
 
   const canView = user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
   if (!canView) {
     return (
-      <DashboardLayout>
+      
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-gray-600">Bạn không có quyền truy cập trang này</p>
           </CardContent>
         </Card>
-      </DashboardLayout>
+      
     );
   }
 
   return (
-    <DashboardLayout>
+    
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -81,7 +103,12 @@ export default function TenantsPage() {
             <CardTitle>Danh sách người thuê</CardTitle>
           </CardHeader>
           <CardContent>
-            {tenants.length > 0 ? (
+            {isLoading ? (
+              <div className="py-12 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+                <p className="mt-4 text-sm text-gray-600">Đang tải...</p>
+              </div>
+            ) : tenants.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -108,7 +135,7 @@ export default function TenantsPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {tenants.map((tenant) => (
-                      <tr key={tenant.id} className="hover:bg-gray-50">
+                      <tr key={tenant.rentalId || tenant.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div className="flex items-center space-x-3">
                             <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -130,7 +157,7 @@ export default function TenantsPage() {
                         <td className="px-4 py-3 text-sm text-gray-600">
                           <div className="flex items-center space-x-2">
                             <Phone className="h-4 w-4 text-gray-400" />
-                            <span>{tenant.profile.phone}</span>
+                            <span>{tenant.profile.phone || 'N/A'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600">
@@ -140,7 +167,7 @@ export default function TenantsPage() {
                           <Badge variant="success">Đang thuê</Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <Link href={`/dashboard/tenants/${tenant.id}`}>
+                          <Link href={`/dashboard/rentals/${tenant.rentalId || tenant.id}`}>
                             <Button variant="ghost" size="sm">
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -154,13 +181,15 @@ export default function TenantsPage() {
             ) : (
               <div className="py-12 text-center">
                 <Users className="mx-auto h-12 w-12 text-gray-400" />
-                <p className="mt-4 text-sm text-gray-600">Chưa có người thuê nào</p>
+                <p className="mt-4 text-sm text-gray-600">
+                  {search ? 'Không tìm thấy người thuê' : 'Chưa có người thuê nào'}
+                </p>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    
   );
 }
 
