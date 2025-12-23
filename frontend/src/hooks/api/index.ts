@@ -84,3 +84,11 @@ export {
   useSendDirectMessage,
 } from './use-chat';
 
+// Notification hooks
+export {
+  useNotifications,
+  useNotification,
+  useCreateNotification,
+  useMarkNotificationAsRead,
+} from './use-notifications';
+

@@ -285,6 +285,15 @@ export interface MessageListQuery {
 }
 
 // Notification API Types
+export interface CreateNotificationRequest {
+  title: string;
+  message: string;
+  type: NotificationType;
+  recipientId?: string;
+  roomId?: string;
+  buildingId?: string;
+}
+
 export interface NotificationListQuery {
   page?: number;
   limit?: number;
