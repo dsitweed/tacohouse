@@ -11,6 +11,12 @@ import { envConfig, envValidationSchema } from './config';
 import { PrismaModule } from './prisma/prisma.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
+import { RentalsModule } from './rentals/rentals.module';
+import { BillsModule } from './bills/bills.module';
+import { PaymentsModule } from './payments/payments.module';
+import { MaintenanceModule } from './maintenance/maintenance.module';
+import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -24,6 +30,12 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     BuildingsModule,
     RoomsModule,
+    RentalsModule,
+    BillsModule,
+    PaymentsModule,
+    MaintenanceModule,
+    ChatModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,3 +1,14 @@
+/**
+ * @deprecated This file is deprecated. Please use hooks from @/hooks/api instead.
+ * 
+ * Migration guide:
+ * - Replace direct API calls with TanStack Query hooks
+ * - Example: Instead of `buildingsApi.getAll()`, use `useBuildings()` hook
+ * - See @/hooks/api/README.md for detailed migration guide
+ * 
+ * This file is kept for backward compatibility but will be removed in future versions.
+ */
+
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth-store";
 import type {

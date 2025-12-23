@@ -15,7 +15,19 @@ export function QueryProvider({ children }: QueryProviderProps) {
         defaultOptions: {
           queries: {
             staleTime: 60 * 1000, // 1 minute
-            retry: 1,
+            gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
+            retry: (failureCount, error: any) => {
+              // Don't retry on 4xx errors
+              if (error?.response?.status >= 400 && error?.response?.status < 500) {
+                return false;
+              }
+              return failureCount < 2;
+            },
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: true,
+          },
+          mutations: {
+            retry: false,
           },
         },
       })
@@ -24,7 +36,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   );
 }
