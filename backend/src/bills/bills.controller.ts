@@ -8,6 +8,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Bill, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -21,12 +28,17 @@ import {
   UpdateBillDto,
 } from './dto';
 
+@ApiTags('Bills')
+@ApiBearerAuth('JWT-auth')
 @Controller('bills')
 export class BillsController {
   constructor(private readonly billsService: BillsService) {}
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ summary: 'Create a new bill' })
+  @ApiResponse({ status: 201, description: 'Bill created successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
     @CurrentUser() currentUser: UserWithRelations,
     @Body() createBillDto: CreateBillDto,
@@ -35,6 +47,8 @@ export class BillsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all bills' })
+  @ApiResponse({ status: 200, description: 'List of bills' })
   findAll(
     @CurrentUser() currentUser: UserWithRelations,
     @Query() query: FindAllBillsDto,
@@ -43,6 +57,10 @@ export class BillsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a bill by ID' })
+  @ApiParam({ name: 'id', description: 'Bill ID' })
+  @ApiResponse({ status: 200, description: 'Bill found' })
+  @ApiResponse({ status: 404, description: 'Bill not found' })
   findOne(
     @CurrentUser() currentUser: UserWithRelations,
     @Param('id') id: string,
@@ -52,6 +70,11 @@ export class BillsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ summary: 'Update a bill' })
+  @ApiParam({ name: 'id', description: 'Bill ID' })
+  @ApiResponse({ status: 200, description: 'Bill updated successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Bill not found' })
   update(
     @CurrentUser() currentUser: UserWithRelations,
     @Param('id') id: string,
@@ -62,6 +85,11 @@ export class BillsController {
 
   @Post(':id/confirm')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
+  @ApiOperation({ summary: 'Confirm payment for a bill' })
+  @ApiParam({ name: 'id', description: 'Bill ID' })
+  @ApiResponse({ status: 200, description: 'Payment confirmed successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Bill not found' })
   confirmPayment(
     @CurrentUser() currentUser: UserWithRelations,
     @Param('id') id: string,
@@ -72,6 +100,11 @@ export class BillsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ summary: 'Delete a bill' })
+  @ApiParam({ name: 'id', description: 'Bill ID' })
+  @ApiResponse({ status: 200, description: 'Bill deleted successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Bill not found' })
   async remove(
     @CurrentUser() currentUser: UserWithRelations,
     @Param('id') id: string,

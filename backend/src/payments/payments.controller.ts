@@ -1,4 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Payment, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -7,6 +14,8 @@ import type { UserWithRelations } from 'src/types';
 import { CreatePaymentDto, FindAllPaymentsDto } from './dto';
 import { PaymentsService } from './payments.service';
 
+@ApiTags('Payments')
+@ApiBearerAuth('JWT-auth')
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
@@ -36,4 +45,3 @@ export class PaymentsController {
     return this.paymentsService.findOne(currentUser, id);
   }
 }
-

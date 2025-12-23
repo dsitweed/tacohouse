@@ -6,6 +6,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { ChatGroup, Message, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -17,6 +24,8 @@ import {
 } from './dto';
 import { ChatService } from './chat.service';
 
+@ApiTags('Chat')
+@ApiBearerAuth('JWT-auth')
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}

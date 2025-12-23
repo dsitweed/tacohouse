@@ -8,6 +8,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Room, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -16,6 +23,8 @@ import type { UserWithRelations } from 'src/types';
 import { CreateRoomDto, FindAllRoomsDto, UpdateRoomDto } from './dto';
 import { RoomsService } from './rooms.service';
 
+@ApiTags('Rooms')
+@ApiBearerAuth('JWT-auth')
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}

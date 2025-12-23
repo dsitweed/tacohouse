@@ -7,6 +7,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Notification, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -18,6 +25,8 @@ import {
 } from './dto';
 import { NotificationsService } from './notifications.service';
 
+@ApiTags('Notifications')
+@ApiBearerAuth('JWT-auth')
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}

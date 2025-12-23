@@ -8,6 +8,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Rental, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -16,6 +23,8 @@ import type { UserWithRelations } from 'src/types';
 import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
 import { RentalsService } from './rentals.service';
 
+@ApiTags('Rentals')
+@ApiBearerAuth('JWT-auth')
 @Controller('rentals')
 export class RentalsController {
   constructor(private readonly rentalsService: RentalsService) {}
@@ -64,4 +73,3 @@ export class RentalsController {
     return this.rentalsService.remove(currentUser, id);
   }
 }
-

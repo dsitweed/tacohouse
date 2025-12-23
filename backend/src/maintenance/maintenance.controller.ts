@@ -7,6 +7,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { MaintenanceRequest, UserRole } from '@tacohouse/shared';
 import { CurrentUser, Roles } from 'src/common/decorators';
@@ -20,6 +27,8 @@ import {
 } from './dto';
 import { MaintenanceService } from './maintenance.service';
 
+@ApiTags('Maintenance')
+@ApiBearerAuth('JWT-auth')
 @Controller('maintenance')
 export class MaintenanceController {
   constructor(private readonly maintenanceService: MaintenanceService) {}
