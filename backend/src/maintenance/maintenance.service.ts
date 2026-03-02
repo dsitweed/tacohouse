@@ -4,12 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  MaintenanceRequest,
-  Prisma,
-  UserRole,
-  MaintenanceStatus,
-} from '@tacohouse/shared';
+import { MaintenanceStatus, Prisma, UserRole } from '@prisma/client';
+import type { MaintenanceRequest } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 

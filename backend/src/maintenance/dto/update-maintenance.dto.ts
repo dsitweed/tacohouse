@@ -3,7 +3,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { PriorityType, MaintenanceStatus, MaintenanceCategory } from '@tacohouse/shared';
+import { MaintenanceCategory, MaintenanceStatus, PriorityType } from '@prisma/client';
 
 export class UpdateMaintenanceDto {
   @IsOptional()

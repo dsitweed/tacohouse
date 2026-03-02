@@ -4,12 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  Notification,
-  Prisma,
-  UserRole,
-  NotificationType,
-} from '@tacohouse/shared';
+import { NotificationType, Prisma, UserRole } from '@prisma/client';
+import type { Notification } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 

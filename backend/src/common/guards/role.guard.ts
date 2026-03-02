@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { UserWithRelations } from 'src/types';

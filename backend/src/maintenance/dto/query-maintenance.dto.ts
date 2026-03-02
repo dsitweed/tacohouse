@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
-import { MaintenanceStatus, PriorityType } from '@tacohouse/shared';
+import { MaintenanceStatus, PriorityType } from '@prisma/client';
 
 export class FindAllMaintenanceDto {
   @Type(() => Number)

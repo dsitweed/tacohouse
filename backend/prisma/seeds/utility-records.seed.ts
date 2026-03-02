@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import type { PrismaClient, Room, UtilityRecord } from '@tacohouse/shared';
-import { RoomType, UtilityType } from '@tacohouse/shared';
+import { RoomType, UtilityType } from '@prisma/client';
+import type { PrismaClient, Room, UtilityRecord } from '@prisma/client';
 
 export async function seedUtilityRecords(
   prisma: PrismaClient,

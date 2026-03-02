@@ -16,7 +16,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { Bill, UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
+import type { Bill } from '@prisma/client';
 import { CurrentUser, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 

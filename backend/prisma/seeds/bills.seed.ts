@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { BillStatus, PaymentMethod, PaymentStatus, RoomType } from '@prisma/client';
 import type {
   Bill,
   Building,
@@ -7,13 +8,7 @@ import type {
   PrismaClient,
   Rental,
   Room,
-} from '@tacohouse/shared';
-import {
-  BillStatus,
-  PaymentMethod,
-  PaymentStatus,
-  RoomType,
-} from '@tacohouse/shared';
+} from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 type BillData = {

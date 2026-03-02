@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { PriorityType, MaintenanceCategory } from '@tacohouse/shared';
+import { MaintenanceCategory, PriorityType } from '@prisma/client';
 
 export class CreateMaintenanceDto {
   @IsNotEmpty()

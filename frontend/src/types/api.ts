@@ -2,8 +2,8 @@
  * API Request/Response Types
  * Based on the API specification
  * 
- * Note: Entity types are imported from @tacohouse/shared to ensure
- * consistency between frontend and backend
+ * Note: Entity types are imported from @prisma/client to ensure
+ * consistency between frontend and backend (types-only on FE)
  */
 
 import type {
@@ -26,11 +26,11 @@ import type {
   PaymentStatus,
   PaymentMethod,
   MaintenanceStatus,
-  Priority,
+  PriorityType,
   MaintenanceCategory,
   MessageType,
   NotificationType,
-} from '@tacohouse/shared';
+} from '@prisma/client';
 
 // Standard API Response
 export interface ApiResponse<T = unknown> {

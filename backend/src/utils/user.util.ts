@@ -1,4 +1,4 @@
-import { UserProfile } from '@tacohouse/shared';
+import type { UserProfile } from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 export type FlattenedUser = Omit<UserWithRelations, 'profile' | 'password'> &

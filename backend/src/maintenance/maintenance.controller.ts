@@ -15,7 +15,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { MaintenanceRequest, UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
+import type { MaintenanceRequest } from '@prisma/client';
 import { CurrentUser, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 

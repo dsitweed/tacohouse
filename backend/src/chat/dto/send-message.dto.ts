@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { MessageType } from '@tacohouse/shared';
+import { MessageType } from '@prisma/client';
 
 export class SendMessageDto {
   @IsNotEmpty()

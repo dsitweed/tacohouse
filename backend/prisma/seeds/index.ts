@@ -1,4 +1,4 @@
-import { PrismaClient } from '@tacohouse/shared';
+import { PrismaClient } from '@prisma/client';
 
 import { seedBills } from './bills.seed';
 import { seedBuildings } from './buildings.seed';

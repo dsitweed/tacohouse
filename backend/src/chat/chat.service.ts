@@ -5,13 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  ChatGroup,
-  Message,
-  Prisma,
-  UserRole,
-  MessageType,
-} from '@tacohouse/shared';
+import { MessageType, Prisma, UserRole } from '@prisma/client';
+import type { ChatGroup, Message } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 

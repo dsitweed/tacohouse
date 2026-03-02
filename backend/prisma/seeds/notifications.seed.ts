@@ -1,10 +1,10 @@
-import {
+import { NotificationType } from '@prisma/client';
+import type {
   Bill,
   MaintenanceRequest,
   Notification,
-  NotificationType,
   PrismaClient,
-} from '@tacohouse/shared';
+} from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 type NotificationData = {

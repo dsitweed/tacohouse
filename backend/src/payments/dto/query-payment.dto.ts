@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PaymentStatus } from '@tacohouse/shared';
+import { PaymentStatus } from '@prisma/client';
 
 export class FindAllPaymentsDto {
   @Type(() => Number)

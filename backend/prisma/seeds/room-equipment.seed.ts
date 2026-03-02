@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import type { PrismaClient, Room, RoomEquipment } from '@tacohouse/shared';
-import { EquipmentCondition } from '@tacohouse/shared';
+import { EquipmentCondition } from '@prisma/client';
+import type { PrismaClient, Room, RoomEquipment } from '@prisma/client';
 
 const EQUIPMENT_TYPES = [
   { name: 'Tủ lạnh', brands: ['Samsung', 'Panasonic', 'Hitachi', 'LG'] },

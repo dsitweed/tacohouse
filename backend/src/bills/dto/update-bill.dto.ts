@@ -1,4 +1,4 @@
-import { BillStatus } from '@tacohouse/shared';
+import { BillStatus } from '@prisma/client';
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
 
 export class UpdateBillDto {

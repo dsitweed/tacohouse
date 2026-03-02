@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { PrismaClient, UserRole } from '@tacohouse/shared';
+import { PrismaClient, UserRole } from '@prisma/client';
 import * as argon from 'argon2';
 import { UserWithRelations } from 'src/types';
 

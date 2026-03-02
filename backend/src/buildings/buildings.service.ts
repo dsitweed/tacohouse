@@ -4,7 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Building, Prisma, UserRole } from '@tacohouse/shared';
+import { Prisma, UserRole } from '@prisma/client';
+import type { Building } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 

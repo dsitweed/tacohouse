@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { Building, PrismaClient } from '@tacohouse/shared';
+import type { Building, PrismaClient } from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 export async function seedBuildings(

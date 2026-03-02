@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import type { Building, PrismaClient, Room } from '@tacohouse/shared';
-import { RoomStatus, RoomType } from '@tacohouse/shared';
+import { RoomStatus, RoomType } from '@prisma/client';
+import type { Building, PrismaClient, Room } from '@prisma/client';
 
 // Real room images from Unsplash
 const ROOM_IMAGES = [

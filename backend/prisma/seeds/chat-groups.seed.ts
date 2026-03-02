@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
+import { MessageType } from '@prisma/client';
 import type {
   Building,
   ChatGroup,
   ChatGroupMember,
   Message,
   PrismaClient,
-} from '@tacohouse/shared';
-import { MessageType } from '@tacohouse/shared';
+} from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 type ChatGroupData = {

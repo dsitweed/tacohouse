@@ -5,7 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Rental, Prisma, UserRole, RentalStatus } from '@tacohouse/shared';
+import { Prisma, RentalStatus, UserRole } from '@prisma/client';
+import type { Rental } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 

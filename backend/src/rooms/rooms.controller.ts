@@ -15,7 +15,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { Room, UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
+import type { Room } from '@prisma/client';
 import { CurrentUser, Public, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 

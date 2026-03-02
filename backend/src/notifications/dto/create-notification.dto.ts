@@ -4,7 +4,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { NotificationType } from '@tacohouse/shared';
+import { NotificationType } from '@prisma/client';
 
 export class CreateNotificationDto {
   @IsNotEmpty()

@@ -1,4 +1,4 @@
-import { BillStatus } from '@tacohouse/shared';
+import { BillStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 

@@ -14,7 +14,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { ChatGroup, Message, UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
+import type { ChatGroup, Message } from '@prisma/client';
 import { CurrentUser, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 

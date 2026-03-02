@@ -1,4 +1,4 @@
-import { UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
   IsDate,

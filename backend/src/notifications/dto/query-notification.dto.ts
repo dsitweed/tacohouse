@@ -1,6 +1,6 @@
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
-import { NotificationType } from '@tacohouse/shared';
+import { NotificationType } from '@prisma/client';
 
 export class FindAllNotificationsDto {
   @Type(() => Number)

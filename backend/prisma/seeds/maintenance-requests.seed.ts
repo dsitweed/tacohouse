@@ -1,15 +1,15 @@
 import { faker } from '@faker-js/faker';
+import {
+  MaintenanceCategory,
+  MaintenanceStatus,
+  PriorityType,
+} from '@prisma/client';
 import type {
   MaintenanceRequest,
   PrismaClient,
   Rental,
   Room,
-} from '@tacohouse/shared';
-import {
-  MaintenanceCategory,
-  MaintenanceStatus,
-  PriorityType,
-} from '@tacohouse/shared';
+} from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 type MaintenanceRequestData = {

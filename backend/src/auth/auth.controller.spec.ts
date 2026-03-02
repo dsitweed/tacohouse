@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { UserRole } from '@tacohouse/shared';
+import { UserRole } from '@prisma/client';
 import type { UserWithRelations } from 'src/types';
 
 import { AuthController } from './auth.controller';

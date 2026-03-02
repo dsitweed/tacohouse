@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import type { PrismaClient, Rental, Room } from '@tacohouse/shared';
-import { RentalStatus } from '@tacohouse/shared';
+import { RentalStatus } from '@prisma/client';
+import type { PrismaClient, Rental, Room } from '@prisma/client';
 import { UserWithRelations } from 'src/types';
 
 const CONTRACT_IMAGES = [

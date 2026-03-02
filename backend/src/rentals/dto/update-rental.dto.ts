@@ -5,7 +5,7 @@ import {
   IsOptional,
   Min,
 } from 'class-validator';
-import { RentalStatus } from '@tacohouse/shared';
+import { RentalStatus } from '@prisma/client';
 
 export class UpdateRentalDto {
   @IsOptional()
