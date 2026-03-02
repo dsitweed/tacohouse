@@ -10,7 +10,7 @@ import type { ChatGroup, Message } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationType, UserWithRelations } from 'src/types';
 
-import { SendMessageDto, FindAllMessagesDto } from './dto';
+import { FindAllMessagesDto, SendMessageDto } from './dto';
 
 @Injectable()
 export class ChatService {
@@ -132,17 +132,17 @@ export class ChatService {
       this.prisma.message.count({ where }),
     ]);
 
-    const totalPages = Math.ceil(total / limit!);
+    const totalPages = Math.ceil(total / limit);
 
     return {
       data: data.reverse(), // Return in chronological order
       pagination: {
-        page: page!,
-        limit: limit!,
+        page: page,
+        limit: limit,
         total,
         totalPages,
-        hasNext: before ? data.length === limit! : page! < totalPages,
-        hasPrev: page! > 1,
+        hasNext: before ? data.length === limit : page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
@@ -238,17 +238,17 @@ export class ChatService {
       this.prisma.message.count({ where }),
     ]);
 
-    const totalPages = Math.ceil(total / limit!);
+    const totalPages = Math.ceil(total / limit);
 
     return {
       data: data.reverse(),
       pagination: {
-        page: page!,
-        limit: limit!,
+        page: page,
+        limit: limit,
         total,
         totalPages,
-        hasNext: before ? data.length === limit! : page! < totalPages,
-        hasPrev: page! > 1,
+        hasNext: before ? data.length === limit : page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
@@ -289,4 +289,3 @@ export class ChatService {
     });
   }
 }
-

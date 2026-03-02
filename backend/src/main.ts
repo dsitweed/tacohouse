@@ -14,7 +14,7 @@ async function bootstrap() {
   // CORS Configuration
   const allowedOrigins: string[] = process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
-    : ['http://localhost:3000', 'http://localhost:3001'];
+    : ['http://localhost:3000'];
 
   app.enableCors({
     origin: (
@@ -66,7 +66,7 @@ async function bootstrap() {
         '- **pagination**: (Optional) Pagination metadata for list endpoints',
     )
     .setVersion('1.0.0')
-    .addServer('http://localhost:3001/api/v1', 'Development server')
+    .addServer('http://localhost:3000/api/v1', 'Development server')
     .addBearerAuth(
       {
         type: 'http',
@@ -99,7 +99,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`🚀 Application is running on: http://localhost:${port}/api/v1`);
   console.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);

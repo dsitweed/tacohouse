@@ -1,87 +1,5 @@
 # Backend Status Report
 
-## ✅ Đã có (Implemented)
-
-### Modules
-- ✅ **Auth** - Authentication & Authorization
-  - Login, Register, Refresh Token
-  - JWT Strategy, Local Strategy
-  - Guards và Decorators
-
-- ✅ **Users** - User Management
-  - Get profile, Update profile
-  - Change password
-
-- ✅ **Buildings** - Building Management
-  - CRUD operations
-  - Query filters
-  - Role-based access control
-
-- ✅ **Rooms** - Room Management
-  - CRUD operations
-  - Query filters
-  - Status management
-
-### Infrastructure
-- ✅ Prisma ORM setup
-- ✅ Database migrations
-- ✅ Seed data
-- ✅ JWT Authentication
-- ✅ Role-based guards
-- ✅ Response interceptors
-- ✅ Error handling
-- ✅ Validation pipes
-- ✅ Shared types package (@tacohouse/shared)
-
-## ❌ Còn thiếu (Missing)
-
-### Critical Modules
-1. **Rentals** - Rental Management
-   - Create rental agreement
-   - Update rental status
-   - Terminate rental
-   - Move-out requests
-   - Track rental history
-
-2. **Bills** - Billing System
-   - Generate monthly bills
-   - Calculate utilities (electricity, water, gas)
-   - Bill status management
-   - Payment confirmation (dual confirmation)
-   - Bill history
-
-3. **Payments** - Payment Processing
-   - Create payment records
-   - Payment methods (Cash, Bank Transfer, Stripe)
-   - Payment status tracking
-   - Receipt management
-
-4. **Maintenance** - Maintenance Requests
-   - Create maintenance request
-   - Update request status
-   - Priority management
-   - Category management
-   - Response handling
-
-5. **Chat** - Messaging System
-   - Group chat (building-based)
-   - Direct messaging
-   - Message history
-   - Real-time messaging (Socket.IO integration)
-
-6. **Notifications** - Notification System
-   - Create notifications
-   - Mark as read/unread
-   - Notification types
-   - Email notifications
-   - Push notifications
-
-### Additional Features Needed
-- **Utility Records** - Track utility readings
-- **Room Equipment** - Equipment management
-- **Payment Confirmations** - Dual confirmation workflow
-- **Chat Groups** - Building group chat management
-
 ## 📋 API Endpoints Status
 
 ### ✅ Implemented
@@ -131,31 +49,43 @@
 - `GET /notifications`
 - `PATCH /notifications/:id/read`
 
-## 🔧 Next Steps
+## Các chức năng còn thiếu / chưa đạt theo tài liệu
 
-1. **Priority 1: Core Business Logic**
-   - Implement Rentals module
-   - Implement Bills module
-   - Implement Payments module
+Auth + Security (Critical)
 
-2. **Priority 2: Communication**
-   - Implement Maintenance module
-   - Implement Chat module (with Socket.IO)
+Flow refresh token chưa đúng tài liệu: POST /auth/refresh đang cần JWT (access token) vì không @Public() và không nhận/kiểm tra refresh token theo Redis/session như mô tả trong Security Doc (xem auth.controller.ts, auth.service.ts, 7.securityDesignDocument.md).
+Chưa có Redis session store / token revocation / logout-all-devices (trong code còn TODO Redis).
+Các lớp bảo vệ nâng cao trong Security doc (rate limit, audit trail, CSRF, sanitization pipeline “thực”) chưa thấy implement thực tế (hiện chủ yếu có logging + validation).
+Public room browsing (Guest) chưa đúng BRD
 
-3. **Priority 3: Notifications**
-   - Implement Notifications module
-   - Email service integration
-   - Push notification setup
+BRD yêu cầu khi tenant báo trả phòng trước 30 ngày thì phòng vẫn đang ở nhưng phải public lên trang chủ để tìm người mới. Code hiện chỉ public status: 'AVAILABLE' nên không public các phòng PENDING_CHECKOUT (xem rooms.service.ts).
+Tenant onboarding + tài liệu xác minh
 
-4. **Priority 4: Additional Features**
-   - Utility Records tracking
-   - Room Equipment management
-   - Advanced filtering and search
+Tài liệu “API enhancement” yêu cầu endpoint riêng kiểu GET/PUT /tenants/me/profile, upload CCCD/portrait/contract… nhưng backend hiện không có module tenants/uploads tương ứng; chỉ có update profile chung qua PATCH /users/me và các field ảnh là “string URL” (xem 6.api-enhancement-summary.md, users.controller.ts).
+Đăng ký cũng chưa lưu các field ảnh CCCD/portrait dù DTO có khai báo (xem register-auth.dto.ts, auth.service.ts).
+Room tenant management + capacity
 
-## 📊 Completion Status
+Tài liệu có “add/remove tenant khỏi room”, giới hạn số người theo maxTenants. Backend hiện chỉ có Rental CRUD, và không check maxTenants khi tạo thêm rental (xem rentals.service.ts, schema.prisma).
+Equipment management + Utility records (Missing)
 
-- **Core Modules**: 4/10 (40%)
-- **API Endpoints**: ~15/50+ (30%)
-- **Infrastructure**: 100%
-- **Overall**: ~35%
+BRD/API enhancement yêu cầu CRUD thiết bị phòng + lịch sử chỉ số điện/nước/gas (meter readings) và đơn giá theo thời gian. Prisma schema đã có RoomEquipment, UtilityRecord nhưng backend chưa có controller/service cho 2 mảng này (xem schema.prisma).
+Billing (Missing phần “tự động/chuẩn business”)
 
+Bill hiện tạo thủ công và cộng tay các khoản; chưa có luồng “chủ nhà nhập chỉ số → hệ thống tính từ chênh lệch công tơ + đơn giá building → tạo bill hàng tháng tự động”, cũng chưa có job/reminder (xem bills.service.ts, 1.businessRequirementDocumentVi.md).
+Payments (thiếu confirm endpoint + Stripe thực)
+
+API enhancement có POST /payments/{id}/confirm + POST /payments/stripe/create-intent; backend hiện không có các endpoint này, và Stripe chưa tích hợp (hiện chỉ set COMPLETED nếu method = STRIPE) (xem payments.controller.ts, payments.service.ts, 6.api-enhancement-summary.md).
+Dual confirmation đang nằm ở POST /bills/:id/confirm (tức là có “ý tưởng” nhưng lệch route so với tài liệu enhancement).
+Chat (thiếu realtime + bug quyền direct message)
+
+Chưa có Socket.IO realtime như kiến trúc mô tả (xem 4.systemArchitectureDocument.md).
+Logic xem direct messages hiện chỉ cho phép nếu currentUser.id === userId (tức gần như không chat 1-1 đúng nghĩa) (xem chat.service.ts).
+Chưa thấy auto add/remove thành viên vào group chat theo move-in/move-out như tài liệu enhancement.
+Notifications (thiếu automation + email reminders)
+
+Có CRUD cơ bản, nhưng thiếu các trigger tự động (bill generated/payment reminder/maintenance update/chat message) và thiếu email “remind 3 lần” như BRD; validation “landlord chỉ notify tenant trong building của mình” đang để comment “for now allow” (xem notifications.service.ts).
+Chuẩn response format + OpenAPI drift
+
+Docs/OpenAPI mô tả response có field status, nhưng interceptor trả statusCode → lệch chuẩn (xem transform-response.interceptor.ts, 6.tacohouse-api-spec.yaml).
+OpenAPI hiện cũng chưa phản ánh các API Maintenance/Chat/Notifications đang có trong code, và thiếu nhiều endpoint trong “API enhancement summary”.
+Nếu bạn muốn, mình có thể làm tiếp 2 việc theo hướng “đóng gap” nhanh nhất:
