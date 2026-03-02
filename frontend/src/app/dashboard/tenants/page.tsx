@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Users, Search, Eye, Phone, Mail } from 'lucide-react';
-import { UserRole, RentalStatus } from '@tacohouse/shared';
+import { UserRole, RentalStatus } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 import { useRentals } from '@/hooks/api/use-rentals';
 
@@ -38,7 +38,7 @@ export default function TenantsPage() {
         },
         email: rental.tenant?.user?.email || '',
         room: {
-          roomNumber: rental.room?.roomNumber || '',
+          roomNumber: rental.room?.number || '',
           building: { name: rental.room?.building?.name || '' },
         },
         status: rental.status,

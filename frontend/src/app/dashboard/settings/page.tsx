@@ -43,7 +43,8 @@ export default function SettingsPage() {
     changePasswordMutation.mutate(
       {
         currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
+        password: passwordData.newPassword,
+        confirmPassword: passwordData.confirmPassword,
       },
       {
         onSuccess: () => {

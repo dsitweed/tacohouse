@@ -2,19 +2,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { User } from '@tacohouse/shared';
+import type { ApiResponse } from '@/lib/api-client';
 import type {
+  User,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   UpdateUserProfileRequest,
   ChangePasswordRequest,
-} from '@/types/api';
+} from '@/types';
 
 // Auth API functions
 const authApi = {
   login: async (data: LoginRequest) => {
-    const response = await apiClient.post<{ data: LoginResponse }>(
+    const response = await apiClient.post<ApiResponse<LoginResponse>>(
       '/auth/login',
       data
     );
@@ -22,30 +23,33 @@ const authApi = {
   },
 
   register: async (data: RegisterRequest) => {
-    const response = await apiClient.post<{ data: User }>('/auth/register', data);
+    const response = await apiClient.post<ApiResponse<User>>('/auth/register', data);
     return extractData(response);
   },
 
   refresh: async (refreshToken: string) => {
-    const response = await apiClient.post<{
-      data: { accessToken: string; refreshToken: string };
-    }>('/auth/refresh', { refreshToken });
+    const response = await apiClient.post<
+      ApiResponse<{ accessToken: string; refreshToken: string }>
+    >('/auth/refresh', { refreshToken });
     return extractData(response);
   },
 
   getProfile: async () => {
-    const response = await apiClient.get<{ data: User }>('/users/me');
+    const response = await apiClient.get<ApiResponse<User>>('/users/me');
     return extractData(response);
   },
 
   updateProfile: async (data: UpdateUserProfileRequest) => {
-    const response = await apiClient.patch<{ data: User }>('/users/me', data);
+    const response = await apiClient.patch<ApiResponse<User>>('/users/me', data);
     return extractData(response);
   },
 
   changePassword: async (data: ChangePasswordRequest) => {
-    const response = await apiClient.post('/users/me/change-password', data);
-    return response.data;
+    const response = await apiClient.post<ApiResponse<User>>(
+      '/users/me/change-password',
+      data
+    );
+    return extractData(response);
   },
 };
 

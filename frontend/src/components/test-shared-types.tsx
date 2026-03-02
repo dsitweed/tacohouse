@@ -11,7 +11,7 @@ import {
   RoomStatus,
   Bill,
   BillStatus 
-} from '@tacohouse/shared';
+} from '@/types';
 
 // Test interface với shared types
 interface UserCardProps {

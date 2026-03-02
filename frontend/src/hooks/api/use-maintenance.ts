@@ -6,13 +6,13 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { MaintenanceRequest } from '@tacohouse/shared';
 import type {
+  MaintenanceRequest,
   CreateMaintenanceRequest,
   UpdateMaintenanceRequest,
   MaintenanceListQuery,
   ApiResponse,
-} from '@/types/api';
+} from '@/types';
 
 // Maintenance API functions
 const maintenanceApi = {

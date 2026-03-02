@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { usePayments } from '@/hooks/api/use-payments';
 import { formatCurrency } from '@/lib/utils';
 import { CreditCard, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { PaymentStatus } from '@tacohouse/shared';
+import { PaymentStatus } from '@/types';
 
 const statusColors: Record<PaymentStatus, 'default' | 'success' | 'warning' | 'error'> = {
   PENDING: 'warning',
@@ -105,8 +105,7 @@ export default function PaymentsPage() {
                           <td className="px-4 py-3 text-sm text-gray-600">
                             {payment.paymentMethod === 'CASH' && 'Tiền mặt'}
                             {payment.paymentMethod === 'BANK_TRANSFER' && 'Chuyển khoản'}
-                            {payment.paymentMethod === 'E_WALLET' && 'Ví điện tử'}
-                            {payment.paymentMethod === 'CREDIT_CARD' && 'Thẻ tín dụng'}
+                            {payment.paymentMethod === 'STRIPE' && 'Stripe'}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600">
                             {payment.paymentDate

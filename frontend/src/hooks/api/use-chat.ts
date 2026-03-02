@@ -6,12 +6,13 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { ChatGroup, Message } from '@tacohouse/shared';
 import type {
+  ChatGroup,
+  Message,
   SendMessageRequest,
   MessageListQuery,
   ApiResponse,
-} from '@/types/api';
+} from '@/types';
 
 // Chat API functions
 const chatApi = {

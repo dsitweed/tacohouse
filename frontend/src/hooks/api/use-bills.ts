@@ -6,14 +6,14 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { Bill } from '@tacohouse/shared';
 import type {
+  Bill,
   CreateBillRequest,
   UpdateBillRequest,
   BillListQuery,
   ConfirmPaymentRequest,
   ApiResponse,
-} from '@/types/api';
+} from '@/types';
 
 // Bill API functions
 const billsApi = {

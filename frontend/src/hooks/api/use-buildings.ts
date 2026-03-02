@@ -6,21 +6,32 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { Building } from '@tacohouse/shared';
 import type {
+  Building,
   CreateBuildingRequest,
   UpdateBuildingRequest,
   BuildingListQuery,
   ApiResponse,
-} from '@/types/api';
+} from '@/types';
 
 // Building API functions
 const buildingsApi = {
   getAll: async (query?: BuildingListQuery) => {
-    const response = await apiClient.get<ApiResponse<Building[]>>('/buildings', {
+    const response = await apiClient.get<
+      ApiResponse<{ data: Building[]; pagination?: unknown }>
+    >('/buildings', {
       params: query,
     });
-    return extractData(response);
+    const result = extractData(response);
+
+    if (result && typeof result === 'object' && 'data' in result) {
+      return result as { data: Building[]; pagination?: unknown };
+    }
+
+    return {
+      data: Array.isArray(result) ? (result as Building[]) : [],
+      pagination: undefined,
+    };
   },
 
   getById: async (id: string) => {

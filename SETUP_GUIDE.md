@@ -60,7 +60,7 @@ import { User, Building, UserRole } from '@tacohouse/shared';
 ```typescript
 import { User, Building, UserRole } from '@tacohouse/shared';
 // hoặc
-import type { User, Building } from '@/types/shared';
+import type { User, Building } from '@/types';
 ```
 
 ## 🔧 Development Workflow
@@ -159,11 +159,11 @@ tacohouse/
    import { User, Building } from '@tacohouse/shared';
    ```
 
-2. **Frontend**: Import từ `@tacohouse/shared` hoặc `@/types/shared`
+2. **Frontend**: Import từ `@tacohouse/shared` hoặc `@/types`
    ```typescript
    import { User, Building } from '@tacohouse/shared';
    // hoặc
-   import type { User, Building } from '@/types/shared';
+   import type { User, Building } from '@/types';
    ```
 
 3. **Kiểm tra**: Đảm bảo không có duplicate type definitions trong `frontend/src/types/index.ts`

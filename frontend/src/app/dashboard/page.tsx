@@ -12,7 +12,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
-import { UserRole, RoomStatus, BillStatus } from '@tacohouse/shared';
+import { UserRole, RoomStatus, BillStatus } from '@/types';
 import { useRooms } from '@/hooks/api/use-rooms';
 import { useBills } from '@/hooks/api/use-bills';
 import { useMaintenanceRequests } from '@/hooks/api/use-maintenance';

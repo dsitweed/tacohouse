@@ -5,21 +5,29 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { Notification } from '@tacohouse/shared';
 import type {
+  Notification,
   NotificationListQuery,
   CreateNotificationRequest,
-  ApiResponse,
-} from '@/types/api';
+} from '@/types';
+import type { ApiResponse } from '@/lib/api-client';
 
 // Notifications API functions
 const notificationsApi = {
   getAll: async (query?: NotificationListQuery) => {
-    const response = await apiClient.get<ApiResponse<{
-      data: Notification[];
-      pagination: any;
-    }>>('/notifications', { params: query });
-    return extractData(response);
+    const response = await apiClient.get<ApiResponse<unknown>>('/notifications', {
+      params: query,
+    });
+    const result = extractData(response);
+
+    if (result && typeof result === 'object' && 'data' in result) {
+      return result as { data: Notification[]; pagination?: unknown };
+    }
+
+    return {
+      data: Array.isArray(result) ? (result as Notification[]) : [],
+      pagination: undefined,
+    };
   },
 
   getOne: async (id: string) => {
@@ -46,11 +54,12 @@ const notificationsApi = {
 };
 
 // Hooks
+export type NotificationsListResult = { data: Notification[]; pagination?: unknown };
+
 export function useNotifications(query?: NotificationListQuery) {
-  return useQuery({
+  return useQuery<NotificationsListResult>({
     queryKey: queryKeys.notifications.list(query),
     queryFn: () => notificationsApi.getAll(query),
-    onError: handleApiError,
   });
 }
 
@@ -59,7 +68,6 @@ export function useNotification(id: string) {
     queryKey: queryKeys.notifications.detail(id),
     queryFn: () => notificationsApi.getOne(id),
     enabled: !!id,
-    onError: handleApiError,
   });
 }
 

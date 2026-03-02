@@ -1,36 +1,12 @@
 /**
  * API Request/Response Types
  * Based on the API specification
- * 
- * Note: Entity types are imported from @prisma/client to ensure
- * consistency between frontend and backend (types-only on FE)
+ *
+ * Note: Entity/enums are imported from local shared types to avoid
+ * coupling the frontend build to backend-only packages (e.g. Prisma).
  */
 
-import type {
-  User,
-  Building,
-  Room,
-  Rental,
-  Bill,
-  Payment,
-  PaymentConfirmation,
-  MaintenanceRequest,
-  ChatGroup,
-  Message,
-  Notification,
-  UserRole,
-  RoomType,
-  RoomStatus,
-  RentalStatus,
-  BillStatus,
-  PaymentStatus,
-  PaymentMethod,
-  MaintenanceStatus,
-  PriorityType,
-  MaintenanceCategory,
-  MessageType,
-  NotificationType,
-} from '@prisma/client';
+import type { NotificationType, User } from '@/types';
 
 // Standard API Response
 export interface ApiResponse<T = unknown> {
@@ -94,7 +70,7 @@ export interface UpdateUserProfileRequest {
 
 export interface ChangePasswordRequest {
   currentPassword: string;
-  newPassword: string;
+  password: string;
   confirmPassword: string;
 }
 
@@ -129,6 +105,7 @@ export interface BuildingListQuery {
   page?: number;
   limit?: number;
   landlordId?: string;
+  search?: string;
 }
 
 // Room API Types

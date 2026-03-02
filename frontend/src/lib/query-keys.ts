@@ -129,6 +129,8 @@ export const queryKeys = {
     lists: () => [...queryKeys.notifications.all, 'list'] as const,
     list: (filters?: { isRead?: boolean; page?: number; limit?: number }) =>
       [...queryKeys.notifications.lists(), filters] as const,
+    details: () => [...queryKeys.notifications.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.notifications.details(), id] as const,
     unread: () => [...queryKeys.notifications.all, 'unread'] as const,
     count: () => [...queryKeys.notifications.all, 'count'] as const,
   },

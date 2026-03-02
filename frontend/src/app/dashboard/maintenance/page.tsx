@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useMaintenanceRequests } from '@/hooks/api/use-maintenance';
 import { Wrench, Plus, AlertCircle, CheckCircle, Clock } from 'lucide-react';
-import { MaintenanceStatus, PriorityType, UserRole } from '@tacohouse/shared';
+import { MaintenanceStatus, PriorityType, UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 
 const statusColors: Record<MaintenanceStatus, 'default' | 'success' | 'warning' | 'error'> = {
@@ -27,12 +27,14 @@ const priorityColors: Record<PriorityType, 'default' | 'warning' | 'error'> = {
   LOW: 'default',
   MEDIUM: 'warning',
   HIGH: 'error',
+  URGENT: 'error',
 };
 
 const priorityLabels: Record<PriorityType, string> = {
   LOW: 'Thấp',
   MEDIUM: 'Trung bình',
   HIGH: 'Cao',
+  URGENT: 'Khẩn cấp',
 };
 
 export default function MaintenancePage() {
@@ -79,7 +81,7 @@ export default function MaintenancePage() {
                     <div className="flex-1">
                       <CardTitle className="text-lg">{request.title}</CardTitle>
                       <p className="mt-1 text-sm text-gray-600">
-                        {request.room?.roomNumber} - {request.room?.building?.name}
+                        {request.room?.number} - {request.room?.building?.name}
                       </p>
                     </div>
                     <div className="flex flex-col items-end space-y-2">

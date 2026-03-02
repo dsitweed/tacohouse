@@ -4,31 +4,35 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/api/use-notifications';
+import type { NotificationsListResult } from '@/hooks/api/use-notifications';
 import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react';
-import { NotificationType } from '@tacohouse/shared';
+import { NotificationType } from '@/types';
 
 const typeIcons: Record<NotificationType, typeof Bell> = {
-  BILL_CREATED: Bell,
-  PAYMENT_RECEIVED: CheckCircle,
-  MAINTENANCE_REQUEST: AlertCircle,
+  BILL_GENERATED: Bell,
+  PAYMENT_REMINDER: CheckCircle,
+  MAINTENANCE_UPDATE: AlertCircle,
+  CHAT_MESSAGE: Bell,
+  ANNOUNCEMENT: Info,
   SYSTEM: Info,
-  GENERAL: Info,
 };
 
 const typeColors: Record<NotificationType, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
-  BILL_CREATED: 'info',
-  PAYMENT_RECEIVED: 'success',
-  MAINTENANCE_REQUEST: 'warning',
+  BILL_GENERATED: 'info',
+  PAYMENT_REMINDER: 'warning',
+  MAINTENANCE_UPDATE: 'warning',
+  CHAT_MESSAGE: 'info',
+  ANNOUNCEMENT: 'default',
   SYSTEM: 'default',
-  GENERAL: 'default',
 };
 
 const typeLabels: Record<NotificationType, string> = {
-  BILL_CREATED: 'Hóa đơn mới',
-  PAYMENT_RECEIVED: 'Thanh toán',
-  MAINTENANCE_REQUEST: 'Yêu cầu sửa chữa',
+  BILL_GENERATED: 'Hóa đơn mới',
+  PAYMENT_REMINDER: 'Nhắc nhở thanh toán',
+  MAINTENANCE_UPDATE: 'Cập nhật sửa chữa',
+  CHAT_MESSAGE: 'Tin nhắn',
+  ANNOUNCEMENT: 'Thông báo',
   SYSTEM: 'Hệ thống',
-  GENERAL: 'Thông báo',
 };
 
 export default function NotificationsPage() {
@@ -36,6 +40,8 @@ export default function NotificationsPage() {
     page: 1,
     limit: 50,
   });
+
+  const list = data as NotificationsListResult | undefined;
 
   return (
     
@@ -60,9 +66,9 @@ export default function NotificationsPage() {
               Đang tải...
             </CardContent>
           </Card>
-        ) : data?.data && data.data.length > 0 ? (
+        ) : list?.data && list.data.length > 0 ? (
           <div className="space-y-3">
-            {data.data.map((notification) => {
+            {list.data.map((notification) => {
               const Icon = typeIcons[notification.type];
               return (
                 <Card

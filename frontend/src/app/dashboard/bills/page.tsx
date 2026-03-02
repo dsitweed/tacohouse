@@ -8,22 +8,22 @@ import { Badge } from '@/components/ui/badge';
 import { useBills } from '@/hooks/api/use-bills';
 import { formatCurrency } from '@/lib/utils';
 import { Receipt, Plus, Eye, CheckCircle, XCircle } from 'lucide-react';
-import { BillStatus, UserRole } from '@tacohouse/shared';
+import { BillStatus, UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 
 const statusColors: Record<BillStatus, 'default' | 'success' | 'warning' | 'error'> = {
   PENDING: 'warning',
   PAID: 'success',
+  TENANT_CONFIRMED: 'warning',
   OVERDUE: 'error',
-  CANCELLED: 'default',
   LANDLORD_CONFIRMED: 'success',
 };
 
 const statusLabels: Record<BillStatus, string> = {
   PENDING: 'Chờ thanh toán',
   PAID: 'Đã thanh toán',
+  TENANT_CONFIRMED: 'Người thuê đã xác nhận',
   OVERDUE: 'Quá hạn',
-  CANCELLED: 'Đã hủy',
   LANDLORD_CONFIRMED: 'Đã xác nhận',
 };
 
@@ -74,7 +74,7 @@ export default function BillsPage() {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-600">
-                    {bill.room?.roomNumber} - {bill.room?.building?.name}
+                    {bill.room?.number} - {bill.room?.building?.name}
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -90,9 +90,11 @@ export default function BillsPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Tiền phòng:</span>
-                      <span className="font-medium">{formatCurrency(bill.roomRent)}</span>
+                      <span className="font-medium">
+                        {formatCurrency(bill.monthlyRent)}
+                      </span>
                     </div>
-                    {bill.electricityAmount > 0 && (
+                    {Number(bill.electricityAmount) > 0 && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Điện:</span>
                         <span className="font-medium">
@@ -100,7 +102,7 @@ export default function BillsPage() {
                         </span>
                       </div>
                     )}
-                    {bill.waterAmount > 0 && (
+                    {Number(bill.waterAmount) > 0 && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Nước:</span>
                         <span className="font-medium">
@@ -108,11 +110,15 @@ export default function BillsPage() {
                         </span>
                       </div>
                     )}
-                    {bill.otherFees > 0 && (
+                    {Number(bill.managementFee) + Number(bill.cleaningFee) + Number(bill.lightingFee) > 0 && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Phí khác:</span>
                         <span className="font-medium">
-                          {formatCurrency(bill.otherFees)}
+                          {formatCurrency(
+                            Number(bill.managementFee) +
+                              Number(bill.cleaningFee) +
+                              Number(bill.lightingFee)
+                          )}
                         </span>
                       </div>
                     )}

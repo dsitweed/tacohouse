@@ -6,13 +6,13 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { Rental } from '@tacohouse/shared';
 import type {
   CreateRentalRequest,
   UpdateRentalRequest,
   RentalListQuery,
   ApiResponse,
-} from '@/types/api';
+  Rental
+} from '@/types';
 
 // Rental API functions
 const rentalsApi = {

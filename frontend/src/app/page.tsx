@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Search, Home, DollarSign, Shield } from 'lucide-react';
 import { useAvailableRooms } from '@/hooks/api/use-rooms';
 import { formatCurrency } from '@/lib/utils';
-import type { Room } from '@tacohouse/shared';
+import type { Room } from '@/types';
 
 export default function HomePage() {
   const { data: rooms, isLoading } = useAvailableRooms();

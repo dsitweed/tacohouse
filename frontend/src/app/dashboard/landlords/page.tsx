@@ -7,12 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { UserCog, Search, Eye, Phone, Mail, Building2 } from 'lucide-react';
-import { UserRole } from '@tacohouse/shared';
+import { UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 import { useBuildings } from '@/hooks/api/use-buildings';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient, extractData } from '@/lib/api-client';
-import type { User } from '@tacohouse/shared';
+import type { User } from '@/types';
+import type { ApiResponse } from '@/lib/api-client';
 
 // Hook to fetch landlords
 function useLandlords() {
@@ -20,11 +21,15 @@ function useLandlords() {
     queryKey: ['landlords'],
     queryFn: async () => {
       // Fetch all buildings and extract unique landlords
-      const buildingsResponse = await apiClient.get('/buildings', {
+      const buildingsResponse = await apiClient.get<ApiResponse<unknown>>('/buildings', {
         params: { page: 1, limit: 1000 },
       });
       const buildings = extractData(buildingsResponse);
-      const buildingsData = Array.isArray(buildings) ? buildings : buildings?.data || [];
+      const buildingsData = Array.isArray(buildings)
+        ? buildings
+        : buildings && typeof buildings === 'object' && 'data' in buildings
+          ? ((buildings as { data: unknown[] }).data ?? [])
+          : [];
       
       // Extract unique landlords from buildings
       const landlordsMap = new Map<string, any>();

@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useRooms } from '@/hooks/api/use-rooms';
 import { formatCurrency } from '@/lib/utils';
 import { DoorOpen, Plus, Search, Edit, Eye } from 'lucide-react';
-import { RoomStatus, UserRole } from '@tacohouse/shared';
+import { RoomStatus, UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 
 const statusColors: Record<RoomStatus, 'default' | 'success' | 'warning' | 'error'> = {
@@ -113,7 +113,7 @@ export default function RoomsPage() {
                           <div className="flex items-center space-x-2">
                             <DoorOpen className="h-5 w-5 text-gray-400" />
                             <span className="font-medium text-gray-900">
-                              {room.roomNumber}
+                              {room.number}
                             </span>
                           </div>
                         </td>

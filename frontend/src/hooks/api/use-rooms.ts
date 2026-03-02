@@ -6,13 +6,13 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { Room } from '@tacohouse/shared';
 import type {
+  Room,
   CreateRoomRequest,
   UpdateRoomRequest,
   RoomListQuery,
   ApiResponse,
-} from '@/types/api';
+} from '@/types';
 
 // Room API functions
 const roomsApi = {

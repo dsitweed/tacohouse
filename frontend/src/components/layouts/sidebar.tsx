@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
-import { UserRole } from '@tacohouse/shared';
+import { UserRole } from '@/types';
 
 interface NavItem {
   title: string;

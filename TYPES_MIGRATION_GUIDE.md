@@ -97,7 +97,7 @@ import type { User, Room } from '@/types';
 import type { User, Building, Room } from '@tacohouse/shared';
 
 // ✅ Alternative (re-export)
-import type { User, Building, Room } from '@/types/shared';
+import type { User, Building, Room } from '@/types';
 ```
 
 ### Import Enums
@@ -107,7 +107,7 @@ import type { User, Building, Room } from '@/types/shared';
 import { UserRole, RoomStatus, BillStatus } from '@tacohouse/shared';
 
 // ✅ Alternative
-import { UserRole, RoomStatus } from '@/types/shared';
+import { UserRole, RoomStatus } from '@/types';
 ```
 
 ### Import API Types

@@ -6,20 +6,31 @@ import {
 } from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
-import type { Payment } from '@tacohouse/shared';
 import type {
+  Payment,
   CreatePaymentRequest,
   PaymentListQuery,
-  ApiResponse,
-} from '@/types/api';
+} from '@/types';
+import type { ApiResponse } from '@/lib/api-client';
+
+export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
 
 // Payment API functions
 const paymentsApi = {
   getAll: async (query?: PaymentListQuery) => {
-    const response = await apiClient.get<ApiResponse<Payment[]>>('/payments', {
+    const response = await apiClient.get<ApiResponse<unknown>>('/payments', {
       params: query,
     });
-    return extractData(response);
+    const result = extractData(response);
+
+    if (result && typeof result === 'object' && 'data' in result) {
+      return result as PaymentsListResult;
+    }
+
+    return {
+      data: Array.isArray(result) ? (result as Payment[]) : [],
+      pagination: undefined,
+    };
   },
 
   getById: async (id: string) => {
@@ -35,7 +46,7 @@ const paymentsApi = {
 
 // Hooks
 export function usePayments(query?: PaymentListQuery) {
-  return useQuery({
+  return useQuery<PaymentsListResult>({
     queryKey: queryKeys.payments.list(query),
     queryFn: () => paymentsApi.getAll(query),
     staleTime: 2 * 60 * 1000, // 2 minutes

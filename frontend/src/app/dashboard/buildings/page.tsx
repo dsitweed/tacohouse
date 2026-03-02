@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useBuildings } from '@/hooks/api/use-buildings';
 import { formatCurrency } from '@/lib/utils';
 import { Building2, Plus, Search, Edit, Eye } from 'lucide-react';
-import { UserRole } from '@tacohouse/shared';
+import { UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 
 export default function BuildingsPage() {
