@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Users, Search, Eye, Phone, Mail } from 'lucide-react';
 import { UserRole, RentalStatus } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
-import { useRentals } from '@/hooks/api/use-rentals';
+import { useRentals } from '@/hooks/api/useRentals';
 
 export default function TenantsPage() {
   const { user } = useAuthStore();

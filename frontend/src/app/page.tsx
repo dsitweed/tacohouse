@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Search, Home, DollarSign, Shield } from 'lucide-react';
-import { useAvailableRooms } from '@/hooks/api/use-rooms';
+import { useAvailableRooms } from '@/hooks/api/useRooms';
 import { formatCurrency } from '@/lib/utils';
 import type { Room } from '@/types';
 

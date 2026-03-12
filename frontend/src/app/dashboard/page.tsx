@@ -13,10 +13,10 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { UserRole, RoomStatus, BillStatus } from '@/types';
-import { useRooms } from '@/hooks/api/use-rooms';
-import { useBills } from '@/hooks/api/use-bills';
-import { useMaintenanceRequests } from '@/hooks/api/use-maintenance';
-import { useRentals } from '@/hooks/api/use-rentals';
+import { useRooms } from '@/hooks/api/useRooms';
+import { useBills } from '@/hooks/api/useBills';
+import { useMaintenanceRequests } from '@/hooks/api/useMaintenance';
+import { useRentals } from '@/hooks/api/useRentals';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();

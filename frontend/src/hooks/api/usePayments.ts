@@ -4,14 +4,14 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import { apiClient, extractData, handleApiError } from '@/lib/api-client';
-import { queryKeys } from '@/lib/query-keys';
+import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
+import { queryKeys } from '@/lib/queryKeys';
 import type {
   Payment,
   CreatePaymentRequest,
   PaymentListQuery,
 } from '@/types';
-import type { ApiResponse } from '@/lib/api-client';
+import type { ApiResponse } from '@/lib/apiClient';
 
 export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
 

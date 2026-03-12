@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { usePayments } from '@/hooks/api/use-payments';
+import { usePayments } from '@/hooks/api/usePayments';
 import { formatCurrency } from '@/lib/utils';
 import { CreditCard, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { PaymentStatus } from '@/types';

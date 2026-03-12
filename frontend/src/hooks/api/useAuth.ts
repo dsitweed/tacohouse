@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
-import { apiClient, extractData, handleApiError } from '@/lib/api-client';
-import { queryKeys } from '@/lib/query-keys';
-import type { ApiResponse } from '@/lib/api-client';
+import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
+import { queryKeys } from '@/lib/queryKeys';
+import type { ApiResponse } from '@/lib/apiClient';
 import type {
   User,
   LoginRequest,

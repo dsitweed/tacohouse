@@ -4,8 +4,8 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import { apiClient, extractData, handleApiError } from '@/lib/api-client';
-import { queryKeys } from '@/lib/query-keys';
+import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
+import { queryKeys } from '@/lib/queryKeys';
 import type {
   ChatGroup,
   Message,

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useMaintenanceRequests } from '@/hooks/api/use-maintenance';
+import { useMaintenanceRequests } from '@/hooks/api/useMaintenance';
 import { Wrench, Plus, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { MaintenanceStatus, PriorityType, UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';

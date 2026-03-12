@@ -1,4 +1,10 @@
-import type { Admin, Landlord, Tenant, User, UserProfile } from '@prisma/client';
+import type {
+  Admin,
+  Landlord,
+  Tenant,
+  User,
+  UserProfile,
+} from '@prisma/client';
 
 export type UserWithRelations = User & {
   profile: UserProfile | null;

@@ -3,14 +3,14 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { apiClient, extractData, handleApiError } from '@/lib/api-client';
-import { queryKeys } from '@/lib/query-keys';
+import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
+import { queryKeys } from '@/lib/queryKeys';
 import type {
   Notification,
   NotificationListQuery,
   CreateNotificationRequest,
 } from '@/types';
-import type { ApiResponse } from '@/lib/api-client';
+import type { ApiResponse } from '@/lib/apiClient';
 
 // Notifications API functions
 const notificationsApi = {

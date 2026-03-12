@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/auth-store';
-import { useUpdateProfile, useChangePassword } from '@/hooks/api/use-auth';
+import { useUpdateProfile, useChangePassword } from '@/hooks/api/useAuth';
 import { Settings, User, Lock, Bell } from 'lucide-react';
 
 export default function SettingsPage() {

@@ -9,11 +9,11 @@ import { Input } from '@/components/ui/input';
 import { UserCog, Search, Eye, Phone, Mail, Building2 } from 'lucide-react';
 import { UserRole } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
-import { useBuildings } from '@/hooks/api/use-buildings';
+import { useBuildings } from '@/hooks/api/useBuildings';
 import { useQuery } from '@tanstack/react-query';
-import { apiClient, extractData } from '@/lib/api-client';
+import { apiClient, extractData } from '@/lib/apiClient';
 import type { User } from '@/types';
-import type { ApiResponse } from '@/lib/api-client';
+import type { ApiResponse } from '@/lib/apiClient';
 
 // Hook to fetch landlords
 function useLandlords() {

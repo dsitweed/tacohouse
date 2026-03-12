@@ -66,7 +66,7 @@ async function bootstrap() {
         '- **pagination**: (Optional) Pagination metadata for list endpoints',
     )
     .setVersion('1.0.0')
-    .addServer('http://localhost:3000/api/v1', 'Development server')
+    .addServer('http://localhost:3005', 'Development server')
     .addBearerAuth(
       {
         type: 'http',

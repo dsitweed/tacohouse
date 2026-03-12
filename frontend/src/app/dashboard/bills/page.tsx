@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useBills } from '@/hooks/api/use-bills';
+import { useBills } from '@/hooks/api/useBills';
 import { formatCurrency } from '@/lib/utils';
 import { Receipt, Plus, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { BillStatus, UserRole } from '@/types';

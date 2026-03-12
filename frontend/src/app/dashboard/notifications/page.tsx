@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useNotifications } from '@/hooks/api/use-notifications';
-import type { NotificationsListResult } from '@/hooks/api/use-notifications';
+import { useNotifications } from '@/hooks/api/useNotifications';
+import type { NotificationsListResult } from '@/hooks/api/useNotifications';
 import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { NotificationType } from '@/types';
 

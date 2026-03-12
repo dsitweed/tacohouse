@@ -11,7 +11,7 @@ export {
   useUpdateProfile,
   useChangePassword,
   useLogout,
-} from './use-auth';
+} from './useAuth';
 
 // Building hooks
 export {
@@ -20,7 +20,7 @@ export {
   useCreateBuilding,
   useUpdateBuilding,
   useDeleteBuilding,
-} from './use-buildings';
+} from './useBuildings';
 
 // Room hooks
 export {
@@ -31,7 +31,7 @@ export {
   useCreateRoom,
   useUpdateRoom,
   useDeleteRoom,
-} from './use-rooms';
+} from './useRooms';
 
 // Rental hooks
 export {
@@ -42,7 +42,7 @@ export {
   useCreateRental,
   useUpdateRental,
   useTerminateRental,
-} from './use-rentals';
+} from './useRentals';
 
 // Bill hooks
 export {
@@ -53,7 +53,7 @@ export {
   useUpdateBill,
   useConfirmBillPayment,
   useCancelBill,
-} from './use-bills';
+} from './useBills';
 
 // Payment hooks
 export {
@@ -61,7 +61,7 @@ export {
   usePayment,
   usePaymentsByBill,
   useCreatePayment,
-} from './use-payments';
+} from './usePayments';
 
 // Maintenance hooks
 export {
@@ -72,7 +72,7 @@ export {
   useCreateMaintenance,
   useUpdateMaintenance,
   useRespondToMaintenance,
-} from './use-maintenance';
+} from './useMaintenance';
 
 // Chat hooks
 export {
@@ -82,7 +82,7 @@ export {
   useSendMessage,
   useDirectMessages,
   useSendDirectMessage,
-} from './use-chat';
+} from './useChat';
 
 // Notification hooks
 export {
@@ -90,5 +90,5 @@ export {
   useNotification,
   useCreateNotification,
   useMarkNotificationAsRead,
-} from './use-notifications';
+} from './useNotifications';
 
