@@ -31,3 +31,10 @@ nest g res users
   - Notifications (system notifications)
 - 8. File Management
   - Uploads (file upload handling)
+ 
+FE màn chính:
+- Landingpage
+- search
+- detail room
+- detail lanlord
+- Phải có baged (yêu thích, đã xác thực, top đầu vv cho user và cho landlord, cho phòng để tăng uy tín)
