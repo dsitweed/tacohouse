@@ -1,5 +1,5 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/authStore';
+import axios, { AxiosInstance } from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_PATH = process.env.NEXT_PUBLIC_API_BASE_PATH;
@@ -29,26 +29,24 @@ export interface ApiError {
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${API_URL}${API_BASE_PATH}`,
-  timeout: 30000,
-  // @ts-ignore
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// // Request interceptor to add auth token
-// apiClient.interceptors.request.use(
-//   (config) => {
-//     const token = useAuthStore.getState().accessToken;
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+// Request interceptor to add auth token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().accessToken;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 // // Response interceptor to handle token refresh
 // apiClient.interceptors.response.use(
@@ -115,7 +113,7 @@ export function handleApiError(error: unknown): ApiError {
 
   return {
     status: 500,
-    message: error instanceof Error ? error.message : 'An unknown error occurred',
+    message:
+      error instanceof Error ? error.message : 'An unknown error occurred',
   };
 }
-

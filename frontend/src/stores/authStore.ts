@@ -8,7 +8,6 @@ interface AuthStore {
   refreshToken: string | null;
   isAuthenticated: boolean;
 
-  // Actions
   login: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
   updateUser: (user: Partial<User>) => void;

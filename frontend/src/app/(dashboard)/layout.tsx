@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/auth-store';
 import { DashboardLayout } from '@/components/layouts';
+import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function DashboardRootLayout({
   children,
@@ -30,4 +30,3 @@ export default function DashboardRootLayout({
 
   return <DashboardLayout>{children}</DashboardLayout>;
 }
-

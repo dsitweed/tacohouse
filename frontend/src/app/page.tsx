@@ -10,6 +10,7 @@ import type { Room } from '@/types';
 
 export default function HomePage() {
   const { data: rooms, isLoading } = useAvailableRooms();
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
       {/* Header - Public Header */}

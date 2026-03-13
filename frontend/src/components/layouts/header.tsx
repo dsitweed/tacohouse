@@ -1,8 +1,8 @@
 'use client';
 
-import { Bell, Search, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/authStore';
+import { Bell, LogOut, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export function Header() {
@@ -45,9 +45,7 @@ export function Header() {
                   ? `${user.profile.firstName} ${user.profile.lastName}`
                   : user?.email}
               </p>
-              <p className="text-xs text-gray-500">
-                {user?.email}
-              </p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
             <Button
               variant="ghost"
@@ -64,4 +62,3 @@ export function Header() {
     </header>
   );
 }
-

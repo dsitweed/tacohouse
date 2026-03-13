@@ -1,24 +1,24 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
+import { UserRole } from '@/types';
 import {
-  LayoutDashboard,
-  Building2,
-  DoorOpen,
-  Users,
-  Receipt,
-  CreditCard,
-  Wrench,
+  BarChart3,
   Bell,
+  Building2,
+  CreditCard,
+  DoorOpen,
+  LayoutDashboard,
   MessageSquare,
+  Receipt,
   Settings,
   UserCog,
-  BarChart3,
+  Users,
+  Wrench,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/stores/auth-store';
-import { UserRole } from '@/types';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface NavItem {
   title: string;
@@ -101,7 +101,7 @@ export function Sidebar() {
   const role = user?.role;
 
   const filteredNavItems = navItems.filter(
-    (item) => !item.roles || (role && item.roles.includes(role))
+    (item) => !item.roles || (role && item.roles.includes(role)),
   );
 
   return (
@@ -113,7 +113,9 @@ export function Sidebar() {
             <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
               <span className="text-white font-bold text-lg">T</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900">Tacohouse</span>
+            <span className="text-xl font-semibold text-gray-900">
+              Tacohouse
+            </span>
           </Link>
         </div>
 
@@ -121,7 +123,8 @@ export function Sidebar() {
         <nav className="flex-1 space-y-1 px-3 py-4">
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+            const isActive =
+              pathname === item.href || pathname?.startsWith(item.href + '/');
 
             return (
               <Link
@@ -131,7 +134,7 @@ export function Sidebar() {
                   'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    : 'text-gray-700 hover:bg-gray-50',
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -169,4 +172,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

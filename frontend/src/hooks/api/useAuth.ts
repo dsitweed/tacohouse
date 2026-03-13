@@ -1,29 +1,32 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '@/stores/auth-store';
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
 import type { ApiResponse } from '@/lib/apiClient';
+import { queryKeys } from '@/lib/queryKeys';
+import { useAuthStore } from '@/stores/authStore';
 import type {
-  User,
+  ChangePasswordRequest,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   UpdateUserProfileRequest,
-  ChangePasswordRequest,
+  User,
 } from '@/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Auth API functions
 const authApi = {
   login: async (data: LoginRequest) => {
     const response = await apiClient.post<ApiResponse<LoginResponse>>(
       '/auth/login',
-      data
+      data,
     );
     return extractData(response);
   },
 
   register: async (data: RegisterRequest) => {
-    const response = await apiClient.post<ApiResponse<User>>('/auth/register', data);
+    const response = await apiClient.post<ApiResponse<User>>(
+      '/auth/register',
+      data,
+    );
     return extractData(response);
   },
 
@@ -40,14 +43,17 @@ const authApi = {
   },
 
   updateProfile: async (data: UpdateUserProfileRequest) => {
-    const response = await apiClient.patch<ApiResponse<User>>('/users/me', data);
+    const response = await apiClient.patch<ApiResponse<User>>(
+      '/users/me',
+      data,
+    );
     return extractData(response);
   },
 
   changePassword: async (data: ChangePasswordRequest) => {
     const response = await apiClient.post<ApiResponse<User>>(
       '/users/me/change-password',
-      data
+      data,
     );
     return extractData(response);
   },
@@ -128,4 +134,3 @@ export function useLogout() {
     queryClient.clear();
   };
 }
-

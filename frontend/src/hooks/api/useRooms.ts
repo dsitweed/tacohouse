@@ -1,18 +1,18 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query';
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import type {
-  Room,
-  CreateRoomRequest,
-  UpdateRoomRequest,
-  RoomListQuery,
   ApiResponse,
+  CreateRoomRequest,
+  Room,
+  RoomListQuery,
+  UpdateRoomRequest,
 } from '@/types';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 // Room API functions
 const roomsApi = {
@@ -36,13 +36,14 @@ const roomsApi = {
 
   getByBuilding: async (buildingId: string) => {
     const response = await apiClient.get<ApiResponse<Room[]>>(
-      `/buildings/${buildingId}/rooms`
+      `/buildings/${buildingId}/rooms`,
     );
     return extractData(response);
   },
 
   getAvailable: async () => {
-    const response = await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
+    const response =
+      await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
     const data = extractData(response);
     return Array.isArray(data) ? data : (data as any)?.data || data;
   },
@@ -53,7 +54,10 @@ const roomsApi = {
   },
 
   update: async (id: string, data: UpdateRoomRequest) => {
-    const response = await apiClient.patch<ApiResponse<Room>>(`/rooms/${id}`, data);
+    const response = await apiClient.patch<ApiResponse<Room>>(
+      `/rooms/${id}`,
+      data,
+    );
     return extractData(response);
   },
 
@@ -74,7 +78,7 @@ export function useRooms(query?: RoomListQuery) {
 
 export function useRoom(
   id: string | undefined,
-  options?: Omit<UseQueryOptions<Room>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<Room>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: queryKeys.rooms.detail(id!),
@@ -85,7 +89,7 @@ export function useRoom(
   });
 }
 
-export function useRoomsByBuilding(buildingId: string | undefined) {
+export function useRoomsByBuilding(buildingId: string) {
   return useQuery({
     queryKey: queryKeys.rooms.byBuilding(buildingId!),
     queryFn: () => roomsApi.getByBuilding(buildingId!),
@@ -98,7 +102,6 @@ export function useAvailableRooms() {
   return useQuery({
     queryKey: queryKeys.rooms.available(),
     queryFn: roomsApi.getAvailable,
-    staleTime: 1 * 60 * 1000, // 1 minute
   });
 }
 
@@ -151,4 +154,3 @@ export function useDeleteRoom() {
     onError: handleApiError,
   });
 }
-
