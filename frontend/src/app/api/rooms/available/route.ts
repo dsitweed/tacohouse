@@ -11,11 +11,10 @@ export async function GET() {
     return Response.json({ error: error.message }, { status: 500 });
   }
 
-
   return Response.json({
     statusCode: 200,
     message: 'Available rooms retrieved successfully',
     data: data,
-    pagination: generatePagination(1, data.length)
+    pagination: generatePagination(1, data.length),
   });
 }
