@@ -53,7 +53,7 @@ export default function HomePage() {
 
         {/* Search Bar */}
         <div className="mx-auto mt-10 max-w-3xl">
-          <Card padding="lg" className="shadow-lg">
+          <Card className="shadow-lg px-8">
             <div className="flex flex-col gap-4 sm:flex-row">
               <div className="flex-1">
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -87,7 +87,7 @@ export default function HomePage() {
 
         {/* Features */}
         <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-3">
-          <Card padding="md" className="text-center">
+          <Card className="text-center px-6">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
               <Home className="h-6 w-6 text-indigo-600" />
             </div>
@@ -100,7 +100,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card padding="md" className="text-center">
+          <Card className="text-center px-6">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100">
               <DollarSign className="h-6 w-6 text-emerald-600" />
             </div>
@@ -113,7 +113,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card padding="md" className="text-center">
+          <Card className="text-center px-6">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100">
               <Shield className="h-6 w-6 text-amber-600" />
             </div>
@@ -136,11 +136,7 @@ export default function HomePage() {
         {isLoading ? (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                padding="none"
-                className="overflow-hidden animate-pulse"
-              >
+              <Card key={i} className="overflow-hidden animate-pulse">
                 <div className="h-48 bg-gray-200" />
                 <div className="p-4">
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
@@ -152,7 +148,7 @@ export default function HomePage() {
         ) : rooms && rooms.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {rooms.slice(0, 9).map((room: Room) => (
-              <Card key={room.id} padding="none" className="overflow-hidden">
+              <Card key={room.id} className="overflow-hidden">
                 <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
                   <Home className="h-16 w-16 text-indigo-400" />
                 </div>

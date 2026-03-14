@@ -1,5 +1,12 @@
-export { Button, type ButtonProps } from './button';
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, type CardProps } from './card';
-export { Badge, type BadgeProps } from './badge';
-export { Input, type InputProps } from './input';
-
+export { Button, buttonVariants } from './button';
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+} from './card';
+export { Badge, badgeVariants } from './badge';
+export { Input } from './input';
