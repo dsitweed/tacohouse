@@ -8,7 +8,9 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format number as Vietnamese currency
  */
-export function formatCurrency(amount: number | string | null | undefined): string {
+export function formatCurrency(
+  amount: number | string | null | undefined,
+): string {
   const numericAmount =
     typeof amount === 'number'
       ? amount
@@ -29,7 +31,6 @@ export function formatNumber(num: number | string | null | undefined): string {
   const numericValue =
     typeof num === 'number' ? num : typeof num === 'string' ? Number(num) : 0;
   return new Intl.NumberFormat('vi-VN').format(
-    Number.isFinite(numericValue) ? numericValue : 0
+    Number.isFinite(numericValue) ? numericValue : 0,
   );
 }
-
