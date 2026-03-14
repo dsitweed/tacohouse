@@ -10,3 +10,4 @@ export {
 } from './card';
 export { Badge, badgeVariants } from './badge';
 export { Input } from './input';
+export { Skeleton, SkeletonCard, SkeletonPage } from './skeleton';

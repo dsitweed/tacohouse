@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLogin } from '@/hooks/api/useAuth';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,7 +39,7 @@ export default function LoginPage() {
         onError: (err: any) => {
           setError(err.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
         },
-      }
+      },
     );
   };
 
@@ -42,12 +48,15 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-            <span className="text-white font-bold text-xl">T</span>
+            <span className="text-xl font-bold text-white">T</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Đăng nhập</h2>
           <p className="mt-2 text-sm text-gray-600">
             Hoặc{' '}
-            <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link
+              href="/register"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
               tạo tài khoản mới
             </Link>
           </p>
@@ -63,34 +72,32 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
                   {error}
                 </div>
               )}
 
               <Input
-                label="Email"
                 type="email"
                 placeholder="email@example.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
               />
 
               <Input
-                label="Mật khẩu"
                 type="password"
                 placeholder="••••••••"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 required
               />
 
-              <Button
-                type="submit"
-                className="w-full"
-                isLoading={loginMutation.isPending}
-              >
+              <Button type="submit" className="w-full">
                 Đăng nhập
               </Button>
             </form>
@@ -109,4 +116,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

@@ -1,15 +1,8 @@
-import { generatePagination, supabaseCLient } from '@/lib/supbaseClient';
-import { RoomStatus } from '@/types';
+import { generatePagination } from '@/lib/supbaseClient';
+import { getAvailableRooms } from '@/server/rooms';
 
 export async function GET() {
-  const { data, error } = await supabaseCLient
-    .from('rooms')
-    .select(`*, building:buildings(*)`)
-    .eq('status', RoomStatus.AVAILABLE);
-
-  if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
-  }
+  const data = await getAvailableRooms();
 
   return Response.json({
     statusCode: 200,

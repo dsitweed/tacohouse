@@ -1,70 +1,13 @@
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
+import { handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
-import type {
-  ApiResponse,
-  CreateRoomRequest,
-  Room,
-  RoomListQuery,
-  UpdateRoomRequest,
-} from '@/types';
+import { roomsApi } from '@/lib/roomsApi/client';
+import type { Room, RoomListQuery, UpdateRoomRequest } from '@/types';
 import {
   UseQueryOptions,
   useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-
-// Room API functions
-const roomsApi = {
-  getAll: async (query?: RoomListQuery) => {
-    const response = await apiClient.get<ApiResponse<Room[]>>('/rooms', {
-      params: query,
-    });
-    const data = extractData(response);
-    // Handle paginated response
-    if (Array.isArray(data)) {
-      return data;
-    }
-    // If response has data property (from pagination)
-    return (data as any)?.data || data;
-  },
-
-  getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Room>>(`/rooms/${id}`);
-    return extractData(response);
-  },
-
-  getByBuilding: async (buildingId: string) => {
-    const response = await apiClient.get<ApiResponse<Room[]>>(
-      `/buildings/${buildingId}/rooms`,
-    );
-    return extractData(response);
-  },
-
-  getAvailable: async () => {
-    const response =
-      await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
-    return extractData(response);
-  },
-
-  create: async (data: CreateRoomRequest) => {
-    const response = await apiClient.post<ApiResponse<Room>>('/rooms', data);
-    return extractData(response);
-  },
-
-  update: async (id: string, data: UpdateRoomRequest) => {
-    const response = await apiClient.patch<ApiResponse<Room>>(
-      `/rooms/${id}`,
-      data,
-    );
-    return extractData(response);
-  },
-
-  delete: async (id: string) => {
-    const response = await apiClient.delete<ApiResponse<void>>(`/rooms/${id}`);
-    return response.data;
-  },
-};
 
 // Hooks
 export function useRooms(query?: RoomListQuery) {

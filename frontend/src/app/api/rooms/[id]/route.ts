@@ -1,26 +1,20 @@
-import { generatePagination, supabaseCLient } from '@/lib/supbaseClient';
+import { generatePagination } from '@/lib/supbaseClient';
+import { getRoomById } from '@/server/rooms';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { data, error } = await supabaseCLient
-    .from('rooms')
-    .select(`*, building:buildings(*)`)
-    .eq('id', params.id)
-    .single();
+  const { id } = await params;
+  const data = await getRoomById(id);
 
-  if (error || !data) {
-    return Response.json(
-      { error: error?.message || 'Room not found' },
-      { status: 404 },
-    );
+  if (!data) {
+    return Response.json({ error: 'Room not found' }, { status: 404 });
   }
 
   return Response.json({
     statusCode: 200,
     message: 'Room retrieved successfully',
     data,
-    pagination: generatePagination(1, data.length),
   });
 }
