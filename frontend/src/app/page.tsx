@@ -14,12 +14,12 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
       {/* Header - Public Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">T</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+                <span className="text-lg font-bold text-white">T</span>
               </div>
               <span className="text-xl font-semibold text-gray-900">
                 Tacohouse
@@ -53,7 +53,7 @@ export default function HomePage() {
 
         {/* Search Bar */}
         <div className="mx-auto mt-10 max-w-3xl">
-          <Card className="shadow-lg px-8">
+          <Card className="px-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row">
               <div className="flex-1">
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -62,7 +62,7 @@ export default function HomePage() {
                 <input
                   type="text"
                   placeholder="Tìm theo tên tòa nhà..."
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
               <div className="flex-1">
@@ -72,7 +72,7 @@ export default function HomePage() {
                 <input
                   type="number"
                   placeholder="VNĐ/tháng"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
               <div className="flex items-end">
@@ -87,7 +87,7 @@ export default function HomePage() {
 
         {/* Features */}
         <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-3">
-          <Card className="text-center px-6">
+          <Card className="px-6 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
               <Home className="h-6 w-6 text-indigo-600" />
             </div>
@@ -100,7 +100,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="text-center px-6">
+          <Card className="px-6 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100">
               <DollarSign className="h-6 w-6 text-emerald-600" />
             </div>
@@ -113,7 +113,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="text-center px-6">
+          <Card className="px-6 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100">
               <Shield className="h-6 w-6 text-amber-600" />
             </div>
@@ -127,7 +127,7 @@ export default function HomePage() {
 
       {/* Rooms Grid */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">Phòng đang tuyển</h2>
           <Button>
             <Link href="/rooms">Xem tất cả</Link>
@@ -136,11 +136,11 @@ export default function HomePage() {
         {isLoading ? (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="overflow-hidden animate-pulse">
+              <Card key={i} className="animate-pulse overflow-hidden">
                 <div className="h-48 bg-gray-200" />
                 <div className="p-4">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="mb-2 h-4 w-3/4 rounded bg-gray-200" />
+                  <div className="h-4 w-1/2 rounded bg-gray-200" />
                 </div>
               </Card>
             ))}
@@ -149,7 +149,7 @@ export default function HomePage() {
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {rooms.slice(0, 9).map((room: Room) => (
               <Card key={room.id} className="overflow-hidden">
-                <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
+                <div className="flex h-48 items-center justify-center bg-gradient-to-br from-indigo-100 to-indigo-200">
                   <Home className="h-16 w-16 text-indigo-400" />
                 </div>
                 <div className="p-4">
@@ -169,7 +169,7 @@ export default function HomePage() {
                     Diện tích: {room.area}m²
                   </p>
                   {room.availableFrom && (
-                    <p className="text-xs text-amber-600 mt-1">
+                    <p className="mt-1 text-xs text-amber-600">
                       Có thể vào:{' '}
                       {new Date(room.availableFrom).toLocaleDateString('vi-VN')}
                     </p>
@@ -179,7 +179,7 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="mt-6 text-center py-12">
+          <div className="mt-6 py-12 text-center">
             <Home className="mx-auto h-12 w-12 text-gray-400" />
             <p className="mt-4 text-sm text-gray-600">
               Hiện tại không có phòng nào đang tuyển
