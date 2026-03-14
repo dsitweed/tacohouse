@@ -1,10 +1,6 @@
-import type { DateTimeString, DecimalLike } from './PrimitivesTypes';
 import type { Building } from './BuildingTypes';
-import type {
-  EquipmentCondition,
-  RoomStatus,
-  RoomType,
-} from './EnumsTypes';
+import type { EquipmentCondition, RoomStatus } from './EnumsTypes';
+import { RoomType } from './EnumsTypes';
 
 export interface Room {
   id: string;
@@ -12,18 +8,18 @@ export interface Room {
   buildingId: string;
   building?: Building;
 
-  area: DecimalLike;
-  monthlyRent: DecimalLike;
-  deposit: DecimalLike;
+  area: number;
+  monthlyRent: number;
+  deposit: number;
   maxTenants: number;
   roomType: RoomType;
   description?: string | null;
   images: string[];
   status: RoomStatus;
-  availableFrom?: DateTimeString | null;
+  availableFrom?: string | null;
 
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface RoomEquipment {
@@ -34,9 +30,14 @@ export interface RoomEquipment {
   description?: string | null;
   brand?: string | null;
   model?: string | null;
-  installedDate?: DateTimeString | null;
-  warrantyExpiryDate?: DateTimeString | null;
+  installedDate?: string | null;
+  warrantyExpiryDate?: string | null;
   condition: EquipmentCondition;
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }
+
+export const RoomTypeLabels: Record<RoomType, string> = {
+  [RoomType.FULL_RIGHTS]: 'Phòng nguyên căn',
+  [RoomType.PARTIAL_RIGHTS]: 'Phòng khép kín',
+};

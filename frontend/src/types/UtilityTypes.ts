@@ -1,4 +1,3 @@
-import type { DateTimeString, DecimalLike } from './PrimitivesTypes';
 import type { UtilityType } from './EnumsTypes';
 import type { Room } from './RoomTypes';
 
@@ -6,12 +5,12 @@ export interface UtilityRecord {
   id: string;
   roomId: string;
   room?: Room;
-  recordDate: DateTimeString;
+  recordDate: string;
   utilityType: UtilityType;
-  previousReading: DecimalLike;
-  currentReading: DecimalLike;
-  consumption: DecimalLike;
-  unitRate: DecimalLike;
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  previousReading: number;
+  currentReading: number;
+  consumption: number;
+  unitRate: number;
+  createdAt: string;
+  updatedAt: string;
 }

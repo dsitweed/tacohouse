@@ -1,6 +1,5 @@
-import type { DateTimeString } from './PrimitivesTypes';
-import type { UserRole } from './EnumsTypes';
 import type { Building } from './BuildingTypes';
+import type { UserRole } from './EnumsTypes';
 
 export interface UserProfile {
   id: string;
@@ -9,14 +8,14 @@ export interface UserProfile {
   lastName: string;
   phone: string;
   avatar?: string | null;
-  dateOfBirth: DateTimeString;
+  dateOfBirth: string;
   occupation: string;
   workplace: string;
   idCardFrontPhoto?: string | null;
   idCardBackPhoto?: string | null;
   portraitPhoto?: string | null;
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Admin {
@@ -44,7 +43,7 @@ export interface User {
   admin?: Admin | null;
   landlord?: Landlord | null;
   tenant?: Tenant | null;
-  deletedAt?: DateTimeString | null;
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  deletedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

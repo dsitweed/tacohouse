@@ -1,4 +1,3 @@
-import type { DateTimeString, DecimalLike } from './PrimitivesTypes';
 import type { RentalStatus } from './EnumsTypes';
 import type { Room } from './RoomTypes';
 import type { Tenant, User } from './UserTypes';
@@ -9,13 +8,13 @@ export interface Rental {
   tenant?: Tenant & { user?: User };
   roomId: string;
   room?: Room;
-  startDate: DateTimeString;
-  endDate?: DateTimeString | null;
-  noticeDate?: DateTimeString | null;
-  monthlyRent: DecimalLike;
-  depositPaid: DecimalLike;
+  startDate: string;
+  endDate?: string | null;
+  noticeDate?: string | null;
+  monthlyRent: number;
+  depositPaid: number;
   status: RentalStatus;
   contractImages: string[];
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }

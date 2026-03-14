@@ -44,8 +44,7 @@ const roomsApi = {
   getAvailable: async () => {
     const response =
       await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
-    const data = extractData(response);
-    return Array.isArray(data) ? data : (data as any)?.data || data;
+    return extractData(response);
   },
 
   create: async (data: CreateRoomRequest) => {
@@ -77,22 +76,20 @@ export function useRooms(query?: RoomListQuery) {
 }
 
 export function useRoom(
-  id: string | undefined,
+  id: string,
   options?: Omit<UseQueryOptions<Room>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
-    queryKey: queryKeys.rooms.detail(id!),
-    queryFn: () => roomsApi.getById(id!),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: queryKeys.rooms.detail(id),
+    queryFn: () => roomsApi.getById(id),
     ...options,
   });
 }
 
 export function useRoomsByBuilding(buildingId: string) {
   return useQuery({
-    queryKey: queryKeys.rooms.byBuilding(buildingId!),
-    queryFn: () => roomsApi.getByBuilding(buildingId!),
+    queryKey: queryKeys.rooms.byBuilding(buildingId),
+    queryFn: () => roomsApi.getByBuilding(buildingId),
     enabled: !!buildingId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });

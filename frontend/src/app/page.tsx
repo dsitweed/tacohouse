@@ -1,16 +1,16 @@
 'use client';
 
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Search, Home, DollarSign, Shield } from 'lucide-react';
 import { useAvailableRooms } from '@/hooks/api/useRooms';
 import { formatCurrency } from '@/lib/utils';
-import type { Room } from '@/types';
+import { type Room, RoomTypeLabels } from '@/types';
+import { DollarSign, Home, Search, Shield } from 'lucide-react';
+import Link from 'next/link';
 
 export default function HomePage() {
   const { data: rooms, isLoading } = useAvailableRooms();
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
       {/* Header - Public Header */}
@@ -21,7 +21,9 @@ export default function HomePage() {
               <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">T</span>
               </div>
-              <span className="text-xl font-semibold text-gray-900">Tacohouse</span>
+              <span className="text-xl font-semibold text-gray-900">
+                Tacohouse
+              </span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link href="/login">
@@ -44,8 +46,8 @@ export default function HomePage() {
             <span className="text-indigo-600">Minh bạch – Không phát sinh</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600">
-            Hệ thống quản lý nhà trọ hiện đại, giúp chủ nhà và người thuê quản lý
-            hợp đồng, thanh toán một cách minh bạch và hiệu quả.
+            Hệ thống quản lý nhà trọ hiện đại, giúp chủ nhà và người thuê quản
+            lý hợp đồng, thanh toán một cách minh bạch và hiệu quả.
           </p>
         </div>
 
@@ -89,9 +91,12 @@ export default function HomePage() {
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
               <Home className="h-6 w-6 text-indigo-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Quản lý dễ dàng</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Quản lý dễ dàng
+            </h3>
             <p className="mt-2 text-sm text-gray-600">
-              Quản lý tòa nhà, phòng trọ và hợp đồng một cách trực quan và hiệu quả.
+              Quản lý tòa nhà, phòng trọ và hợp đồng một cách trực quan và hiệu
+              quả.
             </p>
           </Card>
 
@@ -99,9 +104,12 @@ export default function HomePage() {
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100">
               <DollarSign className="h-6 w-6 text-emerald-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Thanh toán minh bạch</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Thanh toán minh bạch
+            </h3>
             <p className="mt-2 text-sm text-gray-600">
-              Theo dõi hóa đơn, thanh toán và lịch sử giao dịch một cách rõ ràng.
+              Theo dõi hóa đơn, thanh toán và lịch sử giao dịch một cách rõ
+              ràng.
             </p>
           </Card>
 
@@ -119,11 +127,20 @@ export default function HomePage() {
 
       {/* Rooms Grid */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-gray-900">Phòng đang tuyển</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900">Phòng đang tuyển</h2>
+          <Button>
+            <Link href="/rooms">Xem tất cả</Link>
+          </Button>
+        </div>
         {isLoading ? (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} padding="none" className="overflow-hidden animate-pulse">
+              <Card
+                key={i}
+                padding="none"
+                className="overflow-hidden animate-pulse"
+              >
                 <div className="h-48 bg-gray-200" />
                 <div className="p-4">
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
@@ -134,38 +151,33 @@ export default function HomePage() {
           </div>
         ) : rooms && rooms.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {rooms.map((room: Room) => (
+            {rooms.slice(0, 9).map((room: Room) => (
               <Card key={room.id} padding="none" className="overflow-hidden">
                 <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
                   <Home className="h-16 w-16 text-indigo-400" />
                 </div>
                 <div className="p-4">
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">
-                      {room.number}
-                    </h3>
-                    <span className="text-lg font-bold text-indigo-600">
-                      {formatCurrency(Number(room.monthlyRent))}
-                    </span>
-                  </div>
+                  <Link
+                    href={`/rooms/${room.id}`}
+                    className="mb-2 font-semibold text-gray-900"
+                  >
+                    Phòng {room.number}, {room.building?.address}
+                  </Link>
                   <p className="text-sm text-gray-600">
-                    Diện tích: {Number(room.area)}m²
+                    {RoomTypeLabels[room.roomType]}
+                  </p>
+                  <p className="text-lg font-bold text-indigo-600">
+                    {formatCurrency(room.monthlyRent)}
                   </p>
                   <p className="text-sm text-gray-600">
-                    {'building' in room && room.building ? (room.building as { name?: string }).name : 'N/A'}
+                    Diện tích: {room.area}m²
                   </p>
                   {room.availableFrom && (
                     <p className="text-xs text-amber-600 mt-1">
-                      Có thể vào: {new Date(room.availableFrom).toLocaleDateString('vi-VN')}
+                      Có thể vào:{' '}
+                      {new Date(room.availableFrom).toLocaleDateString('vi-VN')}
                     </p>
                   )}
-                  <div className="mt-4">
-                    <Link href={`/rooms/${room.id}`}>
-                      <Button variant="outline" className="w-full">
-                        Xem chi tiết
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
               </Card>
             ))}
@@ -173,7 +185,9 @@ export default function HomePage() {
         ) : (
           <div className="mt-6 text-center py-12">
             <Home className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-4 text-sm text-gray-600">Hiện tại không có phòng nào đang tuyển</p>
+            <p className="mt-4 text-sm text-gray-600">
+              Hiện tại không có phòng nào đang tuyển
+            </p>
           </div>
         )}
       </section>

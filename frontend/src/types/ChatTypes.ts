@@ -1,4 +1,3 @@
-import type { DateTimeString } from './PrimitivesTypes';
 import type { MessageType } from './EnumsTypes';
 import type { User } from './UserTypes';
 
@@ -7,8 +6,8 @@ export interface ChatGroup {
   buildingId: string;
   name: string;
   description?: string | null;
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ChatGroupMember {
@@ -16,7 +15,7 @@ export interface ChatGroupMember {
   chatGroupId: string;
   userId: string;
   user?: User;
-  joinedAt: DateTimeString;
+  joinedAt: string;
 }
 
 export interface Message {
@@ -28,6 +27,6 @@ export interface Message {
   chatGroupId?: string | null;
   recipientId?: string | null;
   recipientUser?: User | null;
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }

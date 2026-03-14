@@ -1,5 +1,4 @@
 export * from './api';
-export * from './PrimitivesTypes';
 export * from './EnumsTypes';
 export * from './UserTypes';
 export * from './BuildingTypes';

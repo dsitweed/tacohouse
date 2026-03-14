@@ -1,4 +1,3 @@
-import type { DateTimeString } from './PrimitivesTypes';
 import type {
   MaintenanceCategory,
   MaintenanceStatus,
@@ -19,9 +18,9 @@ export interface MaintenanceRequest {
   category: MaintenanceCategory;
   images: string[];
   status: MaintenanceStatus;
-  completedAt?: DateTimeString | null;
+  completedAt?: string | null;
   completionNote?: string | null;
-  createdAt: DateTimeString;
-  updatedAt?: DateTimeString;
-  udpatedAt?: DateTimeString; // backend Prisma typo compatibility
+  createdAt: string;
+  updatedAt?: string;
+  udpatedAt?: string; // backend Prisma typo compatibility
 }

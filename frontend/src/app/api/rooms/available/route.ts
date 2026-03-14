@@ -4,7 +4,7 @@ import { RoomStatus } from '@/types';
 export async function GET() {
   const { data, error } = await supabaseCLient
     .from('rooms')
-    .select('*')
+    .select(`*, building:buildings(*)`)
     .eq('status', RoomStatus.AVAILABLE);
 
   if (error) {

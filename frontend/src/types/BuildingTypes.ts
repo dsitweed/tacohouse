@@ -1,4 +1,3 @@
-import type { DateTimeString, DecimalLike } from './PrimitivesTypes';
 import type { Room } from './RoomTypes';
 
 export interface Building {
@@ -15,14 +14,14 @@ export interface Building {
     rooms?: number;
   };
 
-  electricityRate: DecimalLike;
-  waterRate: DecimalLike;
-  gasRate: DecimalLike;
-  managementFee: DecimalLike;
-  cleaningFeePerPerson: DecimalLike;
-  lightingFee: DecimalLike;
+  electricityRate: number;
+  waterRate: number;
+  gasRate: number;
+  managementFee: number;
+  cleaningFeePerPerson: number;
+  lightingFee: number;
 
   rooms?: Room[];
-  createdAt: DateTimeString;
-  updatedAt: DateTimeString;
+  createdAt: string;
+  updatedAt: string;
 }
