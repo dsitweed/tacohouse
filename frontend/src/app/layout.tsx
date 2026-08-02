@@ -1,7 +1,6 @@
 import { AppProvider } from '@/components/providers';
-import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { Geist_Mono, Inter } from 'next/font/google';
 
 import './globals.css';
 
@@ -16,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Tacohouse - Rental Room Management',
+  title: 'TacoHouse - Rental Room Management',
   description: 'Manage your rental properties efficiently',
 };
 

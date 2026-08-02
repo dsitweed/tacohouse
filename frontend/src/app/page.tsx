@@ -22,7 +22,7 @@ export default function HomePage() {
                 <span className="text-lg font-bold text-white">T</span>
               </div>
               <span className="text-xl font-semibold text-gray-900">
-                Tacohouse
+                TacoHouse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
