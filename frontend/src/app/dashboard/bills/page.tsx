@@ -68,7 +68,7 @@ export default function BillsPage() {
       ) : data?.data && data.data.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data.data.map((bill) => (
-            <Card key={bill.id} className="hover:shadow-md transition-shadow">
+            <Card key={bill.id} className="transition-shadow hover:shadow-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">
