@@ -23,8 +23,8 @@ import type { UserWithRelations } from 'src/types';
 import {
   CreateMaintenanceDto,
   FindAllMaintenanceDto,
-  UpdateMaintenanceDto,
   RespondMaintenanceDto,
+  UpdateMaintenanceDto,
 } from './dto';
 import { MaintenanceService } from './maintenance.service';
 
@@ -83,4 +83,3 @@ export class MaintenanceController {
     return this.maintenanceService.respond(currentUser, id, respondDto);
   }
 }
-

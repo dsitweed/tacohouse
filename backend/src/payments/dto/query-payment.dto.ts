@@ -1,6 +1,6 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
 import { PaymentStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class FindAllPaymentsDto {
   @Type(() => Number)
@@ -19,4 +19,3 @@ export class FindAllPaymentsDto {
   @IsEnum(PaymentStatus)
   status?: PaymentStatus;
 }
-

@@ -55,7 +55,7 @@ async function bootstrap() {
 
   // Swagger Configuration
   const config = new DocumentBuilder()
-    .setTitle('Tacohouse API')
+    .setTitle('TacoHouse API')
     .setDescription(
       'A comprehensive rental room management system API for managing buildings, rooms, tenants, billing, and payments.\n\n' +
         '## Response Format\n' +

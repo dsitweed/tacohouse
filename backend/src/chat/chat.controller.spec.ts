@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 
@@ -23,4 +24,3 @@ describe('ChatController', () => {
     expect(controller).toBeDefined();
   });
 });
-

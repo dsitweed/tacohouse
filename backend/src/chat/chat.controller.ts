@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -19,11 +12,8 @@ import type { ChatGroup, Message } from '@prisma/client';
 import { CurrentUser, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 
-import {
-  SendMessageDto,
-  FindAllMessagesDto,
-} from './dto';
 import { ChatService } from './chat.service';
+import { FindAllMessagesDto, SendMessageDto } from './dto';
 
 @ApiTags('Chat')
 @ApiBearerAuth('JWT-auth')
@@ -32,7 +22,9 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('groups')
-  getGroups(@CurrentUser() currentUser: UserWithRelations): Promise<ChatGroup[]> {
+  getGroups(
+    @CurrentUser() currentUser: UserWithRelations,
+  ): Promise<ChatGroup[]> {
     return this.chatService.getGroups(currentUser);
   }
 
@@ -86,4 +78,3 @@ export class ChatController {
     );
   }
 }
-

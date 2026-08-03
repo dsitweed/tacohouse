@@ -88,12 +88,12 @@ export class NotificationsService {
     return {
       data,
       pagination: {
-        page: page!,
-        limit: limit!,
+        page: page,
+        limit: limit,
         total,
         totalPages,
-        hasNext: page! < totalPages,
-        hasPrev: page! > 1,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
@@ -137,7 +137,9 @@ export class NotificationsService {
     });
   }
 
-  async markAllAsRead(currentUser: UserWithRelations): Promise<{ count: number }> {
+  async markAllAsRead(
+    currentUser: UserWithRelations,
+  ): Promise<{ count: number }> {
     const result = await this.prisma.notification.updateMany({
       where: {
         userId: currentUser.id,
@@ -161,4 +163,3 @@ export class NotificationsService {
     });
   }
 }
-

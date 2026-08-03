@@ -12,8 +12,8 @@ import { PaginationType, UserWithRelations } from 'src/types';
 import {
   CreateMaintenanceDto,
   FindAllMaintenanceDto,
-  UpdateMaintenanceDto,
   RespondMaintenanceDto,
+  UpdateMaintenanceDto,
 } from './dto';
 
 @Injectable()
@@ -45,7 +45,9 @@ export class MaintenanceService {
 
     // Only tenants can create maintenance requests
     if (currentUser.role !== UserRole.TENANT) {
-      throw new ForbiddenException('Only tenants can create maintenance requests');
+      throw new ForbiddenException(
+        'Only tenants can create maintenance requests',
+      );
     }
 
     // Check if tenant is renting this room
@@ -133,12 +135,12 @@ export class MaintenanceService {
     return {
       data,
       pagination: {
-        page: page!,
-        limit: limit!,
+        page: page,
+        limit: limit,
         total,
         totalPages,
-        hasNext: page! < totalPages,
-        hasPrev: page! > 1,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
@@ -233,7 +235,9 @@ export class MaintenanceService {
 
     // Only Landlord and Admin can respond
     if (currentUser.role === UserRole.TENANT) {
-      throw new ForbiddenException('You cannot respond to maintenance requests');
+      throw new ForbiddenException(
+        'You cannot respond to maintenance requests',
+      );
     }
 
     return this.prisma.maintenanceRequest.update({
@@ -245,4 +249,3 @@ export class MaintenanceService {
     });
   }
 }
-

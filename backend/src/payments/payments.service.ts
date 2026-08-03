@@ -166,20 +166,17 @@ export class PaymentsService {
     return {
       data,
       pagination: {
-        page: page!,
-        limit: limit!,
+        page: page,
+        limit: limit,
         total,
         totalPages,
-        hasNext: page! < totalPages,
-        hasPrev: page! > 1,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
 
-  async findOne(
-    currentUser: UserWithRelations,
-    id: string,
-  ): Promise<Payment> {
+  async findOne(currentUser: UserWithRelations, id: string): Promise<Payment> {
     const payment = await this.prisma.payment.findUnique({
       where: { id },
       include: {
@@ -223,4 +220,3 @@ export class PaymentsService {
     return payment;
   }
 }
-

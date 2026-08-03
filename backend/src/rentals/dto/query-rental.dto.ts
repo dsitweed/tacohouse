@@ -1,6 +1,6 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
 import { RentalStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class FindAllRentalsDto {
   @Type(() => Number)
@@ -23,4 +23,3 @@ export class FindAllRentalsDto {
   @IsEnum(RentalStatus)
   status?: RentalStatus;
 }
-

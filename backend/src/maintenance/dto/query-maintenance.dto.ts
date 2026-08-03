@@ -1,6 +1,6 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
 import { MaintenanceStatus, PriorityType } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class FindAllMaintenanceDto {
   @Type(() => Number)
@@ -27,4 +27,3 @@ export class FindAllMaintenanceDto {
   @IsEnum(PriorityType)
   priority?: PriorityType;
 }
-

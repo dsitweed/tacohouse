@@ -1,6 +1,6 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
 import { NotificationType } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class FindAllNotificationsDto {
   @Type(() => Number)
@@ -20,4 +20,3 @@ export class FindAllNotificationsDto {
   @IsEnum(NotificationType)
   type?: NotificationType;
 }
-

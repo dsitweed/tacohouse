@@ -1,5 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindAllMessagesDto {
   @Type(() => Number)
@@ -14,4 +14,3 @@ export class FindAllMessagesDto {
   @IsString()
   before?: string; // Message ID for pagination
 }
-

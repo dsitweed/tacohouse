@@ -1,3 +1,4 @@
+import { RentalStatus } from '@prisma/client';
 import {
   IsDateString,
   IsEnum,
@@ -5,7 +6,6 @@ import {
   IsOptional,
   Min,
 } from 'class-validator';
-import { RentalStatus } from '@prisma/client';
 
 export class UpdateRentalDto {
   @IsOptional()
@@ -25,4 +25,3 @@ export class UpdateRentalDto {
   @IsEnum(RentalStatus)
   status?: RentalStatus;
 }
-

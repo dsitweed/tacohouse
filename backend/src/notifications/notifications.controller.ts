@@ -20,10 +20,7 @@ import type { Notification } from '@prisma/client';
 import { CurrentUser, Roles } from 'src/common/decorators';
 import type { UserWithRelations } from 'src/types';
 
-import {
-  CreateNotificationDto,
-  FindAllNotificationsDto,
-} from './dto';
+import { CreateNotificationDto, FindAllNotificationsDto } from './dto';
 import { NotificationsService } from './notifications.service';
 
 @ApiTags('Notifications')
@@ -38,10 +35,7 @@ export class NotificationsController {
     @CurrentUser() currentUser: UserWithRelations,
     @Body() createNotificationDto: CreateNotificationDto,
   ): Promise<Notification> {
-    return this.notificationsService.create(
-      currentUser,
-      createNotificationDto,
-    );
+    return this.notificationsService.create(currentUser, createNotificationDto);
   }
 
   @Get()
@@ -53,7 +47,9 @@ export class NotificationsController {
   }
 
   @Get('unread/count')
-  getUnreadCount(@CurrentUser() currentUser: UserWithRelations): Promise<number> {
+  getUnreadCount(
+    @CurrentUser() currentUser: UserWithRelations,
+  ): Promise<number> {
     return this.notificationsService.getUnreadCount(currentUser);
   }
 
@@ -78,4 +74,3 @@ export class NotificationsController {
     return this.notificationsService.markAllAsRead(currentUser);
   }
 }
-

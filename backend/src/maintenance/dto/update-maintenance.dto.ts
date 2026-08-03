@@ -1,9 +1,9 @@
 import {
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { MaintenanceCategory, MaintenanceStatus, PriorityType } from '@prisma/client';
+  MaintenanceCategory,
+  MaintenanceStatus,
+  PriorityType,
+} from '@prisma/client';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class UpdateMaintenanceDto {
   @IsOptional()
@@ -30,4 +30,3 @@ export class UpdateMaintenanceDto {
   @IsString()
   completionNote?: string;
 }
-

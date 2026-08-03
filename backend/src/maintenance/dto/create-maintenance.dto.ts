@@ -1,3 +1,4 @@
+import { MaintenanceCategory, PriorityType } from '@prisma/client';
 import {
   IsArray,
   IsEnum,
@@ -5,7 +6,6 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { MaintenanceCategory, PriorityType } from '@prisma/client';
 
 export class CreateMaintenanceDto {
   @IsNotEmpty()
@@ -33,4 +33,3 @@ export class CreateMaintenanceDto {
   @IsString({ each: true })
   images?: string[];
 }
-

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MaintenanceService } from './maintenance.service';
+
 import { PrismaService } from '../prisma/prisma.service';
+import { MaintenanceService } from './maintenance.service';
 
 describe('MaintenanceService', () => {
   let service: MaintenanceService;
@@ -23,4 +24,3 @@ describe('MaintenanceService', () => {
     expect(service).toBeDefined();
   });
 });
-

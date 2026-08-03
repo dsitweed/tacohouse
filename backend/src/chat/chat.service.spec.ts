@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChatService } from './chat.service';
+
 import { PrismaService } from '../prisma/prisma.service';
+import { ChatService } from './chat.service';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -23,4 +24,3 @@ describe('ChatService', () => {
     expect(service).toBeDefined();
   });
 });
-

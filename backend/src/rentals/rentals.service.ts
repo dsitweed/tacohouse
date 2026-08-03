@@ -35,7 +35,9 @@ export class RentalsService {
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
       if (currentUser.tenant?.id !== tenantId) {
-        throw new ForbiddenException('You can only create rentals for yourself');
+        throw new ForbiddenException(
+          'You can only create rentals for yourself',
+        );
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
       if (room.building.landlordId !== currentUser.landlord?.id) {
@@ -57,10 +59,7 @@ export class RentalsService {
       where: {
         tenantId,
         status: 'ACTIVE',
-        OR: [
-          { endDate: null },
-          { endDate: { gte: new Date() } },
-        ],
+        OR: [{ endDate: null }, { endDate: { gte: new Date() } }],
       },
     });
 
@@ -73,7 +72,9 @@ export class RentalsService {
       data: {
         ...createRentalDto,
         startDate: new Date(startDate),
-        endDate: createRentalDto.endDate ? new Date(createRentalDto.endDate) : null,
+        endDate: createRentalDto.endDate
+          ? new Date(createRentalDto.endDate)
+          : null,
         depositPaid: createRentalDto.depositPaid || 0,
       },
     });
@@ -152,20 +153,17 @@ export class RentalsService {
     return {
       data,
       pagination: {
-        page: page!,
-        limit: limit!,
+        page: page,
+        limit: limit,
         total,
         totalPages,
-        hasNext: page! < totalPages,
-        hasPrev: page! > 1,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
 
-  async findOne(
-    currentUser: UserWithRelations,
-    id: string,
-  ): Promise<Rental> {
+  async findOne(currentUser: UserWithRelations, id: string): Promise<Rental> {
     const rental = await this.prisma.rental.findUnique({
       where: { id },
       include: {
@@ -285,4 +283,3 @@ export class RentalsService {
     });
   }
 }
-

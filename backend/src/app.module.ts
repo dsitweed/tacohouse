@@ -5,18 +5,18 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { BillsModule } from './bills/bills.module';
 import { BuildingsModule } from './buildings/buildings.module';
+import { ChatModule } from './chat/chat.module';
 import { JwtAuthGuard, RolesGuard } from './common/guards';
 import { envConfig, envValidationSchema } from './config';
+import { MaintenanceModule } from './maintenance/maintenance.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PaymentsModule } from './payments/payments.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RentalsModule } from './rentals/rentals.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
-import { RentalsModule } from './rentals/rentals.module';
-import { BillsModule } from './bills/bills.module';
-import { PaymentsModule } from './payments/payments.module';
-import { MaintenanceModule } from './maintenance/maintenance.module';
-import { ChatModule } from './chat/chat.module';
-import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
