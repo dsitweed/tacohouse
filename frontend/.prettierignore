@@ -1,0 +1,21 @@
+# Ignore build and dependency directories
+node_modules/
+dist/
+build/
+coverage/
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore specific file types or extensions
+*.min.js
+*.min.css
+*.svg
+
+# Ignore a specific file in a specific folder
+src/generated/api.ts
+
+# Ignore documentation files
+*.md

@@ -2,6 +2,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { AppModule } from './app.module';
 import {
   LoggingInterceptor,
@@ -72,9 +75,7 @@ async function bootstrap() {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        name: 'JWT',
         description: 'Enter JWT token',
-        in: 'header',
       },
       'JWT-auth',
     )
@@ -98,6 +99,9 @@ async function bootstrap() {
       operationsSorter: 'alpha',
     },
   });
+
+  const outputPath = path.resolve(process.cwd(), 'swagger.json');
+  fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
