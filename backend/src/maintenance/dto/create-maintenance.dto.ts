@@ -1,4 +1,3 @@
-import { MaintenanceCategory, PriorityType } from '@prisma/client';
 import {
   IsArray,
   IsEnum,
@@ -6,6 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { MaintenanceCategory, PriorityType } from 'generated/prisma/enums';
 
 export class CreateMaintenanceDto {
   @IsNotEmpty()

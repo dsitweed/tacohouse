@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { UserRole } from '@prisma/client';
 import { Request } from 'express';
+import { User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 import { Observable } from 'rxjs';
-import { UserWithRelations } from 'src/types';
 
 import { ROLES_KEY } from '../decorators';
 
@@ -30,7 +30,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const user = request.user as UserWithRelations;
+    const user = request.user as User;
 
     if (!user || !requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Insufficient permission');

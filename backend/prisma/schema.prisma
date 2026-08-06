@@ -1,32 +1,37 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id       String   @id @default(cuid())
+  id       String   @id @default(uuid())
   email    String   @unique
-  password String
   role     UserRole
   isActive Boolean  @default(true)
 
   // Profile information
   profile UserProfile?
 
-  // Relationships based on role
-  admin    Admin?
-  landlord Landlord?
-  tenant   Tenant?
+  // Auth: server-side sessions & linked providers (credential / Google OAuth)
+  sessions Session[]
+  accounts Account[]
+
+  // Role-specific relations (integrity enforced via composite FK on the referencing side)
+  buildings            Building[]            @relation("BuildingLandlord")
+  rentals              Rental[]              @relation("RentalTenant")
+  maintenanceRequests  MaintenanceRequest[]  @relation("MaintenanceTenant")
+  paymentConfirmations PaymentConfirmation[] @relation("ConfirmationTenant")
 
   // Chat and notifications
   sentMessages     Message[]      @relation("MessageSender")
@@ -42,11 +47,15 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  // Composite unique lets referencing tables target (id, role) to pin the
+  // owner's role at the database level (e.g. a Building's landlord must be LANDLORD).
+  @@unique([id, role])
+  @@index([role])
   @@map("users")
 }
 
 model UserProfile {
-  id     String @id @default(cuid())
+  id     String @id @default(uuid())
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -69,55 +78,83 @@ model UserProfile {
   @@map("user_profiles")
 }
 
-model Admin {
-  id     String @id @default(cuid())
-  userId String @unique
+// Auth: server-side session store (refresh tokens, device/IP tracking, revocation)
+model Session {
+  id     String @id @default(uuid())
+  token  String @unique // opaque/refresh token (store a hash in production)
+  userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("admins")
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("sessions")
 }
 
-model Landlord {
-  id     String @id @default(cuid())
-  userId String @unique
+// Auth: linked authentication providers per user (credential + OAuth like Google)
+model Account {
+  id     String @id @default(uuid())
+  userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  buildings Building[]
+  providerId String // 'credential' | 'google' | ...
+  accountId  String // the provider's user id (or this user's id for credential)
 
-  @@map("landlords")
+  password              String?   @db.VarChar(255) // hash, only for providerId = 'credential'
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
 }
 
-model Tenant {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+// Auth: short-lived tokens for email verification, password reset, magic link, OTP
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String // email / userId / purpose key (e.g. "reset:user@mail.com")
+  value      String // token or OTP (store a hash in production)
+  expiresAt  DateTime
 
-  rentals              Rental[]
-  maintenanceRequests  MaintenanceRequest[]
-  paymentConfirmations PaymentConfirmation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("tenants")
+  @@index([identifier])
+  @@map("verifications")
 }
 
 model Building {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   name        String
   address     String
   description String?
   billingDate Int? // Day of month for billing
 
-  landlordId String
-  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  landlordId   String
+  landlordRole UserRole @default(LANDLORD) // pins owner to a LANDLORD user via composite FK
+  landlord     User     @relation("BuildingLandlord", fields: [landlordId, landlordRole], references: [id, role], onDelete: Cascade)
 
   rooms Room[]
 
   // Utility rates for this building
-  electricityRate      Decimal @default(0) // Per kWh
-  waterRate            Decimal @default(0) // Per cubic meter
-  gasRate              Decimal @default(0) // Per cubic meter
-  managementFee        Decimal @default(0) // Fixed monthly fee
-  cleaningFeePerPerson Decimal @default(0) // Per person monthly
-  lightingFee          Decimal @default(0) // Fixed monthly fee
+  electricityRate      Decimal @default(0) @db.Decimal(12, 2) // Per kWh
+  waterRate            Decimal @default(0) @db.Decimal(12, 2) // Per cubic meter
+  gasRate              Decimal @default(0) @db.Decimal(12, 2) // Per cubic meter
+  managementFee        Decimal @default(0) @db.Decimal(12, 2) // Fixed monthly fee
+  cleaningFeePerPerson Decimal @default(0) @db.Decimal(12, 2) // Per person monthly
+  lightingFee          Decimal @default(0) @db.Decimal(12, 2) // Fixed monthly fee
 
   // Chat group for building residents
   chatGroup ChatGroup?
@@ -125,31 +162,32 @@ model Building {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([landlordId])
   @@map("buildings")
 }
 
 model Room {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   number     String
   buildingId String
   building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   // Room details
-  area          Decimal
-  monthlyRent   Decimal
-  deposit       Decimal    @default(0)
+  area          Decimal    @db.Decimal(10, 2)
+  monthlyRent   Decimal    @db.Decimal(14, 2)
+  deposit       Decimal    @default(0) @db.Decimal(14, 2)
   maxTenants    Int        @default(1)
   roomType      RoomType
   description   String?
   images        String[] // Array of image URLs
-  status        RoomStatus
+  status        RoomStatus @default(AVAILABLE)
   availableFrom DateTime?
 
   // Current rentals
   rentals Rental[]
 
-  // Equiment in room
-  equiment RoomEquipment[]
+  // Equipment in room
+  equipment RoomEquipment[]
 
   // Utility consumption records
   utilityRecords UtilityRecord[]
@@ -164,11 +202,12 @@ model Room {
   updatedAt DateTime @updatedAt
 
   @@unique([number, buildingId])
+  @@index([buildingId])
   @@map("rooms")
 }
 
 model RoomEquipment {
-  id     String @id @default(cuid())
+  id     String @id @default(uuid())
   roomId String
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
@@ -183,25 +222,27 @@ model RoomEquipment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([roomId])
   @@map("room_equipments")
 }
 
 // Rental Management
 model Rental {
-  id String @id @default(cuid())
+  id String @id @default(uuid())
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId   String
+  tenantRole UserRole @default(TENANT)
+  tenant     User     @relation("RentalTenant", fields: [tenantId, tenantRole], references: [id, role], onDelete: Restrict)
 
   roomId String
-  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
 
   startDate  DateTime
   endDate    DateTime?
   noticeDate DateTime? // The date when the tenant officially notified the landlord about moving out
 
-  monthlyRent Decimal
-  depositPaid Decimal @default(0) // Deposit amount paid by the tenant, can be deducted from future rent payments
+  monthlyRent Decimal @db.Decimal(14, 2)
+  depositPaid Decimal @default(0) @db.Decimal(14, 2) // Deposit amount paid by the tenant, can be deducted from future rent payments
 
   status         RentalStatus @default(ACTIVE)
   contractImages String[] // Contract document images
@@ -209,60 +250,63 @@ model Rental {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([roomId, status])
+  @@index([tenantId])
   @@map("rentals")
 }
 
 // Billing System
 model Bill {
-  id     String @id @default(cuid())
+  id     String @id @default(uuid())
   roomId String
-  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
 
   billingPeriod DateTime // Start date of the billing cycle (e.g., first day → end of month)
   dueDate       DateTime
 
   // Base charges
-  monthlyRent Decimal
+  monthlyRent Decimal @db.Decimal(14, 2)
 
   // Utility charges (only for PARTIAL_RIGHTS rooms)
-  electricityUsage  Decimal @default(0)
-  electricityAmount Decimal @default(0)
+  electricityUsage  Decimal @default(0) @db.Decimal(12, 3)
+  electricityAmount Decimal @default(0) @db.Decimal(14, 2)
 
-  waterUsage  Decimal @default(0)
-  waterAmount Decimal @default(0)
+  waterUsage  Decimal @default(0) @db.Decimal(12, 3)
+  waterAmount Decimal @default(0) @db.Decimal(14, 2)
 
-  gasUsage  Decimal @default(0)
-  gasAmount Decimal @default(0)
+  gasUsage  Decimal @default(0) @db.Decimal(12, 3)
+  gasAmount Decimal @default(0) @db.Decimal(14, 2)
 
   // Fixed fees
-  managementFee Decimal @default(0)
-  cleaningFee   Decimal @default(0)
-  lightingFee   Decimal @default(0)
+  managementFee Decimal @default(0) @db.Decimal(12, 2)
+  cleaningFee   Decimal @default(0) @db.Decimal(12, 2)
+  lightingFee   Decimal @default(0) @db.Decimal(12, 2)
 
   // Outstanding debt
-  previousDebt Decimal @default(0)
+  previousDebt Decimal @default(0) @db.Decimal(14, 2)
 
   // Total amount
-  totalAmount Decimal
+  totalAmount Decimal @db.Decimal(14, 2)
 
   status BillStatus @default(PENDING)
 
   // Payment tracking
-  payment      Payment?
-  confirmation PaymentConfirmation?
+  payment Payment?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([roomId, billingPeriod])
+  @@index([roomId, status])
   @@map("bills")
 }
 
 model Payment {
-  id     String @id @default(cuid())
+  id     String @id @default(uuid())
   billId String @unique
-  bill   Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+  bill   Bill   @relation(fields: [billId], references: [id], onDelete: Restrict)
 
-  amount        Decimal
+  amount        Decimal       @db.Decimal(14, 2)
   paymentMethod PaymentMethod
   paymentDate   DateTime      @default(now())
 
@@ -274,6 +318,9 @@ model Payment {
 
   status PaymentStatus
 
+  // Two-party confirmation for this payment
+  confirmation PaymentConfirmation?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -281,12 +328,13 @@ model Payment {
 }
 
 model PaymentConfirmation {
-  id     String @id @default(cuid())
-  billId String @unique
-  bill   Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  paymentId String  @unique
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId   String
+  tenantRole UserRole @default(TENANT)
+  tenant     User     @relation("ConfirmationTenant", fields: [tenantId, tenantRole], references: [id, role], onDelete: Restrict)
 
   tenantConfirmed   Boolean   @default(false)
   tenantConfirmedAt DateTime?
@@ -300,35 +348,37 @@ model PaymentConfirmation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([tenantId])
   @@map("payment_confirmations")
 }
 
 // Utility Tracking
 model UtilityRecord {
-  id     String @id @default(cuid())
+  id     String @id @default(uuid())
   roomId String
-  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
 
   recordDate  DateTime
   utilityType UtilityType
 
   // Meter readings
-  previousReading Decimal @default(0)
-  currentReading  Decimal
-  consumption     Decimal // Calculated: current - previous
+  previousReading Decimal @default(0) @db.Decimal(12, 3)
+  currentReading  Decimal @db.Decimal(12, 3)
+  consumption     Decimal @db.Decimal(12, 3) // Calculated: current - previous
 
   // Rates at time of recording
-  unitRate Decimal
+  unitRate Decimal @db.Decimal(12, 2)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([roomId, utilityType, recordDate])
   @@map("utility_records")
 }
 
 // Communication System
 model ChatGroup {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   buildingId String   @unique
   building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
@@ -345,27 +395,33 @@ model ChatGroup {
 }
 
 model ChatGroupMember {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   chatGroupId String
   chatGroup   ChatGroup @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
 
-  userId   String
-  building User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   joinedAt DateTime @default(now())
 
   @@unique([chatGroupId, userId])
+  @@index([userId])
   @@map("chat_group_members")
 }
 
 model Message {
-  id String @id @default(cuid())
+  id String @id @default(uuid())
 
   senderId   String
   senderUser User   @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
 
   content     String
   messageType MessageType @default(TEXT)
+
+  // Attachment metadata for IMAGE / FILE messages
+  attachmentUrl  String?
+  attachmentName String?
+  attachmentSize Int?
 
   // For group messages
   chatGroupId String?
@@ -375,18 +431,24 @@ model Message {
   recipientId   String?
   recipientUser User?   @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
 
+  readAt DateTime? // Read tracking for direct messages
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([chatGroupId, createdAt])
+  @@index([recipientId, senderId])
+  @@index([senderId])
   @@map("messages")
 }
 
 // Maintenance System
 model MaintenanceRequest {
-  id String @id @default(cuid())
+  id String @id @default(uuid())
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId   String
+  tenantRole UserRole @default(TENANT)
+  tenant     User     @relation("MaintenanceTenant", fields: [tenantId, tenantRole], references: [id, role], onDelete: Cascade)
 
   roomId String
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
@@ -405,14 +467,16 @@ model MaintenanceRequest {
   completionNote String?
 
   createdAt DateTime @default(now())
-  udpatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
+  @@index([roomId, status])
+  @@index([tenantId])
   @@map("maintenance_requests")
 }
 
 // Notification System
 model Notification {
-  id String @id @default(cuid())
+  id String @id @default(uuid())
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -426,11 +490,12 @@ model Notification {
 
   // Optional reference to related entity
   relatedId   String?
-  relatedType String?
+  relatedType RelatedEntityType?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([userId, isRead])
   @@map("notifications")
 }
 
@@ -473,6 +538,16 @@ enum NotificationType {
   CHAT_MESSAGE
   ANNOUNCEMENT
   SYSTEM
+}
+
+enum RelatedEntityType {
+  BILL
+  PAYMENT
+  RENTAL
+  MAINTENANCE_REQUEST
+  MESSAGE
+  ROOM
+  BUILDING
 }
 
 // Enums - Status

@@ -16,10 +16,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { Rental } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import type { Rental, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
 import { RentalsService } from './rentals.service';
@@ -33,23 +32,20 @@ export class RentalsController {
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createRentalDto: CreateRentalDto,
   ): Promise<Rental> {
     return this.rentalsService.create(currentUser, createRentalDto);
   }
 
   @Get()
-  findAll(
-    @CurrentUser() currentUser: UserWithRelations,
-    @Query() query: FindAllRentalsDto,
-  ) {
+  findAll(@CurrentUser() currentUser: User, @Query() query: FindAllRentalsDto) {
     return this.rentalsService.findAll(currentUser, query);
   }
 
   @Get(':id')
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Rental> {
     return this.rentalsService.findOne(currentUser, id);
@@ -58,7 +54,7 @@ export class RentalsController {
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   update(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() updateRentalDto: UpdateRentalDto,
   ): Promise<Rental> {
@@ -68,7 +64,7 @@ export class RentalsController {
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   remove(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Rental> {
     return this.rentalsService.remove(currentUser, id);

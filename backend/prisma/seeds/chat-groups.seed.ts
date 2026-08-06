@@ -1,57 +1,22 @@
 import { faker } from '@faker-js/faker';
-import { MessageType } from '@prisma/client';
-import type {
+import {
   Building,
   ChatGroup,
   ChatGroupMember,
   Message,
   PrismaClient,
-} from '@prisma/client';
-import { UserWithRelations } from 'src/types';
-
-type ChatGroupData = {
-  buildingId: string;
-  name: string;
-  description: string;
-};
-
-type ChatGroupMemberData = {
-  chatGroupId: string;
-  userId: string;
-};
-
-type MessageData = {
-  senderId: string;
-  chatGroupId?: string;
-  recipientId?: string;
-  content: string;
-  messageType: MessageType;
-};
-
-const SAMPLE_MESSAGES = [
-  'Chào mọi người! Chúc mọi người một ngày tốt lành!',
-  'Xin chào các bạn!',
-  'Cho mình hỏi về việc thanh toán tiền điện nước tháng này với ạ',
-  'Hôm nay có ai ở nhà không nhỉ? Mình có gói hàng cần nhận',
-  'Cảm ơn mọi người đã giúp đỡ!',
-  'Tuần sau mình sẽ đi vắng vài ngày, ai giúp mình nhận thư nhé',
-  'Wifi hôm nay có vấn đề gì không các bạn?',
-  'Mọi người nhớ đóng cửa kỹ khi ra ngoài nhé',
-  'Hôm nay trời đẹp quá!',
-  'Ai biết quán ăn ngon gần đây không?',
-];
-
-const LANDLORD_MESSAGES = [
-  'Thông báo: Tuần sau sẽ kiểm tra hệ thống điện nước',
-  'Nhắc nhở mọi người thanh toán hóa đơn trước ngày 25 hàng tháng',
-  'Mọi người nhớ giữ gìn vệ sinh chung nhé!',
-  'Hôm nay có thợ đến sửa chữa, mọi người chú ý',
-  'Cảm ơn mọi người đã hợp tác!',
-];
+  User,
+} from 'generated/prisma/client';
+import { MessageType, UserRole } from 'generated/prisma/enums';
+import {
+  ChatGroupCreateInput,
+  MessageCreateManyInput,
+} from 'generated/prisma/models';
 
 export async function seedChatGroups(
   prisma: PrismaClient,
-  users: UserWithRelations[],
+  tenants: User[],
+  landlords: User[],
   buildings: Building[],
 ): Promise<{
   chatGroups: ChatGroup[];
@@ -65,87 +30,71 @@ export async function seedChatGroups(
     return { chatGroups: [], chatGroupMembers: [], messages: [] };
   }
 
-  const landlords = users.filter((user) => user.landlord !== null);
-  const tenants = users.filter((user) => user.tenant !== null);
+  const buildingsFull = await prisma.building.findMany({
+    where: {
+      id: { in: buildings.map((building) => building.id) },
+    },
+    include: {
+      landlord: true,
+      rooms: {
+        include: {
+          rentals: {
+            where: { status: 'ACTIVE' },
+          },
+        },
+      },
+    },
+  });
 
   // Generate chat groups data - one group per building
-  const chatGroupData: ChatGroupData[] = buildings.map((building) => ({
-    buildingId: building.id,
-    name: `${building.name} - Chat Group`,
-    description: `Group chat cho cư dân ${building.name}`,
-  }));
+  const chatGroupData: ChatGroupCreateInput[] = buildingsFull.map(
+    (building) => {
+      const fakeChatGroupId = faker.string.uuid();
+      const memberUserIds = [
+        building.landlordId,
+        ...building.rooms.flatMap((room) =>
+          room.rentals.map((rental) => rental.tenantId),
+        ),
+      ];
+
+      return {
+        id: fakeChatGroupId,
+        building: {
+          connect: { id: building.id },
+        },
+        name: `${building.name} - Chat Group`,
+        description: `Group chat cho cư dân ${building.name}`,
+        members: {
+          createMany: {
+            data: memberUserIds.map((id) => ({ userId: id })),
+            skipDuplicates: true,
+          },
+        },
+      };
+    },
+  );
 
   // Create all chat groups
   const chatGroups = await Promise.all(
-    chatGroupData.map((data) => prisma.chatGroup.create({ data })),
-  );
-
-  // Generate chat group member data
-  const chatGroupMemberData: ChatGroupMemberData[] = [];
-
-  for (const chatGroup of chatGroups) {
-    const building = buildings.find((b) => b.id === chatGroup.id);
-    if (!building) continue;
-
-    // find landlord of this building
-    const landlord = landlords.find(
-      (landlordUser) => landlordUser.landlord?.id === building.landlordId,
-    );
-
-    if (landlord) {
-      chatGroupMemberData.push({
-        chatGroupId: chatGroup.id,
-        userId: landlord.id,
+    chatGroupData.map((data) => {
+      return prisma.chatGroup.create({
+        data,
+        include: {
+          members: {
+            include: { user: true },
+          },
+        },
       });
-    }
-
-    // Get rooms in this building to find tenants
-    const rooms = await prisma.room.findMany({
-      where: { buildingId: building.id },
-      include: { rentals: { where: { status: 'ACTIVE' } } },
-    });
-
-    // Add active tenant to group
-    for (const room of rooms) {
-      for (const rental of room.rentals) {
-        const tenant = tenants.find(
-          (tenantUser) => tenantUser.tenant?.id === rental.tenantId,
-        );
-
-        if (tenant) {
-          chatGroupMemberData.push({
-            chatGroupId: chatGroup.id,
-            userId: tenant.id,
-          });
-        }
-      }
-    }
-  }
-
-  // Create all members to chat groups
-  const chatGroupMembers = await Promise.all(
-    chatGroupMemberData.map((data) => prisma.chatGroupMember.create({ data })),
+    }),
   );
 
   // Generate messages data
-  const messageData: MessageData[] = [];
+  const messageData: MessageCreateManyInput[] = [];
 
-  // Group messages - 5-10 messages per group
   for (const chatGroup of chatGroups) {
-    const groupMembers = chatGroupMembers.filter(
-      (member) => member.chatGroupId === chatGroup.id,
-    );
-
-    if (groupMembers.length === 0) continue;
-
-    const messageCount = faker.number.int({ min: 5, max: 10 });
-
-    for (let i = 0; i < messageCount; i++) {
-      const sender = faker.helpers.arrayElement(groupMembers);
-      const senderUser = users.find((user) => user.id === sender.userId);
-
-      // Landlors user landlord message more often
-      const isLandlord = senderUser?.landlord !== null;
+    for (const member of chatGroup.members) {
+      // Landlords user landlord message more often
+      const isLandlord = member.user.role === UserRole.LANDLORD;
       const messagePoll = isLandlord
         ? faker.datatype.boolean({ probability: 0.6 })
           ? LANDLORD_MESSAGES
@@ -153,7 +102,7 @@ export async function seedChatGroups(
         : SAMPLE_MESSAGES;
 
       messageData.push({
-        senderId: sender.userId,
+        senderId: member.userId,
         chatGroupId: chatGroup.id,
         content: faker.helpers.arrayElement(messagePoll),
         messageType: MessageType.TEXT,
@@ -206,9 +155,12 @@ export async function seedChatGroups(
     }
   }
 
-  const messages = await Promise.all(
-    messageData.map((data) => prisma.message.create({ data })),
-  );
+  const messages = await prisma.message.createManyAndReturn({
+    data: messageData,
+    skipDuplicates: true,
+  });
+
+  const chatGroupMembers = chatGroups.flatMap((group) => group.members);
 
   console.log(
     `✅ Chat groups seeded: ${chatGroups.length} groups, ${chatGroupMembers.length} members, ${messages.length} messages`,
@@ -216,3 +168,24 @@ export async function seedChatGroups(
 
   return { chatGroups, chatGroupMembers, messages };
 }
+
+const SAMPLE_MESSAGES = [
+  'Chào mọi người! Chúc mọi người một ngày tốt lành!',
+  'Xin chào các bạn!',
+  'Cho mình hỏi về việc thanh toán tiền điện nước tháng này với ạ',
+  'Hôm nay có ai ở nhà không nhỉ? Mình có gói hàng cần nhận',
+  'Cảm ơn mọi người đã giúp đỡ!',
+  'Tuần sau mình sẽ đi vắng vài ngày, ai giúp mình nhận thư nhé',
+  'Wifi hôm nay có vấn đề gì không các bạn?',
+  'Mọi người nhớ đóng cửa kỹ khi ra ngoài nhé',
+  'Hôm nay trời đẹp quá!',
+  'Ai biết quán ăn ngon gần đây không?',
+];
+
+const LANDLORD_MESSAGES = [
+  'Thông báo: Tuần sau sẽ kiểm tra hệ thống điện nước',
+  'Nhắc nhở mọi người thanh toán hóa đơn trước ngày 25 hàng tháng',
+  'Mọi người nhớ giữ gìn vệ sinh chung nhé!',
+  'Hôm nay có thợ đến sửa chữa, mọi người chú ý',
+  'Cảm ơn mọi người đã hợp tác!',
+];

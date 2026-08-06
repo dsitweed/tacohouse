@@ -4,10 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { NotificationType, Prisma, UserRole } from '@prisma/client';
-import type { Notification } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Prisma } from 'generated/prisma/client';
+import type { Notification, User } from 'generated/prisma/client';
+import { NotificationType, UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import { CreateNotificationDto, FindAllNotificationsDto } from './dto';
 
@@ -16,7 +17,7 @@ export class NotificationsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    currentUser: UserWithRelations,
+    currentUser: User,
     createNotificationDto: CreateNotificationDto,
   ): Promise<Notification> {
     // Only Admin and Landlord can create notifications
@@ -50,7 +51,7 @@ export class NotificationsService {
   }
 
   async findAll(
-    currentUser: UserWithRelations,
+    currentUser: User,
     query: FindAllNotificationsDto,
   ): Promise<{
     data: Notification[];
@@ -98,10 +99,7 @@ export class NotificationsService {
     };
   }
 
-  async findOne(
-    currentUser: UserWithRelations,
-    id: string,
-  ): Promise<Notification> {
+  async findOne(currentUser: User, id: string): Promise<Notification> {
     const notification = await this.prisma.notification.findUnique({
       where: { id },
     });
@@ -118,10 +116,7 @@ export class NotificationsService {
     return notification;
   }
 
-  async markAsRead(
-    currentUser: UserWithRelations,
-    id: string,
-  ): Promise<Notification> {
+  async markAsRead(currentUser: User, id: string): Promise<Notification> {
     const notification = await this.findOne(currentUser, id);
 
     if (notification.isRead) {
@@ -137,9 +132,7 @@ export class NotificationsService {
     });
   }
 
-  async markAllAsRead(
-    currentUser: UserWithRelations,
-  ): Promise<{ count: number }> {
+  async markAllAsRead(currentUser: User): Promise<{ count: number }> {
     const result = await this.prisma.notification.updateMany({
       where: {
         userId: currentUser.id,
@@ -154,7 +147,7 @@ export class NotificationsService {
     return { count: result.count };
   }
 
-  async getUnreadCount(currentUser: UserWithRelations): Promise<number> {
+  async getUnreadCount(currentUser: User): Promise<number> {
     return this.prisma.notification.count({
       where: {
         userId: currentUser.id,

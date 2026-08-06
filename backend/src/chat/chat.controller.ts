@@ -1,16 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { ChatGroup, Message } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import type { ChatGroup, Message, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import { ChatService } from './chat.service';
 import { FindAllMessagesDto, SendMessageDto } from './dto';
@@ -22,15 +15,13 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('groups')
-  getGroups(
-    @CurrentUser() currentUser: UserWithRelations,
-  ): Promise<ChatGroup[]> {
+  getGroups(@CurrentUser() currentUser: User): Promise<ChatGroup[]> {
     return this.chatService.getGroups(currentUser);
   }
 
   @Get('groups/:id')
   getGroup(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<ChatGroup> {
     return this.chatService.getGroup(currentUser, id);
@@ -38,7 +29,7 @@ export class ChatController {
 
   @Get('groups/:id/messages')
   getMessages(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Query() query: FindAllMessagesDto,
   ) {
@@ -48,7 +39,7 @@ export class ChatController {
   @Post('groups/:id/messages')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   sendMessage(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() sendMessageDto: SendMessageDto,
   ): Promise<Message> {
@@ -57,7 +48,7 @@ export class ChatController {
 
   @Get('direct/:userId')
   getDirectMessages(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('userId') userId: string,
     @Query() query: FindAllMessagesDto,
   ) {
@@ -67,7 +58,7 @@ export class ChatController {
   @Post('direct/:userId')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   sendDirectMessage(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('userId') userId: string,
     @Body() sendMessageDto: SendMessageDto,
   ): Promise<Message> {

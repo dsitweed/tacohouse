@@ -5,10 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { PaymentStatus, Prisma, UserRole } from '@prisma/client';
-import type { Payment } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Prisma } from 'generated/prisma/client';
+import type { Payment, User } from 'generated/prisma/client';
+import { PaymentStatus, UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import { CreatePaymentDto, FindAllPaymentsDto } from './dto';
 
@@ -17,7 +18,7 @@ export class PaymentsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    currentUser: UserWithRelations,
+    currentUser: User,
     createPaymentDto: CreatePaymentDto,
   ): Promise<Payment> {
     const { billId, amount } = createPaymentDto;
@@ -47,7 +48,7 @@ export class PaymentsService {
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
       const hasAccess = bill.room.rentals.some(
-        (rental) => rental.tenantId === currentUser.tenant?.id,
+        (rental) => rental.tenantId === currentUser.id,
       );
       if (!hasAccess) {
         throw new ForbiddenException(
@@ -55,7 +56,7 @@ export class PaymentsService {
         );
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
-      if (bill.room.building.landlordId !== currentUser.landlord?.id) {
+      if (bill.room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role !== UserRole.ADMIN) {
@@ -97,7 +98,7 @@ export class PaymentsService {
   }
 
   async findAll(
-    currentUser: UserWithRelations,
+    currentUser: User,
     query: FindAllPaymentsDto,
   ): Promise<{
     data: Payment[];
@@ -120,7 +121,7 @@ export class PaymentsService {
       where.bill = {
         room: {
           building: {
-            landlordId: currentUser.landlord?.id,
+            landlordId: currentUser.id,
           },
         },
       };
@@ -130,7 +131,7 @@ export class PaymentsService {
         room: {
           rentals: {
             some: {
-              tenantId: currentUser.tenant?.id,
+              tenantId: currentUser.id,
               status: 'ACTIVE',
             },
           },
@@ -176,7 +177,7 @@ export class PaymentsService {
     };
   }
 
-  async findOne(currentUser: UserWithRelations, id: string): Promise<Payment> {
+  async findOne(currentUser: User, id: string): Promise<Payment> {
     const payment = await this.prisma.payment.findUnique({
       where: { id },
       include: {
@@ -204,13 +205,13 @@ export class PaymentsService {
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
       const hasAccess = payment.bill.room.rentals.some(
-        (rental) => rental.tenantId === currentUser.tenant?.id,
+        (rental) => rental.tenantId === currentUser.id,
       );
       if (!hasAccess) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
-      if (payment.bill.room.building.landlordId !== currentUser.landlord?.id) {
+      if (payment.bill.room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role !== UserRole.ADMIN) {

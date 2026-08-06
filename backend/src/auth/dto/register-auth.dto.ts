@@ -1,4 +1,3 @@
-import { UserRole } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
@@ -11,6 +10,7 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import { UserRole } from 'generated/prisma/enums';
 
 export class UserProfileDto {
   @IsNotEmpty()

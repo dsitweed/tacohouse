@@ -15,10 +15,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { Room } from '@prisma/client';
-import { CurrentUser, Public, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Public, Roles } from 'common/decorators';
+import type { Room, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import { CreateRoomDto, FindAllRoomsDto, UpdateRoomDto } from './dto';
 import { RoomsService } from './rooms.service';
@@ -40,7 +39,7 @@ export class RoomsController {
   @ApiBearerAuth('JWT-auth')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createRoomDto: CreateRoomDto,
   ): Promise<Room> {
     return this.roomsService.create(currentUser, createRoomDto);
@@ -48,17 +47,14 @@ export class RoomsController {
 
   @Get()
   @ApiBearerAuth('JWT-auth')
-  findAll(
-    @CurrentUser() currentUser: UserWithRelations,
-    @Query() query: FindAllRoomsDto,
-  ) {
+  findAll(@CurrentUser() currentUser: User, @Query() query: FindAllRoomsDto) {
     return this.roomsService.findAll(currentUser, query);
   }
 
   @Get(':id')
   @ApiBearerAuth('JWT-auth')
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Room> {
     return this.roomsService.findOne(currentUser, id);
@@ -67,7 +63,7 @@ export class RoomsController {
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   update(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() updateRoomDto: UpdateRoomDto,
   ): Promise<Room> {
@@ -77,7 +73,7 @@ export class RoomsController {
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   remove(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Room> {
     return this.roomsService.remove(currentUser, id);

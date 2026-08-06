@@ -1,4 +1,3 @@
-import { PaymentMethod } from '@prisma/client';
 import {
   IsEnum,
   IsNotEmpty,
@@ -7,6 +6,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
+import { PaymentMethod } from 'generated/prisma/enums';
 
 export class CreatePaymentDto {
   @IsNotEmpty()

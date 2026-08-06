@@ -5,10 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { MessageType, Prisma, UserRole } from '@prisma/client';
-import type { ChatGroup, Message } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Prisma } from 'generated/prisma/client';
+import type { ChatGroup, Message, User } from 'generated/prisma/client';
+import { MessageType, UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import { FindAllMessagesDto, SendMessageDto } from './dto';
 
@@ -16,13 +17,13 @@ import { FindAllMessagesDto, SendMessageDto } from './dto';
 export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getGroups(currentUser: UserWithRelations): Promise<ChatGroup[]> {
+  async getGroups(currentUser: User): Promise<ChatGroup[]> {
     const where: Prisma.ChatGroupWhereInput = {};
 
     if (currentUser.role === UserRole.LANDLORD) {
       // Landlord can see groups for their buildings
       where.building = {
-        landlordId: currentUser.landlord?.id,
+        landlordId: currentUser.id,
       };
     } else if (currentUser.role === UserRole.TENANT) {
       // Tenant can see groups for buildings where they are renting
@@ -48,17 +49,14 @@ export class ChatService {
     });
   }
 
-  async getGroup(
-    currentUser: UserWithRelations,
-    groupId: string,
-  ): Promise<ChatGroup> {
+  async getGroup(currentUser: User, groupId: string): Promise<ChatGroup> {
     const group = await this.prisma.chatGroup.findUnique({
       where: { id: groupId },
       include: {
         building: true,
         members: {
           include: {
-            building: {
+            user: {
               include: {
                 profile: true,
               },
@@ -74,7 +72,7 @@ export class ChatService {
 
     // Check permissions
     if (currentUser.role === UserRole.LANDLORD) {
-      if (group.building.landlordId !== currentUser.landlord?.id) {
+      if (group.building.landlordId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role === UserRole.TENANT) {
@@ -92,7 +90,7 @@ export class ChatService {
   }
 
   async getMessages(
-    currentUser: UserWithRelations,
+    currentUser: User,
     groupId: string,
     query: FindAllMessagesDto,
   ): Promise<{
@@ -148,7 +146,7 @@ export class ChatService {
   }
 
   async sendMessage(
-    currentUser: UserWithRelations,
+    currentUser: User,
     groupId: string,
     sendMessageDto: SendMessageDto,
   ): Promise<Message> {
@@ -169,7 +167,7 @@ export class ChatService {
       );
       if (
         !isMember &&
-        groupWithDetails?.building.landlordId !== currentUser.landlord?.id
+        groupWithDetails?.building.landlordId !== currentUser.id
       ) {
         throw new ForbiddenException('You are not a member of this group');
       }
@@ -193,7 +191,7 @@ export class ChatService {
   }
 
   async getDirectMessages(
-    currentUser: UserWithRelations,
+    currentUser: User,
     userId: string,
     query: FindAllMessagesDto,
   ): Promise<{
@@ -254,7 +252,7 @@ export class ChatService {
   }
 
   async sendDirectMessage(
-    currentUser: UserWithRelations,
+    currentUser: User,
     userId: string,
     sendMessageDto: SendMessageDto,
   ): Promise<Message> {

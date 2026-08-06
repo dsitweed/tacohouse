@@ -1,10 +1,7 @@
 import { PartialType, PickType } from '@nestjs/mapped-types';
 
+import { RegisterAuthDto, UserProfileDto } from 'auth/dto';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
-import {
-  RegisterAuthDto,
-  UserProfileDto,
-} from 'src/auth/dto/register-auth.dto';
 
 export class UpdateUserProfileDto extends PartialType(UserProfileDto) {}
 

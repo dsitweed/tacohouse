@@ -1,6 +1,9 @@
 import { faker } from '@faker-js/faker';
-import { RoomType, UtilityType } from '@prisma/client';
-import type { PrismaClient, Room, UtilityRecord } from '@prisma/client';
+import { PrismaClient, Room, UtilityRecord } from 'generated/prisma/client';
+import { RoomType, UtilityType } from 'generated/prisma/enums';
+import { UtilityRecordCreateManyInput } from 'generated/prisma/models';
+
+const UTILITY_TYPES = Object.values(UtilityType);
 
 export async function seedUtilityRecords(
   prisma: PrismaClient,
@@ -8,15 +11,7 @@ export async function seedUtilityRecords(
 ): Promise<UtilityRecord[]> {
   console.log('⚡ Seeding utility records...');
 
-  const utilityRecordsData: Array<{
-    roomId: string;
-    recordDate: Date;
-    utilityType: UtilityType;
-    previousReading: number;
-    currentReading: number;
-    consumption: number;
-    unitRate: number;
-  }> = [];
+  const utilityRecordsData: UtilityRecordCreateManyInput[] = [];
 
   // Only PARTIAL_RIGHTS rooms need utility tracking
   const partialRightsRooms = rooms.filter(
@@ -30,29 +25,27 @@ export async function seedUtilityRecords(
     return [];
   }
 
-  const utilityTypes = Object.values(UtilityType);
-
   // Generate utility records for the last 6 months for each room
   const monthsToGenerate = 6;
 
+  // Base unit rates
+  const unitRates = {
+    [UtilityType.ELECTRICITY]: faker.number.int({ min: 3000, max: 4000 }),
+    [UtilityType.WATER]: faker.number.int({ min: 10000, max: 20000 }),
+    [UtilityType.GAS]: faker.number.int({ min: 15000, max: 25000 }),
+  };
+
+  // Base consumption per month
+  const baseConsumption = {
+    [UtilityType.ELECTRICITY]: faker.number.int({ min: 100, max: 200 }), // kWh
+    [UtilityType.WATER]: faker.number.int({ min: 3, max: 8 }), // cubic meter
+    [UtilityType.GAS]: faker.number.int({ min: 5, max: 15 }), // cubic meter
+  };
+
   for (const room of partialRightsRooms) {
-    for (const utilityType of utilityTypes) {
+    for (const utilityType of UTILITY_TYPES) {
       // Initialize starting readings
       let previousReading = 0;
-
-      // Base unit rates
-      const unitRates = {
-        [UtilityType.ELECTRICITY]: faker.number.int({ min: 3000, max: 4000 }),
-        [UtilityType.WATER]: faker.number.int({ min: 10000, max: 20000 }),
-        [UtilityType.GAS]: faker.number.int({ min: 15000, max: 25000 }),
-      };
-
-      // Base consumption per month
-      const baseConsumption = {
-        [UtilityType.ELECTRICITY]: faker.number.int({ min: 100, max: 200 }), // kWh
-        [UtilityType.WATER]: faker.number.int({ min: 3, max: 8 }), // cubic meter
-        [UtilityType.GAS]: faker.number.int({ min: 5, max: 15 }), // cubic meter
-      };
 
       // Set initial reading based on utility type
       switch (utilityType) {
@@ -73,8 +66,8 @@ export async function seedUtilityRecords(
         recordDate.setMonth(recordDate.getMonth() - i);
         recordDate.setDate(1); // First day of the month
 
-        // Add some variance to consumption (80% - 120% of base)
-        const variance = faker.number.float({ min: 0.8, max: 1.2 });
+        // Add some variance to consumption (50% - 120% of base)
+        const variance = faker.number.float({ min: 0.5, max: 1.2 });
         const consumption = Math.round(baseConsumption[utilityType] * variance);
         const currentReading = previousReading + consumption;
 
@@ -94,9 +87,10 @@ export async function seedUtilityRecords(
     }
   }
 
-  const utilityRecords = await Promise.all(
-    utilityRecordsData.map((data) => prisma.utilityRecord.create({ data })),
-  );
+  const utilityRecords = await prisma.utilityRecord.createManyAndReturn({
+    data: utilityRecordsData,
+    skipDuplicates: true,
+  });
 
   console.log(`✅ Utility records seeded: ${utilityRecords.length}`);
 

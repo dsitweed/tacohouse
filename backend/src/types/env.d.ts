@@ -6,5 +6,6 @@ declare namespace NodeJS {
     JWT_EXPIRES_IN: string;
     JWT_REFRESH_SECRET: string;
     JWT_REFRESH_EXPIRES_IN: string;
+    DATABASE_URL: string;
   }
 }

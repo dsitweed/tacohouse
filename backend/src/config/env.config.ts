@@ -1,24 +1,18 @@
-import Joi from 'joi';
+import { z } from 'zod';
 
-export const envConfig = () => ({
-  NODE_ENV: process.env.NODE_ENV,
-  PORT: parseInt(process.env.PORT || '3001', 10),
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
-  JWT_SECRET: process.env.JWT_SECRET,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
-});
-
-export const envValidationSchema = Joi.object({
-  NODE_ENV: Joi.string()
-    .valid('development', 'production', 'test')
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
     .default('development'),
-  PORT: Joi.number().default(3001),
-  JWT_SECRET: Joi.string().required(),
-  JWT_EXPIRES_IN: Joi.string().default('15m'),
-  JWT_REFRESH_SECRET: Joi.string().required(),
-  JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+  PORT: z.coerce.number().default(3005),
+  FRONTEND_URL: z.string().default('http://localhost:3000'),
+  JWT_SECRET: z.string(),
+  JWT_EXPIRES_IN: z.string().default('15m'),
+  JWT_REFRESH_SECRET: z.string(),
+  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+  DATABASE_URL: z.string(),
 });
 
-export type EnvConfig = ReturnType<typeof envConfig>;
+export type EnvConfig = z.infer<typeof envSchema>;
+export const validateEnv = (config: Record<string, unknown>) =>
+  envSchema.parse(config);

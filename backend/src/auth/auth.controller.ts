@@ -2,9 +2,8 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Public } from 'src/common/decorators/public.decorator';
-import { CurrentUser } from 'src/common/decorators/user.decorator';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Public } from 'common/decorators';
+import type { User } from 'generated/prisma/client';
 
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto';
@@ -31,7 +30,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  login(@CurrentUser() user: UserWithRelations) {
+  login(@CurrentUser() user: User) {
     return this.authService.login(user);
   }
 
@@ -44,11 +43,12 @@ export class AuthController {
     return this.authService.register(registerAuthDto);
   }
 
+  // FIXME: now not working
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
-  create(@CurrentUser() user: UserWithRelations) {
+  create(@CurrentUser() user: User) {
     return this.authService.refresh(user);
   }
 }

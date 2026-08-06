@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { UserRole } from '@prisma/client';
-import type { UserWithRelations } from 'src/types';
+import { UserRole } from 'generated/prisma/enums';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -10,10 +9,9 @@ import type { RegisterAuthDto } from './dto';
 describe('AuthController', () => {
   let controller: AuthController;
 
-  const mockUser: UserWithRelations = {
+  const mockUser = {
     id: '1',
     email: 'test@example.com',
-    password: 'hashedPassword',
     role: UserRole.TENANT,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -35,9 +33,6 @@ describe('AuthController', () => {
       idCardBackPhoto: null,
       portraitPhoto: null,
     },
-    admin: null,
-    landlord: null,
-    tenant: null,
   };
 
   const mockAuthService = {

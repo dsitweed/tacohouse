@@ -1,21 +1,13 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
-import { Prisma, UserRole } from '@prisma/client';
 import * as argon from 'argon2';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UserWithRelations } from 'src/types';
-import { flattenUser } from 'src/utils';
+import { User } from 'generated/prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
 
 import { LoginAuthDto, RegisterAuthDto } from './dto';
 import { JwtPayload } from './strategies';
-
-type RoleData =
-  | { admin?: Prisma.AdminCreateNestedOneWithoutUserInput }
-  | { landlord?: Prisma.LandlordCreateNestedOneWithoutUserInput }
-  | { tenant?: Prisma.TenantCreateNestedOneWithoutUserInput }
-  | Record<string, never>;
 
 @Injectable()
 export class AuthService {
@@ -25,7 +17,7 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async login(user: UserWithRelations) {
+  async login(user: User) {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -37,23 +29,12 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: flattenUser(user),
+      user,
     };
   }
 
   async register(registerAuthDto: RegisterAuthDto) {
-    const {
-      email,
-      password,
-      role,
-      firstName,
-      lastName,
-      phone,
-      avatar,
-      dateOfBirth,
-      occupation,
-      workplace,
-    } = registerAuthDto;
+    const { email, password, role, ...userProfileDto } = registerAuthDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -64,33 +45,33 @@ export class AuthService {
     }
 
     const hashedPassword = await argon.hash(password);
-    const roleData = this.setRoleData(role, registerAuthDto);
 
     const newUser = await this.prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
         role,
         profile: {
           create: {
-            firstName,
-            lastName,
-            phone,
-            avatar,
-            dateOfBirth,
-            occupation,
-            workplace,
+            ...userProfileDto,
           },
         },
-        ...roleData,
       },
-      include: { profile: true, admin: true, landlord: true, tenant: true },
     });
 
-    return flattenUser(newUser);
+    // Create a credential account for password authentication
+    await this.prisma.account.create({
+      data: {
+        userId: newUser.id,
+        providerId: 'credential',
+        accountId: newUser.id,
+        password: hashedPassword,
+      },
+    });
+
+    return newUser;
   }
 
-  async refresh(user: UserWithRelations) {
+  async refresh(user: User) {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -103,53 +84,61 @@ export class AuthService {
   async validateLocalUser({
     email,
     password,
-  }: LoginAuthDto): Promise<Omit<UserWithRelations, 'password'> | null> {
+  }: LoginAuthDto): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
       },
-      include: { profile: true, admin: true, landlord: true, tenant: true },
+      include: {
+        accounts: {
+          where: {
+            providerId: 'credential',
+          },
+        },
+      },
     });
 
-    if (user && (await argon.verify(user.password, password))) {
+    if (!user || user.accounts.length !== 1 || !user.accounts[0].password) {
+      return null;
+    }
+
+    if (await argon.verify(user.accounts[0].password, password)) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
+      const { accounts, ...userData } = user;
+
+      return { ...userData };
     }
 
     return null;
   }
 
-  async validateJwtUser(
-    payload: JwtPayload,
-  ): Promise<Omit<UserWithRelations, 'password'> | null> {
+  async validateJwtUser(payload: JwtPayload): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: payload.sub,
       },
-      include: { profile: true, admin: true, landlord: true, tenant: true },
     });
 
-    if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
-    }
-
-    return null;
+    return user;
   }
 
   private async getAuthTokens(payload: JwtPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.config.get('JWT_SECRET'),
-        expiresIn: this.config.get('JWT_EXPIRES_IN', '15m'),
+        expiresIn: this.config.get(
+          'JWT_EXPIRES_IN',
+          '15m',
+        ) as JwtSignOptions['expiresIn'],
       }),
       this.jwtService.signAsync(
         { ...payload, type: 'refresh' },
         {
           secret: this.config.get('JWT_REFRESH_SECRET'),
-          expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN', '7d'),
+          expiresIn: this.config.get(
+            'JWT_REFRESH_EXPIRES_IN',
+            '7d',
+          ) as JwtSignOptions['expiresIn'],
           jwtid: crypto.randomUUID(), // JWT ID - unique identifier
         },
       ),
@@ -159,22 +148,5 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
-  }
-
-  private setRoleData(
-    role: UserRole,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    registerAuthDto: RegisterAuthDto,
-  ): RoleData {
-    switch (role) {
-      case UserRole.ADMIN:
-        return { admin: { create: {} } };
-      case UserRole.LANDLORD:
-        return { landlord: { create: {} } };
-      case UserRole.TENANT:
-        return { tenant: { create: {} } };
-      default:
-        return {};
-    }
   }
 }

@@ -1,4 +1,3 @@
-import { RoomStatus, RoomType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -10,6 +9,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
+import { RoomStatus, RoomType } from 'generated/prisma/enums';
 
 export class CreateRoomDto {
   @IsNotEmpty()

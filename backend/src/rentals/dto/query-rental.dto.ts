@@ -1,6 +1,6 @@
-import { RentalStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { RentalStatus } from 'generated/prisma/enums';
 
 export class FindAllRentalsDto {
   @Type(() => Number)

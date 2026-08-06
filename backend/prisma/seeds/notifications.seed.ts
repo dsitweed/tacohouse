@@ -1,53 +1,50 @@
-import { NotificationType } from '@prisma/client';
-import type {
+import {
   Bill,
   MaintenanceRequest,
   Notification,
+  NotificationType,
   PrismaClient,
-} from '@prisma/client';
-import { UserWithRelations } from 'src/types';
-
-type NotificationData = {
-  userId: string;
-  title: string;
-  message: string;
-  type: NotificationType;
-  isRead: boolean;
-  readAt?: Date;
-  relatedId?: string;
-  relatedType?: string;
-};
+  User,
+} from 'generated/prisma/client';
+import { NotificationCreateManyInput } from 'generated/prisma/models';
 
 export async function seedNotifications(
   prisma: PrismaClient,
-  users: UserWithRelations[],
+  tenants: User[],
   bills: Bill[],
   maintenanceRequests: MaintenanceRequest[],
 ): Promise<Notification[]> {
   console.log('🔔 Seeding notifications...');
 
-  const tenants = users.filter((user) => user.tenant !== null);
-
   if (tenants.length === 0) {
-    console.log('⚠️  Not enough users to seed notifications');
+    console.log('⚠️  Not enough tenants to seed notifications');
     return [];
   }
 
-  const notificationsData: NotificationData[] = [];
+  const notificationsData: NotificationCreateManyInput[] = [];
+
+  const billsFull = await prisma.bill.findMany({
+    where: {
+      id: { in: bills.map((bill) => bill.id) },
+    },
+    include: {
+      room: {
+        include: {
+          rentals: {
+            where: {
+              status: 'ACTIVE',
+            },
+          },
+          building: true,
+        },
+      },
+    },
+  });
 
   // 1. Generate BILL_GENERATED notifications for each bill
-  for (const bill of bills) {
-    const room = await prisma.room.findUnique({
-      where: { id: bill.roomId },
-      include: { rentals: { where: { status: 'ACTIVE' } } },
-    });
-
-    if (!room || room.rentals.length === 0) continue;
-
-    const rental = room.rentals[0];
-    const tenant = tenants.find((t) => t.tenant?.id === rental.tenantId);
-
-    if (!tenant) continue;
+  for (const bill of billsFull) {
+    const firstRental = bill.room.rentals[0];
+    if (!firstRental) continue;
 
     const billingMonth = new Date(bill.billingPeriod).toLocaleDateString(
       'vi-VN',
@@ -58,7 +55,7 @@ export async function seedNotifications(
     );
 
     notificationsData.push({
-      userId: tenant.id,
+      userId: firstRental.tenantId,
       title: 'Hóa đơn mới',
       message: `Hóa đơn tháng ${billingMonth} đã được tạo. Tổng số tiền: ${bill.totalAmount.toLocaleString()} VND`,
       type: NotificationType.BILL_GENERATED,
@@ -68,27 +65,18 @@ export async function seedNotifications(
           ? new Date(bill.createdAt)
           : undefined,
       relatedId: bill.id,
-      relatedType: 'Bill',
+      relatedType: 'BILL',
     });
   }
 
   // 2. Generate PAYMENT_REMINDER notifications for pending/overdue bills
-  const unpaidBills = bills.filter(
+  const unpaidBills = billsFull.filter(
     (bill) => bill.status === 'PENDING' || bill.status === 'OVERDUE',
   );
 
   for (const bill of unpaidBills) {
-    const room = await prisma.room.findUnique({
-      where: { id: bill.roomId },
-      include: { rentals: { where: { status: 'ACTIVE' } } },
-    });
-
-    if (!room || room.rentals.length === 0) continue;
-
-    const rental = room.rentals[0];
-    const tenant = tenants.find((t) => t.tenant?.id === rental.tenantId);
-
-    if (!tenant) continue;
+    const firstRental = bill.room.rentals[0];
+    if (!firstRental) continue;
 
     const billingMonth = new Date(bill.billingPeriod).toLocaleDateString(
       'vi-VN',
@@ -106,7 +94,7 @@ export async function seedNotifications(
     const isOverdue = bill.status === 'OVERDUE';
 
     notificationsData.push({
-      userId: tenant.id,
+      userId: firstRental.tenantId,
       title: isOverdue ? 'Hóa đơn quá hạn' : 'Nhắc nhở thanh toán',
       message: isOverdue
         ? `Hóa đơn tháng ${billingMonth} đã quá hạn thanh toán. Vui lòng thanh toán sớm để tránh phát sinh phí.`
@@ -114,29 +102,26 @@ export async function seedNotifications(
       type: NotificationType.PAYMENT_REMINDER,
       isRead: false,
       relatedId: bill.id,
-      relatedType: 'Bill',
+      relatedType: 'BILL',
     });
   }
 
   // 3. Generate MAINTENANCE_UPDATE notifications for each maintenance request
-  for (const request of maintenanceRequests) {
-    const tenant = tenants.find((t) => t.id === request.tenantId);
-    if (!tenant) continue;
+  const maintenanceRequestsFull = await prisma.maintenanceRequest.findMany({
+    where: { id: { in: maintenanceRequests.map((request) => request.id) } },
+    include: {
+      room: {
+        include: {
+          building: true,
+        },
+      },
+    },
+  });
 
-    const room = await prisma.room.findUnique({
-      where: { id: request.roomId },
-      include: { building: { include: { landlord: true } } },
-    });
-
-    if (!room) continue;
-
-    const landlord = users.find(
-      (u) => u.landlord?.id === room.building.landlordId,
-    );
-
+  for (const request of maintenanceRequestsFull) {
     // Notification for tenant about their request
     notificationsData.push({
-      userId: tenant.id,
+      userId: request.tenantId,
       title: 'Yêu cầu bảo trì được cập nhật',
       message: `Yêu cầu bảo trì "${request.title}" ${
         request.status === 'COMPLETED'
@@ -154,19 +139,19 @@ export async function seedNotifications(
           ? request.completedAt || undefined
           : undefined,
       relatedId: request.id,
-      relatedType: 'MaintenanceRequest',
+      relatedType: 'MAINTENANCE_REQUEST',
     });
 
     // Notification for landlord about new/pending requests
-    if (landlord && request.status === 'PENDING') {
+    if (request.status === 'PENDING') {
       notificationsData.push({
-        userId: landlord.id,
+        userId: request.room.building.landlordId,
         title: 'Yêu cầu bảo trì mới',
-        message: `Có yêu cầu bảo trì mới từ phòng ${room.number} - ${request.title}`,
+        message: `Có yêu cầu bảo trì mới từ phòng ${request.room.number} - ${request.title}`,
         type: NotificationType.MAINTENANCE_UPDATE,
         isRead: false,
         relatedId: request.id,
-        relatedType: 'MaintenanceRequest',
+        relatedType: 'MAINTENANCE_REQUEST',
       });
     }
   }
@@ -191,24 +176,11 @@ export async function seedNotifications(
   }
 
   // 5. Generate payment confirmation notifications for landlords
-  const confirmedBills = bills.filter(
+  const confirmedBills = billsFull.filter(
     (bill) => bill.status === 'TENANT_CONFIRMED' || bill.status === 'PAID',
   );
 
   for (const bill of confirmedBills) {
-    const room = await prisma.room.findUnique({
-      where: { id: bill.roomId },
-      include: { building: { include: { landlord: true } } },
-    });
-
-    if (!room) continue;
-
-    const landlord = users.find(
-      (u) => u.landlord?.id === room.building.landlordId,
-    );
-
-    if (!landlord) continue;
-
     const billingMonth = new Date(bill.billingPeriod).toLocaleDateString(
       'vi-VN',
       {
@@ -218,14 +190,14 @@ export async function seedNotifications(
     );
 
     notificationsData.push({
-      userId: landlord.id,
+      userId: bill.room.building.landlordId,
       title: 'Xác nhận thanh toán',
-      message: `Phòng ${room.number} đã xác nhận thanh toán hóa đơn tháng ${billingMonth}`,
+      message: `Phòng ${bill.room.number} đã xác nhận thanh toán hóa đơn tháng ${billingMonth}`,
       type: NotificationType.SYSTEM,
       isRead: bill.status === 'PAID',
       readAt: bill.status === 'PAID' ? new Date(bill.updatedAt) : undefined,
       relatedId: bill.id,
-      relatedType: 'Bill',
+      relatedType: 'BILL',
     });
   }
 
@@ -233,9 +205,10 @@ export async function seedNotifications(
     data: notificationsData,
   });
 
-  const notifications = await Promise.all(
-    notificationsData.map((data) => prisma.notification.create({ data })),
-  );
+  const notifications = await prisma.notification.createManyAndReturn({
+    data: notificationsData,
+    skipDuplicates: true,
+  });
 
   console.log(`✅ Notifications seeded: ${notifications.length}`);
 

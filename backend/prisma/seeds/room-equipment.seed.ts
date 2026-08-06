@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { EquipmentCondition } from '@prisma/client';
-import type { PrismaClient, Room, RoomEquipment } from '@prisma/client';
+import { PrismaClient, Room, RoomEquipment } from 'generated/prisma/client';
+import { EquipmentCondition } from 'generated/prisma/enums';
+import { RoomEquipmentCreateManyInput } from 'generated/prisma/models';
 
 const EQUIPMENT_TYPES = [
   { name: 'Tủ lạnh', brands: ['Samsung', 'Panasonic', 'Hitachi', 'LG'] },
@@ -21,49 +22,40 @@ export async function seedRoomEquipment(
 ): Promise<RoomEquipment[]> {
   console.log('🛋️ Seeding room equipment...');
 
-  const equipmentData: Array<{
-    roomId: string;
-    name: string;
-    description?: string;
-    brand?: string;
-    model?: string;
-    installedDate?: Date;
-    warrantyExpiryDate?: Date;
-    condition: EquipmentCondition;
-  }> = [];
+  const equipmentData: RoomEquipmentCreateManyInput[] = rooms.flatMap(
+    (room) => {
+      // Each room gets 2-5 random equipment items
+      const equipmentCount = faker.number.int({ min: 2, max: 5 });
+      const selectedEquipmentTypes = faker.helpers.arrayElements(
+        EQUIPMENT_TYPES,
+        equipmentCount,
+      );
 
-  // Generate equipment for each room
-  for (const room of rooms) {
-    // Each room gets 2-5 random equipment items
-    const equipmentCount = faker.number.int({ min: 2, max: 5 });
-    const selectedEquipmentTypes = faker.helpers.arrayElements(
-      EQUIPMENT_TYPES,
-      equipmentCount,
-    );
+      return selectedEquipmentTypes.map((equipmentType) => {
+        const brand = faker.helpers.arrayElement(equipmentType.brands);
+        const installedDate = faker.date.past({ years: 2 });
 
-    for (const equipmentType of selectedEquipmentTypes) {
-      const brand = faker.helpers.arrayElement(equipmentType.brands);
-      const installedDate = faker.date.past({ years: 2 });
-
-      equipmentData.push({
-        roomId: room.id,
-        name: equipmentType.name,
-        description: `${equipmentType.name} ${brand} ${faker.number.int({ min: 100, max: 500 })}L`,
-        brand,
-        model: faker.string.alphanumeric({ length: 8 }).toUpperCase(),
-        installedDate,
-        warrantyExpiryDate: faker.date.future({
-          years: 2,
-          refDate: installedDate,
-        }),
-        condition: faker.helpers.arrayElement(CONDITIONS),
+        return {
+          roomId: room.id,
+          name: equipmentType.name,
+          description: `${equipmentType.name} ${brand} ${faker.number.int({ min: 100, max: 500 })}L`,
+          brand,
+          model: faker.string.alphanumeric({ length: 8 }).toUpperCase(),
+          installedDate: installedDate,
+          warrantyExpiryDate: faker.date.future({
+            years: 2,
+            refDate: installedDate,
+          }),
+          condition: faker.helpers.arrayElement(CONDITIONS),
+        };
       });
-    }
-  }
-
-  const equipments = await Promise.all(
-    equipmentData.map((data) => prisma.roomEquipment.create({ data })),
+    },
   );
+
+  const equipments = await prisma.roomEquipment.createManyAndReturn({
+    data: equipmentData,
+    skipDuplicates: true,
+  });
 
   console.log(`✅ Room equipment seeded: ${equipments.length}`);
 

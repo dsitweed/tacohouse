@@ -4,10 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { MaintenanceStatus, Prisma, UserRole } from '@prisma/client';
-import type { MaintenanceRequest } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Prisma } from 'generated/prisma/client';
+import type { MaintenanceRequest, User } from 'generated/prisma/client';
+import { MaintenanceStatus, UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import {
   CreateMaintenanceDto,
@@ -21,7 +22,7 @@ export class MaintenanceService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    currentUser: UserWithRelations,
+    currentUser: User,
     createMaintenanceDto: CreateMaintenanceDto,
   ): Promise<MaintenanceRequest> {
     const { roomId } = createMaintenanceDto;
@@ -52,7 +53,7 @@ export class MaintenanceService {
 
     // Check if tenant is renting this room
     const hasAccess = room.rentals.some(
-      (rental) => rental.tenantId === currentUser.tenant?.id,
+      (rental) => rental.tenantId === currentUser.id,
     );
 
     if (!hasAccess) {
@@ -64,13 +65,13 @@ export class MaintenanceService {
     return this.prisma.maintenanceRequest.create({
       data: {
         ...createMaintenanceDto,
-        tenantId: currentUser.tenant!.id,
+        tenantId: currentUser.id,
       },
     });
   }
 
   async findAll(
-    currentUser: UserWithRelations,
+    currentUser: User,
     query: FindAllMaintenanceDto,
   ): Promise<{
     data: MaintenanceRequest[];
@@ -94,12 +95,12 @@ export class MaintenanceService {
       // Landlord can only see requests for their buildings
       where.room = {
         building: {
-          landlordId: currentUser.landlord?.id,
+          landlordId: currentUser.id,
         },
       };
     } else if (currentUser.role === UserRole.TENANT) {
       // Tenant can only see their own requests
-      where.tenantId = currentUser.tenant?.id;
+      where.tenantId = currentUser.id;
     }
 
     const [data, total] = await Promise.all([
@@ -115,11 +116,7 @@ export class MaintenanceService {
           },
           tenant: {
             include: {
-              user: {
-                include: {
-                  profile: true,
-                },
-              },
+              profile: true,
             },
           },
         },
@@ -145,10 +142,7 @@ export class MaintenanceService {
     };
   }
 
-  async findOne(
-    currentUser: UserWithRelations,
-    id: string,
-  ): Promise<MaintenanceRequest> {
+  async findOne(currentUser: User, id: string): Promise<MaintenanceRequest> {
     const request = await this.prisma.maintenanceRequest.findUnique({
       where: { id },
       include: {
@@ -159,11 +153,7 @@ export class MaintenanceService {
         },
         tenant: {
           include: {
-            user: {
-              include: {
-                profile: true,
-              },
-            },
+            profile: true,
           },
         },
       },
@@ -175,11 +165,11 @@ export class MaintenanceService {
 
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
-      if (request.tenantId !== currentUser.tenant?.id) {
+      if (request.tenantId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
-      if (request.room.building.landlordId !== currentUser.landlord?.id) {
+      if (request.room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role !== UserRole.ADMIN) {
@@ -190,7 +180,7 @@ export class MaintenanceService {
   }
 
   async update(
-    currentUser: UserWithRelations,
+    currentUser: User,
     id: string,
     updateMaintenanceDto: UpdateMaintenanceDto,
   ): Promise<MaintenanceRequest> {
@@ -198,7 +188,7 @@ export class MaintenanceService {
 
     // Tenants can only update their own requests if status is PENDING
     if (currentUser.role === UserRole.TENANT) {
-      if (request.tenantId !== currentUser.tenant?.id) {
+      if (request.tenantId !== currentUser.id) {
         throw new ForbiddenException();
       }
       if (request.status !== MaintenanceStatus.PENDING) {
@@ -227,7 +217,7 @@ export class MaintenanceService {
   }
 
   async respond(
-    currentUser: UserWithRelations,
+    currentUser: User,
     id: string,
     respondDto: RespondMaintenanceDto,
   ): Promise<MaintenanceRequest> {

@@ -5,10 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { BillStatus, Prisma, UserRole } from '@prisma/client';
-import type { Bill } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Bill, Prisma, User } from 'generated/prisma/client';
+import { BillStatus, UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import {
   ConfirmPaymentDto,
@@ -21,10 +21,7 @@ import {
 export class BillsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(
-    currentUser: UserWithRelations,
-    createBillDto: CreateBillDto,
-  ): Promise<Bill> {
+  async create(currentUser: User, createBillDto: CreateBillDto): Promise<Bill> {
     const { roomId, billingPeriod, dueDate } = createBillDto;
 
     // Check if room exists and user has access
@@ -47,7 +44,7 @@ export class BillsService {
 
     // Check permissions - only Landlord and Admin can create bills
     if (currentUser.role === UserRole.LANDLORD) {
-      if (room.building.landlordId !== currentUser.landlord?.id) {
+      if (room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException(
           'You can only create bills for your buildings',
         );
@@ -87,7 +84,7 @@ export class BillsService {
   }
 
   async findAll(
-    currentUser: UserWithRelations,
+    currentUser: User,
     query: FindAllBillsDto,
   ): Promise<{
     data: Bill[];
@@ -109,7 +106,7 @@ export class BillsService {
       // Landlord can only see bills for their buildings
       where.room = {
         building: {
-          landlordId: currentUser.landlord?.id,
+          landlordId: currentUser.id,
         },
       };
     } else if (currentUser.role === UserRole.TENANT) {
@@ -117,7 +114,7 @@ export class BillsService {
       where.room = {
         rentals: {
           some: {
-            tenantId: currentUser.tenant?.id,
+            tenantId: currentUser.id,
             status: 'ACTIVE',
           },
         },
@@ -135,8 +132,11 @@ export class BillsService {
               building: true,
             },
           },
-          payment: true,
-          confirmation: true,
+          payment: {
+            include: {
+              confirmation: true,
+            },
+          },
         },
         orderBy: {
           billingPeriod: 'desc',
@@ -160,7 +160,7 @@ export class BillsService {
     };
   }
 
-  async findOne(currentUser: UserWithRelations, id: string): Promise<Bill> {
+  async findOne(currentUser: User, id: string): Promise<Bill> {
     const bill = await this.prisma.bill.findUnique({
       where: { id },
       include: {
@@ -174,8 +174,11 @@ export class BillsService {
             },
           },
         },
-        payment: true,
-        confirmation: true,
+        payment: {
+          include: {
+            confirmation: true,
+          },
+        },
       },
     });
 
@@ -186,13 +189,13 @@ export class BillsService {
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
       const hasAccess = bill.room.rentals.some(
-        (rental) => rental.tenantId === currentUser.tenant?.id,
+        (rental) => rental.tenantId === currentUser.id,
       );
       if (!hasAccess) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
-      if (bill.room.building.landlordId !== currentUser.landlord?.id) {
+      if (bill.room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role !== UserRole.ADMIN) {
@@ -203,7 +206,7 @@ export class BillsService {
   }
 
   async update(
-    currentUser: UserWithRelations,
+    currentUser: User,
     id: string,
     updateBillDto: UpdateBillDto,
   ): Promise<Bill> {
@@ -227,16 +230,24 @@ export class BillsService {
   }
 
   async confirmPayment(
-    currentUser: UserWithRelations,
+    currentUser: User,
     id: string,
     confirmPaymentDto: ConfirmPaymentDto,
   ): Promise<Bill> {
     const bill = await this.findOne(currentUser, id);
 
-    // Get or create payment confirmation
-    let confirmation = await this.prisma.paymentConfirmation.findUnique({
+    // A payment must exist before it can be confirmed
+    const payment = await this.prisma.payment.findUnique({
       where: { billId: id },
+      include: { confirmation: true },
     });
+
+    if (!payment) {
+      throw new BadRequestException('No payment found for this bill');
+    }
+
+    // Get or create payment confirmation for this payment
+    let confirmation = payment.confirmation;
 
     if (!confirmation) {
       // Get tenant from active rental
@@ -253,7 +264,7 @@ export class BillsService {
 
       confirmation = await this.prisma.paymentConfirmation.create({
         data: {
-          billId: id,
+          paymentId: payment.id,
           tenantId: rental.tenantId,
         },
       });
@@ -270,7 +281,7 @@ export class BillsService {
     } = {};
 
     if (currentUser.role === UserRole.TENANT) {
-      if (confirmation.tenantId !== currentUser.tenant?.id) {
+      if (confirmation.tenantId !== currentUser.id) {
         throw new ForbiddenException(
           'You can only confirm payments for your own bills',
         );
@@ -294,24 +305,18 @@ export class BillsService {
       updateData.notes = confirmPaymentDto.notes;
     }
 
-    await this.prisma.paymentConfirmation.update({
-      where: { billId: id },
+    const updatedConfirmation = await this.prisma.paymentConfirmation.update({
+      where: { paymentId: payment.id },
       data: updateData,
     });
 
-    // Update bill status based on confirmations
-    const updatedConfirmation =
-      await this.prisma.paymentConfirmation.findUnique({
-        where: { billId: id },
-      });
-
     let billStatus: BillStatus = BillStatus.PENDING;
     if (
-      updatedConfirmation?.tenantConfirmed &&
-      updatedConfirmation?.landlordConfirmed
+      updatedConfirmation.tenantConfirmed &&
+      updatedConfirmation.landlordConfirmed
     ) {
       billStatus = BillStatus.LANDLORD_CONFIRMED;
-    } else if (updatedConfirmation?.tenantConfirmed) {
+    } else if (updatedConfirmation.tenantConfirmed) {
       billStatus = BillStatus.TENANT_CONFIRMED;
     }
 
@@ -319,13 +324,16 @@ export class BillsService {
       where: { id },
       data: { status: billStatus },
       include: {
-        confirmation: true,
-        payment: true,
+        payment: {
+          include: {
+            confirmation: true,
+          },
+        },
       },
     });
   }
 
-  async remove(currentUser: UserWithRelations, id: string): Promise<void> {
+  async remove(currentUser: User, id: string): Promise<void> {
     await this.findOne(currentUser, id);
 
     // Only Landlord and Admin can delete bills

@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { UserRole } from '@prisma/client';
 import * as argon from 'argon2';
-import { PrismaService } from 'src/prisma/prisma.service';
-import type { UserWithRelations } from 'src/types';
-import { UsersService } from 'src/users/users.service';
+import { User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { UsersService } from 'users/users.service';
 
 import { AuthService } from './auth.service';
 import type { RegisterAuthDto } from './dto';
@@ -17,10 +17,9 @@ jest.mock('argon2');
 describe('AuthService', () => {
   let service: AuthService;
 
-  const mockUser: UserWithRelations = {
+  const mockUser = {
     id: '1',
     email: 'test@example.com',
-    password: 'hashedPassword',
     role: UserRole.TENANT,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -42,14 +41,23 @@ describe('AuthService', () => {
       idCardBackPhoto: null,
       portraitPhoto: null,
     },
-    admin: null,
-    landlord: null,
-    tenant: null,
+    accounts: [
+      {
+        id: 'account-1',
+        userId: '1',
+        providerId: 'credential',
+        accountId: '1',
+        password: 'hashedPassword',
+      },
+    ],
   };
 
   const mockPrismaService = {
     user: {
       findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+    account: {
       create: jest.fn(),
     },
   };
@@ -108,7 +116,7 @@ describe('AuthService', () => {
           id: mockUser.id,
           email: mockUser.email,
           role: mockUser.role,
-        }) as UserWithRelations,
+        }) as User,
       });
 
       expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
@@ -171,7 +179,6 @@ describe('AuthService', () => {
       expect(mockPrismaService.user.create).toHaveBeenCalledWith({
         data: {
           email: registerDto.email,
-          password: 'hashedPassword',
           role: registerDto.role,
           profile: {
             create: {
@@ -185,7 +192,15 @@ describe('AuthService', () => {
             },
           },
         },
-        include: { profile: true },
+      });
+
+      expect(mockPrismaService.account.create).toHaveBeenCalledWith({
+        data: {
+          userId: mockUser.id,
+          providerId: 'credential',
+          accountId: mockUser.id,
+          password: 'hashedPassword',
+        },
       });
 
       expect(result).toEqual(
@@ -251,11 +266,17 @@ describe('AuthService', () => {
 
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: loginDto.email },
-        include: { profile: true },
+        include: {
+          accounts: {
+            where: {
+              providerId: 'credential',
+            },
+          },
+        },
       });
 
       expect(argon.verify).toHaveBeenCalledWith(
-        mockUser.password,
+        mockUser.accounts[0].password,
         loginDto.password,
       );
 
@@ -302,7 +323,6 @@ describe('AuthService', () => {
 
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: jwtPayload.sub },
-        include: { profile: true },
       });
 
       expect(result).not.toHaveProperty('password');

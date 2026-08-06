@@ -16,10 +16,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { Bill } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import type { Bill, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import { BillsService } from './bills.service';
 import {
@@ -41,7 +40,7 @@ export class BillsController {
   @ApiResponse({ status: 201, description: 'Bill created successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createBillDto: CreateBillDto,
   ): Promise<Bill> {
     return this.billsService.create(currentUser, createBillDto);
@@ -50,10 +49,7 @@ export class BillsController {
   @Get()
   @ApiOperation({ summary: 'Get all bills' })
   @ApiResponse({ status: 200, description: 'List of bills' })
-  findAll(
-    @CurrentUser() currentUser: UserWithRelations,
-    @Query() query: FindAllBillsDto,
-  ) {
+  findAll(@CurrentUser() currentUser: User, @Query() query: FindAllBillsDto) {
     return this.billsService.findAll(currentUser, query);
   }
 
@@ -63,7 +59,7 @@ export class BillsController {
   @ApiResponse({ status: 200, description: 'Bill found' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Bill> {
     return this.billsService.findOne(currentUser, id);
@@ -77,7 +73,7 @@ export class BillsController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   update(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() updateBillDto: UpdateBillDto,
   ): Promise<Bill> {
@@ -92,7 +88,7 @@ export class BillsController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   confirmPayment(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() confirmPaymentDto: ConfirmPaymentDto,
   ): Promise<Bill> {
@@ -107,7 +103,7 @@ export class BillsController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   async remove(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<{ message: string }> {
     await this.billsService.remove(currentUser, id);

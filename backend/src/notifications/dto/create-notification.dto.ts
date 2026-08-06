@@ -1,5 +1,5 @@
-import { NotificationType } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { NotificationType, RelatedEntityType } from 'generated/prisma/enums';
 
 export class CreateNotificationDto {
   @IsNotEmpty()
@@ -23,6 +23,6 @@ export class CreateNotificationDto {
   relatedId?: string;
 
   @IsOptional()
-  @IsString()
-  relatedType?: string;
+  @IsEnum(RelatedEntityType)
+  relatedType?: RelatedEntityType;
 }

@@ -15,10 +15,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { Notification } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import type { Notification, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import { CreateNotificationDto, FindAllNotificationsDto } from './dto';
 import { NotificationsService } from './notifications.service';
@@ -32,7 +31,7 @@ export class NotificationsController {
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createNotificationDto: CreateNotificationDto,
   ): Promise<Notification> {
     return this.notificationsService.create(currentUser, createNotificationDto);
@@ -40,22 +39,20 @@ export class NotificationsController {
 
   @Get()
   findAll(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Query() query: FindAllNotificationsDto,
   ) {
     return this.notificationsService.findAll(currentUser, query);
   }
 
   @Get('unread/count')
-  getUnreadCount(
-    @CurrentUser() currentUser: UserWithRelations,
-  ): Promise<number> {
+  getUnreadCount(@CurrentUser() currentUser: User): Promise<number> {
     return this.notificationsService.getUnreadCount(currentUser);
   }
 
   @Get(':id')
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Notification> {
     return this.notificationsService.findOne(currentUser, id);
@@ -63,14 +60,14 @@ export class NotificationsController {
 
   @Patch(':id/read')
   markAsRead(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Notification> {
     return this.notificationsService.markAsRead(currentUser, id);
   }
 
   @Patch('read/all')
-  markAllAsRead(@CurrentUser() currentUser: UserWithRelations) {
+  markAllAsRead(@CurrentUser() currentUser: User) {
     return this.notificationsService.markAllAsRead(currentUser);
   }
 }

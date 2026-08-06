@@ -1,6 +1,6 @@
-import { BillStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { BillStatus } from 'generated/prisma/enums';
 
 export class FindAllBillsDto {
   @Type(() => Number)

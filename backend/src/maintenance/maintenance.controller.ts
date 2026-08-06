@@ -15,10 +15,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { MaintenanceRequest } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import type { MaintenanceRequest, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import {
   CreateMaintenanceDto,
@@ -37,7 +36,7 @@ export class MaintenanceController {
   @Post()
   @Roles(UserRole.TENANT)
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createMaintenanceDto: CreateMaintenanceDto,
   ): Promise<MaintenanceRequest> {
     return this.maintenanceService.create(currentUser, createMaintenanceDto);
@@ -45,7 +44,7 @@ export class MaintenanceController {
 
   @Get()
   findAll(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Query() query: FindAllMaintenanceDto,
   ) {
     return this.maintenanceService.findAll(currentUser, query);
@@ -53,7 +52,7 @@ export class MaintenanceController {
 
   @Get(':id')
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<MaintenanceRequest> {
     return this.maintenanceService.findOne(currentUser, id);
@@ -62,7 +61,7 @@ export class MaintenanceController {
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   update(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() updateMaintenanceDto: UpdateMaintenanceDto,
   ): Promise<MaintenanceRequest> {
@@ -76,7 +75,7 @@ export class MaintenanceController {
   @Post(':id/respond')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   respond(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() respondDto: RespondMaintenanceDto,
   ): Promise<MaintenanceRequest> {

@@ -1,9 +1,9 @@
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import {
   MaintenanceCategory,
   MaintenanceStatus,
   PriorityType,
-} from '@prisma/client';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+} from 'generated/prisma/enums';
 
 export class UpdateMaintenanceDto {
   @IsOptional()

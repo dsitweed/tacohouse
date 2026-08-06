@@ -5,10 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Prisma, RentalStatus, UserRole } from '@prisma/client';
-import type { Rental } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Prisma } from 'generated/prisma/client';
+import type { Rental, User } from 'generated/prisma/client';
+import { RentalStatus, UserRole } from 'generated/prisma/enums';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
 
@@ -17,7 +18,7 @@ export class RentalsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    currentUser: UserWithRelations,
+    currentUser: User,
     createRentalDto: CreateRentalDto,
   ): Promise<Rental> {
     const { roomId, tenantId, startDate } = createRentalDto;
@@ -34,13 +35,13 @@ export class RentalsService {
 
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
-      if (currentUser.tenant?.id !== tenantId) {
+      if (currentUser.id !== tenantId) {
         throw new ForbiddenException(
           'You can only create rentals for yourself',
         );
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
-      if (room.building.landlordId !== currentUser.landlord?.id) {
+      if (room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException(
           'You can only create rentals for your buildings',
         );
@@ -89,7 +90,7 @@ export class RentalsService {
   }
 
   async findAll(
-    currentUser: UserWithRelations,
+    currentUser: User,
     query: FindAllRentalsDto,
   ): Promise<{
     data: Rental[];
@@ -112,12 +113,12 @@ export class RentalsService {
       // Landlord can only see rentals in their buildings
       where.room = {
         building: {
-          landlordId: currentUser.landlord?.id,
+          landlordId: currentUser.id,
         },
       };
     } else if (currentUser.role === UserRole.TENANT) {
       // Tenant can only see their own rentals
-      where.tenantId = currentUser.tenant?.id;
+      where.tenantId = currentUser.id;
     }
 
     const [data, total] = await Promise.all([
@@ -133,11 +134,7 @@ export class RentalsService {
           },
           tenant: {
             include: {
-              user: {
-                include: {
-                  profile: true,
-                },
-              },
+              profile: true,
             },
           },
         },
@@ -163,7 +160,7 @@ export class RentalsService {
     };
   }
 
-  async findOne(currentUser: UserWithRelations, id: string): Promise<Rental> {
+  async findOne(currentUser: User, id: string): Promise<Rental> {
     const rental = await this.prisma.rental.findUnique({
       where: { id },
       include: {
@@ -174,11 +171,7 @@ export class RentalsService {
         },
         tenant: {
           include: {
-            user: {
-              include: {
-                profile: true,
-              },
-            },
+            profile: true,
           },
         },
       },
@@ -190,11 +183,11 @@ export class RentalsService {
 
     // Check permissions
     if (currentUser.role === UserRole.TENANT) {
-      if (rental.tenantId !== currentUser.tenant?.id) {
+      if (rental.tenantId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role === UserRole.LANDLORD) {
-      if (rental.room.building.landlordId !== currentUser.landlord?.id) {
+      if (rental.room.building.landlordId !== currentUser.id) {
         throw new ForbiddenException();
       }
     } else if (currentUser.role !== UserRole.ADMIN) {
@@ -205,7 +198,7 @@ export class RentalsService {
   }
 
   async update(
-    currentUser: UserWithRelations,
+    currentUser: User,
     id: string,
     updateRentalDto: UpdateRentalDto,
   ): Promise<Rental> {
@@ -260,7 +253,7 @@ export class RentalsService {
     });
   }
 
-  async remove(currentUser: UserWithRelations, id: string): Promise<Rental> {
+  async remove(currentUser: User, id: string): Promise<Rental> {
     const rental = await this.findOne(currentUser, id);
 
     // Only Admin and Landlord can terminate rentals

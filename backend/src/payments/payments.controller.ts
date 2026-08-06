@@ -7,10 +7,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { Payment } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import type { Payment, User } from 'generated/prisma/client';
+import { UserRole } from 'generated/prisma/enums';
 
 import { CreatePaymentDto, FindAllPaymentsDto } from './dto';
 import { PaymentsService } from './payments.service';
@@ -24,7 +23,7 @@ export class PaymentsController {
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createPaymentDto: CreatePaymentDto,
   ): Promise<Payment> {
     return this.paymentsService.create(currentUser, createPaymentDto);
@@ -32,7 +31,7 @@ export class PaymentsController {
 
   @Get()
   findAll(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Query() query: FindAllPaymentsDto,
   ) {
     return this.paymentsService.findAll(currentUser, query);
@@ -40,7 +39,7 @@ export class PaymentsController {
 
   @Get(':id')
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Payment> {
     return this.paymentsService.findOne(currentUser, id);

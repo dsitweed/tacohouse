@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { PrismaClient, UserRole } from '@prisma/client';
 import * as argon from 'argon2';
-import { UserWithRelations } from 'src/types';
+import { PrismaClient, User, UserRole } from 'generated/prisma/client';
 
 type UserData = {
   email: string;
@@ -20,9 +19,9 @@ type UserWithProfileData = UserData & {
 const hashPassword = async () => argon.hash('password');
 
 export async function seedUsers(prisma: PrismaClient): Promise<{
-  adminUsers: UserWithRelations[];
-  landlordUsers: UserWithRelations[];
-  tenantUsers: UserWithRelations[];
+  adminUsers: User[];
+  landlordUsers: User[];
+  tenantUsers: User[];
 }> {
   console.log('👤 Seeding users...');
 
@@ -41,9 +40,7 @@ export async function seedUsers(prisma: PrismaClient): Promise<{
   };
 }
 
-export async function seedAdmins(
-  prisma: PrismaClient,
-): Promise<UserWithRelations[]> {
+export async function seedAdmins(prisma: PrismaClient): Promise<User[]> {
   console.log('👤 Seeding Admins...');
 
   const hashedPassword = await hashPassword();
@@ -66,48 +63,45 @@ export async function seedAdmins(
   }
 
   const adminUsers = await Promise.all(
-    admins.map(
-      async (admin) =>
-        await prisma.user.upsert({
-          where: { email: admin.email },
-          update: {},
-          create: {
-            email: admin.email,
-            password: hashedPassword,
-            role: UserRole.ADMIN,
-            isActive: true,
-            profile: {
-              create: {
-                firstName: admin.firstName,
-                lastName: admin.lastName,
-                phone: admin.phone,
-                avatar: admin.avatar,
-                dateOfBirth: admin.dateOfBirth,
-                occupation: 'System Administrator',
-                workplace: 'Tacohouse',
-              },
-            },
-            admin: {
-              create: {},
+    admins.map(async (admin) => {
+      const adminId = faker.string.uuid();
+
+      return await prisma.user.upsert({
+        where: { email: admin.email },
+        update: {},
+        create: {
+          id: adminId,
+          email: admin.email,
+          role: UserRole.ADMIN,
+          isActive: true,
+          profile: {
+            create: {
+              firstName: admin.firstName,
+              lastName: admin.lastName,
+              phone: admin.phone,
+              avatar: admin.avatar,
+              dateOfBirth: admin.dateOfBirth,
+              occupation: 'System Administrator',
+              workplace: 'TacoHouse',
             },
           },
-          include: {
-            profile: true,
-            admin: true,
-            tenant: true,
-            landlord: true,
+          accounts: {
+            create: {
+              providerId: 'credential',
+              accountId: adminId,
+              password: hashedPassword,
+            },
           },
-        }),
-    ),
+        },
+      });
+    }),
   );
 
   console.log(`✅ Admins seeded: ${adminUsers.length}`);
   return adminUsers;
 }
 
-export async function seedLandlords(
-  prisma: PrismaClient,
-): Promise<UserWithRelations[]> {
+export async function seedLandlords(prisma: PrismaClient): Promise<User[]> {
   console.log('🏠 Seeding Landlords...');
 
   const hashedPassword = await hashPassword();
@@ -130,46 +124,45 @@ export async function seedLandlords(
   }
 
   const landlordUsers = await Promise.all(
-    landlordsData.map(
-      async (landlord) =>
-        await prisma.user.upsert({
-          where: { email: landlord.email },
-          update: {},
-          create: {
-            email: landlord.email,
-            password: hashedPassword,
-            role: UserRole.LANDLORD,
-            isActive: true,
-            profile: {
-              create: {
-                firstName: landlord.firstName,
-                lastName: landlord.lastName,
-                phone: landlord.phone,
-                avatar: landlord.avatar,
-                occupation: 'Real Estate Investor',
-                workplace: 'Self-employed',
-                dateOfBirth: landlord.dateOfBirth,
-              },
+    landlordsData.map(async (landlord) => {
+      const landlordId = faker.string.uuid();
+
+      return await prisma.user.upsert({
+        where: { email: landlord.email },
+        update: {},
+        create: {
+          id: landlordId,
+          email: landlord.email,
+          role: UserRole.LANDLORD,
+          isActive: true,
+          profile: {
+            create: {
+              firstName: landlord.firstName,
+              lastName: landlord.lastName,
+              phone: landlord.phone,
+              avatar: landlord.avatar,
+              occupation: 'Real Estate Investor',
+              workplace: 'Self-employed',
+              dateOfBirth: landlord.dateOfBirth,
             },
-            landlord: { create: {} },
           },
-          include: {
-            profile: true,
-            landlord: true,
-            admin: true,
-            tenant: true,
+          accounts: {
+            create: {
+              providerId: 'credential',
+              accountId: landlordId,
+              password: hashedPassword,
+            },
           },
-        }),
-    ),
+        },
+      });
+    }),
   );
 
   console.log(`✅ Landlords seeded: ${landlordUsers.length}`);
   return landlordUsers;
 }
 
-export async function seedTenants(
-  prisma: PrismaClient,
-): Promise<UserWithRelations[]> {
+export async function seedTenants(prisma: PrismaClient): Promise<User[]> {
   console.log('👥 Seeding Tenants...');
 
   const hashedPassword = await hashPassword();
@@ -194,13 +187,15 @@ export async function seedTenants(
   }
 
   const tenantUsers = await Promise.all(
-    tenantsData.map((tenant) =>
-      prisma.user.upsert({
+    tenantsData.map(async (tenant) => {
+      const tenantId = faker.string.uuid();
+
+      return await prisma.user.upsert({
         where: { email: tenant.email },
         update: {},
         create: {
+          id: tenantId,
           email: tenant.email,
-          password: hashedPassword,
           role: UserRole.TENANT,
           isActive: true,
           profile: {
@@ -214,16 +209,16 @@ export async function seedTenants(
               workplace: tenant.workplace,
             },
           },
-          tenant: { create: {} },
+          accounts: {
+            create: {
+              providerId: 'credential',
+              accountId: tenantId,
+              password: hashedPassword,
+            },
+          },
         },
-        include: {
-          profile: true,
-          tenant: true,
-          admin: true,
-          landlord: true,
-        },
-      }),
-    ),
+      });
+    }),
   );
 
   console.log(`✅ Tenants seeded: ${tenantUsers.length}`);

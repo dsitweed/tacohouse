@@ -4,10 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Prisma, UserRole } from '@prisma/client';
-import type { Building } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationType, UserWithRelations } from 'src/types';
+import { Building, Prisma, User, UserRole } from 'generated/prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { PaginationType } from 'types';
 
 import {
   CreateBuildingDto,
@@ -19,10 +18,7 @@ import {
 export class BuildingsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(
-    currentUser: UserWithRelations,
-    createBuildingDto: CreateBuildingDto,
-  ) {
+  async create(currentUser: User, createBuildingDto: CreateBuildingDto) {
     // LANDLORD can creates building for themselves
     // ADMIN can create building for any landlord
     const { landlordId } = createBuildingDto;
@@ -41,7 +37,7 @@ export class BuildingsService {
   }
 
   async findAll(
-    currentUser: UserWithRelations,
+    currentUser: User,
     query: FindAllBuildingsDto,
   ): Promise<{
     data: Building[];
@@ -55,16 +51,16 @@ export class BuildingsService {
     // - TENANT: View buildings where they are renting
     const where: Prisma.BuildingWhereInput = {};
 
-    if (currentUser.admin) {
+    if (currentUser.role === UserRole.ADMIN) {
       where.landlordId = landlordId;
-    } else if (currentUser.landlord) {
-      where.landlordId = currentUser.landlord.id;
-    } else if (currentUser.tenant) {
+    } else if (currentUser.role === UserRole.LANDLORD) {
+      where.landlordId = currentUser.id;
+    } else if (currentUser.role === UserRole.TENANT) {
       where.rooms = {
         some: {
           rentals: {
             some: {
-              tenantId: currentUser.tenant.id,
+              tenantId: currentUser.id,
               status: 'ACTIVE',
             },
           },
@@ -79,16 +75,12 @@ export class BuildingsService {
         take: limit,
         include: {
           landlord: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  email: true,
-                  isActive: true,
-                  deletedAt: true,
-                  profile: true,
-                },
-              },
+            select: {
+              id: true,
+              email: true,
+              isActive: true,
+              deletedAt: true,
+              profile: true,
             },
           },
           _count: {
@@ -116,7 +108,7 @@ export class BuildingsService {
     };
   }
 
-  async findOne(currentUser: UserWithRelations, id: string) {
+  async findOne(currentUser: User, id: string) {
     const building = await this.prisma.building.findUnique({
       where: { id },
     });
@@ -137,7 +129,7 @@ export class BuildingsService {
   }
 
   async update(
-    currentUser: UserWithRelations,
+    currentUser: User,
     id: string,
     updateBuildingDto: UpdateBuildingDto,
   ) {
@@ -158,7 +150,7 @@ export class BuildingsService {
     });
   }
 
-  async remove(currentUser: UserWithRelations, id: string) {
+  async remove(currentUser: User, id: string) {
     const building = await this.findOne(currentUser, id);
     const canAccessLandlord = await this.canAccessLandlordResource(
       currentUser,
@@ -185,10 +177,10 @@ export class BuildingsService {
    * @param landlordId  - The ID of the landlord the action is being performed for
    */
   private async canAccessLandlordResource(
-    currentUser: UserWithRelations,
+    currentUser: User,
     landlordId: string,
   ) {
-    const landlord = await this.prisma.landlord.findUnique({
+    const landlord = await this.prisma.user.findUnique({
       where: { id: landlordId },
     });
     if (!landlord) {
@@ -201,7 +193,7 @@ export class BuildingsService {
       throw new ForbiddenException();
     }
 
-    return currentUser.landlord?.id === landlord.id;
+    return currentUser.id === landlord.id;
   }
 
   /**
@@ -214,19 +206,19 @@ export class BuildingsService {
    * @param building - The building need to be check permission
    */
   private async canAccessBuildingResource(
-    currentUser: UserWithRelations,
+    currentUser: User,
     building: Building,
   ) {
     if (currentUser.role === UserRole.ADMIN) return true;
 
     if (currentUser.role === UserRole.LANDLORD) {
-      return building.landlordId === currentUser.landlord?.id;
+      return building.landlordId === currentUser.id;
     }
 
-    if (currentUser.role === UserRole.TENANT && currentUser.tenant) {
+    if (currentUser.role === UserRole.TENANT) {
       const hasAccess = await this.prisma.rental.findFirst({
         where: {
-          tenantId: currentUser.tenant.id,
+          tenantId: currentUser.id,
           status: 'ACTIVE',
           room: {
             buildingId: building.id,

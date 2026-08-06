@@ -70,6 +70,18 @@ $ mau deploy
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
+## Work with prisma + pnpm
+```bash
+pnpm dlx prisma init
+pnpm dlx prisma migrate dev --name init
+pnpm dlx prisma generate
+pnpm dlx prisma db seed
+pnpm dlx prisma studio
+pnpm dlx prisma migrate status
+pnpm dlx prisma migrate deploy
+pnpm dlx prisma migrate reset
+```
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:

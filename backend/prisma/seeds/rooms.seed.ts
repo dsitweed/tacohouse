@@ -1,19 +1,25 @@
 import { faker } from '@faker-js/faker';
-import { RoomStatus, RoomType } from '@prisma/client';
-import type { Building, PrismaClient, Room } from '@prisma/client';
+import {
+  Building,
+  PrismaClient,
+  Room,
+  RoomStatus,
+  RoomType,
+} from 'generated/prisma/client';
+import { RoomCreateManyInput } from 'generated/prisma/models';
 
 // Real room images from Unsplash
 const ROOM_IMAGES = [
-  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800',
-  'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800',
-  'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800',
-  'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800',
-  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800',
-  'https://images.unsplash.com/photo-1556020685-ae41abfc9365?w=800',
-  'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
-  'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800',
-  'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800',
-  'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800',
+  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267',
+  'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688',
+  'https://images.unsplash.com/photo-1540518614846-7eded433c457',
+  'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af',
+  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85',
+  'https://images.unsplash.com/photo-1556020685-ae41abfc9365',
+  'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2',
+  'https://images.unsplash.com/photo-1484101403633-562f891dc89a',
+  'https://images.unsplash.com/photo-1554995207-c18c203602cb',
+  'https://images.unsplash.com/photo-1616594039964-ae9021a400a0',
 ];
 
 const ROOM_STATUSES = Object.values(RoomStatus);
@@ -26,27 +32,11 @@ export async function seedRooms(
 ): Promise<Room[]> {
   console.log('🚪 Seeding rooms...');
 
-  const roomsData: Array<{
-    number: string;
-    buildingId: string;
-    area: number;
-    monthlyRent: number;
-    deposit: number;
-    maxTenants: number;
-    roomType: RoomType;
-    description: string;
-    images: string[];
-    status: RoomStatus;
-    availableFrom: Date;
-  }> = [];
-
   let roomCounter = 0;
 
-  for (const building of buildings) {
+  const roomData: RoomCreateManyInput[] = buildings.flatMap((building) =>
     // Each building has 3-5 rooms
-    const numberOfRooms = faker.number.int({ min: 3, max: 5 });
-
-    for (let i = 0; i < numberOfRooms; i++) {
+    Array.from({ length: faker.number.int({ min: 3, max: 5 }) }).map(() => {
       roomCounter++;
       const floor = Math.floor(roomCounter / 10) + 1;
       const roomNum = (roomCounter % 10) + 1;
@@ -59,7 +49,7 @@ export async function seedRooms(
         .shuffle(ROOM_IMAGES)
         .slice(0, numberOfImages);
 
-      roomsData.push({
+      return {
         number: `${floor}0${roomNum}`,
         buildingId: building.id,
         area,
@@ -71,16 +61,17 @@ export async function seedRooms(
         images,
         status: faker.helpers.arrayElement(ROOM_STATUSES),
         availableFrom: faker.date.between({
-          from: '2025-01-01',
-          to: '2025-12-31',
+          from: '2026-01-01',
+          to: '2026-12-31',
         }),
-      });
-    }
-  }
-
-  const rooms = await Promise.all(
-    roomsData.map((data) => prisma.room.create({ data })),
+      };
+    }),
   );
+
+  const rooms = await prisma.room.createManyAndReturn({
+    data: roomData,
+    skipDuplicates: true,
+  });
 
   console.log(`✅ Rooms seeded: ${rooms.length}`);
 

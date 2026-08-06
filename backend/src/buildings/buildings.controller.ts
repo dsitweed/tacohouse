@@ -12,15 +12,12 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserRole } from '@prisma/client';
-import type { Building } from '@prisma/client';
-import { CurrentUser, Roles } from 'src/common/decorators';
-import type { UserWithRelations } from 'src/types';
+import { CurrentUser, Roles } from 'common/decorators';
+import { Building, type User, UserRole } from 'generated/prisma/client';
 
 import { BuildingsService } from './buildings.service';
 import { FindAllBuildingsDto } from './dto';
@@ -39,7 +36,7 @@ export class BuildingsController {
   @ApiResponse({ status: 201, description: 'Building created successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Body() createBuildingDto: CreateBuildingDto,
   ): Promise<Building> {
     return this.buildingsService.create(currentUser, createBuildingDto);
@@ -49,7 +46,7 @@ export class BuildingsController {
   @ApiOperation({ summary: 'Get all buildings' })
   @ApiResponse({ status: 200, description: 'List of buildings' })
   findAll(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Query() query: FindAllBuildingsDto,
   ) {
     return this.buildingsService.findAll(currentUser, query);
@@ -61,7 +58,7 @@ export class BuildingsController {
   @ApiResponse({ status: 200, description: 'Building found' })
   @ApiResponse({ status: 404, description: 'Building not found' })
   findOne(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Building> {
     return this.buildingsService.findOne(currentUser, id);
@@ -75,7 +72,7 @@ export class BuildingsController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Building not found' })
   update(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() updateBuildingDto: UpdateBuildingDto,
   ): Promise<Building> {
@@ -90,7 +87,7 @@ export class BuildingsController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Building not found' })
   remove(
-    @CurrentUser() currentUser: UserWithRelations,
+    @CurrentUser() currentUser: User,
     @Param('id') id: string,
   ): Promise<Building> {
     return this.buildingsService.remove(currentUser, id);

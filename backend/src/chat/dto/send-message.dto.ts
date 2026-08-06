@@ -1,5 +1,5 @@
-import { MessageType } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { MessageType } from 'generated/prisma/enums';
 
 export class SendMessageDto {
   @IsNotEmpty()

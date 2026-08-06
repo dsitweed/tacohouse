@@ -1,6 +1,6 @@
-import { MaintenanceStatus, PriorityType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { MaintenanceStatus, PriorityType } from 'generated/prisma/enums';
 
 export class FindAllMaintenanceDto {
   @Type(() => Number)

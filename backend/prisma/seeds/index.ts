@@ -1,17 +1,24 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from 'generated/prisma/client';
 
 import { seedBills } from './bills.seed';
 import { seedBuildings } from './buildings.seed';
 import { seedChatGroups } from './chat-groups.seed';
 import { seedMaintenanceRequests } from './maintenance-requests.seed';
 import { seedNotifications } from './notifications.seed';
+import { seedPaymentConfirmations } from './payment-confirmations.seed';
+import { seedPayments } from './payments.seed';
 import { seedRentals } from './rentals.seed';
 import { seedRoomEquipment } from './room-equipment.seed';
 import { seedRooms } from './rooms.seed';
 import { seedUsers } from './users.seed';
 import { seedUtilityRecords } from './utility-records.seed';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+  }),
+});
 
 async function main() {
   console.log('🌱 Starting seed...');
@@ -36,29 +43,31 @@ async function main() {
     const utilityRecords = await seedUtilityRecords(prisma, rooms);
 
     // 7. Seed Bills
-    const { bills, payments, paymentConfirmations } = await seedBills(
+    const bills = await seedBills(prisma, utilityRecords);
+
+    // 8. Seed Payments
+
+    const payments = await seedPayments(prisma, bills);
+
+    // 9. Seed Payment Confirmations
+
+    const paymentConfirmations = await seedPaymentConfirmations(
       prisma,
-      tenantUsers,
-      rooms,
-      rentals,
+      payments,
     );
 
-    // 8. Seed Chat Groups
+    // 10. Seed Chat Groups
     const { chatGroups, chatGroupMembers, messages } = await seedChatGroups(
       prisma,
-      [...tenantUsers, ...landlordUsers],
+      tenantUsers,
+      landlordUsers,
       buildings,
     );
 
-    // 9. Seed Maintenance Requests
-    const maintenanceRequests = await seedMaintenanceRequests(
-      prisma,
-      tenantUsers,
-      rooms,
-      rentals,
-    );
+    // 11. Seed Maintenance Requests
+    const maintenanceRequests = await seedMaintenanceRequests(prisma, rentals);
 
-    // 10. Seed Notifications
+    // 12. Seed Notifications
     const notifications = await seedNotifications(
       prisma,
       tenantUsers,

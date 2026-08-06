@@ -1,5 +1,5 @@
-import { BillStatus } from '@prisma/client';
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
+import { BillStatus } from 'generated/prisma/enums';
 
 export class UpdateBillDto {
   @IsOptional()

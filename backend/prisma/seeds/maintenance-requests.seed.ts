@@ -1,29 +1,105 @@
 import { faker } from '@faker-js/faker';
 import {
-  MaintenanceCategory,
-  MaintenanceStatus,
-  PriorityType,
-} from '@prisma/client';
-import type {
   MaintenanceRequest,
   PrismaClient,
   Rental,
-  Room,
-} from '@prisma/client';
-import { UserWithRelations } from 'src/types';
+} from 'generated/prisma/client';
+import {
+  MaintenanceCategory,
+  MaintenanceStatus,
+  PriorityType,
+} from 'generated/prisma/enums';
+import { MaintenanceRequestCreateManyInput } from 'generated/prisma/models';
 
-type MaintenanceRequestData = {
-  tenantId: string;
-  roomId: string;
-  title: string;
-  description: string;
-  priority: PriorityType;
-  category: MaintenanceCategory;
-  images: string[];
-  status: MaintenanceStatus;
-  completedAt?: Date;
-  completionNote?: string;
-};
+export async function seedMaintenanceRequests(
+  prisma: PrismaClient,
+  rentals: Rental[],
+): Promise<MaintenanceRequest[]> {
+  console.log('🔧 Seeding maintenance requests...');
+
+  if (rentals.length === 0) {
+    console.log('⚠️ No rentals found, skipping maintenance requests seed');
+    return [];
+  }
+
+  const maintenanceRequestData: MaintenanceRequestCreateManyInput[] = [];
+
+  // only create maintenance requests for active rentals
+  const activeRentals = rentals.filter((rental) => rental.status === 'ACTIVE');
+
+  for (const rental of activeRentals) {
+    // each active rental has 1-3 maintenance requests
+    const requestCount = faker.number.int({ min: 1, max: 3 });
+
+    for (let i = 0; i < requestCount; i++) {
+      const category = faker.helpers.arrayElement(
+        Object.values(MaintenanceCategory),
+      );
+      const images = Array(getMaintenanceImageUrl(category));
+      const issueTemplate = faker.helpers.arrayElement(
+        MAINTENANCE_ISSUES[category],
+      );
+
+      // Status distribution
+      const statusRoll = faker.number.float({ min: 0, max: 1 });
+      let status: MaintenanceStatus;
+      let completedAt: Date | undefined;
+      let completionNote: string | undefined;
+
+      if (statusRoll < 0.3) {
+        // 30% COMPLETED
+        status = MaintenanceStatus.COMPLETED;
+        completedAt = faker.date.recent({ days: 30 });
+        completionNote = faker.helpers.arrayElement([
+          'Đã sửa xong',
+          'Đã thay thế thiết bị mới',
+          'Đã bảo dưỡng xong',
+          'Đã xử lý vấn đề',
+          'Hoàn thành công việc',
+        ]);
+      } else if (statusRoll < 0.7) {
+        // 40% IN_PROGRESS
+        status = MaintenanceStatus.IN_PROGRESS;
+      } else if (statusRoll < 0.85) {
+        // 15% PENDING
+        status = MaintenanceStatus.PENDING;
+      } else {
+        // 15% CANCELLED
+        status = MaintenanceStatus.CANCELLED;
+        completedAt = faker.date.recent({ days: 30 });
+        completionNote = faker.helpers.arrayElement([
+          'Người thuê hủy yêu cầu',
+          'Không cần sửa chữa nữa',
+          'Đã tự xử lý',
+        ]);
+      }
+
+      maintenanceRequestData.push({
+        tenantId: rental.tenantId,
+        roomId: rental.roomId,
+        title: issueTemplate.title,
+        description: issueTemplate.description,
+        priority: issueTemplate.priority,
+        category,
+        images,
+        status,
+        completedAt,
+        completionNote,
+      });
+    }
+  }
+
+  // Create all maintenance requests
+  const maintenanceRequests =
+    await prisma.maintenanceRequest.createManyAndReturn({
+      data: maintenanceRequestData,
+      skipDuplicates: true,
+    });
+
+  console.log(`✅ Maintenance requests seeded: ${maintenanceRequests.length}`);
+
+  return maintenanceRequests;
+}
 
 function getMaintenanceImageUrl(category: MaintenanceCategory): string {
   const urls = {
@@ -149,103 +225,3 @@ const MAINTENANCE_ISSUES = {
     },
   ],
 };
-
-export async function seedMaintenanceRequests(
-  prisma: PrismaClient,
-  tenants: UserWithRelations[],
-  rooms: Room[],
-  rentals: Rental[],
-): Promise<MaintenanceRequest[]> {
-  console.log('🔧 Seeding maintenance requests...');
-
-  if (rentals.length === 0) {
-    console.log('⚠️ No rentals found, skipping maintenance requests seed');
-    return [];
-  }
-
-  const maintenanceRequestData: MaintenanceRequestData[] = [];
-
-  // only create maintenance requests for active rentals
-  const activeRentals = rentals.filter((rental) => rental.status === 'ACTIVE');
-
-  for (const rental of activeRentals) {
-    const tenantUser = tenants.find((t) => t.tenant?.id === rental.tenantId);
-    if (!tenantUser || !tenantUser.tenant) continue;
-
-    const room = rooms.find((r) => r.id === rental.roomId);
-    if (!room) continue;
-
-    // each active rental has 0-3 maintenande requests
-    const requestCount = faker.number.int({ min: 0, max: 3 });
-
-    for (let i = 0; i < requestCount; i++) {
-      const category = faker.helpers.arrayElement(
-        Object.values(MaintenanceCategory),
-      );
-
-      const issueTemplate = faker.helpers.arrayElement(
-        MAINTENANCE_ISSUES[category],
-      );
-
-      // Status distribution
-      const statusRoll = faker.number.float({ min: 0, max: 1 });
-      let status: MaintenanceStatus;
-      let completedAt: Date | undefined;
-      let completionNote: string | undefined;
-
-      if (statusRoll < 0.3) {
-        // 30% COMPLETED
-        status = MaintenanceStatus.COMPLETED;
-        completedAt = faker.date.recent({ days: 30 });
-        completionNote = faker.helpers.arrayElement([
-          'Đã sửa xong',
-          'Đã thay thế thiết bị mới',
-          'Đã bảo dưỡng xong',
-          'Đã xử lý vấn đề',
-          'Hoàn thành công việc',
-        ]);
-      } else if (statusRoll < 0.7) {
-        // 40% IN_PROGRESS
-        status = MaintenanceStatus.IN_PROGRESS;
-      } else if (statusRoll < 0.85) {
-        // 15% PENDING
-        status = MaintenanceStatus.PENDING;
-      } else {
-        // 15% CANCELLED
-        status = MaintenanceStatus.CANCELLED;
-        completedAt = faker.date.recent({ days: 30 });
-        completionNote = faker.helpers.arrayElement([
-          'Người thuê hủy yêu cầu',
-          'Không cần sửa chữa nữa',
-          'Đã tự xử lý',
-        ]);
-      }
-
-      const images = Array(getMaintenanceImageUrl(category));
-
-      maintenanceRequestData.push({
-        tenantId: tenantUser.tenant.id,
-        roomId: room.id,
-        title: issueTemplate.title,
-        description: issueTemplate.description,
-        priority: issueTemplate.priority,
-        category,
-        images,
-        status,
-        completedAt,
-        completionNote,
-      });
-    }
-  }
-
-  // Create all maintenance requests
-  const maintenanceRequests = await Promise.all(
-    maintenanceRequestData.map((data) =>
-      prisma.maintenanceRequest.create({ data }),
-    ),
-  );
-
-  console.log(`✅ Maintenance requests seeded: ${maintenanceRequests.length}`);
-
-  return maintenanceRequests;
-}

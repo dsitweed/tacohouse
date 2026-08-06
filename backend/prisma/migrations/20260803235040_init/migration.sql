@@ -17,6 +17,9 @@ CREATE TYPE "PriorityType" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
 CREATE TYPE "NotificationType" AS ENUM ('BILL_GENERATED', 'PAYMENT_REMINDER', 'MAINTENANCE_UPDATE', 'CHAT_MESSAGE', 'ANNOUNCEMENT', 'SYSTEM');
 
 -- CreateEnum
+CREATE TYPE "RelatedEntityType" AS ENUM ('BILL', 'PAYMENT', 'RENTAL', 'MAINTENANCE_REQUEST', 'MESSAGE', 'ROOM', 'BUILDING');
+
+-- CreateEnum
 CREATE TYPE "RoomStatus" AS ENUM ('AVAILABLE', 'OCCUPIED', 'PENDING_CHECKOUT', 'MAINTENANCE');
 
 -- CreateEnum
@@ -44,7 +47,6 @@ CREATE TYPE "MaintenanceCategory" AS ENUM ('PLUMBING', 'ELECTRICAL', 'APPLIANCE'
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
     "role" "UserRole" NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "deletedAt" TIMESTAMP(3),
@@ -75,27 +77,48 @@ CREATE TABLE "user_profiles" (
 );
 
 -- CreateTable
-CREATE TABLE "admins" (
+CREATE TABLE "sessions" (
     "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "admins_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "landlords" (
+CREATE TABLE "accounts" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "providerId" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
+    "password" VARCHAR(255),
+    "accessToken" TEXT,
+    "refreshToken" TEXT,
+    "idToken" TEXT,
+    "accessTokenExpiresAt" TIMESTAMP(3),
+    "refreshTokenExpiresAt" TIMESTAMP(3),
+    "scope" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "landlords_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "tenants" (
+CREATE TABLE "verifications" (
     "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "identifier" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "tenants_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "verifications_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -106,12 +129,13 @@ CREATE TABLE "buildings" (
     "description" TEXT,
     "billingDate" INTEGER,
     "landlordId" TEXT NOT NULL,
-    "electricityRate" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "waterRate" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "gasRate" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "managementFee" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "cleaningFeePerPerson" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "lightingFee" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "landlordRole" "UserRole" NOT NULL DEFAULT 'LANDLORD',
+    "electricityRate" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "waterRate" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "gasRate" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "managementFee" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "cleaningFeePerPerson" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "lightingFee" DECIMAL(12,2) NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -123,14 +147,14 @@ CREATE TABLE "rooms" (
     "id" TEXT NOT NULL,
     "number" TEXT NOT NULL,
     "buildingId" TEXT NOT NULL,
-    "area" DECIMAL(65,30) NOT NULL,
-    "monthlyRent" DECIMAL(65,30) NOT NULL,
-    "deposit" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "area" DECIMAL(10,2) NOT NULL,
+    "monthlyRent" DECIMAL(14,2) NOT NULL,
+    "deposit" DECIMAL(14,2) NOT NULL DEFAULT 0,
     "maxTenants" INTEGER NOT NULL DEFAULT 1,
     "roomType" "RoomType" NOT NULL,
     "description" TEXT,
     "images" TEXT[],
-    "status" "RoomStatus" NOT NULL,
+    "status" "RoomStatus" NOT NULL DEFAULT 'AVAILABLE',
     "availableFrom" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -159,12 +183,13 @@ CREATE TABLE "room_equipments" (
 CREATE TABLE "rentals" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
+    "tenantRole" "UserRole" NOT NULL DEFAULT 'TENANT',
     "roomId" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3),
     "noticeDate" TIMESTAMP(3),
-    "monthlyRent" DECIMAL(65,30) NOT NULL,
-    "depositPaid" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "monthlyRent" DECIMAL(14,2) NOT NULL,
+    "depositPaid" DECIMAL(14,2) NOT NULL DEFAULT 0,
     "status" "RentalStatus" NOT NULL DEFAULT 'ACTIVE',
     "contractImages" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -179,18 +204,18 @@ CREATE TABLE "bills" (
     "roomId" TEXT NOT NULL,
     "billingPeriod" TIMESTAMP(3) NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
-    "monthlyRent" DECIMAL(65,30) NOT NULL,
-    "electricityUsage" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "electricityAmount" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "waterUsage" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "waterAmount" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "gasUsage" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "gasAmount" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "managementFee" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "cleaningFee" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "lightingFee" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "previousDebt" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "totalAmount" DECIMAL(65,30) NOT NULL,
+    "monthlyRent" DECIMAL(14,2) NOT NULL,
+    "electricityUsage" DECIMAL(12,3) NOT NULL DEFAULT 0,
+    "electricityAmount" DECIMAL(14,2) NOT NULL DEFAULT 0,
+    "waterUsage" DECIMAL(12,3) NOT NULL DEFAULT 0,
+    "waterAmount" DECIMAL(14,2) NOT NULL DEFAULT 0,
+    "gasUsage" DECIMAL(12,3) NOT NULL DEFAULT 0,
+    "gasAmount" DECIMAL(14,2) NOT NULL DEFAULT 0,
+    "managementFee" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "cleaningFee" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "lightingFee" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "previousDebt" DECIMAL(14,2) NOT NULL DEFAULT 0,
+    "totalAmount" DECIMAL(14,2) NOT NULL,
     "status" "BillStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -202,7 +227,7 @@ CREATE TABLE "bills" (
 CREATE TABLE "payments" (
     "id" TEXT NOT NULL,
     "billId" TEXT NOT NULL,
-    "amount" DECIMAL(65,30) NOT NULL,
+    "amount" DECIMAL(14,2) NOT NULL,
     "paymentMethod" "PaymentMethod" NOT NULL,
     "paymentDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "stripePaymentId" TEXT,
@@ -221,6 +246,7 @@ CREATE TABLE "payment_confirmations" (
     "id" TEXT NOT NULL,
     "billId" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
+    "tenantRole" "UserRole" NOT NULL DEFAULT 'TENANT',
     "tenantConfirmed" BOOLEAN NOT NULL DEFAULT false,
     "tenantConfirmedAt" TIMESTAMP(3),
     "landlordConfirmed" BOOLEAN NOT NULL DEFAULT false,
@@ -239,10 +265,10 @@ CREATE TABLE "utility_records" (
     "roomId" TEXT NOT NULL,
     "recordDate" TIMESTAMP(3) NOT NULL,
     "utilityType" "UtilityType" NOT NULL,
-    "previousReading" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "currentReading" DECIMAL(65,30) NOT NULL,
-    "consumption" DECIMAL(65,30) NOT NULL,
-    "unitRate" DECIMAL(65,30) NOT NULL,
+    "previousReading" DECIMAL(12,3) NOT NULL DEFAULT 0,
+    "currentReading" DECIMAL(12,3) NOT NULL,
+    "consumption" DECIMAL(12,3) NOT NULL,
+    "unitRate" DECIMAL(12,2) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -277,8 +303,12 @@ CREATE TABLE "messages" (
     "senderId" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "messageType" "MessageType" NOT NULL DEFAULT 'TEXT',
+    "attachmentUrl" TEXT,
+    "attachmentName" TEXT,
+    "attachmentSize" INTEGER,
     "chatGroupId" TEXT,
     "recipientId" TEXT,
+    "readAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -289,6 +319,7 @@ CREATE TABLE "messages" (
 CREATE TABLE "maintenance_requests" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
+    "tenantRole" "UserRole" NOT NULL DEFAULT 'TENANT',
     "roomId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -299,7 +330,7 @@ CREATE TABLE "maintenance_requests" (
     "completedAt" TIMESTAMP(3),
     "completionNote" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "maintenance_requests_pkey" PRIMARY KEY ("id")
 );
@@ -314,7 +345,7 @@ CREATE TABLE "notifications" (
     "isRead" BOOLEAN NOT NULL DEFAULT false,
     "readAt" TIMESTAMP(3),
     "relatedId" TEXT,
-    "relatedType" TEXT,
+    "relatedType" "RelatedEntityType",
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -325,19 +356,52 @@ CREATE TABLE "notifications" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE INDEX "users_role_idx" ON "users"("role");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_id_role_key" ON "users"("id", "role");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "user_profiles_userId_key" ON "user_profiles"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "admins_userId_key" ON "admins"("userId");
+CREATE UNIQUE INDEX "sessions_token_key" ON "sessions"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "landlords_userId_key" ON "landlords"("userId");
+CREATE INDEX "sessions_userId_idx" ON "sessions"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "tenants_userId_key" ON "tenants"("userId");
+CREATE INDEX "accounts_userId_idx" ON "accounts"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "accounts_providerId_accountId_key" ON "accounts"("providerId", "accountId");
+
+-- CreateIndex
+CREATE INDEX "verifications_identifier_idx" ON "verifications"("identifier");
+
+-- CreateIndex
+CREATE INDEX "buildings_landlordId_idx" ON "buildings"("landlordId");
+
+-- CreateIndex
+CREATE INDEX "rooms_buildingId_idx" ON "rooms"("buildingId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "rooms_number_buildingId_key" ON "rooms"("number", "buildingId");
+
+-- CreateIndex
+CREATE INDEX "room_equipments_roomId_idx" ON "room_equipments"("roomId");
+
+-- CreateIndex
+CREATE INDEX "rentals_roomId_status_idx" ON "rentals"("roomId", "status");
+
+-- CreateIndex
+CREATE INDEX "rentals_tenantId_idx" ON "rentals"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "bills_roomId_status_idx" ON "bills"("roomId", "status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "bills_roomId_billingPeriod_key" ON "bills"("roomId", "billingPeriod");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "payments_billId_key" ON "payments"("billId");
@@ -346,25 +410,49 @@ CREATE UNIQUE INDEX "payments_billId_key" ON "payments"("billId");
 CREATE UNIQUE INDEX "payment_confirmations_billId_key" ON "payment_confirmations"("billId");
 
 -- CreateIndex
+CREATE INDEX "payment_confirmations_tenantId_idx" ON "payment_confirmations"("tenantId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "utility_records_roomId_utilityType_recordDate_key" ON "utility_records"("roomId", "utilityType", "recordDate");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "chat_groups_buildingId_key" ON "chat_groups"("buildingId");
 
 -- CreateIndex
+CREATE INDEX "chat_group_members_userId_idx" ON "chat_group_members"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "chat_group_members_chatGroupId_userId_key" ON "chat_group_members"("chatGroupId", "userId");
+
+-- CreateIndex
+CREATE INDEX "messages_chatGroupId_createdAt_idx" ON "messages"("chatGroupId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "messages_recipientId_senderId_idx" ON "messages"("recipientId", "senderId");
+
+-- CreateIndex
+CREATE INDEX "messages_senderId_idx" ON "messages"("senderId");
+
+-- CreateIndex
+CREATE INDEX "maintenance_requests_roomId_status_idx" ON "maintenance_requests"("roomId", "status");
+
+-- CreateIndex
+CREATE INDEX "maintenance_requests_tenantId_idx" ON "maintenance_requests"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "notifications_userId_isRead_idx" ON "notifications"("userId", "isRead");
 
 -- AddForeignKey
 ALTER TABLE "user_profiles" ADD CONSTRAINT "user_profiles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "admins" ADD CONSTRAINT "admins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "landlords" ADD CONSTRAINT "landlords_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "accounts" ADD CONSTRAINT "accounts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tenants" ADD CONSTRAINT "tenants_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "buildings" ADD CONSTRAINT "buildings_landlordId_fkey" FOREIGN KEY ("landlordId") REFERENCES "landlords"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "buildings" ADD CONSTRAINT "buildings_landlordId_landlordRole_fkey" FOREIGN KEY ("landlordId", "landlordRole") REFERENCES "users"("id", "role") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rooms" ADD CONSTRAINT "rooms_buildingId_fkey" FOREIGN KEY ("buildingId") REFERENCES "buildings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -373,25 +461,25 @@ ALTER TABLE "rooms" ADD CONSTRAINT "rooms_buildingId_fkey" FOREIGN KEY ("buildin
 ALTER TABLE "room_equipments" ADD CONSTRAINT "room_equipments_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rentals" ADD CONSTRAINT "rentals_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "rentals" ADD CONSTRAINT "rentals_tenantId_tenantRole_fkey" FOREIGN KEY ("tenantId", "tenantRole") REFERENCES "users"("id", "role") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rentals" ADD CONSTRAINT "rentals_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "rentals" ADD CONSTRAINT "rentals_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "bills" ADD CONSTRAINT "bills_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "bills" ADD CONSTRAINT "bills_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payments" ADD CONSTRAINT "payments_billId_fkey" FOREIGN KEY ("billId") REFERENCES "bills"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "payments" ADD CONSTRAINT "payments_billId_fkey" FOREIGN KEY ("billId") REFERENCES "bills"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payment_confirmations" ADD CONSTRAINT "payment_confirmations_billId_fkey" FOREIGN KEY ("billId") REFERENCES "bills"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "payment_confirmations" ADD CONSTRAINT "payment_confirmations_billId_fkey" FOREIGN KEY ("billId") REFERENCES "bills"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payment_confirmations" ADD CONSTRAINT "payment_confirmations_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "payment_confirmations" ADD CONSTRAINT "payment_confirmations_tenantId_tenantRole_fkey" FOREIGN KEY ("tenantId", "tenantRole") REFERENCES "users"("id", "role") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "utility_records" ADD CONSTRAINT "utility_records_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "utility_records" ADD CONSTRAINT "utility_records_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "chat_groups" ADD CONSTRAINT "chat_groups_buildingId_fkey" FOREIGN KEY ("buildingId") REFERENCES "buildings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -412,7 +500,7 @@ ALTER TABLE "messages" ADD CONSTRAINT "messages_chatGroupId_fkey" FOREIGN KEY ("
 ALTER TABLE "messages" ADD CONSTRAINT "messages_recipientId_fkey" FOREIGN KEY ("recipientId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "maintenance_requests" ADD CONSTRAINT "maintenance_requests_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "maintenance_requests" ADD CONSTRAINT "maintenance_requests_tenantId_tenantRole_fkey" FOREIGN KEY ("tenantId", "tenantRole") REFERENCES "users"("id", "role") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "maintenance_requests" ADD CONSTRAINT "maintenance_requests_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
