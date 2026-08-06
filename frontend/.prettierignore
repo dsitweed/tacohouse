@@ -14,8 +14,8 @@ pnpm-lock.yaml
 *.min.css
 *.svg
 
-# Ignore a specific file in a specific folder
-src/generated/api.ts
+# Ignore auto-generated API client (formatted by generate:api script)
+src/generated/
 
 # Ignore documentation files
 *.md

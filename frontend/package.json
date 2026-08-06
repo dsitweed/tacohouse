@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "generate:api": "orval --config orval.config.ts"
+    "generate:api": "orval --config orval.config.ts && prettier --write --no-config --single-quote src/generated/api.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.111.0",

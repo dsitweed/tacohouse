@@ -10,7 +10,8 @@ export default defineConfig({
       target: './src/generated/api.ts',
       schemas: './src/generated/model',
       client: 'react-query',
-      mock: true, // Generates MSW mock handlers automatically
+      clean: true,
+      mock: false, // Generates MSW mock handlers automatically
       override: {
         mutator: {
           path: './src/lib/api.ts', // Optional: attach auth tokens/interceptors
