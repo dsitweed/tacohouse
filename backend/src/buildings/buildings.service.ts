@@ -6,7 +6,7 @@ import {
 
 import { Building, Prisma, User, UserRole } from 'generated/prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import {
   CreateBuildingDto,
@@ -41,7 +41,7 @@ export class BuildingsService {
     query: FindAllBuildingsDto,
   ): Promise<{
     data: Building[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit, page, landlordId } = query;
     const skip = (page - 1) * limit;

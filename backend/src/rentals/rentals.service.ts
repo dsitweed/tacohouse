@@ -9,7 +9,7 @@ import { Prisma } from 'generated/prisma/client';
 import type { Rental, User } from 'generated/prisma/client';
 import { RentalStatus, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
 
@@ -94,7 +94,7 @@ export class RentalsService {
     query: FindAllRentalsDto,
   ): Promise<{
     data: Rental[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 10, page = 1, roomId, tenantId, status } = query;
     const skip = (page - 1) * limit;

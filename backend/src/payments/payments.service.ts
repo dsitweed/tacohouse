@@ -9,7 +9,7 @@ import { Prisma } from 'generated/prisma/client';
 import type { Payment, User } from 'generated/prisma/client';
 import { PaymentStatus, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import { CreatePaymentDto, FindAllPaymentsDto } from './dto';
 
@@ -102,7 +102,7 @@ export class PaymentsService {
     query: FindAllPaymentsDto,
   ): Promise<{
     data: Payment[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 10, page = 1, billId, status } = query;
     const skip = (page - 1) * limit;

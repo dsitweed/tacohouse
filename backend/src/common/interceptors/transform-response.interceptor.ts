@@ -8,47 +8,59 @@ import {
 import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ApiResponse, PaginationMeta } from 'types';
 
 @Injectable()
-export class TransformResponseInterceptor<T> implements NestInterceptor<T> {
+export class TransformResponseInterceptor<T> implements NestInterceptor<
+  T,
+  ApiResponse<T>
+> {
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
-  ): Observable<any> | Promise<Observable<any>> {
-    const ctx = context.switchToHttp();
-    const response = ctx.getResponse<Response>();
+  ): Observable<ApiResponse<T>> {
+    const response = context.switchToHttp().getResponse<Response>();
 
     return next.handle().pipe(
-      map((data) => {
-        if (
-          data &&
-          typeof data === 'object' &&
-          'data' in data &&
-          'statusCode' in data
-        ) {
-          return data;
-        }
+      map((body) => {
+        let data: T;
+        let message = 'Success';
+        let pagination: PaginationMeta | undefined;
 
-        let responseData = {};
-        let responseMessage = '';
-        let reponsePagination = {};
+        if (this.isEnvelope(body)) {
+          data = body.data as T;
 
-        if (data && typeof data === 'object') {
-          const { message, pagination, ...rest } = data as Record<string, any>;
+          if (typeof body.message === 'string') {
+            message = body.message;
+          }
 
-          if (message) responseMessage = message as string;
-          if (pagination) reponsePagination = pagination as object;
-
-          responseData = (rest.data || rest) as object;
+          if (body.pagination) {
+            pagination = body.pagination as PaginationMeta;
+          }
+        } else {
+          data = body;
         }
 
         return {
           statusCode: response.statusCode,
-          message: responseMessage || 'Success',
-          data: Object.keys(responseData).length > 0 ? responseData : data,
-          pagination: reponsePagination,
+          message,
+          data,
+          ...(pagination && { pagination }),
         };
       }),
+    );
+  }
+
+  private isEnvelope(value: unknown): value is {
+    data: unknown;
+    message?: unknown;
+    pagination?: unknown;
+  } {
+    return (
+      value !== null &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      'data' in value
     );
   }
 }

@@ -8,7 +8,7 @@ import {
 import { Bill, Prisma, User } from 'generated/prisma/client';
 import { BillStatus, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import {
   ConfirmPaymentDto,
@@ -88,7 +88,7 @@ export class BillsService {
     query: FindAllBillsDto,
   ): Promise<{
     data: Bill[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 10, page = 1, roomId, status } = query;
     const skip = (page - 1) * limit;

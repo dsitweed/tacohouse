@@ -9,7 +9,7 @@ import { Prisma } from 'generated/prisma/client';
 import type { ChatGroup, Message, User } from 'generated/prisma/client';
 import { MessageType, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import { FindAllMessagesDto, SendMessageDto } from './dto';
 
@@ -95,7 +95,7 @@ export class ChatService {
     query: FindAllMessagesDto,
   ): Promise<{
     data: Message[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 50, page = 1, before } = query;
     const skip = before ? 0 : (page - 1) * limit;
@@ -196,7 +196,7 @@ export class ChatService {
     query: FindAllMessagesDto,
   ): Promise<{
     data: Message[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 50, page = 1, before } = query;
     const skip = before ? 0 : (page - 1) * limit;

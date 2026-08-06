@@ -8,7 +8,7 @@ import { Prisma } from 'generated/prisma/client';
 import type { MaintenanceRequest, User } from 'generated/prisma/client';
 import { MaintenanceStatus, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import {
   CreateMaintenanceDto,
@@ -75,7 +75,7 @@ export class MaintenanceService {
     query: FindAllMaintenanceDto,
   ): Promise<{
     data: MaintenanceRequest[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 10, page = 1, tenantId, roomId, status, priority } = query;
     const skip = (page - 1) * limit;

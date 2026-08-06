@@ -8,7 +8,7 @@ import { Prisma } from 'generated/prisma/client';
 import type { Room, User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import { FindAllRoomsDto } from './dto';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -68,7 +68,7 @@ export class RoomsService {
     query: FindAllRoomsDto,
   ): Promise<{
     data: Room[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit, page, landlordId, buildingId } = query;
     const skip = (page - 1) * limit;

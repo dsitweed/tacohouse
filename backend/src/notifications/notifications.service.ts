@@ -8,7 +8,7 @@ import { Prisma } from 'generated/prisma/client';
 import type { Notification, User } from 'generated/prisma/client';
 import { NotificationType, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
-import { PaginationType } from 'types';
+import { PaginationMeta } from 'types';
 
 import { CreateNotificationDto, FindAllNotificationsDto } from './dto';
 
@@ -55,7 +55,7 @@ export class NotificationsService {
     query: FindAllNotificationsDto,
   ): Promise<{
     data: Notification[];
-    pagination: PaginationType;
+    pagination: PaginationMeta;
   }> {
     const { limit = 20, page = 1, isRead, type } = query;
     const skip = (page - 1) * limit;
