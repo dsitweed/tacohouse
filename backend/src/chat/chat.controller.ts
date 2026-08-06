@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
 import type { ChatGroup, Message, User } from 'generated/prisma/client';
@@ -15,11 +15,13 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('groups')
+  @ApiOperation({ operationId: 'getChatGroups' })
   getGroups(@CurrentUser() currentUser: User): Promise<ChatGroup[]> {
     return this.chatService.getGroups(currentUser);
   }
 
   @Get('groups/:id')
+  @ApiOperation({ operationId: 'getChatGroup' })
   getGroup(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -28,6 +30,7 @@ export class ChatController {
   }
 
   @Get('groups/:id/messages')
+  @ApiOperation({ operationId: 'getGroupMessages' })
   getMessages(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -38,6 +41,7 @@ export class ChatController {
 
   @Post('groups/:id/messages')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
+  @ApiOperation({ operationId: 'sendGroupMessage' })
   sendMessage(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -47,6 +51,7 @@ export class ChatController {
   }
 
   @Get('direct/:userId')
+  @ApiOperation({ operationId: 'getDirectMessages' })
   getDirectMessages(
     @CurrentUser() currentUser: User,
     @Param('userId') userId: string,
@@ -57,6 +62,7 @@ export class ChatController {
 
   @Post('direct/:userId')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
+  @ApiOperation({ operationId: 'sendDirectMessage' })
   sendDirectMessage(
     @CurrentUser() currentUser: User,
     @Param('userId') userId: string,

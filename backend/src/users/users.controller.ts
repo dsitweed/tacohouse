@@ -21,14 +21,20 @@ export class UsersController {
   // @UseGuards(JwtAuthGuard) // similar
   // @UseGuards(AuthGuard('jwt')) // similar
   @Get('me')
-  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiOperation({
+    operationId: 'getCurrentUser',
+    summary: 'Get current user profile',
+  })
   @ApiResponse({ status: 200, description: 'User profile retrieved' })
   getCurrentUser(@CurrentUser() user: User) {
     return user;
   }
 
   @Patch('me')
-  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiOperation({
+    operationId: 'updateProfile',
+    summary: 'Update current user profile',
+  })
   @ApiResponse({ status: 200, description: 'Profile updated successfully' })
   update(
     @CurrentUser() currentUser: User,
@@ -41,7 +47,10 @@ export class UsersController {
   }
 
   @Post('me/change-password')
-  @ApiOperation({ summary: 'Change user password' })
+  @ApiOperation({
+    operationId: 'changePassword',
+    summary: 'Change user password',
+  })
   @ApiResponse({ status: 200, description: 'Password changed successfully' })
   @ApiResponse({ status: 400, description: 'Invalid current password' })
   changePassword(

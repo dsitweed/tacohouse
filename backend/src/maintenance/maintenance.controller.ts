@@ -7,13 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
 import type { MaintenanceRequest, User } from 'generated/prisma/client';
@@ -35,6 +29,7 @@ export class MaintenanceController {
 
   @Post()
   @Roles(UserRole.TENANT)
+  @ApiOperation({ operationId: 'createMaintenanceRequest' })
   create(
     @CurrentUser() currentUser: User,
     @Body() createMaintenanceDto: CreateMaintenanceDto,
@@ -43,6 +38,7 @@ export class MaintenanceController {
   }
 
   @Get()
+  @ApiOperation({ operationId: 'getMaintenanceRequests' })
   findAll(
     @CurrentUser() currentUser: User,
     @Query() query: FindAllMaintenanceDto,
@@ -51,6 +47,7 @@ export class MaintenanceController {
   }
 
   @Get(':id')
+  @ApiOperation({ operationId: 'getMaintenanceRequest' })
   findOne(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -60,6 +57,7 @@ export class MaintenanceController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
+  @ApiOperation({ operationId: 'updateMaintenanceRequest' })
   update(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -74,6 +72,7 @@ export class MaintenanceController {
 
   @Post(':id/respond')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ operationId: 'respondMaintenanceRequest' })
   respond(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,

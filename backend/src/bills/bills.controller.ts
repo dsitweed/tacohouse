@@ -36,7 +36,7 @@ export class BillsController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ summary: 'Create a new bill' })
+  @ApiOperation({ operationId: 'createBill', summary: 'Create a new bill' })
   @ApiResponse({ status: 201, description: 'Bill created successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
@@ -47,14 +47,14 @@ export class BillsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all bills' })
+  @ApiOperation({ operationId: 'getBills', summary: 'Get all bills' })
   @ApiResponse({ status: 200, description: 'List of bills' })
   findAll(@CurrentUser() currentUser: User, @Query() query: FindAllBillsDto) {
     return this.billsService.findAll(currentUser, query);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a bill by ID' })
+  @ApiOperation({ operationId: 'getBill', summary: 'Get a bill by ID' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({ status: 200, description: 'Bill found' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
@@ -67,7 +67,7 @@ export class BillsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ summary: 'Update a bill' })
+  @ApiOperation({ operationId: 'updateBill', summary: 'Update a bill' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({ status: 200, description: 'Bill updated successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
@@ -82,7 +82,10 @@ export class BillsController {
 
   @Post(':id/confirm')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
-  @ApiOperation({ summary: 'Confirm payment for a bill' })
+  @ApiOperation({
+    operationId: 'confirmBillPayment',
+    summary: 'Confirm payment for a bill',
+  })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({ status: 200, description: 'Payment confirmed successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
@@ -97,7 +100,7 @@ export class BillsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ summary: 'Delete a bill' })
+  @ApiOperation({ operationId: 'deleteBill', summary: 'Delete a bill' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({ status: 200, description: 'Bill deleted successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })

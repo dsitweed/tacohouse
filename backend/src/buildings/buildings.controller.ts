@@ -32,7 +32,10 @@ export class BuildingsController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ summary: 'Create a new building' })
+  @ApiOperation({
+    operationId: 'createBuilding',
+    summary: 'Create a new building',
+  })
   @ApiResponse({ status: 201, description: 'Building created successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
@@ -43,7 +46,7 @@ export class BuildingsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all buildings' })
+  @ApiOperation({ operationId: 'getBuildings', summary: 'Get all buildings' })
   @ApiResponse({ status: 200, description: 'List of buildings' })
   findAll(
     @CurrentUser() currentUser: User,
@@ -53,7 +56,7 @@ export class BuildingsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a building by ID' })
+  @ApiOperation({ operationId: 'getBuilding', summary: 'Get a building by ID' })
   @ApiParam({ name: 'id', description: 'Building ID' })
   @ApiResponse({ status: 200, description: 'Building found' })
   @ApiResponse({ status: 404, description: 'Building not found' })
@@ -66,7 +69,7 @@ export class BuildingsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ summary: 'Update a building' })
+  @ApiOperation({ operationId: 'updateBuilding', summary: 'Update a building' })
   @ApiParam({ name: 'id', description: 'Building ID' })
   @ApiResponse({ status: 200, description: 'Building updated successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
@@ -81,7 +84,7 @@ export class BuildingsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ summary: 'Delete a building' })
+  @ApiOperation({ operationId: 'deleteBuilding', summary: 'Delete a building' })
   @ApiParam({ name: 'id', description: 'Building ID' })
   @ApiResponse({ status: 200, description: 'Building deleted successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })

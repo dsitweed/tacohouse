@@ -29,7 +29,10 @@ export class RoomsController {
 
   @Get('available')
   @Public()
-  @ApiOperation({ summary: 'Get available rooms (Public)' })
+  @ApiOperation({
+    operationId: 'getAvailableRooms',
+    summary: 'Get available rooms (Public)',
+  })
   @ApiResponse({ status: 200, description: 'List of available rooms' })
   getAvailableRooms(): Promise<Room[]> {
     return this.roomsService.getAvailableRooms();
@@ -38,6 +41,7 @@ export class RoomsController {
   @Post()
   @ApiBearerAuth('JWT-auth')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ operationId: 'createRoom' })
   create(
     @CurrentUser() currentUser: User,
     @Body() createRoomDto: CreateRoomDto,
@@ -47,12 +51,14 @@ export class RoomsController {
 
   @Get()
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ operationId: 'getRooms' })
   findAll(@CurrentUser() currentUser: User, @Query() query: FindAllRoomsDto) {
     return this.roomsService.findAll(currentUser, query);
   }
 
   @Get(':id')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ operationId: 'getRoom' })
   findOne(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -62,6 +68,7 @@ export class RoomsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ operationId: 'updateRoom' })
   update(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -72,6 +79,7 @@ export class RoomsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ operationId: 'deleteRoom' })
   remove(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,

@@ -8,13 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
 import type { Rental, User } from 'generated/prisma/client';
@@ -31,6 +25,7 @@ export class RentalsController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
+  @ApiOperation({ operationId: 'createRental' })
   create(
     @CurrentUser() currentUser: User,
     @Body() createRentalDto: CreateRentalDto,
@@ -39,11 +34,13 @@ export class RentalsController {
   }
 
   @Get()
+  @ApiOperation({ operationId: 'getRentals' })
   findAll(@CurrentUser() currentUser: User, @Query() query: FindAllRentalsDto) {
     return this.rentalsService.findAll(currentUser, query);
   }
 
   @Get(':id')
+  @ApiOperation({ operationId: 'getRental' })
   findOne(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -53,6 +50,7 @@ export class RentalsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
+  @ApiOperation({ operationId: 'updateRental' })
   update(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -63,6 +61,7 @@ export class RentalsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ operationId: 'deleteRental' })
   remove(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,

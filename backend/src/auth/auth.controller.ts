@@ -17,7 +17,7 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  @ApiOperation({ summary: 'User login' })
+  @ApiOperation({ operationId: 'authLogin', summary: 'User login' })
   @ApiBody({
     schema: {
       type: 'object',
@@ -36,7 +36,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  @ApiOperation({ summary: 'User registration' })
+  @ApiOperation({ operationId: 'authRegister', summary: 'User registration' })
   @ApiResponse({ status: 201, description: 'Registration successful' })
   @ApiResponse({ status: 400, description: 'Invalid input' })
   register(@Body() registerAuthDto: RegisterAuthDto) {
@@ -45,7 +45,7 @@ export class AuthController {
 
   // FIXME: now not working
   @Post('refresh')
-  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiOperation({ operationId: 'authRefresh', summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   create(@CurrentUser() user: User) {
