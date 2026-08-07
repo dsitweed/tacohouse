@@ -1,40 +1,17 @@
 import { useAuthStore } from '@/stores/authStore';
-import axios, { AxiosInstance } from 'axios';
+import { ApiError, ApiResponse } from '@/types';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const API_BASE_PATH = process.env.NEXT_PUBLIC_API_BASE_PATH;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
 
-// Standard API Response Format
-export interface ApiResponse<T = unknown> {
-  status: number;
-  message: string;
-  data: T;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
-
-export interface ApiError {
-  status: number;
-  message: string;
-  error?: string;
-  details?: unknown;
-}
-
-// Create axios instance
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: `${API_URL}${API_BASE_PATH}`,
+  baseURL: API_BASE_URL,
+  timeout: 100000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().accessToken;
@@ -48,51 +25,78 @@ apiClient.interceptors.request.use(
   },
 );
 
-// // Response interceptor to handle token refresh
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   async (error: AxiosError<ApiError>) => {
-//     const originalRequest = error.config as AxiosRequestConfig & {
-//       _retry?: boolean;
-//     };
+// Dedupe concurrent refresh call
+let refreshPromise: Promise<string> | null;
 
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
+async function refreshAccessToken(): Promise<string> {
+  const refreshToken = useAuthStore.getState().refreshToken;
+  if (!refreshToken) {
+    throw new Error('No refresh token');
+  }
 
-//       try {
-//         const refreshToken = useAuthStore.getState().refreshToken;
-//         if (!refreshToken) {
-//           throw new Error('No refresh token');
-//         }
+  const response = await axios.post<
+    ApiResponse<{
+      accessToken: string;
+      refreshToken: string;
+    }>
+  >(
+    `${API_BASE_URL}/auth/refresh`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    },
+  );
 
-//         const response = await axios.post<ApiResponse<{
-//           accessToken: string;
-//           refreshToken: string;
-//         }>>(`${API_URL}${API_BASE_PATH}/auth/refresh`, {
-//           refreshToken,
-//         });
+  const { accessToken, refreshToken: newRefreshToken } = response.data.data;
 
-//         const { accessToken, refreshToken: newRefreshToken } = response.data.data;
-//         useAuthStore.getState().setTokens(accessToken, newRefreshToken);
+  useAuthStore.getState().setTokens(accessToken, newRefreshToken);
 
-//         // Retry original request with new token
-//         if (originalRequest.headers) {
-//           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-//         }
-//         return apiClient(originalRequest);
-//       } catch (refreshError) {
-//         // Refresh failed, logout user
-//         useAuthStore.getState().logout();
-//         if (typeof window !== 'undefined') {
-//           window.location.href = '/login';
-//         }
-//         return Promise.reject(refreshError);
-//       }
-//     }
+  return accessToken;
+}
 
-//     return Promise.reject(error);
-//   }
-// );
+// Response interceptor to handle token refresh
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError<ApiError>) => {
+    const originalRequest = error.config as
+      | (AxiosRequestConfig & { _retry?: boolean })
+      | undefined;
+
+    if (
+      !originalRequest ||
+      error.response?.status !== 401 ||
+      originalRequest._retry
+    ) {
+      return Promise.reject(error);
+    }
+
+    originalRequest._retry = true;
+
+    try {
+      // Share a single in-flight refresh across all requests failing at once
+      refreshPromise ??= refreshAccessToken().finally(() => {
+        refreshPromise = null;
+      });
+
+      const accessToken = await refreshPromise;
+
+      // Retry original request with new token
+      if (originalRequest.headers) {
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+      }
+      return apiClient(originalRequest);
+    } catch (refreshError) {
+      // Refresh failed, logout user
+      useAuthStore.getState().logout();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      return Promise.reject(refreshError);
+    }
+  },
+);
 
 // Helper function to extract data from API response
 export function extractData<T>(response: { data: ApiResponse<T> }): T {
@@ -104,7 +108,7 @@ export function handleApiError(error: unknown): ApiError {
   if (axios.isAxiosError(error)) {
     const apiError = error.response?.data as ApiError;
     return {
-      status: error.response?.status || 500,
+      statusCode: error.response?.status || 500,
       message: apiError?.message || error.message || 'An error occurred',
       error: apiError?.error,
       details: apiError?.details,
@@ -112,7 +116,7 @@ export function handleApiError(error: unknown): ApiError {
   }
 
   return {
-    status: 500,
+    statusCode: 500,
     message:
       error instanceof Error ? error.message : 'An unknown error occurred',
   };

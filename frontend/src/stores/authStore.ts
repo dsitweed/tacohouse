@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { User } from '@/types';
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 
 interface AuthStore {
   user: User | null;
@@ -15,92 +15,97 @@ interface AuthStore {
 }
 
 export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      isAuthenticated: false,
+  devtools(
+    persist(
+      (set, get) => ({
+        user: null,
+        accessToken: null,
+        refreshToken: null,
+        isAuthenticated: false,
 
-      login: (user, accessToken, refreshToken) => {
-        set({
-          user,
-          accessToken,
-          refreshToken,
-          isAuthenticated: true,
-        });
-      },
-
-      logout: () => {
-        set({
-          user: null,
-          accessToken: null,
-          refreshToken: null,
-          isAuthenticated: false,
-        });
-      },
-
-      updateUser: (userData) => {
-        const currentUser = get().user;
-        if (currentUser) {
+        login: (user, accessToken, refreshToken) => {
           set({
-            user: { ...currentUser, ...userData },
+            user,
+            accessToken,
+            refreshToken,
+            isAuthenticated: true,
           });
-        }
-      },
+        },
 
-      /**
-       * Set tokens và sync isAuthenticated
-       *
-       * TẠI SAO CẦN: Khi token được refresh (trong api interceptor),
-       * nếu không set isAuthenticated, có thể token mới được set nhưng
-       * isAuthenticated vẫn là false → user bị logout sai
-       */
-      setTokens: (accessToken, refreshToken) => {
-        set({
-          accessToken,
-          refreshToken,
-          // Sync isAuthenticated với accessToken
-          // Logic: Có token = Đã authenticated
-          isAuthenticated: !!accessToken,
-        });
-      },
-    }),
-    {
-      name: 'auth-storage', // Key trong localStorage
+        logout: () => {
+          set({
+            user: null,
+            accessToken: null,
+            refreshToken: null,
+            isAuthenticated: false,
+          });
+        },
 
-      /**
-       * Chỉ persist các field này vào localStorage
-       */
-      partialize: (state) => ({
-        user: state.user,
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
-        isAuthenticated: state.isAuthenticated,
+        updateUser: (userData) => {
+          const currentUser = get().user;
+          if (currentUser) {
+            set({
+              user: { ...currentUser, ...userData },
+            });
+          }
+        },
+
+        /**
+         * Set tokens và sync isAuthenticated
+         *
+         * TẠI SAO CẦN: Khi token được refresh (trong api interceptor),
+         * nếu không set isAuthenticated, có thể token mới được set nhưng
+         * isAuthenticated vẫn là false → user bị logout sai
+         */
+        setTokens: (accessToken, refreshToken) => {
+          set({
+            accessToken,
+            refreshToken,
+            // Sync isAuthenticated với accessToken
+            // Logic: Có token = Đã authenticated
+            isAuthenticated: !!accessToken,
+          });
+        },
       }),
+      {
+        name: 'auth-storage', // Key trong localStorage
 
-      /**
-       * FIX 1: onRehydrateStorage Callback
-       *
-       * TẠI SAO CẦN:
-       * 1. Sau khi Zustand hydrate từ localStorage, callback này chạy
-       * 2. Đảm bảo isAuthenticated được set đúng dựa trên accessToken
-       * 3. Tránh trường hợp localStorage có token nhưng isAuthenticated = false
-       *    (do bug trước đó hoặc data corrupt)
-       *
-       * TIMING: Chạy SAU KHI hydration hoàn tất, TRƯỚC KHI component re-render
-       *
-       * Flow:
-       * localStorage → Zustand hydrate → onRehydrateStorage → State fixed → Component render
-       */
-      skipHydration: false,
-      onRehydrateStorage: () => (state) => {
-        // Nếu có accessToken sau khi hydrate → đảm bảo isAuthenticated = true
-        // Đây là derived state: Có token = Đã authenticated
-        if (state && state.accessToken) {
-          state.isAuthenticated = true;
-        }
+        /**
+         * Chỉ persist các field này vào localStorage
+         */
+        partialize: (state) => ({
+          user: state.user,
+          accessToken: state.accessToken,
+          refreshToken: state.refreshToken,
+          isAuthenticated: state.isAuthenticated,
+        }),
+
+        /**
+         * FIX 1: onRehydrateStorage Callback
+         *
+         * TẠI SAO CẦN:
+         * 1. Sau khi Zustand hydrate từ localStorage, callback này chạy
+         * 2. Đảm bảo isAuthenticated được set đúng dựa trên accessToken
+         * 3. Tránh trường hợp localStorage có token nhưng isAuthenticated = false
+         *    (do bug trước đó hoặc data corrupt)
+         *
+         * TIMING: Chạy SAU KHI hydration hoàn tất, TRƯỚC KHI component re-render
+         *
+         * Flow:
+         * localStorage → Zustand hydrate → onRehydrateStorage → State fixed → Component render
+         */
+        skipHydration: false,
+        onRehydrateStorage: () => (state) => {
+          // Nếu có accessToken sau khi hydrate → đảm bảo isAuthenticated = true
+          // Đây là derived state: Có token = Đã authenticated
+          if (state && state.accessToken) {
+            state.isAuthenticated = true;
+          }
+        },
       },
+    ),
+    {
+      name: 'AuthStore',
     },
   ),
 );

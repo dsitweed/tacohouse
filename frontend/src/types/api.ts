@@ -5,15 +5,21 @@
  * Note: Entity/enums are imported from local shared types to avoid
  * coupling the frontend build to backend-only packages (e.g. Prisma).
  */
-
 import type { NotificationType, User } from '@/types';
 
 // Standard API Response
 export interface ApiResponse<T = unknown> {
-  status: number;
+  statusCode: number;
   message: string;
   data: T;
   pagination?: PaginationMeta;
+}
+
+export interface ApiError {
+  statusCode: number;
+  message: string;
+  error?: string;
+  details?: unknown;
 }
 
 export interface PaginationMeta {
@@ -187,7 +193,12 @@ export interface CreateBillRequest {
 
 export interface UpdateBillRequest {
   dueDate?: string;
-  status?: 'PENDING' | 'TENANT_CONFIRMED' | 'LANDLORD_CONFIRMED' | 'PAID' | 'OVERDUE';
+  status?:
+    | 'PENDING'
+    | 'TENANT_CONFIRMED'
+    | 'LANDLORD_CONFIRMED'
+    | 'PAID'
+    | 'OVERDUE';
 }
 
 export interface BillListQuery {
@@ -228,7 +239,13 @@ export interface CreateMaintenanceRequest {
   title: string;
   description: string;
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  category: 'PLUMBING' | 'ELECTRICAL' | 'APPLIANCE' | 'FURNITURE' | 'CLEANING' | 'OTHER';
+  category:
+    | 'PLUMBING'
+    | 'ELECTRICAL'
+    | 'APPLIANCE'
+    | 'FURNITURE'
+    | 'CLEANING'
+    | 'OTHER';
   images?: string[];
 }
 
@@ -277,4 +294,3 @@ export interface NotificationListQuery {
   isRead?: boolean;
   type?: string;
 }
-
