@@ -13,6 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type UpdateRentalDtoStatus = typeof UpdateRentalDtoStatus[keyof typeof UpdateRentalDtoStatus];
+
+
+export const UpdateRentalDtoStatus = {
+  ACTIVE: 'ACTIVE',
+  NOTICE_GIVEN: 'NOTICE_GIVEN',
+  TERMINATED: 'TERMINATED',
+} as const;

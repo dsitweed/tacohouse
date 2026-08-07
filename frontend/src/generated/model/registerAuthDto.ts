@@ -12,5 +12,34 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { RegisterAuthDtoRole } from './registerAuthDtoRole';
 
-export interface RegisterAuthDto { [key: string]: unknown }
+export interface RegisterAuthDto {
+  email: string;
+  /**
+     * @minLength 6
+     * @maxLength 50
+     * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
+     */
+  password: string;
+  role: RegisterAuthDtoRole;
+  /** @maxLength 100 */
+  firstName: string;
+  /** @maxLength 100 */
+  lastName: string;
+  /** @maxLength 10 */
+  phone: string;
+  /** @maxLength 500 */
+  avatar?: string;
+  dateOfBirth: string;
+  /** @maxLength 100 */
+  occupation: string;
+  /** @maxLength 100 */
+  workplace: string;
+  /** @maxLength 500 */
+  idCardFrontPhoto?: string;
+  /** @maxLength 500 */
+  idCardBackPhoto?: string;
+  /** @maxLength 500 */
+  portraitPhoto?: string;
+}

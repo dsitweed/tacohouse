@@ -13,6 +13,15 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type CreateNotificationDtoRelatedType = typeof CreateNotificationDtoRelatedType[keyof typeof CreateNotificationDtoRelatedType];
+
+
+export const CreateNotificationDtoRelatedType = {
+  BILL: 'BILL',
+  PAYMENT: 'PAYMENT',
+  RENTAL: 'RENTAL',
+  MAINTENANCE_REQUEST: 'MAINTENANCE_REQUEST',
+  MESSAGE: 'MESSAGE',
+  ROOM: 'ROOM',
+  BUILDING: 'BUILDING',
+} as const;

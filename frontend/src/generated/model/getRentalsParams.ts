@@ -12,7 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { GetRentalsStatus } from './getRentalsStatus';
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type GetRentalsParams = {
+page?: number;
+limit?: number;
+roomId?: string;
+tenantId?: string;
+status?: GetRentalsStatus;
+};

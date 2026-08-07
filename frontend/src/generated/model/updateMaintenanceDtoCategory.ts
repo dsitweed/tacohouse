@@ -13,6 +13,14 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type UpdateMaintenanceDtoCategory = typeof UpdateMaintenanceDtoCategory[keyof typeof UpdateMaintenanceDtoCategory];
+
+
+export const UpdateMaintenanceDtoCategory = {
+  PLUMBING: 'PLUMBING',
+  ELECTRICAL: 'ELECTRICAL',
+  APPLIANCE: 'APPLIANCE',
+  FURNITURE: 'FURNITURE',
+  CLEANING: 'CLEANING',
+  OTHER: 'OTHER',
+} as const;

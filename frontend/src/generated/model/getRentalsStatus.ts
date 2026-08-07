@@ -13,6 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type GetRentalsStatus = typeof GetRentalsStatus[keyof typeof GetRentalsStatus];
+
+
+export const GetRentalsStatus = {
+  ACTIVE: 'ACTIVE',
+  NOTICE_GIVEN: 'NOTICE_GIVEN',
+  TERMINATED: 'TERMINATED',
+} as const;

@@ -13,6 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type GetPaymentsStatus = typeof GetPaymentsStatus[keyof typeof GetPaymentsStatus];
+
+
+export const GetPaymentsStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+} as const;

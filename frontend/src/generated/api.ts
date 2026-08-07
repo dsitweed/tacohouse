@@ -28,9 +28,8 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { apiClient } from '../lib/api';
+import { apiClient } from '../lib/apiClient';
 import type {
-  AuthLoginBody,
   ConfirmPaymentDto,
   CreateBillDto,
   CreateBuildingDto,
@@ -39,6 +38,16 @@ import type {
   CreatePaymentDto,
   CreateRentalDto,
   CreateRoomDto,
+  GetBillsParams,
+  GetBuildingsParams,
+  GetDirectMessagesParams,
+  GetGroupMessagesParams,
+  GetMaintenanceRequestsParams,
+  GetNotificationsParams,
+  GetPaymentsParams,
+  GetRentalsParams,
+  GetRoomsParams,
+  LoginAuthDto,
   RegisterAuthDto,
   RespondMaintenanceDto,
   SendMessageDto,
@@ -70,7 +79,7 @@ const withQueryKey = <T extends object, K>(
 };
 
 export type appControllerGetHelloResponse200 = {
-  data: void;
+  data: string;
   status: 200;
 };
 
@@ -257,14 +266,14 @@ export const getAuthLoginUrl = () => {
  * @summary User login
  */
 export const authLogin = async (
-  authLoginBody: AuthLoginBody,
+  loginAuthDto: LoginAuthDto,
   options?: RequestInit,
 ): Promise<authLoginResponse> => {
   return apiClient<authLoginResponse>(getAuthLoginUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(authLoginBody),
+    body: JSON.stringify(loginAuthDto),
   });
 };
 
@@ -275,13 +284,13 @@ export const getAuthLoginMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authLogin>>,
     TError,
-    { data: AuthLoginBody },
+    { data: LoginAuthDto },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authLogin>>,
   TError,
-  { data: AuthLoginBody },
+  { data: LoginAuthDto },
   TContext
 > => {
   const mutationKey = ['authLogin'];
@@ -295,7 +304,7 @@ export const getAuthLoginMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authLogin>>,
-    { data: AuthLoginBody }
+    { data: LoginAuthDto }
   > = (props) => {
     const { data } = props ?? {};
 
@@ -308,7 +317,7 @@ export const getAuthLoginMutationOptions = <
 export type AuthLoginMutationResult = NonNullable<
   Awaited<ReturnType<typeof authLogin>>
 >;
-export type AuthLoginMutationBody = AuthLoginBody;
+export type AuthLoginMutationBody = LoginAuthDto;
 export type AuthLoginMutationError = void;
 
 /**
@@ -319,7 +328,7 @@ export const useAuthLogin = <TError = void, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof authLogin>>,
       TError,
-      { data: AuthLoginBody },
+      { data: LoginAuthDto },
       TContext
     >;
   },
@@ -327,7 +336,7 @@ export const useAuthLogin = <TError = void, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof authLogin>>,
   TError,
-  { data: AuthLoginBody },
+  { data: LoginAuthDto },
   TContext
 > => {
   return useMutation(getAuthLoginMutationOptions(options), queryClient);
@@ -992,41 +1001,57 @@ export type getBuildingsResponseSuccess = getBuildingsResponse200 & {
 };
 export type getBuildingsResponse = getBuildingsResponseSuccess;
 
-export const getGetBuildingsUrl = () => {
-  return `/api/v1/buildings`;
+export const getGetBuildingsUrl = (params: GetBuildingsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/buildings?${stringifiedParams}`
+    : `/api/v1/buildings`;
 };
 
 /**
  * @summary Get all buildings
  */
 export const getBuildings = async (
+  params: GetBuildingsParams,
   options?: RequestInit,
 ): Promise<getBuildingsResponse> => {
-  return apiClient<getBuildingsResponse>(getGetBuildingsUrl(), {
+  return apiClient<getBuildingsResponse>(getGetBuildingsUrl(params), {
     ...options,
     method: 'GET',
   });
 };
 
-export const getGetBuildingsQueryKey = () => {
-  return [`/api/v1/buildings`] as const;
+export const getGetBuildingsQueryKey = (params?: GetBuildingsParams) => {
+  return [`/api/v1/buildings`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetBuildingsQueryOptions = <
   TData = Awaited<ReturnType<typeof getBuildings>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
-  >;
-}) => {
+>(
+  params: GetBuildingsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetBuildingsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetBuildingsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getBuildings>>> = ({
     signal,
-  }) => getBuildings({ signal });
+  }) => getBuildings(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getBuildings>>,
@@ -1044,6 +1069,7 @@ export function useGetBuildings<
   TData = Awaited<ReturnType<typeof getBuildings>>,
   TError = unknown,
 >(
+  params: GetBuildingsParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
@@ -1065,6 +1091,7 @@ export function useGetBuildings<
   TData = Awaited<ReturnType<typeof getBuildings>>,
   TError = unknown,
 >(
+  params: GetBuildingsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
@@ -1086,6 +1113,7 @@ export function useGetBuildings<
   TData = Awaited<ReturnType<typeof getBuildings>>,
   TError = unknown,
 >(
+  params: GetBuildingsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
@@ -1103,6 +1131,7 @@ export function useGetBuildings<
   TData = Awaited<ReturnType<typeof getBuildings>>,
   TError = unknown,
 >(
+  params: GetBuildingsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
@@ -1112,7 +1141,7 @@ export function useGetBuildings<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetBuildingsQueryOptions(options);
+  const queryOptions = getGetBuildingsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -1769,38 +1798,54 @@ export type getRoomsResponseSuccess = getRoomsResponse200 & {
 };
 export type getRoomsResponse = getRoomsResponseSuccess;
 
-export const getGetRoomsUrl = () => {
-  return `/api/v1/rooms`;
+export const getGetRoomsUrl = (params: GetRoomsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rooms?${stringifiedParams}`
+    : `/api/v1/rooms`;
 };
 
 export const getRooms = async (
+  params: GetRoomsParams,
   options?: RequestInit,
 ): Promise<getRoomsResponse> => {
-  return apiClient<getRoomsResponse>(getGetRoomsUrl(), {
+  return apiClient<getRoomsResponse>(getGetRoomsUrl(params), {
     ...options,
     method: 'GET',
   });
 };
 
-export const getGetRoomsQueryKey = () => {
-  return [`/api/v1/rooms`] as const;
+export const getGetRoomsQueryKey = (params?: GetRoomsParams) => {
+  return [`/api/v1/rooms`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetRoomsQueryOptions = <
   TData = Awaited<ReturnType<typeof getRooms>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
-  >;
-}) => {
+>(
+  params: GetRoomsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRoomsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetRoomsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getRooms>>> = ({
     signal,
-  }) => getRooms({ signal });
+  }) => getRooms(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getRooms>>,
@@ -1818,6 +1863,7 @@ export function useGetRooms<
   TData = Awaited<ReturnType<typeof getRooms>>,
   TError = unknown,
 >(
+  params: GetRoomsParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
@@ -1839,6 +1885,7 @@ export function useGetRooms<
   TData = Awaited<ReturnType<typeof getRooms>>,
   TError = unknown,
 >(
+  params: GetRoomsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
@@ -1860,6 +1907,7 @@ export function useGetRooms<
   TData = Awaited<ReturnType<typeof getRooms>>,
   TError = unknown,
 >(
+  params: GetRoomsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
@@ -1874,6 +1922,7 @@ export function useGetRooms<
   TData = Awaited<ReturnType<typeof getRooms>>,
   TError = unknown,
 >(
+  params: GetRoomsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
@@ -1883,7 +1932,7 @@ export function useGetRooms<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetRoomsQueryOptions(options);
+  const queryOptions = getGetRoomsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2311,38 +2360,54 @@ export type getRentalsResponseSuccess = getRentalsResponse200 & {
 };
 export type getRentalsResponse = getRentalsResponseSuccess;
 
-export const getGetRentalsUrl = () => {
-  return `/api/v1/rentals`;
+export const getGetRentalsUrl = (params?: GetRentalsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rentals?${stringifiedParams}`
+    : `/api/v1/rentals`;
 };
 
 export const getRentals = async (
+  params?: GetRentalsParams,
   options?: RequestInit,
 ): Promise<getRentalsResponse> => {
-  return apiClient<getRentalsResponse>(getGetRentalsUrl(), {
+  return apiClient<getRentalsResponse>(getGetRentalsUrl(params), {
     ...options,
     method: 'GET',
   });
 };
 
-export const getGetRentalsQueryKey = () => {
-  return [`/api/v1/rentals`] as const;
+export const getGetRentalsQueryKey = (params?: GetRentalsParams) => {
+  return [`/api/v1/rentals`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetRentalsQueryOptions = <
   TData = Awaited<ReturnType<typeof getRentals>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
-  >;
-}) => {
+>(
+  params?: GetRentalsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRentalsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetRentalsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getRentals>>> = ({
     signal,
-  }) => getRentals({ signal });
+  }) => getRentals(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getRentals>>,
@@ -2360,6 +2425,7 @@ export function useGetRentals<
   TData = Awaited<ReturnType<typeof getRentals>>,
   TError = unknown,
 >(
+  params: undefined | GetRentalsParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
@@ -2381,6 +2447,7 @@ export function useGetRentals<
   TData = Awaited<ReturnType<typeof getRentals>>,
   TError = unknown,
 >(
+  params?: GetRentalsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
@@ -2402,6 +2469,7 @@ export function useGetRentals<
   TData = Awaited<ReturnType<typeof getRentals>>,
   TError = unknown,
 >(
+  params?: GetRentalsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
@@ -2416,6 +2484,7 @@ export function useGetRentals<
   TData = Awaited<ReturnType<typeof getRentals>>,
   TError = unknown,
 >(
+  params?: GetRentalsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
@@ -2425,7 +2494,7 @@ export function useGetRentals<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetRentalsQueryOptions(options);
+  const queryOptions = getGetRentalsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2870,41 +2939,57 @@ export type getBillsResponseSuccess = getBillsResponse200 & {
 };
 export type getBillsResponse = getBillsResponseSuccess;
 
-export const getGetBillsUrl = () => {
-  return `/api/v1/bills`;
+export const getGetBillsUrl = (params?: GetBillsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/bills?${stringifiedParams}`
+    : `/api/v1/bills`;
 };
 
 /**
  * @summary Get all bills
  */
 export const getBills = async (
+  params?: GetBillsParams,
   options?: RequestInit,
 ): Promise<getBillsResponse> => {
-  return apiClient<getBillsResponse>(getGetBillsUrl(), {
+  return apiClient<getBillsResponse>(getGetBillsUrl(params), {
     ...options,
     method: 'GET',
   });
 };
 
-export const getGetBillsQueryKey = () => {
-  return [`/api/v1/bills`] as const;
+export const getGetBillsQueryKey = (params?: GetBillsParams) => {
+  return [`/api/v1/bills`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetBillsQueryOptions = <
   TData = Awaited<ReturnType<typeof getBills>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
-  >;
-}) => {
+>(
+  params?: GetBillsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetBillsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetBillsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getBills>>> = ({
     signal,
-  }) => getBills({ signal });
+  }) => getBills(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getBills>>,
@@ -2922,6 +3007,7 @@ export function useGetBills<
   TData = Awaited<ReturnType<typeof getBills>>,
   TError = unknown,
 >(
+  params: undefined | GetBillsParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
@@ -2943,6 +3029,7 @@ export function useGetBills<
   TData = Awaited<ReturnType<typeof getBills>>,
   TError = unknown,
 >(
+  params?: GetBillsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
@@ -2964,6 +3051,7 @@ export function useGetBills<
   TData = Awaited<ReturnType<typeof getBills>>,
   TError = unknown,
 >(
+  params?: GetBillsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
@@ -2981,6 +3069,7 @@ export function useGetBills<
   TData = Awaited<ReturnType<typeof getBills>>,
   TError = unknown,
 >(
+  params?: GetBillsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
@@ -2990,7 +3079,7 @@ export function useGetBills<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetBillsQueryOptions(options);
+  const queryOptions = getGetBillsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -3601,38 +3690,54 @@ export type getPaymentsResponseSuccess = getPaymentsResponse200 & {
 };
 export type getPaymentsResponse = getPaymentsResponseSuccess;
 
-export const getGetPaymentsUrl = () => {
-  return `/api/v1/payments`;
+export const getGetPaymentsUrl = (params?: GetPaymentsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/payments?${stringifiedParams}`
+    : `/api/v1/payments`;
 };
 
 export const getPayments = async (
+  params?: GetPaymentsParams,
   options?: RequestInit,
 ): Promise<getPaymentsResponse> => {
-  return apiClient<getPaymentsResponse>(getGetPaymentsUrl(), {
+  return apiClient<getPaymentsResponse>(getGetPaymentsUrl(params), {
     ...options,
     method: 'GET',
   });
 };
 
-export const getGetPaymentsQueryKey = () => {
-  return [`/api/v1/payments`] as const;
+export const getGetPaymentsQueryKey = (params?: GetPaymentsParams) => {
+  return [`/api/v1/payments`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetPaymentsQueryOptions = <
   TData = Awaited<ReturnType<typeof getPayments>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
-  >;
-}) => {
+>(
+  params?: GetPaymentsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetPaymentsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetPaymentsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getPayments>>> = ({
     signal,
-  }) => getPayments({ signal });
+  }) => getPayments(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getPayments>>,
@@ -3650,6 +3755,7 @@ export function useGetPayments<
   TData = Awaited<ReturnType<typeof getPayments>>,
   TError = unknown,
 >(
+  params: undefined | GetPaymentsParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
@@ -3671,6 +3777,7 @@ export function useGetPayments<
   TData = Awaited<ReturnType<typeof getPayments>>,
   TError = unknown,
 >(
+  params?: GetPaymentsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
@@ -3692,6 +3799,7 @@ export function useGetPayments<
   TData = Awaited<ReturnType<typeof getPayments>>,
   TError = unknown,
 >(
+  params?: GetPaymentsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
@@ -3706,6 +3814,7 @@ export function useGetPayments<
   TData = Awaited<ReturnType<typeof getPayments>>,
   TError = unknown,
 >(
+  params?: GetPaymentsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
@@ -3715,7 +3824,7 @@ export function useGetPayments<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetPaymentsQueryOptions(options);
+  const queryOptions = getGetPaymentsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -3983,15 +4092,30 @@ export type getMaintenanceRequestsResponseSuccess =
 export type getMaintenanceRequestsResponse =
   getMaintenanceRequestsResponseSuccess;
 
-export const getGetMaintenanceRequestsUrl = () => {
-  return `/api/v1/maintenance`;
+export const getGetMaintenanceRequestsUrl = (
+  params?: GetMaintenanceRequestsParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/maintenance?${stringifiedParams}`
+    : `/api/v1/maintenance`;
 };
 
 export const getMaintenanceRequests = async (
+  params?: GetMaintenanceRequestsParams,
   options?: RequestInit,
 ): Promise<getMaintenanceRequestsResponse> => {
   return apiClient<getMaintenanceRequestsResponse>(
-    getGetMaintenanceRequestsUrl(),
+    getGetMaintenanceRequestsUrl(params),
     {
       ...options,
       method: 'GET',
@@ -3999,30 +4123,35 @@ export const getMaintenanceRequests = async (
   );
 };
 
-export const getGetMaintenanceRequestsQueryKey = () => {
-  return [`/api/v1/maintenance`] as const;
+export const getGetMaintenanceRequestsQueryKey = (
+  params?: GetMaintenanceRequestsParams,
+) => {
+  return [`/api/v1/maintenance`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetMaintenanceRequestsQueryOptions = <
   TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getMaintenanceRequests>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
+>(
+  params?: GetMaintenanceRequestsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMaintenanceRequests>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetMaintenanceRequestsQueryKey();
+    queryOptions?.queryKey ?? getGetMaintenanceRequestsQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getMaintenanceRequests>>
-  > = ({ signal }) => getMaintenanceRequests({ signal });
+  > = ({ signal }) => getMaintenanceRequests(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getMaintenanceRequests>>,
@@ -4040,6 +4169,7 @@ export function useGetMaintenanceRequests<
   TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
   TError = unknown,
 >(
+  params: undefined | GetMaintenanceRequestsParams,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -4065,6 +4195,7 @@ export function useGetMaintenanceRequests<
   TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
   TError = unknown,
 >(
+  params?: GetMaintenanceRequestsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4090,6 +4221,7 @@ export function useGetMaintenanceRequests<
   TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
   TError = unknown,
 >(
+  params?: GetMaintenanceRequestsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4108,6 +4240,7 @@ export function useGetMaintenanceRequests<
   TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
   TError = unknown,
 >(
+  params?: GetMaintenanceRequestsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4121,7 +4254,7 @@ export function useGetMaintenanceRequests<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetMaintenanceRequestsQueryOptions(options);
+  const queryOptions = getGetMaintenanceRequestsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -4795,22 +4928,47 @@ export type getGroupMessagesResponseSuccess = getGroupMessagesResponse200 & {
 };
 export type getGroupMessagesResponse = getGroupMessagesResponseSuccess;
 
-export const getGetGroupMessagesUrl = (id: string) => {
-  return `/api/v1/chat/groups/${id}/messages`;
+export const getGetGroupMessagesUrl = (
+  id: string,
+  params?: GetGroupMessagesParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/chat/groups/${id}/messages?${stringifiedParams}`
+    : `/api/v1/chat/groups/${id}/messages`;
 };
 
 export const getGroupMessages = async (
   id: string,
+  params?: GetGroupMessagesParams,
   options?: RequestInit,
 ): Promise<getGroupMessagesResponse> => {
-  return apiClient<getGroupMessagesResponse>(getGetGroupMessagesUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+  return apiClient<getGroupMessagesResponse>(
+    getGetGroupMessagesUrl(id, params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetGroupMessagesQueryKey = (id: string) => {
-  return [`/api/v1/chat/groups/${id}/messages`] as const;
+export const getGetGroupMessagesQueryKey = (
+  id: string,
+  params?: GetGroupMessagesParams,
+) => {
+  return [
+    `/api/v1/chat/groups/${id}/messages`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getGetGroupMessagesQueryOptions = <
@@ -4818,6 +4976,7 @@ export const getGetGroupMessagesQueryOptions = <
   TError = unknown,
 >(
   id: string,
+  params?: GetGroupMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4830,11 +4989,12 @@ export const getGetGroupMessagesQueryOptions = <
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetGroupMessagesQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getGetGroupMessagesQueryKey(id, params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getGroupMessages>>
-  > = ({ signal }) => getGroupMessages(id, { signal });
+  > = ({ signal }) => getGroupMessages(id, params, { signal });
 
   return {
     queryKey,
@@ -4858,6 +5018,7 @@ export function useGetGroupMessages<
   TError = unknown,
 >(
   id: string,
+  params: undefined | GetGroupMessagesParams,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -4884,6 +5045,7 @@ export function useGetGroupMessages<
   TError = unknown,
 >(
   id: string,
+  params?: GetGroupMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4910,6 +5072,7 @@ export function useGetGroupMessages<
   TError = unknown,
 >(
   id: string,
+  params?: GetGroupMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4929,6 +5092,7 @@ export function useGetGroupMessages<
   TError = unknown,
 >(
   id: string,
+  params?: GetGroupMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4942,7 +5106,7 @@ export function useGetGroupMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetGroupMessagesQueryOptions(id, options);
+  const queryOptions = getGetGroupMessagesQueryOptions(id, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -5051,22 +5215,47 @@ export type getDirectMessagesResponseSuccess = getDirectMessagesResponse200 & {
 };
 export type getDirectMessagesResponse = getDirectMessagesResponseSuccess;
 
-export const getGetDirectMessagesUrl = (userId: string) => {
-  return `/api/v1/chat/direct/${userId}`;
+export const getGetDirectMessagesUrl = (
+  userId: string,
+  params?: GetDirectMessagesParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/chat/direct/${userId}?${stringifiedParams}`
+    : `/api/v1/chat/direct/${userId}`;
 };
 
 export const getDirectMessages = async (
   userId: string,
+  params?: GetDirectMessagesParams,
   options?: RequestInit,
 ): Promise<getDirectMessagesResponse> => {
-  return apiClient<getDirectMessagesResponse>(getGetDirectMessagesUrl(userId), {
-    ...options,
-    method: 'GET',
-  });
+  return apiClient<getDirectMessagesResponse>(
+    getGetDirectMessagesUrl(userId, params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetDirectMessagesQueryKey = (userId: string) => {
-  return [`/api/v1/chat/direct/${userId}`] as const;
+export const getGetDirectMessagesQueryKey = (
+  userId: string,
+  params?: GetDirectMessagesParams,
+) => {
+  return [
+    `/api/v1/chat/direct/${userId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getGetDirectMessagesQueryOptions = <
@@ -5074,6 +5263,7 @@ export const getGetDirectMessagesQueryOptions = <
   TError = unknown,
 >(
   userId: string,
+  params?: GetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5087,11 +5277,11 @@ export const getGetDirectMessagesQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetDirectMessagesQueryKey(userId);
+    queryOptions?.queryKey ?? getGetDirectMessagesQueryKey(userId, params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getDirectMessages>>
-  > = ({ signal }) => getDirectMessages(userId, { signal });
+  > = ({ signal }) => getDirectMessages(userId, params, { signal });
 
   return {
     queryKey,
@@ -5115,6 +5305,7 @@ export function useGetDirectMessages<
   TError = unknown,
 >(
   userId: string,
+  params: undefined | GetDirectMessagesParams,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -5141,6 +5332,7 @@ export function useGetDirectMessages<
   TError = unknown,
 >(
   userId: string,
+  params?: GetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5167,6 +5359,7 @@ export function useGetDirectMessages<
   TError = unknown,
 >(
   userId: string,
+  params?: GetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5186,6 +5379,7 @@ export function useGetDirectMessages<
   TError = unknown,
 >(
   userId: string,
+  params?: GetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5199,7 +5393,11 @@ export function useGetDirectMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetDirectMessagesQueryOptions(userId, options);
+  const queryOptions = getGetDirectMessagesQueryOptions(
+    userId,
+    params,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -5400,38 +5598,61 @@ export type getNotificationsResponseSuccess = getNotificationsResponse200 & {
 };
 export type getNotificationsResponse = getNotificationsResponseSuccess;
 
-export const getGetNotificationsUrl = () => {
-  return `/api/v1/notifications`;
+export const getGetNotificationsUrl = (params?: GetNotificationsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/notifications?${stringifiedParams}`
+    : `/api/v1/notifications`;
 };
 
 export const getNotifications = async (
+  params?: GetNotificationsParams,
   options?: RequestInit,
 ): Promise<getNotificationsResponse> => {
-  return apiClient<getNotificationsResponse>(getGetNotificationsUrl(), {
+  return apiClient<getNotificationsResponse>(getGetNotificationsUrl(params), {
     ...options,
     method: 'GET',
   });
 };
 
-export const getGetNotificationsQueryKey = () => {
-  return [`/api/v1/notifications`] as const;
+export const getGetNotificationsQueryKey = (
+  params?: GetNotificationsParams,
+) => {
+  return [`/api/v1/notifications`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetNotificationsQueryOptions = <
   TData = Awaited<ReturnType<typeof getNotifications>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData>
-  >;
-}) => {
+>(
+  params?: GetNotificationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getNotifications>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetNotificationsQueryKey();
+  const queryKey =
+    queryOptions?.queryKey ?? getGetNotificationsQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getNotifications>>
-  > = ({ signal }) => getNotifications({ signal });
+  > = ({ signal }) => getNotifications(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getNotifications>>,
@@ -5449,6 +5670,7 @@ export function useGetNotifications<
   TData = Awaited<ReturnType<typeof getNotifications>>,
   TError = unknown,
 >(
+  params: undefined | GetNotificationsParams,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -5474,6 +5696,7 @@ export function useGetNotifications<
   TData = Awaited<ReturnType<typeof getNotifications>>,
   TError = unknown,
 >(
+  params?: GetNotificationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5499,6 +5722,7 @@ export function useGetNotifications<
   TData = Awaited<ReturnType<typeof getNotifications>>,
   TError = unknown,
 >(
+  params?: GetNotificationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5517,6 +5741,7 @@ export function useGetNotifications<
   TData = Awaited<ReturnType<typeof getNotifications>>,
   TError = unknown,
 >(
+  params?: GetNotificationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -5530,7 +5755,7 @@ export function useGetNotifications<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetNotificationsQueryOptions(options);
+  const queryOptions = getGetNotificationsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -5541,7 +5766,7 @@ export function useGetNotifications<
 }
 
 export type getUnreadNotificationCountResponse200 = {
-  data: void;
+  data: number;
   status: 200;
 };
 

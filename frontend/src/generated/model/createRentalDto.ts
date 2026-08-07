@@ -13,4 +13,14 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateRentalDto { [key: string]: unknown }
+export interface CreateRentalDto {
+  roomId: string;
+  tenantId: string;
+  startDate: string;
+  endDate?: string;
+  /** @minimum 0 */
+  monthlyRent: number;
+  /** @minimum 0 */
+  depositPaid?: number;
+  contractImages?: string[];
+}

@@ -13,6 +13,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type UpdateBillDtoStatus = typeof UpdateBillDtoStatus[keyof typeof UpdateBillDtoStatus];
+
+
+export const UpdateBillDtoStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  TENANT_CONFIRMED: 'TENANT_CONFIRMED',
+  LANDLORD_CONFIRMED: 'LANDLORD_CONFIRMED',
+  OVERDUE: 'OVERDUE',
+} as const;

@@ -12,5 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateNotificationDtoRelatedType } from './createNotificationDtoRelatedType';
+import type { CreateNotificationDtoType } from './createNotificationDtoType';
 
-export interface CreateNotificationDto { [key: string]: unknown }
+export interface CreateNotificationDto {
+  userId: string;
+  title: string;
+  message: string;
+  type: CreateNotificationDtoType;
+  relatedId?: string;
+  relatedType?: CreateNotificationDtoRelatedType;
+}

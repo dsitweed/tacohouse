@@ -13,6 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type SendMessageDtoMessageType = typeof SendMessageDtoMessageType[keyof typeof SendMessageDtoMessageType];
+
+
+export const SendMessageDtoMessageType = {
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  FILE: 'FILE',
+} as const;

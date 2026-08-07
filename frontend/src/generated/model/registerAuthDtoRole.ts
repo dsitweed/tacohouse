@@ -13,6 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type RegisterAuthDtoRole = typeof RegisterAuthDtoRole[keyof typeof RegisterAuthDtoRole];
+
+
+export const RegisterAuthDtoRole = {
+  ADMIN: 'ADMIN',
+  LANDLORD: 'LANDLORD',
+  TENANT: 'TENANT',
+} as const;

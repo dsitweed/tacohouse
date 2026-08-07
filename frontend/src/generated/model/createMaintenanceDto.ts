@@ -12,5 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateMaintenanceDtoCategory } from './createMaintenanceDtoCategory';
+import type { CreateMaintenanceDtoPriority } from './createMaintenanceDtoPriority';
 
-export interface CreateMaintenanceDto { [key: string]: unknown }
+export interface CreateMaintenanceDto {
+  roomId: string;
+  title: string;
+  description: string;
+  priority: CreateMaintenanceDtoPriority;
+  category: CreateMaintenanceDtoCategory;
+  images?: string[];
+}

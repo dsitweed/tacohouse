@@ -12,5 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { CreatePaymentDtoPaymentMethod } from './createPaymentDtoPaymentMethod';
 
-export interface CreatePaymentDto { [key: string]: unknown }
+export interface CreatePaymentDto {
+  billId: string;
+  /** @minimum 0 */
+  amount: number;
+  paymentMethod: CreatePaymentDtoPaymentMethod;
+  transactionId?: string;
+  notes?: string;
+  receiptImage?: string;
+}

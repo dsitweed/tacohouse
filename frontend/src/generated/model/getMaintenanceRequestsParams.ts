@@ -12,7 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { GetMaintenanceRequestsPriority } from './getMaintenanceRequestsPriority';
+import type { GetMaintenanceRequestsStatus } from './getMaintenanceRequestsStatus';
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type GetMaintenanceRequestsParams = {
+page?: number;
+limit?: number;
+tenantId?: string;
+roomId?: string;
+status?: GetMaintenanceRequestsStatus;
+priority?: GetMaintenanceRequestsPriority;
+};

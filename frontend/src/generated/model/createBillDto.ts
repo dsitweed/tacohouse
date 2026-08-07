@@ -13,4 +13,30 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateBillDto { [key: string]: unknown }
+export interface CreateBillDto {
+  roomId: string;
+  billingPeriod: string;
+  dueDate: string;
+  /** @minimum 0 */
+  monthlyRent: number;
+  /** @minimum 0 */
+  electricityUsage?: number;
+  /** @minimum 0 */
+  electricityAmount?: number;
+  /** @minimum 0 */
+  waterUsage?: number;
+  /** @minimum 0 */
+  waterAmount?: number;
+  /** @minimum 0 */
+  gasUsage?: number;
+  /** @minimum 0 */
+  gasAmount?: number;
+  /** @minimum 0 */
+  managementFee?: number;
+  /** @minimum 0 */
+  cleaningFee?: number;
+  /** @minimum 0 */
+  lightingFee?: number;
+  /** @minimum 0 */
+  previousDebt?: number;
+}

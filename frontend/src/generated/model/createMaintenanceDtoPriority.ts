@@ -13,6 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type CreateMaintenanceDtoPriority = typeof CreateMaintenanceDtoPriority[keyof typeof CreateMaintenanceDtoPriority];
+
+
+export const CreateMaintenanceDtoPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT',
+} as const;

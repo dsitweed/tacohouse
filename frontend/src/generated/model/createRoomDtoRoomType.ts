@@ -13,6 +13,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type CreateRoomDtoRoomType = typeof CreateRoomDtoRoomType[keyof typeof CreateRoomDtoRoomType];
+
+
+export const CreateRoomDtoRoomType = {
+  FULL_RIGHTS: 'FULL_RIGHTS',
+  PARTIAL_RIGHTS: 'PARTIAL_RIGHTS',
+} as const;

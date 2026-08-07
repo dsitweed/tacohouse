@@ -12,5 +12,15 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateMaintenanceDtoCategory } from './updateMaintenanceDtoCategory';
+import type { UpdateMaintenanceDtoPriority } from './updateMaintenanceDtoPriority';
+import type { UpdateMaintenanceDtoStatus } from './updateMaintenanceDtoStatus';
 
-export interface UpdateMaintenanceDto { [key: string]: unknown }
+export interface UpdateMaintenanceDto {
+  title?: string;
+  description?: string;
+  priority?: UpdateMaintenanceDtoPriority;
+  category?: UpdateMaintenanceDtoCategory;
+  status?: UpdateMaintenanceDtoStatus;
+  completionNote?: string;
+}

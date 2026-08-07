@@ -13,6 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type UpdateMaintenanceDtoStatus = typeof UpdateMaintenanceDtoStatus[keyof typeof UpdateMaintenanceDtoStatus];
+
+
+export const UpdateMaintenanceDtoStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;

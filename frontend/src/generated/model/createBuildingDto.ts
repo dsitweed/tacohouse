@@ -13,4 +13,16 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateBuildingDto { [key: string]: unknown }
+export interface CreateBuildingDto {
+  name: string;
+  address: string;
+  description: string;
+  billingDate?: number;
+  landlordId: string;
+  electricityRate?: number;
+  waterRate?: number;
+  gasRate?: number;
+  managementFee?: number;
+  cleaningFeePerPerson?: number;
+  lightingFee?: number;
+}

@@ -12,5 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateRentalDtoStatus } from './updateRentalDtoStatus';
 
-export interface UpdateRentalDto { [key: string]: unknown }
+export interface UpdateRentalDto {
+  endDate?: string;
+  noticeDate?: string;
+  /** @minimum 0 */
+  monthlyRent?: number;
+  status?: UpdateRentalDtoStatus;
+}

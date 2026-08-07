@@ -13,4 +13,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ConfirmPaymentDto { [key: string]: unknown }
+export interface ConfirmPaymentDto {
+  tenantConfirmed?: boolean;
+  landlordConfirmed?: boolean;
+  proofImages?: string[];
+  notes?: string;
+}

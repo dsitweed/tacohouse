@@ -12,5 +12,9 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateBillDtoStatus } from './updateBillDtoStatus';
 
-export interface UpdateBillDto { [key: string]: unknown }
+export interface UpdateBillDto {
+  dueDate?: string;
+  status?: UpdateBillDtoStatus;
+}

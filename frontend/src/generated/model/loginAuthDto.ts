@@ -13,6 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
+export interface LoginAuthDto {
+  email: string;
+  /**
+     * @minLength 6
+     * @maxLength 50
+     */
+  password: string;
 }

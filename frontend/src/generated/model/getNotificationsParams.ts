@@ -12,7 +12,11 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { GetNotificationsType } from './getNotificationsType';
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type GetNotificationsParams = {
+page?: number;
+limit?: number;
+isRead?: boolean;
+type?: GetNotificationsType;
+};

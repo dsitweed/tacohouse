@@ -12,5 +12,9 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { SendMessageDtoMessageType } from './sendMessageDtoMessageType';
 
-export interface SendMessageDto { [key: string]: unknown }
+export interface SendMessageDto {
+  content: string;
+  messageType?: SendMessageDtoMessageType;
+}

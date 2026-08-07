@@ -13,7 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthLoginBody = {
-  email: string;
-  password: string;
-};
+export type CreateRoomDtoStatus = typeof CreateRoomDtoStatus[keyof typeof CreateRoomDtoStatus];
+
+
+export const CreateRoomDtoStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OCCUPIED: 'OCCUPIED',
+  PENDING_CHECKOUT: 'PENDING_CHECKOUT',
+  MAINTENANCE: 'MAINTENANCE',
+} as const;

@@ -13,6 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RespondMaintenanceDto {
-  response: string;
-}
+export type CreatePaymentDtoPaymentMethod = typeof CreatePaymentDtoPaymentMethod[keyof typeof CreatePaymentDtoPaymentMethod];
+
+
+export const CreatePaymentDtoPaymentMethod = {
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  STRIPE: 'STRIPE',
+} as const;
