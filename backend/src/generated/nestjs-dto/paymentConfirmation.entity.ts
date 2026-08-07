@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserRole } from '../prisma/client';
-import { Payment } from './payment.entity';
-import { User } from './user.entity';
 
 export class PaymentConfirmation {
   @ApiProperty({
@@ -14,11 +12,6 @@ export class PaymentConfirmation {
   })
   paymentId: string;
   @ApiProperty({
-    type: () => Payment,
-    required: false,
-  })
-  payment?: Payment;
-  @ApiProperty({
     type: 'string',
   })
   tenantId: string;
@@ -27,11 +20,6 @@ export class PaymentConfirmation {
     enumName: 'UserRole',
   })
   tenantRole: UserRole;
-  @ApiProperty({
-    type: () => User,
-    required: false,
-  })
-  tenant?: User;
   @ApiProperty({
     type: 'boolean',
   })

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Building } from './building.entity';
 import { ChatGroupMember } from './chatGroupMember.entity';
 import { Message } from './message.entity';
 
@@ -13,11 +12,6 @@ export class ChatGroup {
     type: 'string',
   })
   buildingId: string;
-  @ApiProperty({
-    type: () => Building,
-    required: false,
-  })
-  building?: Building;
   @ApiProperty({
     type: 'string',
   })

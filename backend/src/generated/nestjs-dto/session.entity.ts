@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { User } from './user.entity';
-
 export class Session {
   @ApiProperty({
     type: 'string',
@@ -10,16 +8,11 @@ export class Session {
   @ApiProperty({
     type: 'string',
   })
-  token: string;
+  userId: string;
   @ApiProperty({
     type: 'string',
   })
-  userId: string;
-  @ApiProperty({
-    type: () => User,
-    required: false,
-  })
-  user?: User;
+  token: string;
   @ApiProperty({
     type: 'string',
     format: 'date-time',

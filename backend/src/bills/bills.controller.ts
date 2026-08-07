@@ -17,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
+import { Bill as BillEntity } from 'generated/nestjs-dto';
 import type { Bill, User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
 
@@ -37,7 +38,11 @@ export class BillsController {
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   @ApiOperation({ operationId: 'createBill', summary: 'Create a new bill' })
-  @ApiResponse({ status: 201, description: 'Bill created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Bill created successfully',
+    type: BillEntity,
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
     @CurrentUser() currentUser: User,
@@ -48,7 +53,12 @@ export class BillsController {
 
   @Get()
   @ApiOperation({ operationId: 'getBills', summary: 'Get all bills' })
-  @ApiResponse({ status: 200, description: 'List of bills' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of bills',
+    type: BillEntity,
+    isArray: true,
+  })
   findAll(@CurrentUser() currentUser: User, @Query() query: FindAllBillsDto) {
     return this.billsService.findAll(currentUser, query);
   }
@@ -56,7 +66,7 @@ export class BillsController {
   @Get(':id')
   @ApiOperation({ operationId: 'getBill', summary: 'Get a bill by ID' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
-  @ApiResponse({ status: 200, description: 'Bill found' })
+  @ApiResponse({ status: 200, description: 'Bill found', type: BillEntity })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   findOne(
     @CurrentUser() currentUser: User,
@@ -69,7 +79,11 @@ export class BillsController {
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   @ApiOperation({ operationId: 'updateBill', summary: 'Update a bill' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
-  @ApiResponse({ status: 200, description: 'Bill updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Bill updated successfully',
+    type: BillEntity,
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   update(
@@ -87,7 +101,11 @@ export class BillsController {
     summary: 'Confirm payment for a bill',
   })
   @ApiParam({ name: 'id', description: 'Bill ID' })
-  @ApiResponse({ status: 200, description: 'Payment confirmed successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payment confirmed successfully',
+    type: BillEntity,
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Bill not found' })
   confirmPayment(

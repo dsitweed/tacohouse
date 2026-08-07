@@ -102,7 +102,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "User profile retrieved"
+            "description": "User profile retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -130,7 +137,14 @@
         },
         "responses": {
           "200": {
-            "description": "Profile updated successfully"
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -193,7 +207,14 @@
         },
         "responses": {
           "201": {
-            "description": "Building created successfully"
+            "description": "Building created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Building"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -243,7 +264,17 @@
         ],
         "responses": {
           "200": {
-            "description": "List of buildings"
+            "description": "List of buildings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Building"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -273,7 +304,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Building found"
+            "description": "Building found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Building"
+                }
+              }
+            }
           },
           "404": {
             "description": "Building not found"
@@ -314,7 +352,14 @@
         },
         "responses": {
           "200": {
-            "description": "Building updated successfully"
+            "description": "Building updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Building"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -348,7 +393,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Building deleted successfully"
+            "description": "Building deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Building"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -374,7 +426,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of available rooms"
+            "description": "List of available rooms",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Room"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get available rooms (Public)",
@@ -399,7 +461,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -454,7 +523,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Room"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -483,7 +562,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -520,7 +606,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
           }
         },
         "summary": "",
@@ -542,7 +635,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
           }
         },
         "summary": "",
@@ -567,7 +667,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rental"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -633,7 +740,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rental"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -662,7 +779,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rental"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -699,7 +823,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rental"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -726,7 +857,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rental"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -756,7 +894,14 @@
         },
         "responses": {
           "201": {
-            "description": "Bill created successfully"
+            "description": "Bill created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bill"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -827,7 +972,17 @@
         ],
         "responses": {
           "200": {
-            "description": "List of bills"
+            "description": "List of bills",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Bill"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -857,7 +1012,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Bill found"
+            "description": "Bill found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bill"
+                }
+              }
+            }
           },
           "404": {
             "description": "Bill not found"
@@ -898,7 +1060,14 @@
         },
         "responses": {
           "200": {
-            "description": "Bill updated successfully"
+            "description": "Bill updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bill"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -978,7 +1147,14 @@
         },
         "responses": {
           "200": {
-            "description": "Payment confirmed successfully"
+            "description": "Payment confirmed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bill"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1014,7 +1190,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1073,7 +1256,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Payment"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1102,7 +1295,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1132,7 +1332,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRequest"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1190,8 +1397,8 @@
               "type": "string",
               "enum": [
                 "PENDING",
-                "IN_PROGRESS",
                 "COMPLETED",
+                "IN_PROGRESS",
                 "CANCELLED"
               ]
             }
@@ -1213,7 +1420,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaintenanceRequest"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1242,7 +1459,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRequest"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1279,7 +1503,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRequest"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1317,8 +1548,15 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRequest"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1338,7 +1576,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatGroup"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1367,7 +1615,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGroup"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1422,7 +1677,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1459,7 +1724,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1514,7 +1786,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1551,7 +1833,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1581,7 +1870,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1642,7 +1938,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1698,7 +2004,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1727,7 +2040,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1916,6 +2236,1402 @@
           "dateOfBirth",
           "occupation",
           "workplace"
+        ]
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "LANDLORD",
+          "TENANT"
+        ]
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "occupation": {
+            "type": "string"
+          },
+          "workplace": {
+            "type": "string"
+          },
+          "idCardFrontPhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "idCardBackPhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "portraitPhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "firstName",
+          "lastName",
+          "phone",
+          "avatar",
+          "dateOfBirth",
+          "occupation",
+          "workplace",
+          "idCardFrontPhoto",
+          "idCardBackPhoto",
+          "portraitPhoto",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ipAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "userAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "token",
+          "expiresAt",
+          "ipAddress",
+          "userAgent",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "refreshToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "idToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessTokenExpiresAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "refreshTokenExpiresAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "scope": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "providerId",
+          "accountId",
+          "password",
+          "accessToken",
+          "refreshToken",
+          "idToken",
+          "accessTokenExpiresAt",
+          "refreshTokenExpiresAt",
+          "scope",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RoomType": {
+        "type": "string",
+        "enum": [
+          "FULL_RIGHTS",
+          "PARTIAL_RIGHTS"
+        ]
+      },
+      "RoomStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "OCCUPIED",
+          "PENDING_CHECKOUT",
+          "MAINTENANCE"
+        ]
+      },
+      "RentalStatus": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "NOTICE_GIVEN",
+          "TERMINATED"
+        ]
+      },
+      "Rental": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "tenantRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "roomId": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "noticeDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "monthlyRent": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "depositPaid": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RentalStatus"
+              }
+            ]
+          },
+          "contractImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "tenantRole",
+          "roomId",
+          "startDate",
+          "endDate",
+          "noticeDate",
+          "monthlyRent",
+          "depositPaid",
+          "status",
+          "contractImages",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "EquipmentCondition": {
+        "type": "string",
+        "enum": [
+          "EXCELLENT",
+          "GOOD",
+          "FAIR",
+          "POOR",
+          "BROKEN"
+        ]
+      },
+      "RoomEquipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "installedDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "warrantyExpiryDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "condition": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EquipmentCondition"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "roomId",
+          "name",
+          "description",
+          "brand",
+          "model",
+          "installedDate",
+          "warrantyExpiryDate",
+          "condition",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UtilityType": {
+        "type": "string",
+        "enum": [
+          "ELECTRICITY",
+          "WATER",
+          "GAS"
+        ]
+      },
+      "UtilityRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "string"
+          },
+          "recordDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "utilityType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UtilityType"
+              }
+            ]
+          },
+          "previousReading": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "currentReading": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "consumption": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "unitRate": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "roomId",
+          "recordDate",
+          "utilityType",
+          "previousReading",
+          "currentReading",
+          "consumption",
+          "unitRate",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "BillStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PAID",
+          "TENANT_CONFIRMED",
+          "LANDLORD_CONFIRMED",
+          "OVERDUE"
+        ]
+      },
+      "PaymentMethod": {
+        "type": "string",
+        "enum": [
+          "CASH",
+          "BANK_TRANSFER",
+          "STRIPE"
+        ]
+      },
+      "PaymentStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "COMPLETED",
+          "FAILED",
+          "REFUNDED"
+        ]
+      },
+      "PaymentConfirmation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "paymentId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "tenantRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "tenantConfirmed": {
+            "type": "boolean"
+          },
+          "tenantConfirmedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "landlordConfirmed": {
+            "type": "boolean"
+          },
+          "landlordConfirmedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "proofImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "paymentId",
+          "tenantId",
+          "tenantRole",
+          "tenantConfirmed",
+          "tenantConfirmedAt",
+          "landlordConfirmed",
+          "landlordConfirmedAt",
+          "proofImages",
+          "notes",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "billId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "paymentMethod": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaymentMethod"
+              }
+            ]
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stripePaymentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankTransferRef": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiptImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaymentStatus"
+              }
+            ]
+          },
+          "confirmation": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaymentConfirmation"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "billId",
+          "amount",
+          "paymentMethod",
+          "paymentDate",
+          "stripePaymentId",
+          "bankTransferRef",
+          "notes",
+          "receiptImage",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Bill": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "string"
+          },
+          "billingPeriod": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "monthlyRent": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "electricityUsage": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "electricityAmount": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "waterUsage": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "waterAmount": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "gasUsage": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "gasAmount": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "managementFee": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "cleaningFee": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "lightingFee": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "previousDebt": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "totalAmount": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BillStatus"
+              }
+            ]
+          },
+          "payment": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Payment"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "roomId",
+          "billingPeriod",
+          "dueDate",
+          "monthlyRent",
+          "electricityUsage",
+          "electricityAmount",
+          "waterUsage",
+          "waterAmount",
+          "gasUsage",
+          "gasAmount",
+          "managementFee",
+          "cleaningFee",
+          "lightingFee",
+          "previousDebt",
+          "totalAmount",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PriorityType": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "URGENT"
+        ]
+      },
+      "MaintenanceCategory": {
+        "type": "string",
+        "enum": [
+          "PLUMBING",
+          "ELECTRICAL",
+          "APPLIANCE",
+          "FURNITURE",
+          "CLEANING",
+          "OTHER"
+        ]
+      },
+      "MaintenanceStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "IN_PROGRESS",
+          "COMPLETED",
+          "CANCELLED"
+        ]
+      },
+      "MaintenanceRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "tenantRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "roomId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriorityType"
+              }
+            ]
+          },
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MaintenanceCategory"
+              }
+            ]
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MaintenanceStatus"
+              }
+            ]
+          },
+          "completedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "completionNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "tenantRole",
+          "roomId",
+          "title",
+          "description",
+          "priority",
+          "category",
+          "images",
+          "status",
+          "completedAt",
+          "completionNote",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Room": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "monthlyRent": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "deposit": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "maxTenants": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roomType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RoomType"
+              }
+            ]
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RoomStatus"
+              }
+            ]
+          },
+          "availableFrom": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "rentals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rental"
+            }
+          },
+          "equipment": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomEquipment"
+            }
+          },
+          "utilityRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UtilityRecord"
+            }
+          },
+          "bills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bill"
+            }
+          },
+          "maintenanceRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceRequest"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "buildingId",
+          "number",
+          "area",
+          "monthlyRent",
+          "deposit",
+          "maxTenants",
+          "roomType",
+          "description",
+          "images",
+          "status",
+          "availableFrom",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "MessageType": {
+        "type": "string",
+        "enum": [
+          "TEXT",
+          "IMAGE",
+          "FILE"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "senderId": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "messageType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageType"
+              }
+            ]
+          },
+          "attachmentUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "attachmentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "attachmentSize": {
+            "type": "integer",
+            "nullable": true,
+            "format": "int32"
+          },
+          "chatGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "recipientId": {
+            "type": "string",
+            "nullable": true
+          },
+          "readAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "senderId",
+          "content",
+          "messageType",
+          "attachmentUrl",
+          "attachmentName",
+          "attachmentSize",
+          "chatGroupId",
+          "recipientId",
+          "readAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ChatGroupMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "chatGroupId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "chatGroupId",
+          "userId",
+          "joinedAt"
+        ]
+      },
+      "ChatGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatGroupMember"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "buildingId",
+          "name",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Building": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "landlordId": {
+            "type": "string"
+          },
+          "landlordRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "billingDate": {
+            "type": "integer",
+            "nullable": true,
+            "format": "int32"
+          },
+          "electricityRate": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "waterRate": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "gasRate": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "managementFee": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "cleaningFeePerPerson": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "lightingFee": {
+            "type": "string",
+            "format": "Decimal.js"
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Room"
+            }
+          },
+          "chatGroup": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChatGroup"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "landlordId",
+          "landlordRole",
+          "name",
+          "address",
+          "description",
+          "billingDate",
+          "electricityRate",
+          "waterRate",
+          "gasRate",
+          "managementFee",
+          "cleaningFeePerPerson",
+          "lightingFee",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "NotificationType": {
+        "type": "string",
+        "enum": [
+          "BILL_GENERATED",
+          "PAYMENT_REMINDER",
+          "MAINTENANCE_UPDATE",
+          "CHAT_MESSAGE",
+          "ANNOUNCEMENT",
+          "SYSTEM"
+        ]
+      },
+      "RelatedEntityType": {
+        "type": "string",
+        "enum": [
+          "BILL",
+          "PAYMENT",
+          "RENTAL",
+          "MAINTENANCE_REQUEST",
+          "MESSAGE",
+          "ROOM",
+          "BUILDING"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationType"
+              }
+            ]
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "readAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "relatedId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedType": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RelatedEntityType"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "message",
+          "type",
+          "isRead",
+          "readAt",
+          "relatedId",
+          "relatedType",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "profile": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserProfile"
+              }
+            ]
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Session"
+            }
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Account"
+            }
+          },
+          "buildings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Building"
+            }
+          },
+          "rentals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rental"
+            }
+          },
+          "maintenanceRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceRequest"
+            }
+          },
+          "paymentConfirmations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentConfirmation"
+            }
+          },
+          "sentMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "receivedMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            }
+          },
+          "chatGroupMember": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatGroupMember"
+            }
+          },
+          "deletedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "isActive",
+          "deletedAt",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "UpdateUserProfileDto": {
@@ -2337,8 +4053,8 @@
             "type": "string",
             "enum": [
               "PENDING",
-              "IN_PROGRESS",
               "COMPLETED",
+              "IN_PROGRESS",
               "CANCELLED"
             ]
           },

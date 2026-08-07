@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 
 import { CurrentUser } from 'common/decorators';
+import { User as UserEntity } from 'generated/nestjs-dto';
 import type { User } from 'generated/prisma/client';
 
 import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
@@ -25,7 +26,11 @@ export class UsersController {
     operationId: 'getCurrentUser',
     summary: 'Get current user profile',
   })
-  @ApiResponse({ status: 200, description: 'User profile retrieved' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved',
+    type: UserEntity,
+  })
   getCurrentUser(@CurrentUser() user: User) {
     return user;
   }
@@ -35,7 +40,11 @@ export class UsersController {
     operationId: 'updateProfile',
     summary: 'Update current user profile',
   })
-  @ApiResponse({ status: 200, description: 'Profile updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Profile updated successfully',
+    type: UserEntity,
+  })
   update(
     @CurrentUser() currentUser: User,
     @Body() updateUserProfileDto: UpdateUserProfileDto,

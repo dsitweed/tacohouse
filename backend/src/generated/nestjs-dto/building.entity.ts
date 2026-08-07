@@ -3,13 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Prisma, UserRole } from '../prisma/client';
 import { ChatGroup } from './chatGroup.entity';
 import { Room } from './room.entity';
-import { User } from './user.entity';
 
 export class Building {
   @ApiProperty({
     type: 'string',
   })
   id: string;
+  @ApiProperty({
+    type: 'string',
+  })
+  landlordId: string;
+  @ApiProperty({
+    enum: UserRole,
+    enumName: 'UserRole',
+  })
+  landlordRole: UserRole;
   @ApiProperty({
     type: 'string',
   })
@@ -29,26 +37,6 @@ export class Building {
     nullable: true,
   })
   billingDate: number | null;
-  @ApiProperty({
-    type: 'string',
-  })
-  landlordId: string;
-  @ApiProperty({
-    enum: UserRole,
-    enumName: 'UserRole',
-  })
-  landlordRole: UserRole;
-  @ApiProperty({
-    type: () => User,
-    required: false,
-  })
-  landlord?: User;
-  @ApiProperty({
-    type: () => Room,
-    isArray: true,
-    required: false,
-  })
-  rooms?: Room[];
   @ApiProperty({
     type: 'string',
     format: 'Decimal.js',
@@ -79,6 +67,12 @@ export class Building {
     format: 'Decimal.js',
   })
   lightingFee: Prisma.Decimal;
+  @ApiProperty({
+    type: () => Room,
+    isArray: true,
+    required: false,
+  })
+  rooms?: Room[];
   @ApiProperty({
     type: () => ChatGroup,
     required: false,

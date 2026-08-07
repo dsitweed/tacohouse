@@ -1,7 +1,16 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
+import {
+  ChatGroup as ChatGroupEntity,
+  Message as MessageEntity,
+} from 'generated/nestjs-dto';
 import type { ChatGroup, Message, User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
 
@@ -16,12 +25,14 @@ export class ChatController {
 
   @Get('groups')
   @ApiOperation({ operationId: 'getChatGroups' })
+  @ApiResponse({ status: 200, type: ChatGroupEntity, isArray: true })
   getGroups(@CurrentUser() currentUser: User): Promise<ChatGroup[]> {
     return this.chatService.getGroups(currentUser);
   }
 
   @Get('groups/:id')
   @ApiOperation({ operationId: 'getChatGroup' })
+  @ApiResponse({ status: 200, type: ChatGroupEntity })
   getGroup(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -31,6 +42,7 @@ export class ChatController {
 
   @Get('groups/:id/messages')
   @ApiOperation({ operationId: 'getGroupMessages' })
+  @ApiResponse({ status: 200, type: MessageEntity, isArray: true })
   getMessages(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -42,6 +54,7 @@ export class ChatController {
   @Post('groups/:id/messages')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   @ApiOperation({ operationId: 'sendGroupMessage' })
+  @ApiResponse({ status: 201, type: MessageEntity })
   sendMessage(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -52,6 +65,7 @@ export class ChatController {
 
   @Get('direct/:userId')
   @ApiOperation({ operationId: 'getDirectMessages' })
+  @ApiResponse({ status: 200, type: MessageEntity, isArray: true })
   getDirectMessages(
     @CurrentUser() currentUser: User,
     @Param('userId') userId: string,
@@ -63,6 +77,7 @@ export class ChatController {
   @Post('direct/:userId')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
   @ApiOperation({ operationId: 'sendDirectMessage' })
+  @ApiResponse({ status: 201, type: MessageEntity })
   sendDirectMessage(
     @CurrentUser() currentUser: User,
     @Param('userId') userId: string,

@@ -7,9 +7,15 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
+import { Notification as NotificationEntity } from 'generated/nestjs-dto';
 import type { Notification, User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
 
@@ -25,6 +31,7 @@ export class NotificationsController {
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   @ApiOperation({ operationId: 'createNotification' })
+  @ApiResponse({ status: 201, type: NotificationEntity })
   create(
     @CurrentUser() currentUser: User,
     @Body() createNotificationDto: CreateNotificationDto,
@@ -34,6 +41,7 @@ export class NotificationsController {
 
   @Get()
   @ApiOperation({ operationId: 'getNotifications' })
+  @ApiResponse({ status: 200, type: NotificationEntity, isArray: true })
   findAll(
     @CurrentUser() currentUser: User,
     @Query() query: FindAllNotificationsDto,
@@ -49,6 +57,7 @@ export class NotificationsController {
 
   @Get(':id')
   @ApiOperation({ operationId: 'getNotification' })
+  @ApiResponse({ status: 200, type: NotificationEntity })
   findOne(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
@@ -58,6 +67,7 @@ export class NotificationsController {
 
   @Patch(':id/read')
   @ApiOperation({ operationId: 'markNotificationAsRead' })
+  @ApiResponse({ status: 200, type: NotificationEntity })
   markAsRead(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,

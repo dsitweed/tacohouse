@@ -28,6 +28,7 @@ apiClient.interceptors.request.use(
 // Dedupe concurrent refresh call
 let refreshPromise: Promise<string> | null;
 
+// TODO: use http only cookie instead of client state in zustand
 async function refreshAccessToken(): Promise<string> {
   const refreshToken = useAuthStore.getState().refreshToken;
   if (!refreshToken) {

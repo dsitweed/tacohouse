@@ -17,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 
 import { CurrentUser, Roles } from 'common/decorators';
+import { Building as BuildingEntity } from 'generated/nestjs-dto';
 import { Building, type User, UserRole } from 'generated/prisma/client';
 
 import { BuildingsService } from './buildings.service';
@@ -36,7 +37,11 @@ export class BuildingsController {
     operationId: 'createBuilding',
     summary: 'Create a new building',
   })
-  @ApiResponse({ status: 201, description: 'Building created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Building created successfully',
+    type: BuildingEntity,
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(
     @CurrentUser() currentUser: User,
@@ -47,7 +52,12 @@ export class BuildingsController {
 
   @Get()
   @ApiOperation({ operationId: 'getBuildings', summary: 'Get all buildings' })
-  @ApiResponse({ status: 200, description: 'List of buildings' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of buildings',
+    type: BuildingEntity,
+    isArray: true,
+  })
   findAll(
     @CurrentUser() currentUser: User,
     @Query() query: FindAllBuildingsDto,
@@ -58,7 +68,11 @@ export class BuildingsController {
   @Get(':id')
   @ApiOperation({ operationId: 'getBuilding', summary: 'Get a building by ID' })
   @ApiParam({ name: 'id', description: 'Building ID' })
-  @ApiResponse({ status: 200, description: 'Building found' })
+  @ApiResponse({
+    status: 200,
+    description: 'Building found',
+    type: BuildingEntity,
+  })
   @ApiResponse({ status: 404, description: 'Building not found' })
   findOne(
     @CurrentUser() currentUser: User,
@@ -71,7 +85,11 @@ export class BuildingsController {
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   @ApiOperation({ operationId: 'updateBuilding', summary: 'Update a building' })
   @ApiParam({ name: 'id', description: 'Building ID' })
-  @ApiResponse({ status: 200, description: 'Building updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Building updated successfully',
+    type: BuildingEntity,
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Building not found' })
   update(
@@ -86,7 +104,11 @@ export class BuildingsController {
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   @ApiOperation({ operationId: 'deleteBuilding', summary: 'Delete a building' })
   @ApiParam({ name: 'id', description: 'Building ID' })
-  @ApiResponse({ status: 200, description: 'Building deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Building deleted successfully',
+    type: BuildingEntity,
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Building not found' })
   remove(

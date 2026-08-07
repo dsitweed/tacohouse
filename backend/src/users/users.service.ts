@@ -81,7 +81,8 @@ export class UsersService {
 
     const hashedPassword = await argon.hash(newPassword);
 
-    const updatedUser = await this.prisma.account.update({
+    // Only return a confirmation, never the Account record (it holds the password hash)
+    await this.prisma.account.update({
       where: {
         providerId_accountId: {
           providerId: 'credential',
@@ -93,6 +94,6 @@ export class UsersService {
       },
     });
 
-    return updatedUser;
+    return { message: 'Password updated successfully' };
   }
 }

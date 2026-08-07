@@ -341,7 +341,6 @@ export class BillsService {
       throw new ForbiddenException('You cannot delete bills');
     }
 
-    // Delete the bill
     await this.prisma.bill.delete({
       where: { id },
     });
