@@ -6,7 +6,7 @@ import { CurrentUser, Public } from 'common/decorators';
 import type { User } from 'generated/prisma/client';
 
 import { AuthService } from './auth.service';
-import { RegisterAuthDto } from './dto';
+import { LoginAuthDto, RegisterAuthDto } from './dto';
 
 // TODO: Work with redis
 @ApiTags('Auth')
@@ -18,16 +18,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   @ApiOperation({ operationId: 'authLogin', summary: 'User login' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string', example: 'user@example.com' },
-        password: { type: 'string', example: 'password123' },
-      },
-      required: ['email', 'password'],
-    },
-  })
+  @ApiBody({ type: LoginAuthDto })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   login(@CurrentUser() user: User) {

@@ -7,7 +7,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -24,21 +31,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "example": "user@example.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "example": "password123"
-                  }
-                },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "$ref": "#/components/schemas/LoginAuthDto"
               }
             }
           }
@@ -218,7 +211,36 @@
       },
       "get": {
         "operationId": "getBuildings",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "landlordId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of buildings"
@@ -392,7 +414,44 @@
       },
       "get": {
         "operationId": "getRooms",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "landlordId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "buildingId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -523,7 +582,55 @@
       },
       "get": {
         "operationId": "getRentals",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "roomId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "NOTICE_GIVEN",
+                "TERMINATED"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -667,7 +774,57 @@
       },
       "get": {
         "operationId": "getBills",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "roomId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rentalId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "PAID",
+                "TENANT_CONFIRMED",
+                "LANDLORD_CONFIRMED",
+                "OVERDUE"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of bills"
@@ -872,7 +1029,48 @@
       },
       "get": {
         "operationId": "getPayments",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "billId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "COMPLETED",
+                "FAILED",
+                "REFUNDED"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -949,7 +1147,70 @@
       },
       "get": {
         "operationId": "getMaintenanceRequests",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roomId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "CANCELLED"
+              ]
+            }
+          },
+          {
+            "name": "priority",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "URGENT"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -1131,6 +1392,32 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1194,6 +1481,32 @@
             "name": "userId",
             "required": true,
             "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -1283,7 +1596,50 @@
       },
       "get": {
         "operationId": "getNotifications",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isRead",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BILL_GENERATED",
+                "PAYMENT_REMINDER",
+                "MAINTENANCE_UPDATE",
+                "CHAT_MESSAGE",
+                "ANNOUNCEMENT",
+                "SYSTEM"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -1306,7 +1662,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1463,9 +1826,97 @@
       }
     },
     "schemas": {
+      "LoginAuthDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
       "RegisterAuthDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 50,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "LANDLORD",
+              "TENANT"
+            ]
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "avatar": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "occupation": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "workplace": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "idCardFrontPhoto": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "idCardBackPhoto": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "portraitPhoto": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "role",
+          "firstName",
+          "lastName",
+          "phone",
+          "dateOfBirth",
+          "occupation",
+          "workplace"
+        ]
       },
       "UpdateUserProfileDto": {
         "type": "object",
@@ -1473,11 +1924,66 @@
       },
       "UpdatePasswordDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 50
+          },
+          "confirmPassword": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "currentPassword",
+          "confirmPassword"
+        ]
       },
       "CreateBuildingDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "billingDate": {
+            "type": "number"
+          },
+          "landlordId": {
+            "type": "string"
+          },
+          "electricityRate": {
+            "type": "number"
+          },
+          "waterRate": {
+            "type": "number"
+          },
+          "gasRate": {
+            "type": "number"
+          },
+          "managementFee": {
+            "type": "number"
+          },
+          "cleaningFeePerPerson": {
+            "type": "number"
+          },
+          "lightingFee": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "description",
+          "landlordId"
+        ]
       },
       "UpdateBuildingDto": {
         "type": "object",
@@ -1485,7 +1991,71 @@
       },
       "CreateRoomDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "area": {
+            "type": "number",
+            "minimum": 1
+          },
+          "monthlyRent": {
+            "type": "number",
+            "minimum": 1
+          },
+          "deposit": {
+            "type": "number",
+            "default": 0,
+            "minimum": 1
+          },
+          "maxTenants": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1
+          },
+          "roomType": {
+            "type": "string",
+            "enum": [
+              "FULL_RIGHTS",
+              "PARTIAL_RIGHTS"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "OCCUPIED",
+              "PENDING_CHECKOUT",
+              "MAINTENANCE"
+            ]
+          },
+          "availableFrom": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "number",
+          "buildingId",
+          "area",
+          "monthlyRent",
+          "deposit",
+          "maxTenants",
+          "roomType",
+          "status"
+        ]
       },
       "UpdateRoomDto": {
         "type": "object",
@@ -1493,47 +2063,365 @@
       },
       "CreateRentalDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "monthlyRent": {
+            "type": "number",
+            "minimum": 0
+          },
+          "depositPaid": {
+            "type": "number",
+            "minimum": 0
+          },
+          "contractImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "roomId",
+          "tenantId",
+          "startDate",
+          "monthlyRent"
+        ]
       },
       "UpdateRentalDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "endDate": {
+            "type": "string"
+          },
+          "noticeDate": {
+            "type": "string"
+          },
+          "monthlyRent": {
+            "type": "number",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "NOTICE_GIVEN",
+              "TERMINATED"
+            ]
+          }
+        }
       },
       "CreateBillDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "billingPeriod": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string"
+          },
+          "monthlyRent": {
+            "type": "number",
+            "minimum": 0
+          },
+          "electricityUsage": {
+            "type": "number",
+            "minimum": 0
+          },
+          "electricityAmount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "waterUsage": {
+            "type": "number",
+            "minimum": 0
+          },
+          "waterAmount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "gasUsage": {
+            "type": "number",
+            "minimum": 0
+          },
+          "gasAmount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "managementFee": {
+            "type": "number",
+            "minimum": 0
+          },
+          "cleaningFee": {
+            "type": "number",
+            "minimum": 0
+          },
+          "lightingFee": {
+            "type": "number",
+            "minimum": 0
+          },
+          "previousDebt": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "roomId",
+          "billingPeriod",
+          "dueDate",
+          "monthlyRent"
+        ]
       },
       "UpdateBillDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "dueDate": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PAID",
+              "TENANT_CONFIRMED",
+              "LANDLORD_CONFIRMED",
+              "OVERDUE"
+            ]
+          }
+        }
       },
       "ConfirmPaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "tenantConfirmed": {
+            "type": "boolean"
+          },
+          "landlordConfirmed": {
+            "type": "boolean"
+          },
+          "proofImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
       },
       "CreatePaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "billId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "BANK_TRANSFER",
+              "STRIPE"
+            ]
+          },
+          "transactionId": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "receiptImage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "billId",
+          "amount",
+          "paymentMethod"
+        ]
       },
       "CreateMaintenanceDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "URGENT"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "PLUMBING",
+              "ELECTRICAL",
+              "APPLIANCE",
+              "FURNITURE",
+              "CLEANING",
+              "OTHER"
+            ]
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "roomId",
+          "title",
+          "description",
+          "priority",
+          "category"
+        ]
       },
       "UpdateMaintenanceDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "URGENT"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "PLUMBING",
+              "ELECTRICAL",
+              "APPLIANCE",
+              "FURNITURE",
+              "CLEANING",
+              "OTHER"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "completionNote": {
+            "type": "string"
+          }
+        }
       },
       "RespondMaintenanceDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "response": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "response"
+        ]
       },
       "SendMessageDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "messageType": {
+            "enum": [
+              "TEXT",
+              "IMAGE",
+              "FILE"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "content"
+        ]
       },
       "CreateNotificationDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BILL_GENERATED",
+              "PAYMENT_REMINDER",
+              "MAINTENANCE_UPDATE",
+              "CHAT_MESSAGE",
+              "ANNOUNCEMENT",
+              "SYSTEM"
+            ]
+          },
+          "relatedId": {
+            "type": "string"
+          },
+          "relatedType": {
+            "type": "string",
+            "enum": [
+              "BILL",
+              "PAYMENT",
+              "RENTAL",
+              "MAINTENANCE_REQUEST",
+              "MESSAGE",
+              "ROOM",
+              "BUILDING"
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "title",
+          "message",
+          "type"
+        ]
       }
     }
   }
