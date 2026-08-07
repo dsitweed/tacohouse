@@ -13,12 +13,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type EquipmentCondition = typeof EquipmentCondition[keyof typeof EquipmentCondition];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const EquipmentCondition = {
+  EXCELLENT: 'EXCELLENT',
+  GOOD: 'GOOD',
+  FAIR: 'FAIR',
+  POOR: 'POOR',
+  BROKEN: 'BROKEN',
 } as const;

@@ -12,13 +12,23 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { EquipmentCondition } from './equipmentCondition';
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface RoomEquipment {
+  id: string;
+  roomId: string;
+  name: string;
+  /** @nullable */
+  description: string | null;
+  /** @nullable */
+  brand: string | null;
+  /** @nullable */
+  model: string | null;
+  /** @nullable */
+  installedDate: string | null;
+  /** @nullable */
+  warrantyExpiryDate: string | null;
+  condition: EquipmentCondition;
+  createdAt: string;
+  updatedAt: string;
+}

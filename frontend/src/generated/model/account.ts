@@ -13,12 +13,25 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface Account {
+  id: string;
+  userId: string;
+  providerId: string;
+  accountId: string;
+  /** @nullable */
+  password: string | null;
+  /** @nullable */
+  accessToken: string | null;
+  /** @nullable */
+  refreshToken: string | null;
+  /** @nullable */
+  idToken: string | null;
+  /** @nullable */
+  accessTokenExpiresAt: string | null;
+  /** @nullable */
+  refreshTokenExpiresAt: string | null;
+  /** @nullable */
+  scope: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

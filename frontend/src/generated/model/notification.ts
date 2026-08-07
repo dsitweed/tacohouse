@@ -12,13 +12,21 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { NotificationType } from './notificationType';
+import type { RelatedEntityType } from './relatedEntityType';
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  isRead: boolean;
+  /** @nullable */
+  readAt: string | null;
+  /** @nullable */
+  relatedId: string | null;
+  relatedType: RelatedEntityType | null;
+  createdAt: string;
+  updatedAt: string;
+}

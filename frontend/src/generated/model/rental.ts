@@ -12,13 +12,23 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { RentalStatus } from './rentalStatus';
+import type { UserRole } from './userRole';
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface Rental {
+  id: string;
+  tenantId: string;
+  tenantRole: UserRole;
+  roomId: string;
+  startDate: string;
+  /** @nullable */
+  endDate: string | null;
+  /** @nullable */
+  noticeDate: string | null;
+  monthlyRent: string;
+  depositPaid: string;
+  status: RentalStatus;
+  contractImages: string[];
+  createdAt: string;
+  updatedAt: string;
+}

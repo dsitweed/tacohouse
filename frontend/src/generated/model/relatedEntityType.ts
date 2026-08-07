@@ -13,12 +13,15 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type RelatedEntityType = typeof RelatedEntityType[keyof typeof RelatedEntityType];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const RelatedEntityType = {
+  BILL: 'BILL',
+  PAYMENT: 'PAYMENT',
+  RENTAL: 'RENTAL',
+  MAINTENANCE_REQUEST: 'MAINTENANCE_REQUEST',
+  MESSAGE: 'MESSAGE',
+  ROOM: 'ROOM',
+  BUILDING: 'BUILDING',
 } as const;

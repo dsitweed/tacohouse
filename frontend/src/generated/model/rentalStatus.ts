@@ -13,12 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type RentalStatus = typeof RentalStatus[keyof typeof RentalStatus];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const RentalStatus = {
+  ACTIVE: 'ACTIVE',
+  NOTICE_GIVEN: 'NOTICE_GIVEN',
+  TERMINATED: 'TERMINATED',
 } as const;

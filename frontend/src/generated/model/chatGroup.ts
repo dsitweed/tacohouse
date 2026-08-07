@@ -12,13 +12,17 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { ChatGroupMember } from './chatGroupMember';
+import type { Message } from './message';
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface ChatGroup {
+  id: string;
+  buildingId: string;
+  name: string;
+  /** @nullable */
+  description: string | null;
+  messages?: Message[];
+  members?: ChatGroupMember[];
+  createdAt: string;
+  updatedAt: string;
+}

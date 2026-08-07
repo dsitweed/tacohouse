@@ -13,12 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const PaymentMethod = {
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  STRIPE: 'STRIPE',
 } as const;

@@ -13,12 +13,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type RoomType = typeof RoomType[keyof typeof RoomType];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const RoomType = {
+  FULL_RIGHTS: 'FULL_RIGHTS',
+  PARTIAL_RIGHTS: 'PARTIAL_RIGHTS',
 } as const;

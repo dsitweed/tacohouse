@@ -13,12 +13,23 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface UserProfile {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  /** @nullable */
+  avatar: string | null;
+  dateOfBirth: string;
+  occupation: string;
+  workplace: string;
+  /** @nullable */
+  idCardFrontPhoto: string | null;
+  /** @nullable */
+  idCardBackPhoto: string | null;
+  /** @nullable */
+  portraitPhoto: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

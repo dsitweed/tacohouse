@@ -13,12 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  LANDLORD: 'LANDLORD',
+  TENANT: 'TENANT',
 } as const;

@@ -12,13 +12,17 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { UtilityType } from './utilityType';
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
-
-
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
-} as const;
+export interface UtilityRecord {
+  id: string;
+  roomId: string;
+  recordDate: string;
+  utilityType: UtilityType;
+  previousReading: string;
+  currentReading: string;
+  consumption: string;
+  unitRate: string;
+  createdAt: string;
+  updatedAt: string;
+}

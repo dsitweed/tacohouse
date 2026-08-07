@@ -28,8 +28,10 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { apiClient } from '../lib/apiClient';
 import type {
+  Bill,
+  Building,
+  ChatGroup,
   ConfirmPaymentDto,
   CreateBillDto,
   CreateBuildingDto,
@@ -48,8 +50,14 @@ import type {
   GetRentalsParams,
   GetRoomsParams,
   LoginAuthDto,
+  MaintenanceRequest,
+  Message,
+  Notification,
+  Payment,
   RegisterAuthDto,
+  Rental,
   RespondMaintenanceDto,
+  Room,
   SendMessageDto,
   UpdateBillDto,
   UpdateBuildingDto,
@@ -58,8 +66,10 @@ import type {
   UpdateRentalDto,
   UpdateRoomDto,
   UpdateUserProfileDto,
+  User,
 } from './model';
 
+import { apiClient } from '../lib/apiClient';
 const withQueryKey = <T extends object, K>(
   query: T,
   queryKey: K,
@@ -255,8 +265,7 @@ export type authLoginResponseError = authLoginResponse401 & {
 };
 
 export type authLoginResponse =
-  | authLoginResponseSuccess
-  | authLoginResponseError;
+  authLoginResponseSuccess | authLoginResponseError;
 
 export const getAuthLoginUrl = () => {
   return `/api/v1/auth/login`;
@@ -360,8 +369,7 @@ export type authRegisterResponseError = authRegisterResponse400 & {
 };
 
 export type authRegisterResponse =
-  | authRegisterResponseSuccess
-  | authRegisterResponseError;
+  authRegisterResponseSuccess | authRegisterResponseError;
 
 export const getAuthRegisterUrl = () => {
   return `/api/v1/auth/register`;
@@ -465,8 +473,7 @@ export type authRefreshResponseError = authRefreshResponse401 & {
 };
 
 export type authRefreshResponse =
-  | authRefreshResponseSuccess
-  | authRefreshResponseError;
+  authRefreshResponseSuccess | authRefreshResponseError;
 
 export const getAuthRefreshUrl = () => {
   return `/api/v1/auth/refresh`;
@@ -548,7 +555,7 @@ export const useAuthRefresh = <TError = void, TContext = unknown>(
 };
 
 export type getCurrentUserResponse200 = {
-  data: void;
+  data: User;
   status: 200;
 };
 
@@ -688,7 +695,7 @@ export function useGetCurrentUser<
 }
 
 export type updateProfileResponse200 = {
-  data: void;
+  data: User;
   status: 200;
 };
 
@@ -799,8 +806,7 @@ export type changePasswordResponseError = changePasswordResponse400 & {
 };
 
 export type changePasswordResponse =
-  | changePasswordResponseSuccess
-  | changePasswordResponseError;
+  changePasswordResponseSuccess | changePasswordResponseError;
 
 export const getChangePasswordUrl = () => {
   return `/api/v1/users/me/change-password`;
@@ -887,7 +893,7 @@ export const useChangePassword = <TError = void, TContext = unknown>(
 };
 
 export type createBuildingResponse201 = {
-  data: void;
+  data: Building;
   status: 201;
 };
 
@@ -904,8 +910,7 @@ export type createBuildingResponseError = createBuildingResponse403 & {
 };
 
 export type createBuildingResponse =
-  | createBuildingResponseSuccess
-  | createBuildingResponseError;
+  createBuildingResponseSuccess | createBuildingResponseError;
 
 export const getCreateBuildingUrl = () => {
   return `/api/v1/buildings`;
@@ -992,7 +997,7 @@ export const useCreateBuilding = <TError = void, TContext = unknown>(
 };
 
 export type getBuildingsResponse200 = {
-  data: void;
+  data: Building[];
   status: 200;
 };
 
@@ -1152,7 +1157,7 @@ export function useGetBuildings<
 }
 
 export type getBuildingResponse200 = {
-  data: void;
+  data: Building;
   status: 200;
 };
 
@@ -1169,8 +1174,7 @@ export type getBuildingResponseError = getBuildingResponse404 & {
 };
 
 export type getBuildingResponse =
-  | getBuildingResponseSuccess
-  | getBuildingResponseError;
+  getBuildingResponseSuccess | getBuildingResponseError;
 
 export const getGetBuildingUrl = (id: string) => {
   return `/api/v1/buildings/${id}`;
@@ -1316,7 +1320,7 @@ export function useGetBuilding<
 }
 
 export type updateBuildingResponse200 = {
-  data: void;
+  data: Building;
   status: 200;
 };
 
@@ -1334,15 +1338,13 @@ export type updateBuildingResponseSuccess = updateBuildingResponse200 & {
   headers: Headers;
 };
 export type updateBuildingResponseError = (
-  | updateBuildingResponse403
-  | updateBuildingResponse404
+  updateBuildingResponse403 | updateBuildingResponse404
 ) & {
   headers: Headers;
 };
 
 export type updateBuildingResponse =
-  | updateBuildingResponseSuccess
-  | updateBuildingResponseError;
+  updateBuildingResponseSuccess | updateBuildingResponseError;
 
 export const getUpdateBuildingUrl = (id: string) => {
   return `/api/v1/buildings/${id}`;
@@ -1430,7 +1432,7 @@ export const useUpdateBuilding = <TError = void, TContext = unknown>(
 };
 
 export type deleteBuildingResponse200 = {
-  data: void;
+  data: Building;
   status: 200;
 };
 
@@ -1448,15 +1450,13 @@ export type deleteBuildingResponseSuccess = deleteBuildingResponse200 & {
   headers: Headers;
 };
 export type deleteBuildingResponseError = (
-  | deleteBuildingResponse403
-  | deleteBuildingResponse404
+  deleteBuildingResponse403 | deleteBuildingResponse404
 ) & {
   headers: Headers;
 };
 
 export type deleteBuildingResponse =
-  | deleteBuildingResponseSuccess
-  | deleteBuildingResponseError;
+  deleteBuildingResponseSuccess | deleteBuildingResponseError;
 
 export const getDeleteBuildingUrl = (id: string) => {
   return `/api/v1/buildings/${id}`;
@@ -1541,7 +1541,7 @@ export const useDeleteBuilding = <TError = void, TContext = unknown>(
 };
 
 export type getAvailableRoomsResponse200 = {
-  data: void;
+  data: Room[];
   status: 200;
 };
 
@@ -1701,7 +1701,7 @@ export function useGetAvailableRooms<
 }
 
 export type createRoomResponse201 = {
-  data: void;
+  data: Room;
   status: 201;
 };
 
@@ -1789,7 +1789,7 @@ export const useCreateRoom = <TError = unknown, TContext = unknown>(
 };
 
 export type getRoomsResponse200 = {
-  data: void;
+  data: Room[];
   status: 200;
 };
 
@@ -1943,7 +1943,7 @@ export function useGetRooms<
 }
 
 export type getRoomResponse200 = {
-  data: void;
+  data: Room;
   status: 200;
 };
 
@@ -2088,7 +2088,7 @@ export function useGetRoom<
 }
 
 export type updateRoomResponse200 = {
-  data: void;
+  data: Room;
   status: 200;
 };
 
@@ -2177,7 +2177,7 @@ export const useUpdateRoom = <TError = unknown, TContext = unknown>(
 };
 
 export type deleteRoomResponse200 = {
-  data: void;
+  data: Room;
   status: 200;
 };
 
@@ -2263,7 +2263,7 @@ export const useDeleteRoom = <TError = unknown, TContext = unknown>(
 };
 
 export type createRentalResponse201 = {
-  data: void;
+  data: Rental;
   status: 201;
 };
 
@@ -2351,7 +2351,7 @@ export const useCreateRental = <TError = unknown, TContext = unknown>(
 };
 
 export type getRentalsResponse200 = {
-  data: void;
+  data: Rental[];
   status: 200;
 };
 
@@ -2505,7 +2505,7 @@ export function useGetRentals<
 }
 
 export type getRentalResponse200 = {
-  data: void;
+  data: Rental;
   status: 200;
 };
 
@@ -2650,7 +2650,7 @@ export function useGetRental<
 }
 
 export type updateRentalResponse200 = {
-  data: void;
+  data: Rental;
   status: 200;
 };
 
@@ -2739,7 +2739,7 @@ export const useUpdateRental = <TError = unknown, TContext = unknown>(
 };
 
 export type deleteRentalResponse200 = {
-  data: void;
+  data: Rental;
   status: 200;
 };
 
@@ -2825,7 +2825,7 @@ export const useDeleteRental = <TError = unknown, TContext = unknown>(
 };
 
 export type createBillResponse201 = {
-  data: void;
+  data: Bill;
   status: 201;
 };
 
@@ -2842,8 +2842,7 @@ export type createBillResponseError = createBillResponse403 & {
 };
 
 export type createBillResponse =
-  | createBillResponseSuccess
-  | createBillResponseError;
+  createBillResponseSuccess | createBillResponseError;
 
 export const getCreateBillUrl = () => {
   return `/api/v1/bills`;
@@ -2930,7 +2929,7 @@ export const useCreateBill = <TError = void, TContext = unknown>(
 };
 
 export type getBillsResponse200 = {
-  data: void;
+  data: Bill[];
   status: 200;
 };
 
@@ -3090,7 +3089,7 @@ export function useGetBills<
 }
 
 export type getBillResponse200 = {
-  data: void;
+  data: Bill;
   status: 200;
 };
 
@@ -3250,7 +3249,7 @@ export function useGetBill<
 }
 
 export type updateBillResponse200 = {
-  data: void;
+  data: Bill;
   status: 200;
 };
 
@@ -3268,15 +3267,13 @@ export type updateBillResponseSuccess = updateBillResponse200 & {
   headers: Headers;
 };
 export type updateBillResponseError = (
-  | updateBillResponse403
-  | updateBillResponse404
+  updateBillResponse403 | updateBillResponse404
 ) & {
   headers: Headers;
 };
 
 export type updateBillResponse =
-  | updateBillResponseSuccess
-  | updateBillResponseError;
+  updateBillResponseSuccess | updateBillResponseError;
 
 export const getUpdateBillUrl = (id: string) => {
   return `/api/v1/bills/${id}`;
@@ -3382,15 +3379,13 @@ export type deleteBillResponseSuccess = deleteBillResponse200 & {
   headers: Headers;
 };
 export type deleteBillResponseError = (
-  | deleteBillResponse403
-  | deleteBillResponse404
+  deleteBillResponse403 | deleteBillResponse404
 ) & {
   headers: Headers;
 };
 
 export type deleteBillResponse =
-  | deleteBillResponseSuccess
-  | deleteBillResponseError;
+  deleteBillResponseSuccess | deleteBillResponseError;
 
 export const getDeleteBillUrl = (id: string) => {
   return `/api/v1/bills/${id}`;
@@ -3475,7 +3470,7 @@ export const useDeleteBill = <TError = void, TContext = unknown>(
 };
 
 export type confirmBillPaymentResponse200 = {
-  data: void;
+  data: Bill;
   status: 200;
 };
 
@@ -3494,15 +3489,13 @@ export type confirmBillPaymentResponseSuccess =
     headers: Headers;
   };
 export type confirmBillPaymentResponseError = (
-  | confirmBillPaymentResponse403
-  | confirmBillPaymentResponse404
+  confirmBillPaymentResponse403 | confirmBillPaymentResponse404
 ) & {
   headers: Headers;
 };
 
 export type confirmBillPaymentResponse =
-  | confirmBillPaymentResponseSuccess
-  | confirmBillPaymentResponseError;
+  confirmBillPaymentResponseSuccess | confirmBillPaymentResponseError;
 
 export const getConfirmBillPaymentUrl = (id: string) => {
   return `/api/v1/bills/${id}/confirm`;
@@ -3593,7 +3586,7 @@ export const useConfirmBillPayment = <TError = void, TContext = unknown>(
 };
 
 export type createPaymentResponse201 = {
-  data: void;
+  data: Payment;
   status: 201;
 };
 
@@ -3681,7 +3674,7 @@ export const useCreatePayment = <TError = unknown, TContext = unknown>(
 };
 
 export type getPaymentsResponse200 = {
-  data: void;
+  data: Payment[];
   status: 200;
 };
 
@@ -3835,7 +3828,7 @@ export function useGetPayments<
 }
 
 export type getPaymentResponse200 = {
-  data: void;
+  data: Payment;
   status: 200;
 };
 
@@ -3982,7 +3975,7 @@ export function useGetPayment<
 }
 
 export type createMaintenanceRequestResponse201 = {
-  data: void;
+  data: MaintenanceRequest;
   status: 201;
 };
 
@@ -4081,7 +4074,7 @@ export const useCreateMaintenanceRequest = <
 };
 
 export type getMaintenanceRequestsResponse200 = {
-  data: void;
+  data: MaintenanceRequest[];
   status: 200;
 };
 
@@ -4265,7 +4258,7 @@ export function useGetMaintenanceRequests<
 }
 
 export type getMaintenanceRequestResponse200 = {
-  data: void;
+  data: MaintenanceRequest;
   status: 200;
 };
 
@@ -4438,7 +4431,7 @@ export function useGetMaintenanceRequest<
 }
 
 export type updateMaintenanceRequestResponse200 = {
-  data: void;
+  data: MaintenanceRequest;
   status: 200;
 };
 
@@ -4537,13 +4530,13 @@ export const useUpdateMaintenanceRequest = <
   );
 };
 
-export type respondMaintenanceRequestResponse201 = {
-  data: void;
-  status: 201;
+export type respondMaintenanceRequestResponse200 = {
+  data: MaintenanceRequest;
+  status: 200;
 };
 
 export type respondMaintenanceRequestResponseSuccess =
-  respondMaintenanceRequestResponse201 & {
+  respondMaintenanceRequestResponse200 & {
     headers: Headers;
   };
 export type respondMaintenanceRequestResponse =
@@ -4638,7 +4631,7 @@ export const useRespondMaintenanceRequest = <
 };
 
 export type getChatGroupsResponse200 = {
-  data: void;
+  data: ChatGroup[];
   status: 200;
 };
 
@@ -4772,7 +4765,7 @@ export function useGetChatGroups<
 }
 
 export type getChatGroupResponse200 = {
-  data: void;
+  data: ChatGroup;
   status: 200;
 };
 
@@ -4919,7 +4912,7 @@ export function useGetChatGroup<
 }
 
 export type getGroupMessagesResponse200 = {
-  data: void;
+  data: Message[];
   status: 200;
 };
 
@@ -5117,7 +5110,7 @@ export function useGetGroupMessages<
 }
 
 export type sendGroupMessageResponse201 = {
-  data: void;
+  data: Message;
   status: 201;
 };
 
@@ -5206,7 +5199,7 @@ export const useSendGroupMessage = <TError = unknown, TContext = unknown>(
 };
 
 export type getDirectMessagesResponse200 = {
-  data: void;
+  data: Message[];
   status: 200;
 };
 
@@ -5408,7 +5401,7 @@ export function useGetDirectMessages<
 }
 
 export type sendDirectMessageResponse201 = {
-  data: void;
+  data: Message;
   status: 201;
 };
 
@@ -5497,7 +5490,7 @@ export const useSendDirectMessage = <TError = unknown, TContext = unknown>(
 };
 
 export type createNotificationResponse201 = {
-  data: void;
+  data: Notification;
   status: 201;
 };
 
@@ -5589,7 +5582,7 @@ export const useCreateNotification = <TError = unknown, TContext = unknown>(
 };
 
 export type getNotificationsResponse200 = {
-  data: void;
+  data: Notification[];
   status: 200;
 };
 
@@ -5926,7 +5919,7 @@ export function useGetUnreadNotificationCount<
 }
 
 export type getNotificationResponse200 = {
-  data: void;
+  data: Notification;
   status: 200;
 };
 
@@ -6093,7 +6086,7 @@ export function useGetNotification<
 }
 
 export type markNotificationAsReadResponse200 = {
-  data: void;
+  data: Notification;
   status: 200;
 };
 

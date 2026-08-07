@@ -13,12 +13,14 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsStatus = typeof GetMaintenanceRequestsStatus[keyof typeof GetMaintenanceRequestsStatus];
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
 
 
-export const GetMaintenanceRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CANCELLED: 'CANCELLED',
+export const NotificationType = {
+  BILL_GENERATED: 'BILL_GENERATED',
+  PAYMENT_REMINDER: 'PAYMENT_REMINDER',
+  MAINTENANCE_UPDATE: 'MAINTENANCE_UPDATE',
+  CHAT_MESSAGE: 'CHAT_MESSAGE',
+  ANNOUNCEMENT: 'ANNOUNCEMENT',
+  SYSTEM: 'SYSTEM',
 } as const;
