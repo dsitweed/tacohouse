@@ -112,10 +112,10 @@ export class AuthService {
     return null;
   }
 
-  async validateJwtUser(payload: JwtPayload): Promise<User | null> {
+  async validateJwtUser(userId: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: {
-        id: payload.sub,
+        id: userId,
       },
     });
 
