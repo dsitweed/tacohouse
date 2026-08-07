@@ -4,26 +4,28 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
+
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import type {
+  ApiResponse,
   ChatGroup,
   Message,
-  SendMessageRequest,
   MessageListQuery,
-  ApiResponse,
+  SendMessageRequest,
 } from '@/types';
 
 // Chat API functions
 const chatApi = {
   getGroups: async () => {
-    const response = await apiClient.get<ApiResponse<ChatGroup[]>>('/chat/groups');
+    const response =
+      await apiClient.get<ApiResponse<ChatGroup[]>>('/chat/groups');
     return extractData(response);
   },
 
   getGroup: async (groupId: string) => {
     const response = await apiClient.get<ApiResponse<ChatGroup>>(
-      `/chat/groups/${groupId}`
+      `/chat/groups/${groupId}`,
     );
     return extractData(response);
   },
@@ -31,7 +33,7 @@ const chatApi = {
   getMessages: async (groupId: string, query?: MessageListQuery) => {
     const response = await apiClient.get<ApiResponse<Message[]>>(
       `/chat/groups/${groupId}/messages`,
-      { params: query }
+      { params: query },
     );
     return extractData(response);
   },
@@ -39,7 +41,7 @@ const chatApi = {
   sendMessage: async (groupId: string, data: SendMessageRequest) => {
     const response = await apiClient.post<ApiResponse<Message>>(
       `/chat/groups/${groupId}/messages`,
-      data
+      data,
     );
     return extractData(response);
   },
@@ -47,7 +49,7 @@ const chatApi = {
   getDirectMessages: async (userId: string, query?: MessageListQuery) => {
     const response = await apiClient.get<ApiResponse<Message[]>>(
       `/chat/direct/${userId}`,
-      { params: query }
+      { params: query },
     );
     return extractData(response);
   },
@@ -55,7 +57,7 @@ const chatApi = {
   sendDirectMessage: async (userId: string, data: SendMessageRequest) => {
     const response = await apiClient.post<ApiResponse<Message>>(
       `/chat/direct/${userId}`,
-      data
+      data,
     );
     return extractData(response);
   },
@@ -72,7 +74,7 @@ export function useChatGroups() {
 
 export function useChatGroup(
   groupId: string | undefined,
-  options?: Omit<UseQueryOptions<ChatGroup>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<ChatGroup>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: queryKeys.chat.group(groupId!),
@@ -85,7 +87,7 @@ export function useChatGroup(
 
 export function useChatMessages(
   groupId: string | undefined,
-  query?: MessageListQuery
+  query?: MessageListQuery,
 ) {
   return useQuery({
     queryKey: queryKeys.chat.messages(groupId!),
@@ -118,7 +120,7 @@ export function useSendMessage() {
 
 export function useDirectMessages(
   userId: string | undefined,
-  query?: MessageListQuery
+  query?: MessageListQuery,
 ) {
   return useQuery({
     queryKey: queryKeys.chat.direct(userId!),
@@ -148,4 +150,3 @@ export function useSendDirectMessage() {
     onError: handleApiError,
   });
 }
-

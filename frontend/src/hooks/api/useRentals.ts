@@ -4,20 +4,23 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
+
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import type {
-  CreateRentalRequest,
-  UpdateRentalRequest,
-  RentalListQuery,
   ApiResponse,
-  Rental
+  CreateRentalRequest,
+  Rental,
+  RentalListQuery,
+  UpdateRentalRequest,
 } from '@/types';
 
 // Rental API functions
 const rentalsApi = {
   getAll: async (query?: RentalListQuery) => {
-    const response = await apiClient.get<ApiResponse<{ data: Rental[]; pagination?: any }>>('/rentals', {
+    const response = await apiClient.get<
+      ApiResponse<{ data: Rental[]; pagination?: any }>
+    >('/rentals', {
       params: query,
     });
     const result = extractData(response);
@@ -34,20 +37,25 @@ const rentalsApi = {
   },
 
   create: async (data: CreateRentalRequest) => {
-    const response = await apiClient.post<ApiResponse<Rental>>('/rentals', data);
+    const response = await apiClient.post<ApiResponse<Rental>>(
+      '/rentals',
+      data,
+    );
     return extractData(response);
   },
 
   update: async (id: string, data: UpdateRentalRequest) => {
     const response = await apiClient.patch<ApiResponse<Rental>>(
       `/rentals/${id}`,
-      data
+      data,
     );
     return extractData(response);
   },
 
   terminate: async (id: string) => {
-    const response = await apiClient.delete<ApiResponse<void>>(`/rentals/${id}`);
+    const response = await apiClient.delete<ApiResponse<void>>(
+      `/rentals/${id}`,
+    );
     return response.data;
   },
 };
@@ -63,7 +71,7 @@ export function useRentals(query?: RentalListQuery) {
 
 export function useRental(
   id: string | undefined,
-  options?: Omit<UseQueryOptions<Rental>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<Rental>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: queryKeys.rentals.detail(id!),
@@ -139,4 +147,3 @@ export function useTerminateRental() {
     onError: handleApiError,
   });
 }
-

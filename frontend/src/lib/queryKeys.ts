@@ -135,4 +135,3 @@ export const queryKeys = {
     count: () => [...queryKeys.notifications.all, 'count'] as const,
   },
 } as const;
-

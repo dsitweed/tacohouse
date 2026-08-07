@@ -1,7 +1,8 @@
+import 'server-only';
+
 import { supabaseCLient } from '@/lib/supbaseClient';
 import type { Room } from '@/types';
 import { RoomStatus } from '@/types';
-import 'server-only';
 
 export async function getRoomById(id: string): Promise<Room | null> {
   const { data, error } = await supabaseCLient

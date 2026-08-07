@@ -1,5 +1,5 @@
-import { apiClient, extractData } from '@/lib/apiClient';
 import type { ApiResponse } from '@/lib/apiClient';
+import { apiClient, extractData } from '@/lib/apiClient';
 import type {
   CreateRoomRequest,
   Room,

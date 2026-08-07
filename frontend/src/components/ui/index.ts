@@ -1,13 +1,13 @@
+export { Badge, badgeVariants } from './badge';
 export { Button, buttonVariants } from './button';
 export {
   Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
   CardAction,
-  CardDescription,
   CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from './card';
-export { Badge, badgeVariants } from './badge';
 export { Input } from './input';
 export { Skeleton, SkeletonCard, SkeletonPage } from './skeleton';

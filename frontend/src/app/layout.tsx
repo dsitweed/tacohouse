@@ -1,8 +1,9 @@
-import { AppProvider } from '@/components/providers';
+import './globals.css';
+
 import type { Metadata } from 'next';
 import { Geist_Mono, Inter } from 'next/font/google';
 
-import './globals.css';
+import { AppProvider } from '@/components/providers';
 
 const inter = Inter({
   variable: '--font-sans',

@@ -1,9 +1,10 @@
 'use client';
 
-import { DashboardLayout } from '@/components/layouts';
-import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+import { DashboardLayout } from '@/components/layouts';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function DashboardRootLayout({
   children,

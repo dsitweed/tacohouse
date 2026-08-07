@@ -1,8 +1,5 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/stores/authStore';
-import { UserRole } from '@/types';
 import {
   BarChart3,
   Bell,
@@ -19,6 +16,10 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
+import { UserRole } from '@/types';
 
 interface NavItem {
   title: string;
@@ -105,13 +106,13 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-gray-200 bg-white">
+    <aside className="fixed top-0 left-0 z-40 h-screen w-64 border-r border-gray-200 bg-white">
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center border-b border-gray-200 px-6">
           <Link href="/dashboard" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">T</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+              <span className="text-lg font-bold text-white">T</span>
             </div>
             <span className="text-xl font-semibold text-gray-900">
               Tacohouse
@@ -148,18 +149,18 @@ export function Sidebar() {
         {user && (
           <div className="border-t border-gray-200 p-4">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                <span className="text-indigo-600 font-semibold">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100">
+                <span className="font-semibold text-indigo-600">
                   {user.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-gray-900">
                   {user.profile?.firstName && user.profile?.lastName
                     ? `${user.profile.firstName} ${user.profile.lastName}`
                     : user.email}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="truncate text-xs text-gray-500">
                   {role === UserRole.ADMIN && 'Quản trị viên'}
                   {role === UserRole.LANDLORD && 'Chủ nhà'}
                   {role === UserRole.TENANT && 'Người thuê'}

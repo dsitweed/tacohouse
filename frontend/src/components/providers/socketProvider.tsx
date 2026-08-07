@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -16,7 +16,7 @@ const SocketContext = createContext<SocketContextType>({
 export const useSocket = () => {
   const context = useContext(SocketContext);
   if (!context) {
-    throw new Error("useSocket must be used within a SocketProvider");
+    throw new Error('useSocket must be used within a SocketProvider');
   }
   return context;
 };
@@ -31,14 +31,14 @@ export function SocketProvider({ children }: SocketProviderProps) {
 
   useEffect(() => {
     const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
-      transports: ["websocket"],
+      transports: ['websocket'],
     });
 
-    socketInstance.on("connect", () => {
+    socketInstance.on('connect', () => {
       setIsConnected(true);
     });
 
-    socketInstance.on("disconnect", () => {
+    socketInstance.on('disconnect', () => {
       setIsConnected(false);
     });
 

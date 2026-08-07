@@ -4,14 +4,11 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
+
+import type { ApiResponse } from '@/lib/apiClient';
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
-import type {
-  Payment,
-  CreatePaymentRequest,
-  PaymentListQuery,
-} from '@/types';
-import type { ApiResponse } from '@/lib/apiClient';
+import type { CreatePaymentRequest, Payment, PaymentListQuery } from '@/types';
 
 export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
 
@@ -34,12 +31,17 @@ const paymentsApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Payment>>(`/payments/${id}`);
+    const response = await apiClient.get<ApiResponse<Payment>>(
+      `/payments/${id}`,
+    );
     return extractData(response);
   },
 
   create: async (data: CreatePaymentRequest) => {
-    const response = await apiClient.post<ApiResponse<Payment>>('/payments', data);
+    const response = await apiClient.post<ApiResponse<Payment>>(
+      '/payments',
+      data,
+    );
     return extractData(response);
   },
 };
@@ -55,7 +57,7 @@ export function usePayments(query?: PaymentListQuery) {
 
 export function usePayment(
   id: string | undefined,
-  options?: Omit<UseQueryOptions<Payment>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<Payment>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: queryKeys.payments.detail(id!),
@@ -92,4 +94,3 @@ export function useCreatePayment() {
     onError: handleApiError,
   });
 }
-

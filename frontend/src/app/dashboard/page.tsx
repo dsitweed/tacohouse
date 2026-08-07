@@ -1,5 +1,14 @@
 'use client';
 
+import {
+  AlertCircle,
+  Building2,
+  DollarSign,
+  DoorOpen,
+  TrendingUp,
+} from 'lucide-react';
+import { useMemo } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useBills } from '@/hooks/api/useBills';
@@ -9,14 +18,6 @@ import { useRooms } from '@/hooks/api/useRooms';
 import { formatCurrency } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { BillStatus, RoomStatus, UserRole } from '@/types';
-import {
-  AlertCircle,
-  Building2,
-  DollarSign,
-  DoorOpen,
-  TrendingUp,
-} from 'lucide-react';
-import { useMemo } from 'react';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -222,7 +223,7 @@ export default function DashboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64 flex items-center justify-center text-gray-400">
+          <div className="flex h-64 items-center justify-center text-gray-400">
             Biểu đồ doanh thu sẽ được hiển thị ở đây
           </div>
         </CardContent>

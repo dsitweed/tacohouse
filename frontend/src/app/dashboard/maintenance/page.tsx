@@ -1,13 +1,14 @@
 'use client';
 
+import { AlertCircle, CheckCircle, Clock, Plus, Wrench } from 'lucide-react';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMaintenanceRequests } from '@/hooks/api/useMaintenance';
 import { useAuthStore } from '@/stores/authStore';
 import { MaintenanceStatus, PriorityType, UserRole } from '@/types';
-import { AlertCircle, CheckCircle, Clock, Plus, Wrench } from 'lucide-react';
-import { useState } from 'react';
 
 const statusColors: Record<
   MaintenanceStatus,
@@ -79,7 +80,7 @@ export default function MaintenancePage() {
           {data.data.map((request) => (
             <Card
               key={request.id}
-              className="hover:shadow-md transition-shadow"
+              className="transition-shadow hover:shadow-md"
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -115,7 +116,7 @@ export default function MaintenancePage() {
                 )}
 
                 {request.completionNote && (
-                  <div className="mt-4 rounded-lg bg-emerald-50 border border-emerald-200 p-3">
+                  <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
                     <p className="text-sm font-medium text-emerald-900">
                       Phản hồi từ chủ nhà:
                     </p>

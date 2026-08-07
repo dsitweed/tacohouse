@@ -1,9 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/stores/authStore';
 import { Bell, LogOut, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/stores/authStore';
 
 export function Header() {
   const { logout, user } = useAuthStore();
@@ -18,13 +19,13 @@ export function Header() {
     <header className="sticky top-0 z-30 h-16 border-b border-gray-200 bg-white">
       <div className="flex h-full items-center justify-between px-6">
         {/* Search */}
-        <div className="flex-1 max-w-md">
+        <div className="max-w-md flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Tìm kiếm..."
-              className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
+              className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pr-4 pl-10 text-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 focus:outline-none"
             />
           </div>
         </div>
@@ -34,7 +35,7 @@ export function Header() {
           {/* Notifications */}
           <button className="relative rounded-lg p-2 text-gray-600 hover:bg-gray-100">
             <Bell className="h-5 w-5" />
-            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
           </button>
 
           {/* User menu */}
@@ -53,7 +54,7 @@ export function Header() {
               onClick={handleLogout}
               className="text-gray-600"
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="mr-2 h-4 w-4" />
               Đăng xuất
             </Button>
           </div>

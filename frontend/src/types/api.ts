@@ -194,11 +194,7 @@ export interface CreateBillRequest {
 export interface UpdateBillRequest {
   dueDate?: string;
   status?:
-    | 'PENDING'
-    | 'TENANT_CONFIRMED'
-    | 'LANDLORD_CONFIRMED'
-    | 'PAID'
-    | 'OVERDUE';
+    'PENDING' | 'TENANT_CONFIRMED' | 'LANDLORD_CONFIRMED' | 'PAID' | 'OVERDUE';
 }
 
 export interface BillListQuery {

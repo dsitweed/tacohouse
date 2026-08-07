@@ -4,21 +4,24 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
+
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import type {
+  ApiResponse,
   Bill,
-  CreateBillRequest,
-  UpdateBillRequest,
   BillListQuery,
   ConfirmPaymentRequest,
-  ApiResponse,
+  CreateBillRequest,
+  UpdateBillRequest,
 } from '@/types';
 
 // Bill API functions
 const billsApi = {
   getAll: async (query?: BillListQuery) => {
-    const response = await apiClient.get<ApiResponse<{ data: Bill[]; pagination?: any }>>('/bills', {
+    const response = await apiClient.get<
+      ApiResponse<{ data: Bill[]; pagination?: any }>
+    >('/bills', {
       params: query,
     });
     const result = extractData(response);
@@ -36,7 +39,7 @@ const billsApi = {
 
   getByRoom: async (roomId: string) => {
     const response = await apiClient.get<ApiResponse<Bill[]>>(
-      `/rooms/${roomId}/bills`
+      `/rooms/${roomId}/bills`,
     );
     return extractData(response);
   },
@@ -47,14 +50,17 @@ const billsApi = {
   },
 
   update: async (id: string, data: UpdateBillRequest) => {
-    const response = await apiClient.patch<ApiResponse<Bill>>(`/bills/${id}`, data);
+    const response = await apiClient.patch<ApiResponse<Bill>>(
+      `/bills/${id}`,
+      data,
+    );
     return extractData(response);
   },
 
   confirmPayment: async (id: string, data: ConfirmPaymentRequest) => {
     const response = await apiClient.post<ApiResponse<Bill>>(
       `/bills/${id}/confirm`,
-      data
+      data,
     );
     return extractData(response);
   },
@@ -76,7 +82,7 @@ export function useBills(query?: BillListQuery) {
 
 export function useBill(
   id: string | undefined,
-  options?: Omit<UseQueryOptions<Bill>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<Bill>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: queryKeys.bills.detail(id!),
@@ -151,4 +157,3 @@ export function useCancelBill() {
     onError: handleApiError,
   });
 }
-

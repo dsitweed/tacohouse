@@ -1,20 +1,6 @@
 plugins:
-  - '@trivago/prettier-plugin-sort-imports'
   - 'prettier-plugin-tailwindcss'
 singleQuote: true
 semi: true
 bracketSpacing: true
 trailingComma: all
-importOrder:
-  - '^@nestjs'
-  - '<THIRD_PARTY_MODULES>'
-  - '^@app/(.*)$'
-  - '^@modules/(.*)$'
-  - '^@common/(.*)$'
-  - '^[./]'
-importOrderSeparation: true
-importOrderSortSpecifiers: true
-importOrderParserPlugins:
-  - 'typescript'
-  - 'jsx'
-  - 'decorators-legacy'

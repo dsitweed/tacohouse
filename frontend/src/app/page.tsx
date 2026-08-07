@@ -1,12 +1,13 @@
 'use client';
 
+import { DollarSign, Home, Search, Shield } from 'lucide-react';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAvailableRooms } from '@/hooks/api/useRooms';
 import { formatCurrency } from '@/lib/utils';
 import { type Room, RoomTypeLabels } from '@/types';
-import { DollarSign, Home, Search, Shield } from 'lucide-react';
-import Link from 'next/link';
 
 export default function HomePage() {
   const { data: rooms, isLoading } = useAvailableRooms();

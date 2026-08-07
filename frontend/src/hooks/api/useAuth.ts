@@ -1,5 +1,7 @@
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import type { ApiResponse } from '@/lib/apiClient';
+import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import { useAuthStore } from '@/stores/authStore';
 import type {
@@ -10,7 +12,6 @@ import type {
   UpdateUserProfileRequest,
   User,
 } from '@/types';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Auth API functions
 const authApi = {

@@ -1,19 +1,20 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { Building2, Eye, Mail, Phone, Search, UserCog } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useBuildings } from '@/hooks/api/useBuildings';
-import { apiClient, extractData } from '@/lib/apiClient';
 import type { ApiResponse } from '@/lib/apiClient';
+import { apiClient, extractData } from '@/lib/apiClient';
 import { useAuthStore } from '@/stores/authStore';
-import { UserRole } from '@/types';
 import type { User } from '@/types';
-import { useQuery } from '@tanstack/react-query';
-import { Building2, Eye, Mail, Phone, Search, UserCog } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+import { UserRole } from '@/types';
 
 // Hook to fetch landlords
 function useLandlords() {
@@ -106,7 +107,7 @@ export default function LandlordsPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Tìm kiếm chủ nhà..."
               value={search}
@@ -125,7 +126,7 @@ export default function LandlordsPage() {
         <CardContent>
           {isLoading ? (
             <div className="py-12 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600"></div>
               <p className="mt-4 text-sm text-gray-600">Đang tải...</p>
             </div>
           ) : filteredLandlords.length > 0 ? (
@@ -161,7 +162,7 @@ export default function LandlordsPage() {
                       <tr key={landlord.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div className="flex items-center space-x-3">
-                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100">
                               <UserCog className="h-5 w-5 text-indigo-600" />
                             </div>
                             <div>

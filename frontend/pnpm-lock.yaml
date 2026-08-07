@@ -63,9 +63,6 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.14
-      '@trivago/prettier-plugin-sort-imports':
-        specifier: ^6.0.2
-        version: 6.0.2(prettier@3.6.2)
       '@types/node':
         specifier: ^26
         version: 26.1.2
@@ -81,12 +78,18 @@ importers:
       eslint-config-next:
         specifier: 16.2.12
         version: 16.2.12(@typescript-eslint/parser@8.65.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3)
+      eslint-plugin-simple-import-sort:
+        specifier: ^12.1.1
+        version: 12.1.1(eslint@9.39.5(jiti@2.6.1))
       orval:
         specifier: ^8.23.0
-        version: 8.23.0(prettier@3.6.2)(typescript@5.9.3)
+        version: 8.23.0(prettier@3.9.6)(typescript@5.9.3)
+      prettier:
+        specifier: ^3.9.6
+        version: 3.9.6
       prettier-plugin-tailwindcss:
         specifier: ^0.8.1
-        version: 0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(prettier@3.6.2))(prettier@3.6.2)
+        version: 0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(prettier@3.9.6))(prettier@3.9.6)
       tailwindcss:
         specifier: ^4
         version: 4.1.14
@@ -2470,6 +2473,11 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7
 
+  eslint-plugin-simple-import-sort@12.1.1:
+    resolution: {integrity: sha512-6nuzu4xwQtE3332Uz0to+TxDQYRLTKRESSc2hefVT48Zc8JthmN23Gx9lnYhu0FtkRSL1oxny3kJ2aveVhmOVA==}
+    peerDependencies:
+      eslint: '>=5.0.0'
+
   eslint-scope@8.4.0:
     resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -3574,8 +3582,8 @@ packages:
       prettier-plugin-svelte:
         optional: true
 
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+  prettier@3.9.6:
+    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -5888,7 +5896,7 @@ snapshots:
       '@tanstack/query-core': 5.101.4
       react: 19.2.8
 
-  '@trivago/prettier-plugin-sort-imports@6.0.2(prettier@3.6.2)':
+  '@trivago/prettier-plugin-sort-imports@6.0.2(prettier@3.9.6)':
     dependencies:
       '@babel/generator': 7.29.1
       '@babel/parser': 7.29.0
@@ -5898,9 +5906,10 @@ snapshots:
       lodash-es: 4.18.1
       minimatch: 9.0.5
       parse-imports-exports: 0.2.4
-      prettier: 3.6.2
+      prettier: 3.9.6
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@ts-morph/common@0.27.0':
     dependencies:
@@ -6272,6 +6281,7 @@ snapshots:
   brace-expansion@2.0.2:
     dependencies:
       balanced-match: 1.0.2
+    optional: true
 
   brace-expansion@5.0.4:
     dependencies:
@@ -6794,6 +6804,10 @@ snapshots:
       semver: 6.3.1
       string.prototype.matchall: 4.0.12
       string.prototype.repeat: 1.0.0
+
+  eslint-plugin-simple-import-sort@12.1.1(eslint@9.39.5(jiti@2.6.1)):
+    dependencies:
+      eslint: 9.39.5(jiti@2.6.1)
 
   eslint-scope@8.4.0:
     dependencies:
@@ -7366,7 +7380,8 @@ snapshots:
       has-symbols: 1.1.0
       set-function-name: 2.0.2
 
-  javascript-natural-sort@0.7.1: {}
+  javascript-natural-sort@0.7.1:
+    optional: true
 
   jiti@2.6.1: {}
 
@@ -7501,7 +7516,8 @@ snapshots:
     dependencies:
       p-locate: 6.0.0
 
-  lodash-es@4.18.1: {}
+  lodash-es@4.18.1:
+    optional: true
 
   lodash.merge@4.6.2: {}
 
@@ -7589,6 +7605,7 @@ snapshots:
   minimatch@9.0.5:
     dependencies:
       brace-expansion: 2.0.2
+    optional: true
 
   minimist@1.2.8: {}
 
@@ -7733,7 +7750,7 @@ snapshots:
       string-width: 7.2.0
       strip-ansi: 7.2.0
 
-  orval@8.23.0(prettier@3.6.2)(typescript@5.9.3):
+  orval@8.23.0(prettier@3.9.6)(typescript@5.9.3):
     dependencies:
       '@commander-js/extra-typings': 15.0.0(commander@15.0.0)
       '@orval/angular': 8.23.0(typescript@5.9.3)
@@ -7765,7 +7782,7 @@ snapshots:
       typedoc-plugin-coverage: 4.0.3(typedoc@0.28.20(typescript@5.9.3))
       typedoc-plugin-markdown: 4.12.0(typedoc@0.28.20(typescript@5.9.3))
     optionalDependencies:
-      prettier: 3.6.2
+      prettier: 3.9.6
     transitivePeerDependencies:
       - '@faker-js/faker'
       - supports-color
@@ -7800,6 +7817,7 @@ snapshots:
   parse-imports-exports@0.2.4:
     dependencies:
       parse-statements: 1.0.11
+    optional: true
 
   parse-json@5.2.0:
     dependencies:
@@ -7810,7 +7828,8 @@ snapshots:
 
   parse-ms@4.0.0: {}
 
-  parse-statements@1.0.11: {}
+  parse-statements@1.0.11:
+    optional: true
 
   parseurl@1.3.3: {}
 
@@ -7861,13 +7880,13 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(prettier@3.6.2))(prettier@3.6.2):
+  prettier-plugin-tailwindcss@0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(prettier@3.9.6))(prettier@3.9.6):
     dependencies:
-      prettier: 3.6.2
+      prettier: 3.9.6
     optionalDependencies:
-      '@trivago/prettier-plugin-sort-imports': 6.0.2(prettier@3.6.2)
+      '@trivago/prettier-plugin-sort-imports': 6.0.2(prettier@3.9.6)
 
-  prettier@3.6.2: {}
+  prettier@3.9.6: {}
 
   pretty-ms@9.3.0:
     dependencies:

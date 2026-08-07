@@ -4,23 +4,23 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
+
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import type {
-  MaintenanceRequest,
-  CreateMaintenanceRequest,
-  UpdateMaintenanceRequest,
-  MaintenanceListQuery,
   ApiResponse,
+  CreateMaintenanceRequest,
+  MaintenanceListQuery,
+  MaintenanceRequest,
+  UpdateMaintenanceRequest,
 } from '@/types';
 
 // Maintenance API functions
 const maintenanceApi = {
   getAll: async (query?: MaintenanceListQuery) => {
-    const response = await apiClient.get<ApiResponse<{ data: MaintenanceRequest[]; pagination?: any }>>(
-      '/maintenance',
-      { params: query }
-    );
+    const response = await apiClient.get<
+      ApiResponse<{ data: MaintenanceRequest[]; pagination?: any }>
+    >('/maintenance', { params: query });
     const result = extractData(response);
     // Handle paginated response
     if (result && typeof result === 'object' && 'data' in result) {
@@ -31,7 +31,7 @@ const maintenanceApi = {
 
   getById: async (id: string) => {
     const response = await apiClient.get<ApiResponse<MaintenanceRequest>>(
-      `/maintenance/${id}`
+      `/maintenance/${id}`,
     );
     return extractData(response);
   },
@@ -39,7 +39,7 @@ const maintenanceApi = {
   create: async (data: CreateMaintenanceRequest) => {
     const response = await apiClient.post<ApiResponse<MaintenanceRequest>>(
       '/maintenance',
-      data
+      data,
     );
     return extractData(response);
   },
@@ -47,7 +47,7 @@ const maintenanceApi = {
   update: async (id: string, data: UpdateMaintenanceRequest) => {
     const response = await apiClient.patch<ApiResponse<MaintenanceRequest>>(
       `/maintenance/${id}`,
-      data
+      data,
     );
     return extractData(response);
   },
@@ -55,7 +55,7 @@ const maintenanceApi = {
   respond: async (id: string, response: string) => {
     const apiResponse = await apiClient.post<ApiResponse<MaintenanceRequest>>(
       `/maintenance/${id}/respond`,
-      { response }
+      { response },
     );
     return extractData(apiResponse);
   },
@@ -72,7 +72,7 @@ export function useMaintenanceRequests(query?: MaintenanceListQuery) {
 
 export function useMaintenanceRequest(
   id: string | undefined,
-  options?: Omit<UseQueryOptions<MaintenanceRequest>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<MaintenanceRequest>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
     queryKey: queryKeys.maintenance.detail(id!),
@@ -107,7 +107,9 @@ export function useCreateMaintenance() {
   return useMutation({
     mutationFn: maintenanceApi.create,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.maintenance.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.maintenance.lists(),
+      });
       queryClient.invalidateQueries({
         queryKey: queryKeys.maintenance.byTenant(data.tenantId),
       });
@@ -133,9 +135,11 @@ export function useUpdateMaintenance() {
     onSuccess: (data, variables) => {
       queryClient.setQueryData(
         queryKeys.maintenance.detail(variables.id),
-        data
+        data,
       );
-      queryClient.invalidateQueries({ queryKey: queryKeys.maintenance.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.maintenance.lists(),
+      });
     },
     onError: handleApiError,
   });
@@ -150,11 +154,12 @@ export function useRespondToMaintenance() {
     onSuccess: (data, variables) => {
       queryClient.setQueryData(
         queryKeys.maintenance.detail(variables.id),
-        data
+        data,
       );
-      queryClient.invalidateQueries({ queryKey: queryKeys.maintenance.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.maintenance.lists(),
+      });
     },
     onError: handleApiError,
   });
 }
-

@@ -1,6 +1,7 @@
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+
 import { useAuthStore } from '@/stores/authStore';
 import { ApiError, ApiResponse } from '@/types';
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
 
@@ -62,8 +63,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiError>) => {
     const originalRequest = error.config as
-      | (AxiosRequestConfig & { _retry?: boolean })
-      | undefined;
+      (AxiosRequestConfig & { _retry?: boolean }) | undefined;
 
     if (
       !originalRequest ||

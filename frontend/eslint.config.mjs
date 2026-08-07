@@ -1,5 +1,6 @@
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import nextTypescript from "eslint-config-next/typescript";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 const eslintConfig = [
   ...nextCoreWebVitals,
@@ -15,8 +16,13 @@ const eslintConfig = [
     ],
   },
   {
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+    },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
     },
   },
 ];

@@ -1,11 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRegister } from '@/hooks/api/useAuth';
 
 export default function RegisterPage() {
@@ -52,7 +59,7 @@ export default function RegisterPage() {
         onError: (err: any) => {
           setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.');
         },
-      }
+      },
     );
   };
 
@@ -61,12 +68,15 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-            <span className="text-white font-bold text-xl">T</span>
+            <span className="text-xl font-bold text-white">T</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Đăng ký</h2>
           <p className="mt-2 text-sm text-gray-600">
             Đã có tài khoản?{' '}
-            <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link
+              href="/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
               Đăng nhập
             </Link>
           </p>
@@ -75,14 +85,12 @@ export default function RegisterPage() {
         <Card>
           <CardHeader>
             <CardTitle>Tạo tài khoản mới</CardTitle>
-            <CardDescription>
-              Điền thông tin để tạo tài khoản
-            </CardDescription>
+            <CardDescription>Điền thông tin để tạo tài khoản</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
                   {error}
                 </div>
               )}
@@ -92,14 +100,18 @@ export default function RegisterPage() {
                   label="Họ"
                   placeholder="Nguyễn"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   required
                 />
                 <Input
                   label="Tên"
                   placeholder="Văn A"
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -109,7 +121,9 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="email@example.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
               />
 
@@ -118,7 +132,9 @@ export default function RegisterPage() {
                 type="tel"
                 placeholder="0901234567"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
               />
 
               <div>
@@ -126,7 +142,7 @@ export default function RegisterPage() {
                   Loại tài khoản
                 </label>
                 <select
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   value={formData.role}
                   onChange={(e) =>
                     setFormData({ ...formData, role: e.target.value as any })
@@ -142,7 +158,9 @@ export default function RegisterPage() {
                 type="password"
                 placeholder="••••••••"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 required
               />
 
@@ -180,4 +198,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

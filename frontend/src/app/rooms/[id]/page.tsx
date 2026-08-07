@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -9,7 +11,6 @@ import {
 import { formatCurrency } from '@/lib/utils';
 import { getRoomById } from '@/server/rooms';
 import { RoomTypeLabels } from '@/types';
-import { notFound } from 'next/navigation';
 
 export default async function RoomDetailPage({
   params,

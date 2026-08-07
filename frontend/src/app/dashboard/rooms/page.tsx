@@ -1,5 +1,9 @@
 'use client';
 
+import { DoorOpen, Edit, Eye, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +12,6 @@ import { useRooms } from '@/hooks/api/useRooms';
 import { formatCurrency } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { RoomStatus, UserRole } from '@/types';
-import { DoorOpen, Edit, Eye, Plus, Search } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
 
 const statusColors: Record<
   RoomStatus,
@@ -62,7 +63,7 @@ export default function RoomsPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Tìm kiếm phòng..."
               value={search}

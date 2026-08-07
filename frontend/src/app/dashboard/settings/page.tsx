@@ -1,5 +1,8 @@
 'use client';
 
+import { Bell, Lock, Settings, User } from 'lucide-react';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,8 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useChangePassword, useUpdateProfile } from '@/hooks/api/useAuth';
 import { useAuthStore } from '@/stores/authStore';
-import { Bell, Lock, Settings, User } from 'lucide-react';
-import { useState } from 'react';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();

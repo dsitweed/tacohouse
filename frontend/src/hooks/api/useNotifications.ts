@@ -1,23 +1,23 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import type { ApiResponse } from '@/lib/apiClient';
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
 import type {
+  CreateNotificationRequest,
   Notification,
   NotificationListQuery,
-  CreateNotificationRequest,
 } from '@/types';
-import type { ApiResponse } from '@/lib/apiClient';
 
 // Notifications API functions
 const notificationsApi = {
   getAll: async (query?: NotificationListQuery) => {
-    const response = await apiClient.get<ApiResponse<unknown>>('/notifications', {
-      params: query,
-    });
+    const response = await apiClient.get<ApiResponse<unknown>>(
+      '/notifications',
+      {
+        params: query,
+      },
+    );
     const result = extractData(response);
 
     if (result && typeof result === 'object' && 'data' in result) {
@@ -32,7 +32,7 @@ const notificationsApi = {
 
   getOne: async (id: string) => {
     const response = await apiClient.get<ApiResponse<Notification>>(
-      `/notifications/${id}`
+      `/notifications/${id}`,
     );
     return extractData(response);
   },
@@ -40,21 +40,24 @@ const notificationsApi = {
   create: async (data: CreateNotificationRequest) => {
     const response = await apiClient.post<ApiResponse<Notification>>(
       '/notifications',
-      data
+      data,
     );
     return extractData(response);
   },
 
   markAsRead: async (id: string) => {
     const response = await apiClient.patch<ApiResponse<Notification>>(
-      `/notifications/${id}/read`
+      `/notifications/${id}/read`,
     );
     return extractData(response);
   },
 };
 
 // Hooks
-export type NotificationsListResult = { data: Notification[]; pagination?: unknown };
+export type NotificationsListResult = {
+  data: Notification[];
+  pagination?: unknown;
+};
 
 export function useNotifications(query?: NotificationListQuery) {
   return useQuery<NotificationsListResult>({
@@ -94,4 +97,3 @@ export function useMarkNotificationAsRead() {
     onError: handleApiError,
   });
 }
-
