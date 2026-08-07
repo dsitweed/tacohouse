@@ -373,7 +373,7 @@ docker-compose -f docker-compose.prod.yml down
 ### 9.4. Environment Variables
 - Development: `.env` files trong mỗi package
 - Production: `.env.production` (copy from `.env.production.example`)
-- Required variables: `DATABASE_URL`, `JWT_SECRET`, `NEXT_PUBLIC_API_URL`
+- Required variables: `DATABASE_URL`, `JWT_SECRET`, `NEXT_PUBLIC_API_ORIGIN`
 
 ## 10. Contributing
 
