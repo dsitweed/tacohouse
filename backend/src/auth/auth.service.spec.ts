@@ -2,7 +2,6 @@ import { ConflictException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import * as argon from 'argon2';
 import { User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';

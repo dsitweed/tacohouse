@@ -4,7 +4,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-
 import * as argon from 'argon2';
 import { User } from 'generated/prisma/client';
 import { PrismaService } from 'prisma/prisma.service';

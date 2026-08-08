@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-
 import { User } from 'generated/prisma/client';
 import { Observable } from 'rxjs';
 

@@ -5,7 +5,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-
 import { CurrentUser } from 'common/decorators';
 import { User as UserEntity } from 'generated/nestjs-dto';
 import type { User } from 'generated/prisma/client';

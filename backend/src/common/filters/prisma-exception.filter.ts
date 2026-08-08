@@ -1,6 +1,5 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-
 import { Response } from 'express';
 import { Prisma } from 'generated/prisma/client';
 

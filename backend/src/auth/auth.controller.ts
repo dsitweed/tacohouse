@@ -1,6 +1,5 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
 import { CurrentUser, Public } from 'common/decorators';
 import { JwtRefreshGuard, LocalAuthGuard } from 'common/guards';
 import type { User } from 'generated/prisma/client';

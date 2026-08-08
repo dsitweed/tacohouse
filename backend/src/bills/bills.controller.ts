@@ -15,7 +15,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-
 import { CurrentUser, Roles } from 'common/decorators';
 import { Bill as BillEntity } from 'generated/nestjs-dto';
 import type { Bill, User } from 'generated/prisma/client';

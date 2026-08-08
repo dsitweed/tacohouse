@@ -1397,8 +1397,8 @@
               "type": "string",
               "enum": [
                 "PENDING",
-                "COMPLETED",
                 "IN_PROGRESS",
+                "COMPLETED",
                 "CANCELLED"
               ]
             }
@@ -4053,8 +4053,8 @@
             "type": "string",
             "enum": [
               "PENDING",
-              "COMPLETED",
               "IN_PROGRESS",
+              "COMPLETED",
               "CANCELLED"
             ]
           },

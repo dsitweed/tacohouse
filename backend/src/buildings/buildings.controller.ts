@@ -15,7 +15,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-
 import { CurrentUser, Roles } from 'common/decorators';
 import { Building as BuildingEntity } from 'generated/nestjs-dto';
 import { Building, type User, UserRole } from 'generated/prisma/client';

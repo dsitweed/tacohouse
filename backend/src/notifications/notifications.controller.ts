@@ -13,7 +13,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-
 import { CurrentUser, Roles } from 'common/decorators';
 import { Notification as NotificationEntity } from 'generated/nestjs-dto';
 import type { Notification, User } from 'generated/prisma/client';

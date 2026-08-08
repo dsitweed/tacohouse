@@ -5,7 +5,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-
 import { CurrentUser, Roles } from 'common/decorators';
 import {
   ChatGroup as ChatGroupEntity,

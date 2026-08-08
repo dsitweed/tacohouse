@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
 import { Building, Prisma, User, UserRole } from 'generated/prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationMeta } from 'types';

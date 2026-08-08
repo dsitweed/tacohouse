@@ -3,9 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
-import { Prisma } from 'generated/prisma/client';
 import type { Notification, User } from 'generated/prisma/client';
+import { Prisma } from 'generated/prisma/client';
 import { NotificationType, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationMeta } from 'types';

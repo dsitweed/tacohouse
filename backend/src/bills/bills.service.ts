@@ -4,7 +4,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
 import { Bill, Prisma, User } from 'generated/prisma/client';
 import { BillStatus, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';

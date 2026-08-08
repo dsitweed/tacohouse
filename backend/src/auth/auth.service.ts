@@ -1,7 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-
 import * as argon from 'argon2';
 import { User } from 'generated/prisma/client';
 import { PrismaService } from 'prisma/prisma.service';

@@ -5,7 +5,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-
 import { Request } from 'express';
 import { User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';

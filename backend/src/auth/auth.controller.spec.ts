@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { UserRole } from 'generated/prisma/enums';
 
 import { AuthController } from './auth.controller';

@@ -4,9 +4,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
-import { Prisma } from 'generated/prisma/client';
 import type { Payment, User } from 'generated/prisma/client';
+import { Prisma } from 'generated/prisma/client';
 import { PaymentStatus, UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationMeta } from 'types';
