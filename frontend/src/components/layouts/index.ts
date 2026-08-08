@@ -1,3 +1,3 @@
-export { DashboardLayout } from './dashboard-layout';
-export { Header } from './header';
+export { DashboardLayout } from './DashboarLayout';
+export { Header } from './Header';
 export { Sidebar } from './sidebar';

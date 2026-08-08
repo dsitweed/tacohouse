@@ -3,6 +3,8 @@
  * Centralized query key management for better organization and type safety
  */
 
+import { RoomsControllerFindAllParams } from '@/generated/model';
+
 export const queryKeys = {
   // Auth queries
   auth: {
@@ -24,12 +26,8 @@ export const queryKeys = {
   rooms: {
     all: ['rooms'] as const,
     lists: () => [...queryKeys.rooms.all, 'list'] as const,
-    list: (filters?: {
-      buildingId?: string;
-      status?: string;
-      page?: number;
-      limit?: number;
-    }) => [...queryKeys.rooms.lists(), filters] as const,
+    findAll: (query?: RoomsControllerFindAllParams) =>
+      [...queryKeys.rooms.lists(), query] as const,
     available: () => [...queryKeys.rooms.all, 'available'] as const,
     details: () => [...queryKeys.rooms.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.rooms.details(), id] as const,

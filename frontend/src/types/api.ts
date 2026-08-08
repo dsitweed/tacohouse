@@ -140,13 +140,6 @@ export interface UpdateRoomRequest {
   availableFrom?: string;
 }
 
-export interface RoomListQuery {
-  page?: number;
-  limit?: number;
-  buildingId?: string;
-  status?: string;
-}
-
 // Rental API Types
 export interface CreateRentalRequest {
   roomId: string;

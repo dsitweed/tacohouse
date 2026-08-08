@@ -5,16 +5,73 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { handleApiError } from '@/lib/apiClient';
+import { RoomsControllerFindAllParams } from '@/generated/model';
+import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
-import { roomsApi } from '@/lib/roomsApi/client';
-import type { Room, RoomListQuery, UpdateRoomRequest } from '@/types';
+import type {
+  ApiResponse,
+  CreateRoomRequest,
+  Room,
+  UpdateRoomRequest,
+} from '@/types';
+
+// Room API functions
+const roomsApi = {
+  findAll: async (query?: RoomsControllerFindAllParams) => {
+    const response = await apiClient.get<ApiResponse<Room[]>>('/rooms', {
+      params: query,
+    });
+    const data = extractData(response);
+
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    return (data as { data?: Room[] })?.data || data;
+  },
+
+  getById: async (id: string) => {
+    const response = await apiClient.get<ApiResponse<Room>>(`/rooms/${id}`);
+    return extractData(response);
+  },
+
+  getByBuilding: async (buildingId: string) => {
+    const response = await apiClient.get<ApiResponse<Room[]>>(
+      `/buildings/${buildingId}/rooms`,
+    );
+    return extractData(response);
+  },
+
+  getAvailable: async () => {
+    const response =
+      await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
+    return extractData(response);
+  },
+
+  create: async (data: CreateRoomRequest) => {
+    const response = await apiClient.post<ApiResponse<Room>>('/rooms', data);
+    return extractData(response);
+  },
+
+  update: async (id: string, data: UpdateRoomRequest) => {
+    const response = await apiClient.patch<ApiResponse<Room>>(
+      `/rooms/${id}`,
+      data,
+    );
+    return extractData(response);
+  },
+
+  delete: async (id: string) => {
+    const response = await apiClient.delete<ApiResponse<void>>(`/rooms/${id}`);
+    return response.data;
+  },
+};
 
 // Hooks
-export function useRooms(query?: RoomListQuery) {
+export function useRooms(query?: RoomsControllerFindAllParams) {
   return useQuery({
-    queryKey: queryKeys.rooms.list(query),
-    queryFn: () => roomsApi.getAll(query),
+    queryKey: queryKeys.rooms.findAll(query),
+    queryFn: () => roomsApi.findAll(query),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }

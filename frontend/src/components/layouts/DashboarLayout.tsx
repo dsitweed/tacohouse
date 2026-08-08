@@ -1,6 +1,6 @@
 'use client';
 
-import { Header } from './header';
+import { Header } from './Header';
 import { Sidebar } from './sidebar';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {

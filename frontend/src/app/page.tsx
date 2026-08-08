@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useAvailableRooms } from '@/hooks/api/useRooms';
+import { useAvailableRooms } from '@/features/rooms';
 import { formatCurrency } from '@/lib/utils';
 import { type Room, RoomTypeLabels } from '@/types';
 
