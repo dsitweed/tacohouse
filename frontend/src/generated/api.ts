@@ -12,22 +12,6 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
-import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
-  MutationFunction,
-  QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseMutationOptions,
-  UseMutationResult,
-  UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
 import type {
   Bill,
   BillsControllerFindAllParams,
@@ -70,6810 +54,788 @@ import type {
 } from './model';
 
 import { apiClient } from '../lib/apiClient';
-const withQueryKey = <T extends object, K>(
-  query: T,
-  queryKey: K,
-): T & { queryKey: K } => {
-  const result = { queryKey } as T & { queryKey: K };
-  for (const key of Object.keys(query)) {
-    // The explicit queryKey always wins, matching the previous
-    // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
-    Object.defineProperty(result, key, {
-      enumerable: true,
-      configurable: true,
-      get: () => (query as Record<string, unknown>)[key],
+export const getTacoHouseAPI = () => {
+  const appControllerGetHello = () => {
+    return apiClient<string>({ url: `/api/v1`, method: 'GET' });
+  };
+
+  /**
+   * @summary User login
+   */
+  const authControllerLogin = (loginAuthDto: LoginAuthDto) => {
+    return apiClient<void>({
+      url: `/api/v1/auth/login`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: loginAuthDto,
     });
-  }
-  return result;
-};
-
-export type appControllerGetHelloResponse200 = {
-  data: string;
-  status: 200;
-};
-
-export type appControllerGetHelloResponseSuccess =
-  appControllerGetHelloResponse200 & {
-    headers: Headers;
-  };
-export type appControllerGetHelloResponse =
-  appControllerGetHelloResponseSuccess;
-
-export const getAppControllerGetHelloUrl = () => {
-  return `/api/v1`;
-};
-
-export const appControllerGetHello = async (
-  options?: RequestInit,
-): Promise<appControllerGetHelloResponse> => {
-  return apiClient<appControllerGetHelloResponse>(
-    getAppControllerGetHelloUrl(),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getAppControllerGetHelloQueryKey = () => {
-  return [`/api/v1`] as const;
-};
-
-export const getAppControllerGetHelloQueryOptions = <
-  TData = Awaited<ReturnType<typeof appControllerGetHello>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof appControllerGetHello>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getAppControllerGetHelloQueryKey();
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof appControllerGetHello>>
-  > = ({ signal }) => appControllerGetHello({ signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof appControllerGetHello>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type AppControllerGetHelloQueryResult = NonNullable<
-  Awaited<ReturnType<typeof appControllerGetHello>>
->;
-export type AppControllerGetHelloQueryError = unknown;
-
-export function useAppControllerGetHello<
-  TData = Awaited<ReturnType<typeof appControllerGetHello>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof appControllerGetHello>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof appControllerGetHello>>,
-          TError,
-          Awaited<ReturnType<typeof appControllerGetHello>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAppControllerGetHello<
-  TData = Awaited<ReturnType<typeof appControllerGetHello>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof appControllerGetHello>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof appControllerGetHello>>,
-          TError,
-          Awaited<ReturnType<typeof appControllerGetHello>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAppControllerGetHello<
-  TData = Awaited<ReturnType<typeof appControllerGetHello>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof appControllerGetHello>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useAppControllerGetHello<
-  TData = Awaited<ReturnType<typeof appControllerGetHello>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof appControllerGetHello>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAppControllerGetHelloQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type authControllerLoginResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type authControllerLoginResponse401 = {
-  data: void;
-  status: 401;
-};
-
-export type authControllerLoginResponseSuccess =
-  authControllerLoginResponse200 & {
-    headers: Headers;
-  };
-export type authControllerLoginResponseError =
-  authControllerLoginResponse401 & {
-    headers: Headers;
   };
 
-export type authControllerLoginResponse =
-  authControllerLoginResponseSuccess | authControllerLoginResponseError;
-
-export const getAuthControllerLoginUrl = () => {
-  return `/api/v1/auth/login`;
-};
-
-/**
- * @summary User login
- */
-export const authControllerLogin = async (
-  loginAuthDto: LoginAuthDto,
-  options?: RequestInit,
-): Promise<authControllerLoginResponse> => {
-  return apiClient<authControllerLoginResponse>(getAuthControllerLoginUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(loginAuthDto),
-  });
-};
-
-export const getAuthControllerLoginMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authControllerLogin>>,
-    TError,
-    { data: LoginAuthDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof authControllerLogin>>,
-  TError,
-  { data: LoginAuthDto },
-  TContext
-> => {
-  const mutationKey = ['authControllerLogin'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authControllerLogin>>,
-    { data: LoginAuthDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return authControllerLogin(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type AuthControllerLoginMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerLogin>>
->;
-export type AuthControllerLoginMutationBody = LoginAuthDto;
-export type AuthControllerLoginMutationError = void;
-
-/**
- * @summary User login
- */
-export const useAuthControllerLogin = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authControllerLogin>>,
-      TError,
-      { data: LoginAuthDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof authControllerLogin>>,
-  TError,
-  { data: LoginAuthDto },
-  TContext
-> => {
-  return useMutation(
-    getAuthControllerLoginMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type authControllerRegisterResponse201 = {
-  data: void;
-  status: 201;
-};
-
-export type authControllerRegisterResponse400 = {
-  data: void;
-  status: 400;
-};
-
-export type authControllerRegisterResponseSuccess =
-  authControllerRegisterResponse201 & {
-    headers: Headers;
-  };
-export type authControllerRegisterResponseError =
-  authControllerRegisterResponse400 & {
-    headers: Headers;
-  };
-
-export type authControllerRegisterResponse =
-  authControllerRegisterResponseSuccess | authControllerRegisterResponseError;
-
-export const getAuthControllerRegisterUrl = () => {
-  return `/api/v1/auth/register`;
-};
-
-/**
- * @summary User registration
- */
-export const authControllerRegister = async (
-  registerAuthDto: RegisterAuthDto,
-  options?: RequestInit,
-): Promise<authControllerRegisterResponse> => {
-  return apiClient<authControllerRegisterResponse>(
-    getAuthControllerRegisterUrl(),
-    {
-      ...options,
+  /**
+   * @summary User registration
+   */
+  const authControllerRegister = (registerAuthDto: RegisterAuthDto) => {
+    return apiClient<void>({
+      url: `/api/v1/auth/register`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(registerAuthDto),
-    },
-  );
-};
-
-export const getAuthControllerRegisterMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authControllerRegister>>,
-    TError,
-    { data: RegisterAuthDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof authControllerRegister>>,
-  TError,
-  { data: RegisterAuthDto },
-  TContext
-> => {
-  const mutationKey = ['authControllerRegister'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authControllerRegister>>,
-    { data: RegisterAuthDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return authControllerRegister(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: registerAuthDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type AuthControllerRegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerRegister>>
->;
-export type AuthControllerRegisterMutationBody = RegisterAuthDto;
-export type AuthControllerRegisterMutationError = void;
-
-/**
- * @summary User registration
- */
-export const useAuthControllerRegister = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authControllerRegister>>,
-      TError,
-      { data: RegisterAuthDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof authControllerRegister>>,
-  TError,
-  { data: RegisterAuthDto },
-  TContext
-> => {
-  return useMutation(
-    getAuthControllerRegisterMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type authControllerCreateResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type authControllerCreateResponse401 = {
-  data: void;
-  status: 401;
-};
-
-export type authControllerCreateResponseSuccess =
-  authControllerCreateResponse200 & {
-    headers: Headers;
-  };
-export type authControllerCreateResponseError =
-  authControllerCreateResponse401 & {
-    headers: Headers;
+  /**
+   * @summary Refresh access token
+   */
+  const authControllerCreate = () => {
+    return apiClient<void>({ url: `/api/v1/auth/refresh`, method: 'POST' });
   };
 
-export type authControllerCreateResponse =
-  authControllerCreateResponseSuccess | authControllerCreateResponseError;
-
-export const getAuthControllerCreateUrl = () => {
-  return `/api/v1/auth/refresh`;
-};
-
-/**
- * @summary Refresh access token
- */
-export const authControllerCreate = async (
-  options?: RequestInit,
-): Promise<authControllerCreateResponse> => {
-  return apiClient<authControllerCreateResponse>(getAuthControllerCreateUrl(), {
-    ...options,
-    method: 'POST',
-  });
-};
-
-export const getAuthControllerCreateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authControllerCreate>>,
-    TError,
-    void,
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof authControllerCreate>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ['authControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authControllerCreate>>,
-    void
-  > = () => {
-    return authControllerCreate();
+  /**
+   * @summary Get current user profile
+   */
+  const usersControllerGetCurrentUser = () => {
+    return apiClient<User>({ url: `/api/v1/users/me`, method: 'GET' });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type AuthControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerCreate>>
->;
-
-export type AuthControllerCreateMutationError = void;
-
-/**
- * @summary Refresh access token
- */
-export const useAuthControllerCreate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authControllerCreate>>,
-      TError,
-      void,
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof authControllerCreate>>,
-  TError,
-  void,
-  TContext
-> => {
-  return useMutation(
-    getAuthControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type usersControllerGetCurrentUserResponse200 = {
-  data: User;
-  status: 200;
-};
-
-export type usersControllerGetCurrentUserResponseSuccess =
-  usersControllerGetCurrentUserResponse200 & {
-    headers: Headers;
-  };
-export type usersControllerGetCurrentUserResponse =
-  usersControllerGetCurrentUserResponseSuccess;
-
-export const getUsersControllerGetCurrentUserUrl = () => {
-  return `/api/v1/users/me`;
-};
-
-/**
- * @summary Get current user profile
- */
-export const usersControllerGetCurrentUser = async (
-  options?: RequestInit,
-): Promise<usersControllerGetCurrentUserResponse> => {
-  return apiClient<usersControllerGetCurrentUserResponse>(
-    getUsersControllerGetCurrentUserUrl(),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getUsersControllerGetCurrentUserQueryKey = () => {
-  return [`/api/v1/users/me`] as const;
-};
-
-export const getUsersControllerGetCurrentUserQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getUsersControllerGetCurrentUserQueryKey();
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
-  > = ({ signal }) => usersControllerGetCurrentUser({ signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type UsersControllerGetCurrentUserQueryResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
->;
-export type UsersControllerGetCurrentUserQueryError = unknown;
-
-export function useUsersControllerGetCurrentUser<
-  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-          TError,
-          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerGetCurrentUser<
-  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-          TError,
-          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerGetCurrentUser<
-  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary Get current user profile
- */
-
-export function useUsersControllerGetCurrentUser<
-  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getUsersControllerGetCurrentUserQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type usersControllerUpdateResponse200 = {
-  data: User;
-  status: 200;
-};
-
-export type usersControllerUpdateResponseSuccess =
-  usersControllerUpdateResponse200 & {
-    headers: Headers;
-  };
-export type usersControllerUpdateResponse =
-  usersControllerUpdateResponseSuccess;
-
-export const getUsersControllerUpdateUrl = () => {
-  return `/api/v1/users/me`;
-};
-
-/**
- * @summary Update current user profile
- */
-export const usersControllerUpdate = async (
-  updateUserProfileDto: UpdateUserProfileDto,
-  options?: RequestInit,
-): Promise<usersControllerUpdateResponse> => {
-  return apiClient<usersControllerUpdateResponse>(
-    getUsersControllerUpdateUrl(),
-    {
-      ...options,
+  /**
+   * @summary Update current user profile
+   */
+  const usersControllerUpdate = (
+    updateUserProfileDto: UpdateUserProfileDto,
+  ) => {
+    return apiClient<User>({
+      url: `/api/v1/users/me`,
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updateUserProfileDto),
-    },
-  );
-};
-
-export const getUsersControllerUpdateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersControllerUpdate>>,
-    TError,
-    { data: UpdateUserProfileDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersControllerUpdate>>,
-  TError,
-  { data: UpdateUserProfileDto },
-  TContext
-> => {
-  const mutationKey = ['usersControllerUpdate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersControllerUpdate>>,
-    { data: UpdateUserProfileDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return usersControllerUpdate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: updateUserProfileDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type UsersControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerUpdate>>
->;
-export type UsersControllerUpdateMutationBody = UpdateUserProfileDto;
-export type UsersControllerUpdateMutationError = unknown;
-
-/**
- * @summary Update current user profile
- */
-export const useUsersControllerUpdate = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof usersControllerUpdate>>,
-      TError,
-      { data: UpdateUserProfileDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof usersControllerUpdate>>,
-  TError,
-  { data: UpdateUserProfileDto },
-  TContext
-> => {
-  return useMutation(
-    getUsersControllerUpdateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type usersControllerChangePasswordResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type usersControllerChangePasswordResponse400 = {
-  data: void;
-  status: 400;
-};
-
-export type usersControllerChangePasswordResponseSuccess =
-  usersControllerChangePasswordResponse200 & {
-    headers: Headers;
-  };
-export type usersControllerChangePasswordResponseError =
-  usersControllerChangePasswordResponse400 & {
-    headers: Headers;
-  };
-
-export type usersControllerChangePasswordResponse =
-  | usersControllerChangePasswordResponseSuccess
-  | usersControllerChangePasswordResponseError;
-
-export const getUsersControllerChangePasswordUrl = () => {
-  return `/api/v1/users/me/change-password`;
-};
-
-/**
- * @summary Change user password
- */
-export const usersControllerChangePassword = async (
-  updatePasswordDto: UpdatePasswordDto,
-  options?: RequestInit,
-): Promise<usersControllerChangePasswordResponse> => {
-  return apiClient<usersControllerChangePasswordResponse>(
-    getUsersControllerChangePasswordUrl(),
-    {
-      ...options,
+  /**
+   * @summary Change user password
+   */
+  const usersControllerChangePassword = (
+    updatePasswordDto: UpdatePasswordDto,
+  ) => {
+    return apiClient<void>({
+      url: `/api/v1/users/me/change-password`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updatePasswordDto),
-    },
-  );
-};
-
-export const getUsersControllerChangePasswordMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersControllerChangePassword>>,
-    TError,
-    { data: UpdatePasswordDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersControllerChangePassword>>,
-  TError,
-  { data: UpdatePasswordDto },
-  TContext
-> => {
-  const mutationKey = ['usersControllerChangePassword'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersControllerChangePassword>>,
-    { data: UpdatePasswordDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return usersControllerChangePassword(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: updatePasswordDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type UsersControllerChangePasswordMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerChangePassword>>
->;
-export type UsersControllerChangePasswordMutationBody = UpdatePasswordDto;
-export type UsersControllerChangePasswordMutationError = void;
-
-/**
- * @summary Change user password
- */
-export const useUsersControllerChangePassword = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof usersControllerChangePassword>>,
-      TError,
-      { data: UpdatePasswordDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof usersControllerChangePassword>>,
-  TError,
-  { data: UpdatePasswordDto },
-  TContext
-> => {
-  return useMutation(
-    getUsersControllerChangePasswordMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type buildingsControllerCreateResponse201 = {
-  data: Building;
-  status: 201;
-};
-
-export type buildingsControllerCreateResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type buildingsControllerCreateResponseSuccess =
-  buildingsControllerCreateResponse201 & {
-    headers: Headers;
-  };
-export type buildingsControllerCreateResponseError =
-  buildingsControllerCreateResponse403 & {
-    headers: Headers;
-  };
-
-export type buildingsControllerCreateResponse =
-  | buildingsControllerCreateResponseSuccess
-  | buildingsControllerCreateResponseError;
-
-export const getBuildingsControllerCreateUrl = () => {
-  return `/api/v1/buildings`;
-};
-
-/**
- * @summary Create a new building
- */
-export const buildingsControllerCreate = async (
-  createBuildingDto: CreateBuildingDto,
-  options?: RequestInit,
-): Promise<buildingsControllerCreateResponse> => {
-  return apiClient<buildingsControllerCreateResponse>(
-    getBuildingsControllerCreateUrl(),
-    {
-      ...options,
+  /**
+   * @summary Create a new building
+   */
+  const buildingsControllerCreate = (createBuildingDto: CreateBuildingDto) => {
+    return apiClient<Building>({
+      url: `/api/v1/buildings`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createBuildingDto),
-    },
-  );
-};
-
-export const getBuildingsControllerCreateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof buildingsControllerCreate>>,
-    TError,
-    { data: CreateBuildingDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof buildingsControllerCreate>>,
-  TError,
-  { data: CreateBuildingDto },
-  TContext
-> => {
-  const mutationKey = ['buildingsControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof buildingsControllerCreate>>,
-    { data: CreateBuildingDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return buildingsControllerCreate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: createBuildingDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BuildingsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof buildingsControllerCreate>>
->;
-export type BuildingsControllerCreateMutationBody = CreateBuildingDto;
-export type BuildingsControllerCreateMutationError = void;
-
-/**
- * @summary Create a new building
- */
-export const useBuildingsControllerCreate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof buildingsControllerCreate>>,
-      TError,
-      { data: CreateBuildingDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof buildingsControllerCreate>>,
-  TError,
-  { data: CreateBuildingDto },
-  TContext
-> => {
-  return useMutation(
-    getBuildingsControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type buildingsControllerFindAllResponse200 = {
-  data: Building[];
-  status: 200;
-};
-
-export type buildingsControllerFindAllResponseSuccess =
-  buildingsControllerFindAllResponse200 & {
-    headers: Headers;
-  };
-export type buildingsControllerFindAllResponse =
-  buildingsControllerFindAllResponseSuccess;
-
-export const getBuildingsControllerFindAllUrl = (
-  params: BuildingsControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/buildings?${stringifiedParams}`
-    : `/api/v1/buildings`;
-};
-
-/**
- * @summary Get all buildings
- */
-export const buildingsControllerFindAll = async (
-  params: BuildingsControllerFindAllParams,
-  options?: RequestInit,
-): Promise<buildingsControllerFindAllResponse> => {
-  return apiClient<buildingsControllerFindAllResponse>(
-    getBuildingsControllerFindAllUrl(params),
-    {
-      ...options,
+  /**
+   * @summary Get all buildings
+   */
+  const buildingsControllerFindAll = (
+    params: BuildingsControllerFindAllParams,
+  ) => {
+    return apiClient<Building[]>({
+      url: `/api/v1/buildings`,
       method: 'GET',
-    },
-  );
-};
-
-export const getBuildingsControllerFindAllQueryKey = (
-  params?: BuildingsControllerFindAllParams,
-) => {
-  return [`/api/v1/buildings`, ...(params ? [params] : [])] as const;
-};
-
-export const getBuildingsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-  TError = unknown,
->(
-  params: BuildingsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getBuildingsControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof buildingsControllerFindAll>>
-  > = ({ signal }) => buildingsControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type BuildingsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof buildingsControllerFindAll>>
->;
-export type BuildingsControllerFindAllQueryError = unknown;
-
-export function useBuildingsControllerFindAll<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-  TError = unknown,
->(
-  params: BuildingsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof buildingsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBuildingsControllerFindAll<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-  TError = unknown,
->(
-  params: BuildingsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof buildingsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBuildingsControllerFindAll<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-  TError = unknown,
->(
-  params: BuildingsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary Get all buildings
- */
-
-export function useBuildingsControllerFindAll<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-  TError = unknown,
->(
-  params: BuildingsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getBuildingsControllerFindAllQueryOptions(
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type buildingsControllerFindOneResponse200 = {
-  data: Building;
-  status: 200;
-};
-
-export type buildingsControllerFindOneResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type buildingsControllerFindOneResponseSuccess =
-  buildingsControllerFindOneResponse200 & {
-    headers: Headers;
-  };
-export type buildingsControllerFindOneResponseError =
-  buildingsControllerFindOneResponse404 & {
-    headers: Headers;
+      params,
+    });
   };
 
-export type buildingsControllerFindOneResponse =
-  | buildingsControllerFindOneResponseSuccess
-  | buildingsControllerFindOneResponseError;
-
-export const getBuildingsControllerFindOneUrl = (id: string) => {
-  return `/api/v1/buildings/${id}`;
-};
-
-/**
- * @summary Get a building by ID
- */
-export const buildingsControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<buildingsControllerFindOneResponse> => {
-  return apiClient<buildingsControllerFindOneResponse>(
-    getBuildingsControllerFindOneUrl(id),
-    {
-      ...options,
+  /**
+   * @summary Get a building by ID
+   */
+  const buildingsControllerFindOne = (id: string) => {
+    return apiClient<Building>({
+      url: `/api/v1/buildings/${id}`,
       method: 'GET',
-    },
-  );
-};
-
-export const getBuildingsControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/buildings/${id}`] as const;
-};
-
-export const getBuildingsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getBuildingsControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof buildingsControllerFindOne>>
-  > = ({ signal }) => buildingsControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type BuildingsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof buildingsControllerFindOne>>
->;
-export type BuildingsControllerFindOneQueryError = void;
-
-export function useBuildingsControllerFindOne<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof buildingsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBuildingsControllerFindOne<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof buildingsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBuildingsControllerFindOne<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary Get a building by ID
- */
-
-export function useBuildingsControllerFindOne<
-  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getBuildingsControllerFindOneQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type buildingsControllerUpdateResponse200 = {
-  data: Building;
-  status: 200;
-};
-
-export type buildingsControllerUpdateResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type buildingsControllerUpdateResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type buildingsControllerUpdateResponseSuccess =
-  buildingsControllerUpdateResponse200 & {
-    headers: Headers;
+    });
   };
-export type buildingsControllerUpdateResponseError = (
-  buildingsControllerUpdateResponse403 | buildingsControllerUpdateResponse404
-) & {
-  headers: Headers;
-};
 
-export type buildingsControllerUpdateResponse =
-  | buildingsControllerUpdateResponseSuccess
-  | buildingsControllerUpdateResponseError;
-
-export const getBuildingsControllerUpdateUrl = (id: string) => {
-  return `/api/v1/buildings/${id}`;
-};
-
-/**
- * @summary Update a building
- */
-export const buildingsControllerUpdate = async (
-  id: string,
-  updateBuildingDto: UpdateBuildingDto,
-  options?: RequestInit,
-): Promise<buildingsControllerUpdateResponse> => {
-  return apiClient<buildingsControllerUpdateResponse>(
-    getBuildingsControllerUpdateUrl(id),
-    {
-      ...options,
+  /**
+   * @summary Update a building
+   */
+  const buildingsControllerUpdate = (
+    id: string,
+    updateBuildingDto: UpdateBuildingDto,
+  ) => {
+    return apiClient<Building>({
+      url: `/api/v1/buildings/${id}`,
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updateBuildingDto),
-    },
-  );
-};
-
-export const getBuildingsControllerUpdateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof buildingsControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateBuildingDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof buildingsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateBuildingDto },
-  TContext
-> => {
-  const mutationKey = ['buildingsControllerUpdate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof buildingsControllerUpdate>>,
-    { id: string; data: UpdateBuildingDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return buildingsControllerUpdate(id, data);
+      headers: { 'Content-Type': 'application/json' },
+      data: updateBuildingDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BuildingsControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof buildingsControllerUpdate>>
->;
-export type BuildingsControllerUpdateMutationBody = UpdateBuildingDto;
-export type BuildingsControllerUpdateMutationError = void;
-
-/**
- * @summary Update a building
- */
-export const useBuildingsControllerUpdate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof buildingsControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateBuildingDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof buildingsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateBuildingDto },
-  TContext
-> => {
-  return useMutation(
-    getBuildingsControllerUpdateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type buildingsControllerRemoveResponse200 = {
-  data: Building;
-  status: 200;
-};
-
-export type buildingsControllerRemoveResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type buildingsControllerRemoveResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type buildingsControllerRemoveResponseSuccess =
-  buildingsControllerRemoveResponse200 & {
-    headers: Headers;
-  };
-export type buildingsControllerRemoveResponseError = (
-  buildingsControllerRemoveResponse403 | buildingsControllerRemoveResponse404
-) & {
-  headers: Headers;
-};
-
-export type buildingsControllerRemoveResponse =
-  | buildingsControllerRemoveResponseSuccess
-  | buildingsControllerRemoveResponseError;
-
-export const getBuildingsControllerRemoveUrl = (id: string) => {
-  return `/api/v1/buildings/${id}`;
-};
-
-/**
- * @summary Delete a building
- */
-export const buildingsControllerRemove = async (
-  id: string,
-  options?: RequestInit,
-): Promise<buildingsControllerRemoveResponse> => {
-  return apiClient<buildingsControllerRemoveResponse>(
-    getBuildingsControllerRemoveUrl(id),
-    {
-      ...options,
+  /**
+   * @summary Delete a building
+   */
+  const buildingsControllerRemove = (id: string) => {
+    return apiClient<Building>({
+      url: `/api/v1/buildings/${id}`,
       method: 'DELETE',
-    },
-  );
-};
-
-export const getBuildingsControllerRemoveMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof buildingsControllerRemove>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof buildingsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ['buildingsControllerRemove'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof buildingsControllerRemove>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
-
-    return buildingsControllerRemove(id);
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BuildingsControllerRemoveMutationResult = NonNullable<
-  Awaited<ReturnType<typeof buildingsControllerRemove>>
->;
-
-export type BuildingsControllerRemoveMutationError = void;
-
-/**
- * @summary Delete a building
- */
-export const useBuildingsControllerRemove = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof buildingsControllerRemove>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof buildingsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  return useMutation(
-    getBuildingsControllerRemoveMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type roomsControllerGetAvailableRoomsResponse200 = {
-  data: Room[];
-  status: 200;
-};
-
-export type roomsControllerGetAvailableRoomsResponseSuccess =
-  roomsControllerGetAvailableRoomsResponse200 & {
-    headers: Headers;
+  /**
+   * @summary Get available rooms (Public)
+   */
+  const roomsControllerGetAvailableRooms = () => {
+    return apiClient<Room[]>({ url: `/api/v1/rooms/available`, method: 'GET' });
   };
-export type roomsControllerGetAvailableRoomsResponse =
-  roomsControllerGetAvailableRoomsResponseSuccess;
 
-export const getRoomsControllerGetAvailableRoomsUrl = () => {
-  return `/api/v1/rooms/available`;
-};
-
-/**
- * @summary Get available rooms (Public)
- */
-export const roomsControllerGetAvailableRooms = async (
-  options?: RequestInit,
-): Promise<roomsControllerGetAvailableRoomsResponse> => {
-  return apiClient<roomsControllerGetAvailableRoomsResponse>(
-    getRoomsControllerGetAvailableRoomsUrl(),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getRoomsControllerGetAvailableRoomsQueryKey = () => {
-  return [`/api/v1/rooms/available`] as const;
-};
-
-export const getRoomsControllerGetAvailableRoomsQueryOptions = <
-  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoomsControllerGetAvailableRoomsQueryKey();
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
-  > = ({ signal }) => roomsControllerGetAvailableRooms({ signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type RoomsControllerGetAvailableRoomsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
->;
-export type RoomsControllerGetAvailableRoomsQueryError = unknown;
-
-export function useRoomsControllerGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-          TError,
-          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsControllerGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-          TError,
-          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsControllerGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary Get available rooms (Public)
- */
-
-export function useRoomsControllerGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoomsControllerGetAvailableRoomsQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type roomsControllerCreateResponse201 = {
-  data: Room;
-  status: 201;
-};
-
-export type roomsControllerCreateResponseSuccess =
-  roomsControllerCreateResponse201 & {
-    headers: Headers;
-  };
-export type roomsControllerCreateResponse =
-  roomsControllerCreateResponseSuccess;
-
-export const getRoomsControllerCreateUrl = () => {
-  return `/api/v1/rooms`;
-};
-
-export const roomsControllerCreate = async (
-  createRoomDto: CreateRoomDto,
-  options?: RequestInit,
-): Promise<roomsControllerCreateResponse> => {
-  return apiClient<roomsControllerCreateResponse>(
-    getRoomsControllerCreateUrl(),
-    {
-      ...options,
+  const roomsControllerCreate = (createRoomDto: CreateRoomDto) => {
+    return apiClient<Room>({
+      url: `/api/v1/rooms`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createRoomDto),
-    },
-  );
-};
-
-export const getRoomsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof roomsControllerCreate>>,
-    TError,
-    { data: CreateRoomDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof roomsControllerCreate>>,
-  TError,
-  { data: CreateRoomDto },
-  TContext
-> => {
-  const mutationKey = ['roomsControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof roomsControllerCreate>>,
-    { data: CreateRoomDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return roomsControllerCreate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: createRoomDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RoomsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof roomsControllerCreate>>
->;
-export type RoomsControllerCreateMutationBody = CreateRoomDto;
-export type RoomsControllerCreateMutationError = unknown;
-
-export const useRoomsControllerCreate = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof roomsControllerCreate>>,
-      TError,
-      { data: CreateRoomDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof roomsControllerCreate>>,
-  TError,
-  { data: CreateRoomDto },
-  TContext
-> => {
-  return useMutation(
-    getRoomsControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type roomsControllerFindAllResponse200 = {
-  data: Room[];
-  status: 200;
-};
-
-export type roomsControllerFindAllResponseSuccess =
-  roomsControllerFindAllResponse200 & {
-    headers: Headers;
+  const roomsControllerFindAll = (params: RoomsControllerFindAllParams) => {
+    return apiClient<Room[]>({ url: `/api/v1/rooms`, method: 'GET', params });
   };
-export type roomsControllerFindAllResponse =
-  roomsControllerFindAllResponseSuccess;
 
-export const getRoomsControllerFindAllUrl = (
-  params: RoomsControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/rooms?${stringifiedParams}`
-    : `/api/v1/rooms`;
-};
-
-export const roomsControllerFindAll = async (
-  params: RoomsControllerFindAllParams,
-  options?: RequestInit,
-): Promise<roomsControllerFindAllResponse> => {
-  return apiClient<roomsControllerFindAllResponse>(
-    getRoomsControllerFindAllUrl(params),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getRoomsControllerFindAllQueryKey = (
-  params?: RoomsControllerFindAllParams,
-) => {
-  return [`/api/v1/rooms`, ...(params ? [params] : [])] as const;
-};
-
-export const getRoomsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
-  TError = unknown,
->(
-  params: RoomsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoomsControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof roomsControllerFindAll>>
-  > = ({ signal }) => roomsControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof roomsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type RoomsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof roomsControllerFindAll>>
->;
-export type RoomsControllerFindAllQueryError = unknown;
-
-export function useRoomsControllerFindAll<
-  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
-  TError = unknown,
->(
-  params: RoomsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof roomsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsControllerFindAll<
-  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
-  TError = unknown,
->(
-  params: RoomsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof roomsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsControllerFindAll<
-  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
-  TError = unknown,
->(
-  params: RoomsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useRoomsControllerFindAll<
-  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
-  TError = unknown,
->(
-  params: RoomsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoomsControllerFindAllQueryOptions(params, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type roomsControllerFindOneResponse200 = {
-  data: Room;
-  status: 200;
-};
-
-export type roomsControllerFindOneResponseSuccess =
-  roomsControllerFindOneResponse200 & {
-    headers: Headers;
+  const roomsControllerFindOne = (id: string) => {
+    return apiClient<Room>({ url: `/api/v1/rooms/${id}`, method: 'GET' });
   };
-export type roomsControllerFindOneResponse =
-  roomsControllerFindOneResponseSuccess;
 
-export const getRoomsControllerFindOneUrl = (id: string) => {
-  return `/api/v1/rooms/${id}`;
-};
-
-export const roomsControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<roomsControllerFindOneResponse> => {
-  return apiClient<roomsControllerFindOneResponse>(
-    getRoomsControllerFindOneUrl(id),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getRoomsControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/rooms/${id}`] as const;
-};
-
-export const getRoomsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoomsControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof roomsControllerFindOne>>
-  > = ({ signal }) => roomsControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof roomsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type RoomsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof roomsControllerFindOne>>
->;
-export type RoomsControllerFindOneQueryError = unknown;
-
-export function useRoomsControllerFindOne<
-  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof roomsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsControllerFindOne<
-  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof roomsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsControllerFindOne<
-  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useRoomsControllerFindOne<
-  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof roomsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoomsControllerFindOneQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type roomsControllerUpdateResponse200 = {
-  data: Room;
-  status: 200;
-};
-
-export type roomsControllerUpdateResponseSuccess =
-  roomsControllerUpdateResponse200 & {
-    headers: Headers;
-  };
-export type roomsControllerUpdateResponse =
-  roomsControllerUpdateResponseSuccess;
-
-export const getRoomsControllerUpdateUrl = (id: string) => {
-  return `/api/v1/rooms/${id}`;
-};
-
-export const roomsControllerUpdate = async (
-  id: string,
-  updateRoomDto: UpdateRoomDto,
-  options?: RequestInit,
-): Promise<roomsControllerUpdateResponse> => {
-  return apiClient<roomsControllerUpdateResponse>(
-    getRoomsControllerUpdateUrl(id),
-    {
-      ...options,
+  const roomsControllerUpdate = (id: string, updateRoomDto: UpdateRoomDto) => {
+    return apiClient<Room>({
+      url: `/api/v1/rooms/${id}`,
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updateRoomDto),
-    },
-  );
-};
-
-export const getRoomsControllerUpdateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof roomsControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateRoomDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof roomsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateRoomDto },
-  TContext
-> => {
-  const mutationKey = ['roomsControllerUpdate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof roomsControllerUpdate>>,
-    { id: string; data: UpdateRoomDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return roomsControllerUpdate(id, data);
+      headers: { 'Content-Type': 'application/json' },
+      data: updateRoomDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RoomsControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof roomsControllerUpdate>>
->;
-export type RoomsControllerUpdateMutationBody = UpdateRoomDto;
-export type RoomsControllerUpdateMutationError = unknown;
-
-export const useRoomsControllerUpdate = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof roomsControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateRoomDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof roomsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateRoomDto },
-  TContext
-> => {
-  return useMutation(
-    getRoomsControllerUpdateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type roomsControllerRemoveResponse200 = {
-  data: Room;
-  status: 200;
-};
-
-export type roomsControllerRemoveResponseSuccess =
-  roomsControllerRemoveResponse200 & {
-    headers: Headers;
+  const roomsControllerRemove = (id: string) => {
+    return apiClient<Room>({ url: `/api/v1/rooms/${id}`, method: 'DELETE' });
   };
-export type roomsControllerRemoveResponse =
-  roomsControllerRemoveResponseSuccess;
 
-export const getRoomsControllerRemoveUrl = (id: string) => {
-  return `/api/v1/rooms/${id}`;
-};
+  const rentalsControllerCreate = (createRentalDto: CreateRentalDto) => {
+    return apiClient<Rental>({
+      url: `/api/v1/rentals`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createRentalDto,
+    });
+  };
 
-export const roomsControllerRemove = async (
-  id: string,
-  options?: RequestInit,
-): Promise<roomsControllerRemoveResponse> => {
-  return apiClient<roomsControllerRemoveResponse>(
-    getRoomsControllerRemoveUrl(id),
-    {
-      ...options,
+  const rentalsControllerFindAll = (
+    params?: RentalsControllerFindAllParams,
+  ) => {
+    return apiClient<Rental[]>({
+      url: `/api/v1/rentals`,
+      method: 'GET',
+      params,
+    });
+  };
+
+  const rentalsControllerFindOne = (id: string) => {
+    return apiClient<Rental>({ url: `/api/v1/rentals/${id}`, method: 'GET' });
+  };
+
+  const rentalsControllerUpdate = (
+    id: string,
+    updateRentalDto: UpdateRentalDto,
+  ) => {
+    return apiClient<Rental>({
+      url: `/api/v1/rentals/${id}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: updateRentalDto,
+    });
+  };
+
+  const rentalsControllerRemove = (id: string) => {
+    return apiClient<Rental>({
+      url: `/api/v1/rentals/${id}`,
       method: 'DELETE',
-    },
-  );
-};
-
-export const getRoomsControllerRemoveMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof roomsControllerRemove>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof roomsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ['roomsControllerRemove'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof roomsControllerRemove>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
-
-    return roomsControllerRemove(id);
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RoomsControllerRemoveMutationResult = NonNullable<
-  Awaited<ReturnType<typeof roomsControllerRemove>>
->;
-
-export type RoomsControllerRemoveMutationError = unknown;
-
-export const useRoomsControllerRemove = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof roomsControllerRemove>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof roomsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  return useMutation(
-    getRoomsControllerRemoveMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type rentalsControllerCreateResponse201 = {
-  data: Rental;
-  status: 201;
-};
-
-export type rentalsControllerCreateResponseSuccess =
-  rentalsControllerCreateResponse201 & {
-    headers: Headers;
-  };
-export type rentalsControllerCreateResponse =
-  rentalsControllerCreateResponseSuccess;
-
-export const getRentalsControllerCreateUrl = () => {
-  return `/api/v1/rentals`;
-};
-
-export const rentalsControllerCreate = async (
-  createRentalDto: CreateRentalDto,
-  options?: RequestInit,
-): Promise<rentalsControllerCreateResponse> => {
-  return apiClient<rentalsControllerCreateResponse>(
-    getRentalsControllerCreateUrl(),
-    {
-      ...options,
+  /**
+   * @summary Create a new bill
+   */
+  const billsControllerCreate = (createBillDto: CreateBillDto) => {
+    return apiClient<Bill>({
+      url: `/api/v1/bills`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createRentalDto),
-    },
-  );
-};
-
-export const getRentalsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof rentalsControllerCreate>>,
-    TError,
-    { data: CreateRentalDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof rentalsControllerCreate>>,
-  TError,
-  { data: CreateRentalDto },
-  TContext
-> => {
-  const mutationKey = ['rentalsControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof rentalsControllerCreate>>,
-    { data: CreateRentalDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return rentalsControllerCreate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: createBillDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RentalsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof rentalsControllerCreate>>
->;
-export type RentalsControllerCreateMutationBody = CreateRentalDto;
-export type RentalsControllerCreateMutationError = unknown;
-
-export const useRentalsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof rentalsControllerCreate>>,
-      TError,
-      { data: CreateRentalDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof rentalsControllerCreate>>,
-  TError,
-  { data: CreateRentalDto },
-  TContext
-> => {
-  return useMutation(
-    getRentalsControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type rentalsControllerFindAllResponse200 = {
-  data: Rental[];
-  status: 200;
-};
-
-export type rentalsControllerFindAllResponseSuccess =
-  rentalsControllerFindAllResponse200 & {
-    headers: Headers;
+  /**
+   * @summary Get all bills
+   */
+  const billsControllerFindAll = (params?: BillsControllerFindAllParams) => {
+    return apiClient<Bill[]>({ url: `/api/v1/bills`, method: 'GET', params });
   };
-export type rentalsControllerFindAllResponse =
-  rentalsControllerFindAllResponseSuccess;
 
-export const getRentalsControllerFindAllUrl = (
-  params?: RentalsControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/rentals?${stringifiedParams}`
-    : `/api/v1/rentals`;
-};
-
-export const rentalsControllerFindAll = async (
-  params?: RentalsControllerFindAllParams,
-  options?: RequestInit,
-): Promise<rentalsControllerFindAllResponse> => {
-  return apiClient<rentalsControllerFindAllResponse>(
-    getRentalsControllerFindAllUrl(params),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getRentalsControllerFindAllQueryKey = (
-  params?: RentalsControllerFindAllParams,
-) => {
-  return [`/api/v1/rentals`, ...(params ? [params] : [])] as const;
-};
-
-export const getRentalsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: RentalsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRentalsControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof rentalsControllerFindAll>>
-  > = ({ signal }) => rentalsControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type RentalsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof rentalsControllerFindAll>>
->;
-export type RentalsControllerFindAllQueryError = unknown;
-
-export function useRentalsControllerFindAll<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | RentalsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof rentalsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRentalsControllerFindAll<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: RentalsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof rentalsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRentalsControllerFindAll<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: RentalsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useRentalsControllerFindAll<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: RentalsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRentalsControllerFindAllQueryOptions(params, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type rentalsControllerFindOneResponse200 = {
-  data: Rental;
-  status: 200;
-};
-
-export type rentalsControllerFindOneResponseSuccess =
-  rentalsControllerFindOneResponse200 & {
-    headers: Headers;
+  /**
+   * @summary Get a bill by ID
+   */
+  const billsControllerFindOne = (id: string) => {
+    return apiClient<Bill>({ url: `/api/v1/bills/${id}`, method: 'GET' });
   };
-export type rentalsControllerFindOneResponse =
-  rentalsControllerFindOneResponseSuccess;
 
-export const getRentalsControllerFindOneUrl = (id: string) => {
-  return `/api/v1/rentals/${id}`;
-};
-
-export const rentalsControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<rentalsControllerFindOneResponse> => {
-  return apiClient<rentalsControllerFindOneResponse>(
-    getRentalsControllerFindOneUrl(id),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getRentalsControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/rentals/${id}`] as const;
-};
-
-export const getRentalsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRentalsControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof rentalsControllerFindOne>>
-  > = ({ signal }) => rentalsControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type RentalsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof rentalsControllerFindOne>>
->;
-export type RentalsControllerFindOneQueryError = unknown;
-
-export function useRentalsControllerFindOne<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof rentalsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRentalsControllerFindOne<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof rentalsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRentalsControllerFindOne<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useRentalsControllerFindOne<
-  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRentalsControllerFindOneQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type rentalsControllerUpdateResponse200 = {
-  data: Rental;
-  status: 200;
-};
-
-export type rentalsControllerUpdateResponseSuccess =
-  rentalsControllerUpdateResponse200 & {
-    headers: Headers;
-  };
-export type rentalsControllerUpdateResponse =
-  rentalsControllerUpdateResponseSuccess;
-
-export const getRentalsControllerUpdateUrl = (id: string) => {
-  return `/api/v1/rentals/${id}`;
-};
-
-export const rentalsControllerUpdate = async (
-  id: string,
-  updateRentalDto: UpdateRentalDto,
-  options?: RequestInit,
-): Promise<rentalsControllerUpdateResponse> => {
-  return apiClient<rentalsControllerUpdateResponse>(
-    getRentalsControllerUpdateUrl(id),
-    {
-      ...options,
+  /**
+   * @summary Update a bill
+   */
+  const billsControllerUpdate = (id: string, updateBillDto: UpdateBillDto) => {
+    return apiClient<Bill>({
+      url: `/api/v1/bills/${id}`,
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updateRentalDto),
-    },
-  );
-};
-
-export const getRentalsControllerUpdateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof rentalsControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateRentalDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof rentalsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateRentalDto },
-  TContext
-> => {
-  const mutationKey = ['rentalsControllerUpdate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof rentalsControllerUpdate>>,
-    { id: string; data: UpdateRentalDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return rentalsControllerUpdate(id, data);
+      headers: { 'Content-Type': 'application/json' },
+      data: updateBillDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RentalsControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof rentalsControllerUpdate>>
->;
-export type RentalsControllerUpdateMutationBody = UpdateRentalDto;
-export type RentalsControllerUpdateMutationError = unknown;
-
-export const useRentalsControllerUpdate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof rentalsControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateRentalDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof rentalsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateRentalDto },
-  TContext
-> => {
-  return useMutation(
-    getRentalsControllerUpdateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type rentalsControllerRemoveResponse200 = {
-  data: Rental;
-  status: 200;
-};
-
-export type rentalsControllerRemoveResponseSuccess =
-  rentalsControllerRemoveResponse200 & {
-    headers: Headers;
-  };
-export type rentalsControllerRemoveResponse =
-  rentalsControllerRemoveResponseSuccess;
-
-export const getRentalsControllerRemoveUrl = (id: string) => {
-  return `/api/v1/rentals/${id}`;
-};
-
-export const rentalsControllerRemove = async (
-  id: string,
-  options?: RequestInit,
-): Promise<rentalsControllerRemoveResponse> => {
-  return apiClient<rentalsControllerRemoveResponse>(
-    getRentalsControllerRemoveUrl(id),
-    {
-      ...options,
-      method: 'DELETE',
-    },
-  );
-};
-
-export const getRentalsControllerRemoveMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof rentalsControllerRemove>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof rentalsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ['rentalsControllerRemove'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof rentalsControllerRemove>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
-
-    return rentalsControllerRemove(id);
+  /**
+   * @summary Delete a bill
+   */
+  const billsControllerRemove = (id: string) => {
+    return apiClient<void>({ url: `/api/v1/bills/${id}`, method: 'DELETE' });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RentalsControllerRemoveMutationResult = NonNullable<
-  Awaited<ReturnType<typeof rentalsControllerRemove>>
->;
-
-export type RentalsControllerRemoveMutationError = unknown;
-
-export const useRentalsControllerRemove = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof rentalsControllerRemove>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof rentalsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  return useMutation(
-    getRentalsControllerRemoveMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type billsControllerCreateResponse201 = {
-  data: Bill;
-  status: 201;
-};
-
-export type billsControllerCreateResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type billsControllerCreateResponseSuccess =
-  billsControllerCreateResponse201 & {
-    headers: Headers;
-  };
-export type billsControllerCreateResponseError =
-  billsControllerCreateResponse403 & {
-    headers: Headers;
-  };
-
-export type billsControllerCreateResponse =
-  billsControllerCreateResponseSuccess | billsControllerCreateResponseError;
-
-export const getBillsControllerCreateUrl = () => {
-  return `/api/v1/bills`;
-};
-
-/**
- * @summary Create a new bill
- */
-export const billsControllerCreate = async (
-  createBillDto: CreateBillDto,
-  options?: RequestInit,
-): Promise<billsControllerCreateResponse> => {
-  return apiClient<billsControllerCreateResponse>(
-    getBillsControllerCreateUrl(),
-    {
-      ...options,
+  /**
+   * @summary Confirm payment for a bill
+   */
+  const billsControllerConfirmPayment = (
+    id: string,
+    confirmPaymentDto: ConfirmPaymentDto,
+  ) => {
+    return apiClient<Bill>({
+      url: `/api/v1/bills/${id}/confirm`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createBillDto),
-    },
-  );
-};
-
-export const getBillsControllerCreateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof billsControllerCreate>>,
-    TError,
-    { data: CreateBillDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof billsControllerCreate>>,
-  TError,
-  { data: CreateBillDto },
-  TContext
-> => {
-  const mutationKey = ['billsControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof billsControllerCreate>>,
-    { data: CreateBillDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return billsControllerCreate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: confirmPaymentDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BillsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof billsControllerCreate>>
->;
-export type BillsControllerCreateMutationBody = CreateBillDto;
-export type BillsControllerCreateMutationError = void;
-
-/**
- * @summary Create a new bill
- */
-export const useBillsControllerCreate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof billsControllerCreate>>,
-      TError,
-      { data: CreateBillDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof billsControllerCreate>>,
-  TError,
-  { data: CreateBillDto },
-  TContext
-> => {
-  return useMutation(
-    getBillsControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type billsControllerFindAllResponse200 = {
-  data: Bill[];
-  status: 200;
-};
-
-export type billsControllerFindAllResponseSuccess =
-  billsControllerFindAllResponse200 & {
-    headers: Headers;
+  const paymentsControllerCreate = (createPaymentDto: CreatePaymentDto) => {
+    return apiClient<Payment>({
+      url: `/api/v1/payments`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createPaymentDto,
+    });
   };
-export type billsControllerFindAllResponse =
-  billsControllerFindAllResponseSuccess;
 
-export const getBillsControllerFindAllUrl = (
-  params?: BillsControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/bills?${stringifiedParams}`
-    : `/api/v1/bills`;
-};
-
-/**
- * @summary Get all bills
- */
-export const billsControllerFindAll = async (
-  params?: BillsControllerFindAllParams,
-  options?: RequestInit,
-): Promise<billsControllerFindAllResponse> => {
-  return apiClient<billsControllerFindAllResponse>(
-    getBillsControllerFindAllUrl(params),
-    {
-      ...options,
+  const paymentsControllerFindAll = (
+    params?: PaymentsControllerFindAllParams,
+  ) => {
+    return apiClient<Payment[]>({
+      url: `/api/v1/payments`,
       method: 'GET',
-    },
-  );
-};
-
-export const getBillsControllerFindAllQueryKey = (
-  params?: BillsControllerFindAllParams,
-) => {
-  return [`/api/v1/bills`, ...(params ? [params] : [])] as const;
-};
-
-export const getBillsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: BillsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getBillsControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof billsControllerFindAll>>
-  > = ({ signal }) => billsControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof billsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type BillsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof billsControllerFindAll>>
->;
-export type BillsControllerFindAllQueryError = unknown;
-
-export function useBillsControllerFindAll<
-  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | BillsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof billsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof billsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBillsControllerFindAll<
-  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: BillsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof billsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof billsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBillsControllerFindAll<
-  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: BillsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary Get all bills
- */
-
-export function useBillsControllerFindAll<
-  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: BillsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getBillsControllerFindAllQueryOptions(params, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type billsControllerFindOneResponse200 = {
-  data: Bill;
-  status: 200;
-};
-
-export type billsControllerFindOneResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type billsControllerFindOneResponseSuccess =
-  billsControllerFindOneResponse200 & {
-    headers: Headers;
-  };
-export type billsControllerFindOneResponseError =
-  billsControllerFindOneResponse404 & {
-    headers: Headers;
+      params,
+    });
   };
 
-export type billsControllerFindOneResponse =
-  billsControllerFindOneResponseSuccess | billsControllerFindOneResponseError;
+  const paymentsControllerFindOne = (id: string) => {
+    return apiClient<Payment>({ url: `/api/v1/payments/${id}`, method: 'GET' });
+  };
 
-export const getBillsControllerFindOneUrl = (id: string) => {
-  return `/api/v1/bills/${id}`;
-};
+  const maintenanceControllerCreate = (
+    createMaintenanceDto: CreateMaintenanceDto,
+  ) => {
+    return apiClient<MaintenanceRequest>({
+      url: `/api/v1/maintenance`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createMaintenanceDto,
+    });
+  };
 
-/**
- * @summary Get a bill by ID
- */
-export const billsControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<billsControllerFindOneResponse> => {
-  return apiClient<billsControllerFindOneResponse>(
-    getBillsControllerFindOneUrl(id),
-    {
-      ...options,
+  const maintenanceControllerFindAll = (
+    params?: MaintenanceControllerFindAllParams,
+  ) => {
+    return apiClient<MaintenanceRequest[]>({
+      url: `/api/v1/maintenance`,
       method: 'GET',
-    },
-  );
-};
-
-export const getBillsControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/bills/${id}`] as const;
-};
-
-export const getBillsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getBillsControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof billsControllerFindOne>>
-  > = ({ signal }) => billsControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof billsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type BillsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof billsControllerFindOne>>
->;
-export type BillsControllerFindOneQueryError = void;
-
-export function useBillsControllerFindOne<
-  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof billsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof billsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBillsControllerFindOne<
-  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof billsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof billsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useBillsControllerFindOne<
-  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary Get a bill by ID
- */
-
-export function useBillsControllerFindOne<
-  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof billsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getBillsControllerFindOneQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type billsControllerUpdateResponse200 = {
-  data: Bill;
-  status: 200;
-};
-
-export type billsControllerUpdateResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type billsControllerUpdateResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type billsControllerUpdateResponseSuccess =
-  billsControllerUpdateResponse200 & {
-    headers: Headers;
+      params,
+    });
   };
-export type billsControllerUpdateResponseError = (
-  billsControllerUpdateResponse403 | billsControllerUpdateResponse404
-) & {
-  headers: Headers;
-};
 
-export type billsControllerUpdateResponse =
-  billsControllerUpdateResponseSuccess | billsControllerUpdateResponseError;
+  const maintenanceControllerFindOne = (id: string) => {
+    return apiClient<MaintenanceRequest>({
+      url: `/api/v1/maintenance/${id}`,
+      method: 'GET',
+    });
+  };
 
-export const getBillsControllerUpdateUrl = (id: string) => {
-  return `/api/v1/bills/${id}`;
-};
-
-/**
- * @summary Update a bill
- */
-export const billsControllerUpdate = async (
-  id: string,
-  updateBillDto: UpdateBillDto,
-  options?: RequestInit,
-): Promise<billsControllerUpdateResponse> => {
-  return apiClient<billsControllerUpdateResponse>(
-    getBillsControllerUpdateUrl(id),
-    {
-      ...options,
+  const maintenanceControllerUpdate = (
+    id: string,
+    updateMaintenanceDto: UpdateMaintenanceDto,
+  ) => {
+    return apiClient<MaintenanceRequest>({
+      url: `/api/v1/maintenance/${id}`,
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updateBillDto),
-    },
-  );
-};
-
-export const getBillsControllerUpdateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof billsControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateBillDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof billsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateBillDto },
-  TContext
-> => {
-  const mutationKey = ['billsControllerUpdate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof billsControllerUpdate>>,
-    { id: string; data: UpdateBillDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return billsControllerUpdate(id, data);
+      headers: { 'Content-Type': 'application/json' },
+      data: updateMaintenanceDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BillsControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof billsControllerUpdate>>
->;
-export type BillsControllerUpdateMutationBody = UpdateBillDto;
-export type BillsControllerUpdateMutationError = void;
-
-/**
- * @summary Update a bill
- */
-export const useBillsControllerUpdate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof billsControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateBillDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof billsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateBillDto },
-  TContext
-> => {
-  return useMutation(
-    getBillsControllerUpdateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type billsControllerRemoveResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type billsControllerRemoveResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type billsControllerRemoveResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type billsControllerRemoveResponseSuccess =
-  billsControllerRemoveResponse200 & {
-    headers: Headers;
-  };
-export type billsControllerRemoveResponseError = (
-  billsControllerRemoveResponse403 | billsControllerRemoveResponse404
-) & {
-  headers: Headers;
-};
-
-export type billsControllerRemoveResponse =
-  billsControllerRemoveResponseSuccess | billsControllerRemoveResponseError;
-
-export const getBillsControllerRemoveUrl = (id: string) => {
-  return `/api/v1/bills/${id}`;
-};
-
-/**
- * @summary Delete a bill
- */
-export const billsControllerRemove = async (
-  id: string,
-  options?: RequestInit,
-): Promise<billsControllerRemoveResponse> => {
-  return apiClient<billsControllerRemoveResponse>(
-    getBillsControllerRemoveUrl(id),
-    {
-      ...options,
-      method: 'DELETE',
-    },
-  );
-};
-
-export const getBillsControllerRemoveMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof billsControllerRemove>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof billsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ['billsControllerRemove'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof billsControllerRemove>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
-
-    return billsControllerRemove(id);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BillsControllerRemoveMutationResult = NonNullable<
-  Awaited<ReturnType<typeof billsControllerRemove>>
->;
-
-export type BillsControllerRemoveMutationError = void;
-
-/**
- * @summary Delete a bill
- */
-export const useBillsControllerRemove = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof billsControllerRemove>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof billsControllerRemove>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  return useMutation(
-    getBillsControllerRemoveMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type billsControllerConfirmPaymentResponse200 = {
-  data: Bill;
-  status: 200;
-};
-
-export type billsControllerConfirmPaymentResponse403 = {
-  data: void;
-  status: 403;
-};
-
-export type billsControllerConfirmPaymentResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type billsControllerConfirmPaymentResponseSuccess =
-  billsControllerConfirmPaymentResponse200 & {
-    headers: Headers;
-  };
-export type billsControllerConfirmPaymentResponseError = (
-  | billsControllerConfirmPaymentResponse403
-  | billsControllerConfirmPaymentResponse404
-) & {
-  headers: Headers;
-};
-
-export type billsControllerConfirmPaymentResponse =
-  | billsControllerConfirmPaymentResponseSuccess
-  | billsControllerConfirmPaymentResponseError;
-
-export const getBillsControllerConfirmPaymentUrl = (id: string) => {
-  return `/api/v1/bills/${id}/confirm`;
-};
-
-/**
- * @summary Confirm payment for a bill
- */
-export const billsControllerConfirmPayment = async (
-  id: string,
-  confirmPaymentDto: ConfirmPaymentDto,
-  options?: RequestInit,
-): Promise<billsControllerConfirmPaymentResponse> => {
-  return apiClient<billsControllerConfirmPaymentResponse>(
-    getBillsControllerConfirmPaymentUrl(id),
-    {
-      ...options,
+  const maintenanceControllerRespond = (
+    id: string,
+    respondMaintenanceDto: RespondMaintenanceDto,
+  ) => {
+    return apiClient<MaintenanceRequest>({
+      url: `/api/v1/maintenance/${id}/respond`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(confirmPaymentDto),
-    },
-  );
-};
-
-export const getBillsControllerConfirmPaymentMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
-    TError,
-    { id: string; data: ConfirmPaymentDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
-  TError,
-  { id: string; data: ConfirmPaymentDto },
-  TContext
-> => {
-  const mutationKey = ['billsControllerConfirmPayment'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
-    { id: string; data: ConfirmPaymentDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return billsControllerConfirmPayment(id, data);
+      headers: { 'Content-Type': 'application/json' },
+      data: respondMaintenanceDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type BillsControllerConfirmPaymentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof billsControllerConfirmPayment>>
->;
-export type BillsControllerConfirmPaymentMutationBody = ConfirmPaymentDto;
-export type BillsControllerConfirmPaymentMutationError = void;
-
-/**
- * @summary Confirm payment for a bill
- */
-export const useBillsControllerConfirmPayment = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
-      TError,
-      { id: string; data: ConfirmPaymentDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
-  TError,
-  { id: string; data: ConfirmPaymentDto },
-  TContext
-> => {
-  return useMutation(
-    getBillsControllerConfirmPaymentMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type paymentsControllerCreateResponse201 = {
-  data: Payment;
-  status: 201;
-};
-
-export type paymentsControllerCreateResponseSuccess =
-  paymentsControllerCreateResponse201 & {
-    headers: Headers;
+  const chatControllerGetGroups = () => {
+    return apiClient<ChatGroup[]>({
+      url: `/api/v1/chat/groups`,
+      method: 'GET',
+    });
   };
-export type paymentsControllerCreateResponse =
-  paymentsControllerCreateResponseSuccess;
 
-export const getPaymentsControllerCreateUrl = () => {
-  return `/api/v1/payments`;
-};
+  const chatControllerGetGroup = (id: string) => {
+    return apiClient<ChatGroup>({
+      url: `/api/v1/chat/groups/${id}`,
+      method: 'GET',
+    });
+  };
 
-export const paymentsControllerCreate = async (
-  createPaymentDto: CreatePaymentDto,
-  options?: RequestInit,
-): Promise<paymentsControllerCreateResponse> => {
-  return apiClient<paymentsControllerCreateResponse>(
-    getPaymentsControllerCreateUrl(),
-    {
-      ...options,
+  const chatControllerGetMessages = (
+    id: string,
+    params?: ChatControllerGetMessagesParams,
+  ) => {
+    return apiClient<Message[]>({
+      url: `/api/v1/chat/groups/${id}/messages`,
+      method: 'GET',
+      params,
+    });
+  };
+
+  const chatControllerSendMessage = (
+    id: string,
+    sendMessageDto: SendMessageDto,
+  ) => {
+    return apiClient<Message>({
+      url: `/api/v1/chat/groups/${id}/messages`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createPaymentDto),
-    },
-  );
-};
-
-export const getPaymentsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof paymentsControllerCreate>>,
-    TError,
-    { data: CreatePaymentDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof paymentsControllerCreate>>,
-  TError,
-  { data: CreatePaymentDto },
-  TContext
-> => {
-  const mutationKey = ['paymentsControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof paymentsControllerCreate>>,
-    { data: CreatePaymentDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return paymentsControllerCreate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: sendMessageDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PaymentsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerCreate>>
->;
-export type PaymentsControllerCreateMutationBody = CreatePaymentDto;
-export type PaymentsControllerCreateMutationError = unknown;
-
-export const usePaymentsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof paymentsControllerCreate>>,
-      TError,
-      { data: CreatePaymentDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof paymentsControllerCreate>>,
-  TError,
-  { data: CreatePaymentDto },
-  TContext
-> => {
-  return useMutation(
-    getPaymentsControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type paymentsControllerFindAllResponse200 = {
-  data: Payment[];
-  status: 200;
-};
-
-export type paymentsControllerFindAllResponseSuccess =
-  paymentsControllerFindAllResponse200 & {
-    headers: Headers;
-  };
-export type paymentsControllerFindAllResponse =
-  paymentsControllerFindAllResponseSuccess;
-
-export const getPaymentsControllerFindAllUrl = (
-  params?: PaymentsControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/payments?${stringifiedParams}`
-    : `/api/v1/payments`;
-};
-
-export const paymentsControllerFindAll = async (
-  params?: PaymentsControllerFindAllParams,
-  options?: RequestInit,
-): Promise<paymentsControllerFindAllResponse> => {
-  return apiClient<paymentsControllerFindAllResponse>(
-    getPaymentsControllerFindAllUrl(params),
-    {
-      ...options,
+  const chatControllerGetDirectMessages = (
+    userId: string,
+    params?: ChatControllerGetDirectMessagesParams,
+  ) => {
+    return apiClient<Message[]>({
+      url: `/api/v1/chat/direct/${userId}`,
       method: 'GET',
-    },
-  );
-};
-
-export const getPaymentsControllerFindAllQueryKey = (
-  params?: PaymentsControllerFindAllParams,
-) => {
-  return [`/api/v1/payments`, ...(params ? [params] : [])] as const;
-};
-
-export const getPaymentsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getPaymentsControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof paymentsControllerFindAll>>
-  > = ({ signal }) => paymentsControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type PaymentsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerFindAll>>
->;
-export type PaymentsControllerFindAllQueryError = unknown;
-
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | PaymentsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof paymentsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof paymentsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getPaymentsControllerFindAllQueryOptions(
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type paymentsControllerFindOneResponse200 = {
-  data: Payment;
-  status: 200;
-};
-
-export type paymentsControllerFindOneResponseSuccess =
-  paymentsControllerFindOneResponse200 & {
-    headers: Headers;
+      params,
+    });
   };
-export type paymentsControllerFindOneResponse =
-  paymentsControllerFindOneResponseSuccess;
 
-export const getPaymentsControllerFindOneUrl = (id: string) => {
-  return `/api/v1/payments/${id}`;
-};
-
-export const paymentsControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<paymentsControllerFindOneResponse> => {
-  return apiClient<paymentsControllerFindOneResponse>(
-    getPaymentsControllerFindOneUrl(id),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getPaymentsControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/payments/${id}`] as const;
-};
-
-export const getPaymentsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getPaymentsControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof paymentsControllerFindOne>>
-  > = ({ signal }) => paymentsControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type PaymentsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerFindOne>>
->;
-export type PaymentsControllerFindOneQueryError = unknown;
-
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof paymentsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof paymentsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getPaymentsControllerFindOneQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type maintenanceControllerCreateResponse201 = {
-  data: MaintenanceRequest;
-  status: 201;
-};
-
-export type maintenanceControllerCreateResponseSuccess =
-  maintenanceControllerCreateResponse201 & {
-    headers: Headers;
-  };
-export type maintenanceControllerCreateResponse =
-  maintenanceControllerCreateResponseSuccess;
-
-export const getMaintenanceControllerCreateUrl = () => {
-  return `/api/v1/maintenance`;
-};
-
-export const maintenanceControllerCreate = async (
-  createMaintenanceDto: CreateMaintenanceDto,
-  options?: RequestInit,
-): Promise<maintenanceControllerCreateResponse> => {
-  return apiClient<maintenanceControllerCreateResponse>(
-    getMaintenanceControllerCreateUrl(),
-    {
-      ...options,
+  const chatControllerSendDirectMessage = (
+    userId: string,
+    sendMessageDto: SendMessageDto,
+  ) => {
+    return apiClient<Message>({
+      url: `/api/v1/chat/direct/${userId}`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createMaintenanceDto),
-    },
-  );
-};
-
-export const getMaintenanceControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof maintenanceControllerCreate>>,
-    TError,
-    { data: CreateMaintenanceDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof maintenanceControllerCreate>>,
-  TError,
-  { data: CreateMaintenanceDto },
-  TContext
-> => {
-  const mutationKey = ['maintenanceControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof maintenanceControllerCreate>>,
-    { data: CreateMaintenanceDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return maintenanceControllerCreate(data);
+      headers: { 'Content-Type': 'application/json' },
+      data: sendMessageDto,
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
-
-export type MaintenanceControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof maintenanceControllerCreate>>
->;
-export type MaintenanceControllerCreateMutationBody = CreateMaintenanceDto;
-export type MaintenanceControllerCreateMutationError = unknown;
-
-export const useMaintenanceControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof maintenanceControllerCreate>>,
-      TError,
-      { data: CreateMaintenanceDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof maintenanceControllerCreate>>,
-  TError,
-  { data: CreateMaintenanceDto },
-  TContext
-> => {
-  return useMutation(
-    getMaintenanceControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type maintenanceControllerFindAllResponse200 = {
-  data: MaintenanceRequest[];
-  status: 200;
-};
-
-export type maintenanceControllerFindAllResponseSuccess =
-  maintenanceControllerFindAllResponse200 & {
-    headers: Headers;
+  const notificationsControllerCreate = (
+    createNotificationDto: CreateNotificationDto,
+  ) => {
+    return apiClient<Notification>({
+      url: `/api/v1/notifications`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createNotificationDto,
+    });
   };
-export type maintenanceControllerFindAllResponse =
-  maintenanceControllerFindAllResponseSuccess;
 
-export const getMaintenanceControllerFindAllUrl = (
-  params?: MaintenanceControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/maintenance?${stringifiedParams}`
-    : `/api/v1/maintenance`;
-};
-
-export const maintenanceControllerFindAll = async (
-  params?: MaintenanceControllerFindAllParams,
-  options?: RequestInit,
-): Promise<maintenanceControllerFindAllResponse> => {
-  return apiClient<maintenanceControllerFindAllResponse>(
-    getMaintenanceControllerFindAllUrl(params),
-    {
-      ...options,
+  const notificationsControllerFindAll = (
+    params?: NotificationsControllerFindAllParams,
+  ) => {
+    return apiClient<Notification[]>({
+      url: `/api/v1/notifications`,
       method: 'GET',
-    },
-  );
-};
-
-export const getMaintenanceControllerFindAllQueryKey = (
-  params?: MaintenanceControllerFindAllParams,
-) => {
-  return [`/api/v1/maintenance`, ...(params ? [params] : [])] as const;
-};
-
-export const getMaintenanceControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-  TError = unknown,
->(
-  params?: MaintenanceControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getMaintenanceControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof maintenanceControllerFindAll>>
-  > = ({ signal }) => maintenanceControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type MaintenanceControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof maintenanceControllerFindAll>>
->;
-export type MaintenanceControllerFindAllQueryError = unknown;
-
-export function useMaintenanceControllerFindAll<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | MaintenanceControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof maintenanceControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMaintenanceControllerFindAll<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-  TError = unknown,
->(
-  params?: MaintenanceControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof maintenanceControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMaintenanceControllerFindAll<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-  TError = unknown,
->(
-  params?: MaintenanceControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useMaintenanceControllerFindAll<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-  TError = unknown,
->(
-  params?: MaintenanceControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getMaintenanceControllerFindAllQueryOptions(
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type maintenanceControllerFindOneResponse200 = {
-  data: MaintenanceRequest;
-  status: 200;
-};
-
-export type maintenanceControllerFindOneResponseSuccess =
-  maintenanceControllerFindOneResponse200 & {
-    headers: Headers;
+      params,
+    });
   };
-export type maintenanceControllerFindOneResponse =
-  maintenanceControllerFindOneResponseSuccess;
 
-export const getMaintenanceControllerFindOneUrl = (id: string) => {
-  return `/api/v1/maintenance/${id}`;
-};
-
-export const maintenanceControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<maintenanceControllerFindOneResponse> => {
-  return apiClient<maintenanceControllerFindOneResponse>(
-    getMaintenanceControllerFindOneUrl(id),
-    {
-      ...options,
+  const notificationsControllerGetUnreadCount = () => {
+    return apiClient<number>({
+      url: `/api/v1/notifications/unread/count`,
       method: 'GET',
-    },
-  );
-};
-
-export const getMaintenanceControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/maintenance/${id}`] as const;
-};
-
-export const getMaintenanceControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getMaintenanceControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof maintenanceControllerFindOne>>
-  > = ({ signal }) => maintenanceControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type MaintenanceControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof maintenanceControllerFindOne>>
->;
-export type MaintenanceControllerFindOneQueryError = unknown;
-
-export function useMaintenanceControllerFindOne<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof maintenanceControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMaintenanceControllerFindOne<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof maintenanceControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMaintenanceControllerFindOne<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useMaintenanceControllerFindOne<
-  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getMaintenanceControllerFindOneQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type maintenanceControllerUpdateResponse200 = {
-  data: MaintenanceRequest;
-  status: 200;
-};
-
-export type maintenanceControllerUpdateResponseSuccess =
-  maintenanceControllerUpdateResponse200 & {
-    headers: Headers;
+    });
   };
-export type maintenanceControllerUpdateResponse =
-  maintenanceControllerUpdateResponseSuccess;
 
-export const getMaintenanceControllerUpdateUrl = (id: string) => {
-  return `/api/v1/maintenance/${id}`;
-};
+  const notificationsControllerFindOne = (id: string) => {
+    return apiClient<Notification>({
+      url: `/api/v1/notifications/${id}`,
+      method: 'GET',
+    });
+  };
 
-export const maintenanceControllerUpdate = async (
-  id: string,
-  updateMaintenanceDto: UpdateMaintenanceDto,
-  options?: RequestInit,
-): Promise<maintenanceControllerUpdateResponse> => {
-  return apiClient<maintenanceControllerUpdateResponse>(
-    getMaintenanceControllerUpdateUrl(id),
-    {
-      ...options,
+  const notificationsControllerMarkAsRead = (id: string) => {
+    return apiClient<Notification>({
+      url: `/api/v1/notifications/${id}/read`,
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(updateMaintenanceDto),
-    },
-  );
-};
-
-export const getMaintenanceControllerUpdateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateMaintenanceDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateMaintenanceDto },
-  TContext
-> => {
-  const mutationKey = ['maintenanceControllerUpdate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
-    { id: string; data: UpdateMaintenanceDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return maintenanceControllerUpdate(id, data);
+    });
   };
 
-  return { mutationFn, ...mutationOptions };
-};
+  const notificationsControllerMarkAllAsRead = () => {
+    return apiClient<void>({
+      url: `/api/v1/notifications/read/all`,
+      method: 'PATCH',
+    });
+  };
 
-export type MaintenanceControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof maintenanceControllerUpdate>>
+  return {
+    appControllerGetHello,
+    authControllerLogin,
+    authControllerRegister,
+    authControllerCreate,
+    usersControllerGetCurrentUser,
+    usersControllerUpdate,
+    usersControllerChangePassword,
+    buildingsControllerCreate,
+    buildingsControllerFindAll,
+    buildingsControllerFindOne,
+    buildingsControllerUpdate,
+    buildingsControllerRemove,
+    roomsControllerGetAvailableRooms,
+    roomsControllerCreate,
+    roomsControllerFindAll,
+    roomsControllerFindOne,
+    roomsControllerUpdate,
+    roomsControllerRemove,
+    rentalsControllerCreate,
+    rentalsControllerFindAll,
+    rentalsControllerFindOne,
+    rentalsControllerUpdate,
+    rentalsControllerRemove,
+    billsControllerCreate,
+    billsControllerFindAll,
+    billsControllerFindOne,
+    billsControllerUpdate,
+    billsControllerRemove,
+    billsControllerConfirmPayment,
+    paymentsControllerCreate,
+    paymentsControllerFindAll,
+    paymentsControllerFindOne,
+    maintenanceControllerCreate,
+    maintenanceControllerFindAll,
+    maintenanceControllerFindOne,
+    maintenanceControllerUpdate,
+    maintenanceControllerRespond,
+    chatControllerGetGroups,
+    chatControllerGetGroup,
+    chatControllerGetMessages,
+    chatControllerSendMessage,
+    chatControllerGetDirectMessages,
+    chatControllerSendDirectMessage,
+    notificationsControllerCreate,
+    notificationsControllerFindAll,
+    notificationsControllerGetUnreadCount,
+    notificationsControllerFindOne,
+    notificationsControllerMarkAsRead,
+    notificationsControllerMarkAllAsRead,
+  };
+};
+export type AppControllerGetHelloResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['appControllerGetHello']>
+  >
 >;
-export type MaintenanceControllerUpdateMutationBody = UpdateMaintenanceDto;
-export type MaintenanceControllerUpdateMutationError = unknown;
-
-export const useMaintenanceControllerUpdate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateMaintenanceDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateMaintenanceDto },
-  TContext
-> => {
-  return useMutation(
-    getMaintenanceControllerUpdateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type maintenanceControllerRespondResponse200 = {
-  data: MaintenanceRequest;
-  status: 200;
-};
-
-export type maintenanceControllerRespondResponseSuccess =
-  maintenanceControllerRespondResponse200 & {
-    headers: Headers;
-  };
-export type maintenanceControllerRespondResponse =
-  maintenanceControllerRespondResponseSuccess;
-
-export const getMaintenanceControllerRespondUrl = (id: string) => {
-  return `/api/v1/maintenance/${id}/respond`;
-};
-
-export const maintenanceControllerRespond = async (
-  id: string,
-  respondMaintenanceDto: RespondMaintenanceDto,
-  options?: RequestInit,
-): Promise<maintenanceControllerRespondResponse> => {
-  return apiClient<maintenanceControllerRespondResponse>(
-    getMaintenanceControllerRespondUrl(id),
-    {
-      ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(respondMaintenanceDto),
-    },
-  );
-};
-
-export const getMaintenanceControllerRespondMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof maintenanceControllerRespond>>,
-    TError,
-    { id: string; data: RespondMaintenanceDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof maintenanceControllerRespond>>,
-  TError,
-  { id: string; data: RespondMaintenanceDto },
-  TContext
-> => {
-  const mutationKey = ['maintenanceControllerRespond'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof maintenanceControllerRespond>>,
-    { id: string; data: RespondMaintenanceDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return maintenanceControllerRespond(id, data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type MaintenanceControllerRespondMutationResult = NonNullable<
-  Awaited<ReturnType<typeof maintenanceControllerRespond>>
+export type AuthControllerLoginResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogin']>>
 >;
-export type MaintenanceControllerRespondMutationBody = RespondMaintenanceDto;
-export type MaintenanceControllerRespondMutationError = unknown;
-
-export const useMaintenanceControllerRespond = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof maintenanceControllerRespond>>,
-      TError,
-      { id: string; data: RespondMaintenanceDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof maintenanceControllerRespond>>,
-  TError,
-  { id: string; data: RespondMaintenanceDto },
-  TContext
-> => {
-  return useMutation(
-    getMaintenanceControllerRespondMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type chatControllerGetGroupsResponse200 = {
-  data: ChatGroup[];
-  status: 200;
-};
-
-export type chatControllerGetGroupsResponseSuccess =
-  chatControllerGetGroupsResponse200 & {
-    headers: Headers;
-  };
-export type chatControllerGetGroupsResponse =
-  chatControllerGetGroupsResponseSuccess;
-
-export const getChatControllerGetGroupsUrl = () => {
-  return `/api/v1/chat/groups`;
-};
-
-export const chatControllerGetGroups = async (
-  options?: RequestInit,
-): Promise<chatControllerGetGroupsResponse> => {
-  return apiClient<chatControllerGetGroupsResponse>(
-    getChatControllerGetGroupsUrl(),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getChatControllerGetGroupsQueryKey = () => {
-  return [`/api/v1/chat/groups`] as const;
-};
-
-export const getChatControllerGetGroupsQueryOptions = <
-  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof chatControllerGetGroups>>,
-      TError,
-      TData
+export type AuthControllerRegisterResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>
+  >
+>;
+export type AuthControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerCreate']>
+  >
+>;
+export type UsersControllerGetCurrentUserResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['usersControllerGetCurrentUser']
     >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getChatControllerGetGroupsQueryKey();
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof chatControllerGetGroups>>
-  > = ({ signal }) => chatControllerGetGroups({ signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof chatControllerGetGroups>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type ChatControllerGetGroupsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof chatControllerGetGroups>>
+  >
 >;
-export type ChatControllerGetGroupsQueryError = unknown;
-
-export function useChatControllerGetGroups<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroups>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetGroups>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetGroups>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetGroups<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroups>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetGroups>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetGroups>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetGroups<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroups>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useChatControllerGetGroups<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroups>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getChatControllerGetGroupsQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type chatControllerGetGroupResponse200 = {
-  data: ChatGroup;
-  status: 200;
-};
-
-export type chatControllerGetGroupResponseSuccess =
-  chatControllerGetGroupResponse200 & {
-    headers: Headers;
-  };
-export type chatControllerGetGroupResponse =
-  chatControllerGetGroupResponseSuccess;
-
-export const getChatControllerGetGroupUrl = (id: string) => {
-  return `/api/v1/chat/groups/${id}`;
-};
-
-export const chatControllerGetGroup = async (
-  id: string,
-  options?: RequestInit,
-): Promise<chatControllerGetGroupResponse> => {
-  return apiClient<chatControllerGetGroupResponse>(
-    getChatControllerGetGroupUrl(id),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getChatControllerGetGroupQueryKey = (id: string) => {
-  return [`/api/v1/chat/groups/${id}`] as const;
-};
-
-export const getChatControllerGetGroupQueryOptions = <
-  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroup>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getChatControllerGetGroupQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof chatControllerGetGroup>>
-  > = ({ signal }) => chatControllerGetGroup(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof chatControllerGetGroup>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type ChatControllerGetGroupQueryResult = NonNullable<
-  Awaited<ReturnType<typeof chatControllerGetGroup>>
+export type UsersControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerUpdate']>
+  >
 >;
-export type ChatControllerGetGroupQueryError = unknown;
-
-export function useChatControllerGetGroup<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroup>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetGroup>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetGroup>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetGroup<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroup>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetGroup>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetGroup>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetGroup<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroup>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useChatControllerGetGroup<
-  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetGroup>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getChatControllerGetGroupQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type chatControllerGetMessagesResponse200 = {
-  data: Message[];
-  status: 200;
-};
-
-export type chatControllerGetMessagesResponseSuccess =
-  chatControllerGetMessagesResponse200 & {
-    headers: Headers;
-  };
-export type chatControllerGetMessagesResponse =
-  chatControllerGetMessagesResponseSuccess;
-
-export const getChatControllerGetMessagesUrl = (
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/chat/groups/${id}/messages?${stringifiedParams}`
-    : `/api/v1/chat/groups/${id}/messages`;
-};
-
-export const chatControllerGetMessages = async (
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-  options?: RequestInit,
-): Promise<chatControllerGetMessagesResponse> => {
-  return apiClient<chatControllerGetMessagesResponse>(
-    getChatControllerGetMessagesUrl(id, params),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getChatControllerGetMessagesQueryKey = (
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-) => {
-  return [
-    `/api/v1/chat/groups/${id}/messages`,
-    ...(params ? [params] : []),
-  ] as const;
-};
-
-export const getChatControllerGetMessagesQueryOptions = <
-  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
-  TError = unknown,
->(
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetMessages>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getChatControllerGetMessagesQueryKey(id, params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof chatControllerGetMessages>>
-  > = ({ signal }) => chatControllerGetMessages(id, params, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof chatControllerGetMessages>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type ChatControllerGetMessagesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof chatControllerGetMessages>>
->;
-export type ChatControllerGetMessagesQueryError = unknown;
-
-export function useChatControllerGetMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
-  TError = unknown,
->(
-  id: string,
-  params: undefined | ChatControllerGetMessagesParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetMessages>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetMessages>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetMessages>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
-  TError = unknown,
->(
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetMessages>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetMessages>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetMessages>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
-  TError = unknown,
->(
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetMessages>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useChatControllerGetMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
-  TError = unknown,
->(
-  id: string,
-  params?: ChatControllerGetMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetMessages>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getChatControllerGetMessagesQueryOptions(
-    id,
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type chatControllerSendMessageResponse201 = {
-  data: Message;
-  status: 201;
-};
-
-export type chatControllerSendMessageResponseSuccess =
-  chatControllerSendMessageResponse201 & {
-    headers: Headers;
-  };
-export type chatControllerSendMessageResponse =
-  chatControllerSendMessageResponseSuccess;
-
-export const getChatControllerSendMessageUrl = (id: string) => {
-  return `/api/v1/chat/groups/${id}/messages`;
-};
-
-export const chatControllerSendMessage = async (
-  id: string,
-  sendMessageDto: SendMessageDto,
-  options?: RequestInit,
-): Promise<chatControllerSendMessageResponse> => {
-  return apiClient<chatControllerSendMessageResponse>(
-    getChatControllerSendMessageUrl(id),
-    {
-      ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(sendMessageDto),
-    },
-  );
-};
-
-export const getChatControllerSendMessageMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof chatControllerSendMessage>>,
-    TError,
-    { id: string; data: SendMessageDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof chatControllerSendMessage>>,
-  TError,
-  { id: string; data: SendMessageDto },
-  TContext
-> => {
-  const mutationKey = ['chatControllerSendMessage'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof chatControllerSendMessage>>,
-    { id: string; data: SendMessageDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return chatControllerSendMessage(id, data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ChatControllerSendMessageMutationResult = NonNullable<
-  Awaited<ReturnType<typeof chatControllerSendMessage>>
->;
-export type ChatControllerSendMessageMutationBody = SendMessageDto;
-export type ChatControllerSendMessageMutationError = unknown;
-
-export const useChatControllerSendMessage = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof chatControllerSendMessage>>,
-      TError,
-      { id: string; data: SendMessageDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof chatControllerSendMessage>>,
-  TError,
-  { id: string; data: SendMessageDto },
-  TContext
-> => {
-  return useMutation(
-    getChatControllerSendMessageMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type chatControllerGetDirectMessagesResponse200 = {
-  data: Message[];
-  status: 200;
-};
-
-export type chatControllerGetDirectMessagesResponseSuccess =
-  chatControllerGetDirectMessagesResponse200 & {
-    headers: Headers;
-  };
-export type chatControllerGetDirectMessagesResponse =
-  chatControllerGetDirectMessagesResponseSuccess;
-
-export const getChatControllerGetDirectMessagesUrl = (
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/chat/direct/${userId}?${stringifiedParams}`
-    : `/api/v1/chat/direct/${userId}`;
-};
-
-export const chatControllerGetDirectMessages = async (
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-  options?: RequestInit,
-): Promise<chatControllerGetDirectMessagesResponse> => {
-  return apiClient<chatControllerGetDirectMessagesResponse>(
-    getChatControllerGetDirectMessagesUrl(userId, params),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getChatControllerGetDirectMessagesQueryKey = (
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-) => {
-  return [
-    `/api/v1/chat/direct/${userId}`,
-    ...(params ? [params] : []),
-  ] as const;
-};
-
-export const getChatControllerGetDirectMessagesQueryOptions = <
-  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-  TError = unknown,
->(
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getChatControllerGetDirectMessagesQueryKey(userId, params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
-  > = ({ signal }) =>
-    chatControllerGetDirectMessages(userId, params, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: userId !== null && userId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type ChatControllerGetDirectMessagesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
->;
-export type ChatControllerGetDirectMessagesQueryError = unknown;
-
-export function useChatControllerGetDirectMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-  TError = unknown,
->(
-  userId: string,
-  params: undefined | ChatControllerGetDirectMessagesParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetDirectMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-  TError = unknown,
->(
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-          TError,
-          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useChatControllerGetDirectMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-  TError = unknown,
->(
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useChatControllerGetDirectMessages<
-  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-  TError = unknown,
->(
-  userId: string,
-  params?: ChatControllerGetDirectMessagesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getChatControllerGetDirectMessagesQueryOptions(
-    userId,
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type chatControllerSendDirectMessageResponse201 = {
-  data: Message;
-  status: 201;
-};
-
-export type chatControllerSendDirectMessageResponseSuccess =
-  chatControllerSendDirectMessageResponse201 & {
-    headers: Headers;
-  };
-export type chatControllerSendDirectMessageResponse =
-  chatControllerSendDirectMessageResponseSuccess;
-
-export const getChatControllerSendDirectMessageUrl = (userId: string) => {
-  return `/api/v1/chat/direct/${userId}`;
-};
-
-export const chatControllerSendDirectMessage = async (
-  userId: string,
-  sendMessageDto: SendMessageDto,
-  options?: RequestInit,
-): Promise<chatControllerSendDirectMessageResponse> => {
-  return apiClient<chatControllerSendDirectMessageResponse>(
-    getChatControllerSendDirectMessageUrl(userId),
-    {
-      ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(sendMessageDto),
-    },
-  );
-};
-
-export const getChatControllerSendDirectMessageMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
-    TError,
-    { userId: string; data: SendMessageDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
-  TError,
-  { userId: string; data: SendMessageDto },
-  TContext
-> => {
-  const mutationKey = ['chatControllerSendDirectMessage'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
-    { userId: string; data: SendMessageDto }
-  > = (props) => {
-    const { userId, data } = props ?? {};
-
-    return chatControllerSendDirectMessage(userId, data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ChatControllerSendDirectMessageMutationResult = NonNullable<
-  Awaited<ReturnType<typeof chatControllerSendDirectMessage>>
->;
-export type ChatControllerSendDirectMessageMutationBody = SendMessageDto;
-export type ChatControllerSendDirectMessageMutationError = unknown;
-
-export const useChatControllerSendDirectMessage = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
-      TError,
-      { userId: string; data: SendMessageDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
-  TError,
-  { userId: string; data: SendMessageDto },
-  TContext
-> => {
-  return useMutation(
-    getChatControllerSendDirectMessageMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type notificationsControllerCreateResponse201 = {
-  data: Notification;
-  status: 201;
-};
-
-export type notificationsControllerCreateResponseSuccess =
-  notificationsControllerCreateResponse201 & {
-    headers: Headers;
-  };
-export type notificationsControllerCreateResponse =
-  notificationsControllerCreateResponseSuccess;
-
-export const getNotificationsControllerCreateUrl = () => {
-  return `/api/v1/notifications`;
-};
-
-export const notificationsControllerCreate = async (
-  createNotificationDto: CreateNotificationDto,
-  options?: RequestInit,
-): Promise<notificationsControllerCreateResponse> => {
-  return apiClient<notificationsControllerCreateResponse>(
-    getNotificationsControllerCreateUrl(),
-    {
-      ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(createNotificationDto),
-    },
-  );
-};
-
-export const getNotificationsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerCreate>>,
-    TError,
-    { data: CreateNotificationDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerCreate>>,
-  TError,
-  { data: CreateNotificationDto },
-  TContext
-> => {
-  const mutationKey = ['notificationsControllerCreate'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerCreate>>,
-    { data: CreateNotificationDto }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return notificationsControllerCreate(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type NotificationsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerCreate>>
->;
-export type NotificationsControllerCreateMutationBody = CreateNotificationDto;
-export type NotificationsControllerCreateMutationError = unknown;
-
-export const useNotificationsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerCreate>>,
-      TError,
-      { data: CreateNotificationDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerCreate>>,
-  TError,
-  { data: CreateNotificationDto },
-  TContext
-> => {
-  return useMutation(
-    getNotificationsControllerCreateMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type notificationsControllerFindAllResponse200 = {
-  data: Notification[];
-  status: 200;
-};
-
-export type notificationsControllerFindAllResponseSuccess =
-  notificationsControllerFindAllResponse200 & {
-    headers: Headers;
-  };
-export type notificationsControllerFindAllResponse =
-  notificationsControllerFindAllResponseSuccess;
-
-export const getNotificationsControllerFindAllUrl = (
-  params?: NotificationsControllerFindAllParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value));
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/notifications?${stringifiedParams}`
-    : `/api/v1/notifications`;
-};
-
-export const notificationsControllerFindAll = async (
-  params?: NotificationsControllerFindAllParams,
-  options?: RequestInit,
-): Promise<notificationsControllerFindAllResponse> => {
-  return apiClient<notificationsControllerFindAllResponse>(
-    getNotificationsControllerFindAllUrl(params),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getNotificationsControllerFindAllQueryKey = (
-  params?: NotificationsControllerFindAllParams,
-) => {
-  return [`/api/v1/notifications`, ...(params ? [params] : [])] as const;
-};
-
-export const getNotificationsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: NotificationsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getNotificationsControllerFindAllQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsControllerFindAll>>
-  > = ({ signal }) => notificationsControllerFindAll(params, { signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type NotificationsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerFindAll>>
->;
-export type NotificationsControllerFindAllQueryError = unknown;
-
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | NotificationsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: NotificationsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsControllerFindAll>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: NotificationsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: NotificationsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getNotificationsControllerFindAllQueryOptions(
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type notificationsControllerGetUnreadCountResponse200 = {
-  data: number;
-  status: 200;
-};
-
-export type notificationsControllerGetUnreadCountResponseSuccess =
-  notificationsControllerGetUnreadCountResponse200 & {
-    headers: Headers;
-  };
-export type notificationsControllerGetUnreadCountResponse =
-  notificationsControllerGetUnreadCountResponseSuccess;
-
-export const getNotificationsControllerGetUnreadCountUrl = () => {
-  return `/api/v1/notifications/unread/count`;
-};
-
-export const notificationsControllerGetUnreadCount = async (
-  options?: RequestInit,
-): Promise<notificationsControllerGetUnreadCountResponse> => {
-  return apiClient<notificationsControllerGetUnreadCountResponse>(
-    getNotificationsControllerGetUnreadCountUrl(),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getNotificationsControllerGetUnreadCountQueryKey = () => {
-  return [`/api/v1/notifications/unread/count`] as const;
-};
-
-export const getNotificationsControllerGetUnreadCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-      TError,
-      TData
+export type UsersControllerChangePasswordResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['usersControllerChangePassword']
     >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getNotificationsControllerGetUnreadCountQueryKey();
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
-  > = ({ signal }) => notificationsControllerGetUnreadCount({ signal });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type NotificationsControllerGetUnreadCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
+  >
 >;
-export type NotificationsControllerGetUnreadCountQueryError = unknown;
-
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getNotificationsControllerGetUnreadCountQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type notificationsControllerFindOneResponse200 = {
-  data: Notification;
-  status: 200;
-};
-
-export type notificationsControllerFindOneResponseSuccess =
-  notificationsControllerFindOneResponse200 & {
-    headers: Headers;
-  };
-export type notificationsControllerFindOneResponse =
-  notificationsControllerFindOneResponseSuccess;
-
-export const getNotificationsControllerFindOneUrl = (id: string) => {
-  return `/api/v1/notifications/${id}`;
-};
-
-export const notificationsControllerFindOne = async (
-  id: string,
-  options?: RequestInit,
-): Promise<notificationsControllerFindOneResponse> => {
-  return apiClient<notificationsControllerFindOneResponse>(
-    getNotificationsControllerFindOneUrl(id),
-    {
-      ...options,
-      method: 'GET',
-    },
-  );
-};
-
-export const getNotificationsControllerFindOneQueryKey = (id: string) => {
-  return [`/api/v1/notifications/${id}`] as const;
-};
-
-export const getNotificationsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getNotificationsControllerFindOneQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsControllerFindOne>>
-  > = ({ signal }) => notificationsControllerFindOne(id, { signal });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type NotificationsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerFindOne>>
+export type BuildingsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerCreate']>
+  >
 >;
-export type NotificationsControllerFindOneQueryError = unknown;
-
-export function useNotificationsControllerFindOne<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerFindOne<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsControllerFindOne>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerFindOne<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useNotificationsControllerFindOne<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getNotificationsControllerFindOneQueryOptions(
-    id,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export type notificationsControllerMarkAsReadResponse200 = {
-  data: Notification;
-  status: 200;
-};
-
-export type notificationsControllerMarkAsReadResponseSuccess =
-  notificationsControllerMarkAsReadResponse200 & {
-    headers: Headers;
-  };
-export type notificationsControllerMarkAsReadResponse =
-  notificationsControllerMarkAsReadResponseSuccess;
-
-export const getNotificationsControllerMarkAsReadUrl = (id: string) => {
-  return `/api/v1/notifications/${id}/read`;
-};
-
-export const notificationsControllerMarkAsRead = async (
-  id: string,
-  options?: RequestInit,
-): Promise<notificationsControllerMarkAsReadResponse> => {
-  return apiClient<notificationsControllerMarkAsReadResponse>(
-    getNotificationsControllerMarkAsReadUrl(id),
-    {
-      ...options,
-      method: 'PATCH',
-    },
-  );
-};
-
-export const getNotificationsControllerMarkAsReadMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ['notificationsControllerMarkAsRead'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
-
-    return notificationsControllerMarkAsRead(id);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type NotificationsControllerMarkAsReadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>
+export type BuildingsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindAll']>
+  >
 >;
-
-export type NotificationsControllerMarkAsReadMutationError = unknown;
-
-export const useNotificationsControllerMarkAsRead = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  return useMutation(
-    getNotificationsControllerMarkAsReadMutationOptions(options),
-    queryClient,
-  );
-};
-
-export type notificationsControllerMarkAllAsReadResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type notificationsControllerMarkAllAsReadResponseSuccess =
-  notificationsControllerMarkAllAsReadResponse200 & {
-    headers: Headers;
-  };
-export type notificationsControllerMarkAllAsReadResponse =
-  notificationsControllerMarkAllAsReadResponseSuccess;
-
-export const getNotificationsControllerMarkAllAsReadUrl = () => {
-  return `/api/v1/notifications/read/all`;
-};
-
-export const notificationsControllerMarkAllAsRead = async (
-  options?: RequestInit,
-): Promise<notificationsControllerMarkAllAsReadResponse> => {
-  return apiClient<notificationsControllerMarkAllAsReadResponse>(
-    getNotificationsControllerMarkAllAsReadUrl(),
-    {
-      ...options,
-      method: 'PATCH',
-    },
-  );
-};
-
-export const getNotificationsControllerMarkAllAsReadMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-    TError,
-    void,
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ['notificationsControllerMarkAllAsRead'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-    void
-  > = () => {
-    return notificationsControllerMarkAllAsRead();
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type NotificationsControllerMarkAllAsReadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>
+export type BuildingsControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindOne']>
+  >
 >;
-
-export type NotificationsControllerMarkAllAsReadMutationError = unknown;
-
-export const useNotificationsControllerMarkAllAsRead = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-      TError,
-      void,
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-  TError,
-  void,
-  TContext
-> => {
-  return useMutation(
-    getNotificationsControllerMarkAllAsReadMutationOptions(options),
-    queryClient,
-  );
-};
+export type BuildingsControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerUpdate']>
+  >
+>;
+export type BuildingsControllerRemoveResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerRemove']>
+  >
+>;
+export type RoomsControllerGetAvailableRoomsResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['roomsControllerGetAvailableRooms']
+    >
+  >
+>;
+export type RoomsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerCreate']>
+  >
+>;
+export type RoomsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerFindAll']>
+  >
+>;
+export type RoomsControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerFindOne']>
+  >
+>;
+export type RoomsControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerUpdate']>
+  >
+>;
+export type RoomsControllerRemoveResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerRemove']>
+  >
+>;
+export type RentalsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerCreate']>
+  >
+>;
+export type RentalsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindAll']>
+  >
+>;
+export type RentalsControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindOne']>
+  >
+>;
+export type RentalsControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerUpdate']>
+  >
+>;
+export type RentalsControllerRemoveResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerRemove']>
+  >
+>;
+export type BillsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerCreate']>
+  >
+>;
+export type BillsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindAll']>
+  >
+>;
+export type BillsControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindOne']>
+  >
+>;
+export type BillsControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerUpdate']>
+  >
+>;
+export type BillsControllerRemoveResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerRemove']>
+  >
+>;
+export type BillsControllerConfirmPaymentResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['billsControllerConfirmPayment']
+    >
+  >
+>;
+export type PaymentsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerCreate']>
+  >
+>;
+export type PaymentsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindAll']>
+  >
+>;
+export type PaymentsControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindOne']>
+  >
+>;
+export type MaintenanceControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerCreate']
+    >
+  >
+>;
+export type MaintenanceControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerFindAll']
+    >
+  >
+>;
+export type MaintenanceControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerFindOne']
+    >
+  >
+>;
+export type MaintenanceControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerUpdate']
+    >
+  >
+>;
+export type MaintenanceControllerRespondResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerRespond']
+    >
+  >
+>;
+export type ChatControllerGetGroupsResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetGroups']>
+  >
+>;
+export type ChatControllerGetGroupResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetGroup']>
+  >
+>;
+export type ChatControllerGetMessagesResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetMessages']>
+  >
+>;
+export type ChatControllerSendMessageResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerSendMessage']>
+  >
+>;
+export type ChatControllerGetDirectMessagesResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['chatControllerGetDirectMessages']
+    >
+  >
+>;
+export type ChatControllerSendDirectMessageResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['chatControllerSendDirectMessage']
+    >
+  >
+>;
+export type NotificationsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['notificationsControllerCreate']
+    >
+  >
+>;
+export type NotificationsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['notificationsControllerFindAll']
+    >
+  >
+>;
+export type NotificationsControllerGetUnreadCountResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<
+        typeof getTacoHouseAPI
+      >['notificationsControllerGetUnreadCount']
+    >
+  >
+>;
+export type NotificationsControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['notificationsControllerFindOne']
+    >
+  >
+>;
+export type NotificationsControllerMarkAsReadResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAsRead']
+    >
+  >
+>;
+export type NotificationsControllerMarkAllAsReadResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAllAsRead']
+    >
+  >
+>;

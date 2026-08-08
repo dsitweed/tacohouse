@@ -9,7 +9,7 @@ export default defineConfig({
     output: {
       target: './src/generated/api.ts',
       schemas: './src/generated/model',
-      client: 'react-query',
+      client: 'axios',
       clean: true,
       mock: false, // Generates MSW mock handlers automatically
       override: {
