@@ -7,12 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, Roles } from 'common/decorators';
 import { MaintenanceRequest as MaintenanceRequestEntity } from 'generated/nestjs-dto';
 import type { MaintenanceRequest, User } from 'generated/prisma/client';
@@ -34,7 +29,6 @@ export class MaintenanceController {
 
   @Post()
   @Roles(UserRole.TENANT)
-  @ApiOperation({ operationId: 'createMaintenanceRequest' })
   @ApiResponse({ status: 201, type: MaintenanceRequestEntity })
   create(
     @CurrentUser() currentUser: User,
@@ -44,7 +38,6 @@ export class MaintenanceController {
   }
 
   @Get()
-  @ApiOperation({ operationId: 'getMaintenanceRequests' })
   @ApiResponse({ status: 200, type: MaintenanceRequestEntity, isArray: true })
   findAll(
     @CurrentUser() currentUser: User,
@@ -54,7 +47,6 @@ export class MaintenanceController {
   }
 
   @Get(':id')
-  @ApiOperation({ operationId: 'getMaintenanceRequest' })
   @ApiResponse({ status: 200, type: MaintenanceRequestEntity })
   findOne(
     @CurrentUser() currentUser: User,
@@ -65,7 +57,6 @@ export class MaintenanceController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
-  @ApiOperation({ operationId: 'updateMaintenanceRequest' })
   @ApiResponse({ status: 200, type: MaintenanceRequestEntity })
   update(
     @CurrentUser() currentUser: User,
@@ -81,7 +72,6 @@ export class MaintenanceController {
 
   @Post(':id/respond')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'respondMaintenanceRequest' })
   @ApiResponse({ status: 200, type: MaintenanceRequestEntity })
   respond(
     @CurrentUser() currentUser: User,

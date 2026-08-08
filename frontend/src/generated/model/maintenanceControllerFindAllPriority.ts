@@ -12,12 +12,13 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { GetRentalsStatus } from './getRentalsStatus';
 
-export type GetRentalsParams = {
-page?: number;
-limit?: number;
-roomId?: string;
-tenantId?: string;
-status?: GetRentalsStatus;
-};
+export type MaintenanceControllerFindAllPriority = typeof MaintenanceControllerFindAllPriority[keyof typeof MaintenanceControllerFindAllPriority];
+
+
+export const MaintenanceControllerFindAllPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT',
+} as const;

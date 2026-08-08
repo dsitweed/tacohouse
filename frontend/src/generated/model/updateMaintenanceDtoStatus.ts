@@ -18,7 +18,7 @@ export type UpdateMaintenanceDtoStatus = typeof UpdateMaintenanceDtoStatus[keyof
 
 export const UpdateMaintenanceDtoStatus = {
   PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
   IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
 } as const;

@@ -12,12 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { BillsControllerFindAllStatus } from './billsControllerFindAllStatus';
 
-export type GetRentalsStatus = typeof GetRentalsStatus[keyof typeof GetRentalsStatus];
-
-
-export const GetRentalsStatus = {
-  ACTIVE: 'ACTIVE',
-  NOTICE_GIVEN: 'NOTICE_GIVEN',
-  TERMINATED: 'TERMINATED',
-} as const;
+export type BillsControllerFindAllParams = {
+page?: number;
+limit?: number;
+roomId?: string;
+rentalId?: string;
+status?: BillsControllerFindAllStatus;
+};

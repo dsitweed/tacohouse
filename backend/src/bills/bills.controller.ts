@@ -36,7 +36,7 @@ export class BillsController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'createBill', summary: 'Create a new bill' })
+  @ApiOperation({ summary: 'Create a new bill' })
   @ApiResponse({
     status: 201,
     description: 'Bill created successfully',
@@ -51,7 +51,7 @@ export class BillsController {
   }
 
   @Get()
-  @ApiOperation({ operationId: 'getBills', summary: 'Get all bills' })
+  @ApiOperation({ summary: 'Get all bills' })
   @ApiResponse({
     status: 200,
     description: 'List of bills',
@@ -63,7 +63,7 @@ export class BillsController {
   }
 
   @Get(':id')
-  @ApiOperation({ operationId: 'getBill', summary: 'Get a bill by ID' })
+  @ApiOperation({ summary: 'Get a bill by ID' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({ status: 200, description: 'Bill found', type: BillEntity })
   @ApiResponse({ status: 404, description: 'Bill not found' })
@@ -76,7 +76,7 @@ export class BillsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'updateBill', summary: 'Update a bill' })
+  @ApiOperation({ summary: 'Update a bill' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({
     status: 200,
@@ -95,10 +95,7 @@ export class BillsController {
 
   @Post(':id/confirm')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
-  @ApiOperation({
-    operationId: 'confirmBillPayment',
-    summary: 'Confirm payment for a bill',
-  })
+  @ApiOperation({ summary: 'Confirm payment for a bill' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({
     status: 200,
@@ -117,7 +114,7 @@ export class BillsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'deleteBill', summary: 'Delete a bill' })
+  @ApiOperation({ summary: 'Delete a bill' })
   @ApiParam({ name: 'id', description: 'Bill ID' })
   @ApiResponse({ status: 200, description: 'Bill deleted successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden' })

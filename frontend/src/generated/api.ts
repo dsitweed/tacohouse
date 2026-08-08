@@ -30,7 +30,11 @@ import type {
 
 import type {
   Bill,
+  BillsControllerFindAllParams,
   Building,
+  BuildingsControllerFindAllParams,
+  ChatControllerGetDirectMessagesParams,
+  ChatControllerGetMessagesParams,
   ChatGroup,
   ConfirmPaymentDto,
   CreateBillDto,
@@ -40,24 +44,20 @@ import type {
   CreatePaymentDto,
   CreateRentalDto,
   CreateRoomDto,
-  GetBillsParams,
-  GetBuildingsParams,
-  GetDirectMessagesParams,
-  GetGroupMessagesParams,
-  GetMaintenanceRequestsParams,
-  GetNotificationsParams,
-  GetPaymentsParams,
-  GetRentalsParams,
-  GetRoomsParams,
   LoginAuthDto,
+  MaintenanceControllerFindAllParams,
   MaintenanceRequest,
   Message,
   Notification,
+  NotificationsControllerFindAllParams,
   Payment,
+  PaymentsControllerFindAllParams,
   RegisterAuthDto,
   Rental,
+  RentalsControllerFindAllParams,
   RespondMaintenanceDto,
   Room,
+  RoomsControllerFindAllParams,
   SendMessageDto,
   UpdateBillDto,
   UpdateBuildingDto,
@@ -247,38 +247,40 @@ export function useAppControllerGetHello<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type authLoginResponse200 = {
+export type authControllerLoginResponse200 = {
   data: void;
   status: 200;
 };
 
-export type authLoginResponse401 = {
+export type authControllerLoginResponse401 = {
   data: void;
   status: 401;
 };
 
-export type authLoginResponseSuccess = authLoginResponse200 & {
-  headers: Headers;
-};
-export type authLoginResponseError = authLoginResponse401 & {
-  headers: Headers;
-};
+export type authControllerLoginResponseSuccess =
+  authControllerLoginResponse200 & {
+    headers: Headers;
+  };
+export type authControllerLoginResponseError =
+  authControllerLoginResponse401 & {
+    headers: Headers;
+  };
 
-export type authLoginResponse =
-  authLoginResponseSuccess | authLoginResponseError;
+export type authControllerLoginResponse =
+  authControllerLoginResponseSuccess | authControllerLoginResponseError;
 
-export const getAuthLoginUrl = () => {
+export const getAuthControllerLoginUrl = () => {
   return `/api/v1/auth/login`;
 };
 
 /**
  * @summary User login
  */
-export const authLogin = async (
+export const authControllerLogin = async (
   loginAuthDto: LoginAuthDto,
   options?: RequestInit,
-): Promise<authLoginResponse> => {
-  return apiClient<authLoginResponse>(getAuthLoginUrl(), {
+): Promise<authControllerLoginResponse> => {
+  return apiClient<authControllerLoginResponse>(getAuthControllerLoginUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -286,23 +288,23 @@ export const authLogin = async (
   });
 };
 
-export const getAuthLoginMutationOptions = <
+export const getAuthControllerLoginMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authLogin>>,
+    Awaited<ReturnType<typeof authControllerLogin>>,
     TError,
     { data: LoginAuthDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof authLogin>>,
+  Awaited<ReturnType<typeof authControllerLogin>>,
   TError,
   { data: LoginAuthDto },
   TContext
 > => {
-  const mutationKey = ['authLogin'];
+  const mutationKey = ['authControllerLogin'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -312,30 +314,30 @@ export const getAuthLoginMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authLogin>>,
+    Awaited<ReturnType<typeof authControllerLogin>>,
     { data: LoginAuthDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return authLogin(data);
+    return authControllerLogin(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type AuthLoginMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authLogin>>
+export type AuthControllerLoginMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerLogin>>
 >;
-export type AuthLoginMutationBody = LoginAuthDto;
-export type AuthLoginMutationError = void;
+export type AuthControllerLoginMutationBody = LoginAuthDto;
+export type AuthControllerLoginMutationError = void;
 
 /**
  * @summary User login
  */
-export const useAuthLogin = <TError = void, TContext = unknown>(
+export const useAuthControllerLogin = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authLogin>>,
+      Awaited<ReturnType<typeof authControllerLogin>>,
       TError,
       { data: LoginAuthDto },
       TContext
@@ -343,70 +345,78 @@ export const useAuthLogin = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof authLogin>>,
+  Awaited<ReturnType<typeof authControllerLogin>>,
   TError,
   { data: LoginAuthDto },
   TContext
 > => {
-  return useMutation(getAuthLoginMutationOptions(options), queryClient);
+  return useMutation(
+    getAuthControllerLoginMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type authRegisterResponse201 = {
+export type authControllerRegisterResponse201 = {
   data: void;
   status: 201;
 };
 
-export type authRegisterResponse400 = {
+export type authControllerRegisterResponse400 = {
   data: void;
   status: 400;
 };
 
-export type authRegisterResponseSuccess = authRegisterResponse201 & {
-  headers: Headers;
-};
-export type authRegisterResponseError = authRegisterResponse400 & {
-  headers: Headers;
-};
+export type authControllerRegisterResponseSuccess =
+  authControllerRegisterResponse201 & {
+    headers: Headers;
+  };
+export type authControllerRegisterResponseError =
+  authControllerRegisterResponse400 & {
+    headers: Headers;
+  };
 
-export type authRegisterResponse =
-  authRegisterResponseSuccess | authRegisterResponseError;
+export type authControllerRegisterResponse =
+  authControllerRegisterResponseSuccess | authControllerRegisterResponseError;
 
-export const getAuthRegisterUrl = () => {
+export const getAuthControllerRegisterUrl = () => {
   return `/api/v1/auth/register`;
 };
 
 /**
  * @summary User registration
  */
-export const authRegister = async (
+export const authControllerRegister = async (
   registerAuthDto: RegisterAuthDto,
   options?: RequestInit,
-): Promise<authRegisterResponse> => {
-  return apiClient<authRegisterResponse>(getAuthRegisterUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(registerAuthDto),
-  });
+): Promise<authControllerRegisterResponse> => {
+  return apiClient<authControllerRegisterResponse>(
+    getAuthControllerRegisterUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(registerAuthDto),
+    },
+  );
 };
 
-export const getAuthRegisterMutationOptions = <
+export const getAuthControllerRegisterMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authRegister>>,
+    Awaited<ReturnType<typeof authControllerRegister>>,
     TError,
     { data: RegisterAuthDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof authRegister>>,
+  Awaited<ReturnType<typeof authControllerRegister>>,
   TError,
   { data: RegisterAuthDto },
   TContext
 > => {
-  const mutationKey = ['authRegister'];
+  const mutationKey = ['authControllerRegister'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -416,30 +426,30 @@ export const getAuthRegisterMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authRegister>>,
+    Awaited<ReturnType<typeof authControllerRegister>>,
     { data: RegisterAuthDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return authRegister(data);
+    return authControllerRegister(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type AuthRegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authRegister>>
+export type AuthControllerRegisterMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerRegister>>
 >;
-export type AuthRegisterMutationBody = RegisterAuthDto;
-export type AuthRegisterMutationError = void;
+export type AuthControllerRegisterMutationBody = RegisterAuthDto;
+export type AuthControllerRegisterMutationError = void;
 
 /**
  * @summary User registration
  */
-export const useAuthRegister = <TError = void, TContext = unknown>(
+export const useAuthControllerRegister = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authRegister>>,
+      Awaited<ReturnType<typeof authControllerRegister>>,
       TError,
       { data: RegisterAuthDto },
       TContext
@@ -447,67 +457,72 @@ export const useAuthRegister = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof authRegister>>,
+  Awaited<ReturnType<typeof authControllerRegister>>,
   TError,
   { data: RegisterAuthDto },
   TContext
 > => {
-  return useMutation(getAuthRegisterMutationOptions(options), queryClient);
+  return useMutation(
+    getAuthControllerRegisterMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type authRefreshResponse200 = {
+export type authControllerCreateResponse200 = {
   data: void;
   status: 200;
 };
 
-export type authRefreshResponse401 = {
+export type authControllerCreateResponse401 = {
   data: void;
   status: 401;
 };
 
-export type authRefreshResponseSuccess = authRefreshResponse200 & {
-  headers: Headers;
-};
-export type authRefreshResponseError = authRefreshResponse401 & {
-  headers: Headers;
-};
+export type authControllerCreateResponseSuccess =
+  authControllerCreateResponse200 & {
+    headers: Headers;
+  };
+export type authControllerCreateResponseError =
+  authControllerCreateResponse401 & {
+    headers: Headers;
+  };
 
-export type authRefreshResponse =
-  authRefreshResponseSuccess | authRefreshResponseError;
+export type authControllerCreateResponse =
+  authControllerCreateResponseSuccess | authControllerCreateResponseError;
 
-export const getAuthRefreshUrl = () => {
+export const getAuthControllerCreateUrl = () => {
   return `/api/v1/auth/refresh`;
 };
 
 /**
  * @summary Refresh access token
  */
-export const authRefresh = async (
+export const authControllerCreate = async (
   options?: RequestInit,
-): Promise<authRefreshResponse> => {
-  return apiClient<authRefreshResponse>(getAuthRefreshUrl(), {
+): Promise<authControllerCreateResponse> => {
+  return apiClient<authControllerCreateResponse>(getAuthControllerCreateUrl(), {
     ...options,
     method: 'POST',
   });
 };
 
-export const getAuthRefreshMutationOptions = <
+export const getAuthControllerCreateMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authRefresh>>,
+    Awaited<ReturnType<typeof authControllerCreate>>,
     TError,
     void,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof authRefresh>>,
+  Awaited<ReturnType<typeof authControllerCreate>>,
   TError,
   void,
   TContext
 > => {
-  const mutationKey = ['authRefresh'];
+  const mutationKey = ['authControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -517,28 +532,28 @@ export const getAuthRefreshMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authRefresh>>,
+    Awaited<ReturnType<typeof authControllerCreate>>,
     void
   > = () => {
-    return authRefresh();
+    return authControllerCreate();
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type AuthRefreshMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authRefresh>>
+export type AuthControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerCreate>>
 >;
 
-export type AuthRefreshMutationError = void;
+export type AuthControllerCreateMutationError = void;
 
 /**
  * @summary Refresh access token
  */
-export const useAuthRefresh = <TError = void, TContext = unknown>(
+export const useAuthControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authRefresh>>,
+      Awaited<ReturnType<typeof authControllerCreate>>,
       TError,
       void,
       TContext
@@ -546,85 +561,102 @@ export const useAuthRefresh = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof authRefresh>>,
+  Awaited<ReturnType<typeof authControllerCreate>>,
   TError,
   void,
   TContext
 > => {
-  return useMutation(getAuthRefreshMutationOptions(options), queryClient);
+  return useMutation(
+    getAuthControllerCreateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getCurrentUserResponse200 = {
+export type usersControllerGetCurrentUserResponse200 = {
   data: User;
   status: 200;
 };
 
-export type getCurrentUserResponseSuccess = getCurrentUserResponse200 & {
-  headers: Headers;
-};
-export type getCurrentUserResponse = getCurrentUserResponseSuccess;
+export type usersControllerGetCurrentUserResponseSuccess =
+  usersControllerGetCurrentUserResponse200 & {
+    headers: Headers;
+  };
+export type usersControllerGetCurrentUserResponse =
+  usersControllerGetCurrentUserResponseSuccess;
 
-export const getGetCurrentUserUrl = () => {
+export const getUsersControllerGetCurrentUserUrl = () => {
   return `/api/v1/users/me`;
 };
 
 /**
  * @summary Get current user profile
  */
-export const getCurrentUser = async (
+export const usersControllerGetCurrentUser = async (
   options?: RequestInit,
-): Promise<getCurrentUserResponse> => {
-  return apiClient<getCurrentUserResponse>(getGetCurrentUserUrl(), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<usersControllerGetCurrentUserResponse> => {
+  return apiClient<usersControllerGetCurrentUserResponse>(
+    getUsersControllerGetCurrentUserUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetCurrentUserQueryKey = () => {
+export const getUsersControllerGetCurrentUserQueryKey = () => {
   return [`/api/v1/users/me`] as const;
 };
 
-export const getGetCurrentUserQueryOptions = <
-  TData = Awaited<ReturnType<typeof getCurrentUser>>,
+export const getUsersControllerGetCurrentUserQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
+    UseQueryOptions<
+      Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+      TError,
+      TData
+    >
   >;
 }) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetCurrentUserQueryKey();
+  const queryKey =
+    queryOptions?.queryKey ?? getUsersControllerGetCurrentUserQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentUser>>> = ({
-    signal,
-  }) => getCurrentUser({ signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
+  > = ({ signal }) => usersControllerGetCurrentUser({ signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getCurrentUser>>,
+    Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetCurrentUserQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getCurrentUser>>
+export type UsersControllerGetCurrentUserQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
 >;
-export type GetCurrentUserQueryError = unknown;
+export type UsersControllerGetCurrentUserQueryError = unknown;
 
-export function useGetCurrentUser<
-  TData = Awaited<ReturnType<typeof getCurrentUser>>,
+export function useUsersControllerGetCurrentUser<
+  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
   TError = unknown,
 >(
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCurrentUser>>,
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
           TError,
-          Awaited<ReturnType<typeof getCurrentUser>>
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
         >,
         'initialData'
       >;
@@ -633,19 +665,23 @@ export function useGetCurrentUser<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetCurrentUser<
-  TData = Awaited<ReturnType<typeof getCurrentUser>>,
+export function useUsersControllerGetCurrentUser<
+  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCurrentUser>>,
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
           TError,
-          Awaited<ReturnType<typeof getCurrentUser>>
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
         >,
         'initialData'
       >;
@@ -654,13 +690,17 @@ export function useGetCurrentUser<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetCurrentUser<
-  TData = Awaited<ReturnType<typeof getCurrentUser>>,
+export function useUsersControllerGetCurrentUser<
+  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -671,20 +711,24 @@ export function useGetCurrentUser<
  * @summary Get current user profile
  */
 
-export function useGetCurrentUser<
-  TData = Awaited<ReturnType<typeof getCurrentUser>>,
+export function useUsersControllerGetCurrentUser<
+  TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetCurrentUserQueryOptions(options);
+  const queryOptions = getUsersControllerGetCurrentUserQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -694,52 +738,57 @@ export function useGetCurrentUser<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type updateProfileResponse200 = {
+export type usersControllerUpdateResponse200 = {
   data: User;
   status: 200;
 };
 
-export type updateProfileResponseSuccess = updateProfileResponse200 & {
-  headers: Headers;
-};
-export type updateProfileResponse = updateProfileResponseSuccess;
+export type usersControllerUpdateResponseSuccess =
+  usersControllerUpdateResponse200 & {
+    headers: Headers;
+  };
+export type usersControllerUpdateResponse =
+  usersControllerUpdateResponseSuccess;
 
-export const getUpdateProfileUrl = () => {
+export const getUsersControllerUpdateUrl = () => {
   return `/api/v1/users/me`;
 };
 
 /**
  * @summary Update current user profile
  */
-export const updateProfile = async (
+export const usersControllerUpdate = async (
   updateUserProfileDto: UpdateUserProfileDto,
   options?: RequestInit,
-): Promise<updateProfileResponse> => {
-  return apiClient<updateProfileResponse>(getUpdateProfileUrl(), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateUserProfileDto),
-  });
+): Promise<usersControllerUpdateResponse> => {
+  return apiClient<usersControllerUpdateResponse>(
+    getUsersControllerUpdateUrl(),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateUserProfileDto),
+    },
+  );
 };
 
-export const getUpdateProfileMutationOptions = <
+export const getUsersControllerUpdateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateProfile>>,
+    Awaited<ReturnType<typeof usersControllerUpdate>>,
     TError,
     { data: UpdateUserProfileDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateProfile>>,
+  Awaited<ReturnType<typeof usersControllerUpdate>>,
   TError,
   { data: UpdateUserProfileDto },
   TContext
 > => {
-  const mutationKey = ['updateProfile'];
+  const mutationKey = ['usersControllerUpdate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -749,30 +798,30 @@ export const getUpdateProfileMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateProfile>>,
+    Awaited<ReturnType<typeof usersControllerUpdate>>,
     { data: UpdateUserProfileDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return updateProfile(data);
+    return usersControllerUpdate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateProfileMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateProfile>>
+export type UsersControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersControllerUpdate>>
 >;
-export type UpdateProfileMutationBody = UpdateUserProfileDto;
-export type UpdateProfileMutationError = unknown;
+export type UsersControllerUpdateMutationBody = UpdateUserProfileDto;
+export type UsersControllerUpdateMutationError = unknown;
 
 /**
  * @summary Update current user profile
  */
-export const useUpdateProfile = <TError = unknown, TContext = unknown>(
+export const useUsersControllerUpdate = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateProfile>>,
+      Awaited<ReturnType<typeof usersControllerUpdate>>,
       TError,
       { data: UpdateUserProfileDto },
       TContext
@@ -780,70 +829,79 @@ export const useUpdateProfile = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateProfile>>,
+  Awaited<ReturnType<typeof usersControllerUpdate>>,
   TError,
   { data: UpdateUserProfileDto },
   TContext
 > => {
-  return useMutation(getUpdateProfileMutationOptions(options), queryClient);
+  return useMutation(
+    getUsersControllerUpdateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type changePasswordResponse200 = {
+export type usersControllerChangePasswordResponse200 = {
   data: void;
   status: 200;
 };
 
-export type changePasswordResponse400 = {
+export type usersControllerChangePasswordResponse400 = {
   data: void;
   status: 400;
 };
 
-export type changePasswordResponseSuccess = changePasswordResponse200 & {
-  headers: Headers;
-};
-export type changePasswordResponseError = changePasswordResponse400 & {
-  headers: Headers;
-};
+export type usersControllerChangePasswordResponseSuccess =
+  usersControllerChangePasswordResponse200 & {
+    headers: Headers;
+  };
+export type usersControllerChangePasswordResponseError =
+  usersControllerChangePasswordResponse400 & {
+    headers: Headers;
+  };
 
-export type changePasswordResponse =
-  changePasswordResponseSuccess | changePasswordResponseError;
+export type usersControllerChangePasswordResponse =
+  | usersControllerChangePasswordResponseSuccess
+  | usersControllerChangePasswordResponseError;
 
-export const getChangePasswordUrl = () => {
+export const getUsersControllerChangePasswordUrl = () => {
   return `/api/v1/users/me/change-password`;
 };
 
 /**
  * @summary Change user password
  */
-export const changePassword = async (
+export const usersControllerChangePassword = async (
   updatePasswordDto: UpdatePasswordDto,
   options?: RequestInit,
-): Promise<changePasswordResponse> => {
-  return apiClient<changePasswordResponse>(getChangePasswordUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updatePasswordDto),
-  });
+): Promise<usersControllerChangePasswordResponse> => {
+  return apiClient<usersControllerChangePasswordResponse>(
+    getUsersControllerChangePasswordUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updatePasswordDto),
+    },
+  );
 };
 
-export const getChangePasswordMutationOptions = <
+export const getUsersControllerChangePasswordMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof changePassword>>,
+    Awaited<ReturnType<typeof usersControllerChangePassword>>,
     TError,
     { data: UpdatePasswordDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof changePassword>>,
+  Awaited<ReturnType<typeof usersControllerChangePassword>>,
   TError,
   { data: UpdatePasswordDto },
   TContext
 > => {
-  const mutationKey = ['changePassword'];
+  const mutationKey = ['usersControllerChangePassword'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -853,30 +911,33 @@ export const getChangePasswordMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof changePassword>>,
+    Awaited<ReturnType<typeof usersControllerChangePassword>>,
     { data: UpdatePasswordDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return changePassword(data);
+    return usersControllerChangePassword(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type ChangePasswordMutationResult = NonNullable<
-  Awaited<ReturnType<typeof changePassword>>
+export type UsersControllerChangePasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usersControllerChangePassword>>
 >;
-export type ChangePasswordMutationBody = UpdatePasswordDto;
-export type ChangePasswordMutationError = void;
+export type UsersControllerChangePasswordMutationBody = UpdatePasswordDto;
+export type UsersControllerChangePasswordMutationError = void;
 
 /**
  * @summary Change user password
  */
-export const useChangePassword = <TError = void, TContext = unknown>(
+export const useUsersControllerChangePassword = <
+  TError = void,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof changePassword>>,
+      Awaited<ReturnType<typeof usersControllerChangePassword>>,
       TError,
       { data: UpdatePasswordDto },
       TContext
@@ -884,70 +945,79 @@ export const useChangePassword = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof changePassword>>,
+  Awaited<ReturnType<typeof usersControllerChangePassword>>,
   TError,
   { data: UpdatePasswordDto },
   TContext
 > => {
-  return useMutation(getChangePasswordMutationOptions(options), queryClient);
+  return useMutation(
+    getUsersControllerChangePasswordMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type createBuildingResponse201 = {
+export type buildingsControllerCreateResponse201 = {
   data: Building;
   status: 201;
 };
 
-export type createBuildingResponse403 = {
+export type buildingsControllerCreateResponse403 = {
   data: void;
   status: 403;
 };
 
-export type createBuildingResponseSuccess = createBuildingResponse201 & {
-  headers: Headers;
-};
-export type createBuildingResponseError = createBuildingResponse403 & {
-  headers: Headers;
-};
+export type buildingsControllerCreateResponseSuccess =
+  buildingsControllerCreateResponse201 & {
+    headers: Headers;
+  };
+export type buildingsControllerCreateResponseError =
+  buildingsControllerCreateResponse403 & {
+    headers: Headers;
+  };
 
-export type createBuildingResponse =
-  createBuildingResponseSuccess | createBuildingResponseError;
+export type buildingsControllerCreateResponse =
+  | buildingsControllerCreateResponseSuccess
+  | buildingsControllerCreateResponseError;
 
-export const getCreateBuildingUrl = () => {
+export const getBuildingsControllerCreateUrl = () => {
   return `/api/v1/buildings`;
 };
 
 /**
  * @summary Create a new building
  */
-export const createBuilding = async (
+export const buildingsControllerCreate = async (
   createBuildingDto: CreateBuildingDto,
   options?: RequestInit,
-): Promise<createBuildingResponse> => {
-  return apiClient<createBuildingResponse>(getCreateBuildingUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createBuildingDto),
-  });
+): Promise<buildingsControllerCreateResponse> => {
+  return apiClient<buildingsControllerCreateResponse>(
+    getBuildingsControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createBuildingDto),
+    },
+  );
 };
 
-export const getCreateBuildingMutationOptions = <
+export const getBuildingsControllerCreateMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerCreate>>,
     TError,
     { data: CreateBuildingDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createBuilding>>,
+  Awaited<ReturnType<typeof buildingsControllerCreate>>,
   TError,
   { data: CreateBuildingDto },
   TContext
 > => {
-  const mutationKey = ['createBuilding'];
+  const mutationKey = ['buildingsControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -957,30 +1027,30 @@ export const getCreateBuildingMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerCreate>>,
     { data: CreateBuildingDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createBuilding(data);
+    return buildingsControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateBuildingMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createBuilding>>
+export type BuildingsControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof buildingsControllerCreate>>
 >;
-export type CreateBuildingMutationBody = CreateBuildingDto;
-export type CreateBuildingMutationError = void;
+export type BuildingsControllerCreateMutationBody = CreateBuildingDto;
+export type BuildingsControllerCreateMutationError = void;
 
 /**
  * @summary Create a new building
  */
-export const useCreateBuilding = <TError = void, TContext = unknown>(
+export const useBuildingsControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createBuilding>>,
+      Awaited<ReturnType<typeof buildingsControllerCreate>>,
       TError,
       { data: CreateBuildingDto },
       TContext
@@ -988,25 +1058,32 @@ export const useCreateBuilding = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createBuilding>>,
+  Awaited<ReturnType<typeof buildingsControllerCreate>>,
   TError,
   { data: CreateBuildingDto },
   TContext
 > => {
-  return useMutation(getCreateBuildingMutationOptions(options), queryClient);
+  return useMutation(
+    getBuildingsControllerCreateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getBuildingsResponse200 = {
+export type buildingsControllerFindAllResponse200 = {
   data: Building[];
   status: 200;
 };
 
-export type getBuildingsResponseSuccess = getBuildingsResponse200 & {
-  headers: Headers;
-};
-export type getBuildingsResponse = getBuildingsResponseSuccess;
+export type buildingsControllerFindAllResponseSuccess =
+  buildingsControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type buildingsControllerFindAllResponse =
+  buildingsControllerFindAllResponseSuccess;
 
-export const getGetBuildingsUrl = (params: GetBuildingsParams) => {
+export const getBuildingsControllerFindAllUrl = (
+  params: BuildingsControllerFindAllParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -1025,65 +1102,79 @@ export const getGetBuildingsUrl = (params: GetBuildingsParams) => {
 /**
  * @summary Get all buildings
  */
-export const getBuildings = async (
-  params: GetBuildingsParams,
+export const buildingsControllerFindAll = async (
+  params: BuildingsControllerFindAllParams,
   options?: RequestInit,
-): Promise<getBuildingsResponse> => {
-  return apiClient<getBuildingsResponse>(getGetBuildingsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<buildingsControllerFindAllResponse> => {
+  return apiClient<buildingsControllerFindAllResponse>(
+    getBuildingsControllerFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetBuildingsQueryKey = (params?: GetBuildingsParams) => {
+export const getBuildingsControllerFindAllQueryKey = (
+  params?: BuildingsControllerFindAllParams,
+) => {
   return [`/api/v1/buildings`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetBuildingsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getBuildings>>,
+export const getBuildingsControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetBuildingsParams,
+  params: BuildingsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetBuildingsQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getBuildingsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBuildings>>> = ({
-    signal,
-  }) => getBuildings(params, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof buildingsControllerFindAll>>
+  > = ({ signal }) => buildingsControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getBuildings>>,
+    Awaited<ReturnType<typeof buildingsControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetBuildingsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getBuildings>>
+export type BuildingsControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof buildingsControllerFindAll>>
 >;
-export type GetBuildingsQueryError = unknown;
+export type BuildingsControllerFindAllQueryError = unknown;
 
-export function useGetBuildings<
-  TData = Awaited<ReturnType<typeof getBuildings>>,
+export function useBuildingsControllerFindAll<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetBuildingsParams,
+  params: BuildingsControllerFindAllParams,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBuildings>>,
+          Awaited<ReturnType<typeof buildingsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getBuildings>>
+          Awaited<ReturnType<typeof buildingsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -1092,20 +1183,24 @@ export function useGetBuildings<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBuildings<
-  TData = Awaited<ReturnType<typeof getBuildings>>,
+export function useBuildingsControllerFindAll<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetBuildingsParams,
+  params: BuildingsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBuildings>>,
+          Awaited<ReturnType<typeof buildingsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getBuildings>>
+          Awaited<ReturnType<typeof buildingsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -1114,14 +1209,18 @@ export function useGetBuildings<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBuildings<
-  TData = Awaited<ReturnType<typeof getBuildings>>,
+export function useBuildingsControllerFindAll<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetBuildingsParams,
+  params: BuildingsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -1132,21 +1231,28 @@ export function useGetBuildings<
  * @summary Get all buildings
  */
 
-export function useGetBuildings<
-  TData = Awaited<ReturnType<typeof getBuildings>>,
+export function useBuildingsControllerFindAll<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetBuildingsParams,
+  params: BuildingsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuildings>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetBuildingsQueryOptions(params, options);
+  const queryOptions = getBuildingsControllerFindAllQueryOptions(
+    params,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -1156,65 +1262,76 @@ export function useGetBuildings<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getBuildingResponse200 = {
+export type buildingsControllerFindOneResponse200 = {
   data: Building;
   status: 200;
 };
 
-export type getBuildingResponse404 = {
+export type buildingsControllerFindOneResponse404 = {
   data: void;
   status: 404;
 };
 
-export type getBuildingResponseSuccess = getBuildingResponse200 & {
-  headers: Headers;
-};
-export type getBuildingResponseError = getBuildingResponse404 & {
-  headers: Headers;
-};
+export type buildingsControllerFindOneResponseSuccess =
+  buildingsControllerFindOneResponse200 & {
+    headers: Headers;
+  };
+export type buildingsControllerFindOneResponseError =
+  buildingsControllerFindOneResponse404 & {
+    headers: Headers;
+  };
 
-export type getBuildingResponse =
-  getBuildingResponseSuccess | getBuildingResponseError;
+export type buildingsControllerFindOneResponse =
+  | buildingsControllerFindOneResponseSuccess
+  | buildingsControllerFindOneResponseError;
 
-export const getGetBuildingUrl = (id: string) => {
+export const getBuildingsControllerFindOneUrl = (id: string) => {
   return `/api/v1/buildings/${id}`;
 };
 
 /**
  * @summary Get a building by ID
  */
-export const getBuilding = async (
+export const buildingsControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getBuildingResponse> => {
-  return apiClient<getBuildingResponse>(getGetBuildingUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<buildingsControllerFindOneResponse> => {
+  return apiClient<buildingsControllerFindOneResponse>(
+    getBuildingsControllerFindOneUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetBuildingQueryKey = (id: string) => {
+export const getBuildingsControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/buildings/${id}`] as const;
 };
 
-export const getGetBuildingQueryOptions = <
-  TData = Awaited<ReturnType<typeof getBuilding>>,
+export const getBuildingsControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuilding>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetBuildingQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getBuildingsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBuilding>>> = ({
-    signal,
-  }) => getBuilding(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof buildingsControllerFindOne>>
+  > = ({ signal }) => buildingsControllerFindOne(id, { signal });
 
   return {
     queryKey,
@@ -1222,31 +1339,35 @@ export const getGetBuildingQueryOptions = <
     enabled: id !== null && id !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerFindOne>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetBuildingQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getBuilding>>
+export type BuildingsControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof buildingsControllerFindOne>>
 >;
-export type GetBuildingQueryError = void;
+export type BuildingsControllerFindOneQueryError = void;
 
-export function useGetBuilding<
-  TData = Awaited<ReturnType<typeof getBuilding>>,
+export function useBuildingsControllerFindOne<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuilding>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBuilding>>,
+          Awaited<ReturnType<typeof buildingsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getBuilding>>
+          Awaited<ReturnType<typeof buildingsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -1255,20 +1376,24 @@ export function useGetBuilding<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBuilding<
-  TData = Awaited<ReturnType<typeof getBuilding>>,
+export function useBuildingsControllerFindOne<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuilding>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBuilding>>,
+          Awaited<ReturnType<typeof buildingsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getBuilding>>
+          Awaited<ReturnType<typeof buildingsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -1277,14 +1402,18 @@ export function useGetBuilding<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBuilding<
-  TData = Awaited<ReturnType<typeof getBuilding>>,
+export function useBuildingsControllerFindOne<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuilding>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -1295,21 +1424,25 @@ export function useGetBuilding<
  * @summary Get a building by ID
  */
 
-export function useGetBuilding<
-  TData = Awaited<ReturnType<typeof getBuilding>>,
+export function useBuildingsControllerFindOne<
+  TData = Awaited<ReturnType<typeof buildingsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBuilding>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof buildingsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetBuildingQueryOptions(id, options);
+  const queryOptions = getBuildingsControllerFindOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -1319,70 +1452,75 @@ export function useGetBuilding<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type updateBuildingResponse200 = {
+export type buildingsControllerUpdateResponse200 = {
   data: Building;
   status: 200;
 };
 
-export type updateBuildingResponse403 = {
+export type buildingsControllerUpdateResponse403 = {
   data: void;
   status: 403;
 };
 
-export type updateBuildingResponse404 = {
+export type buildingsControllerUpdateResponse404 = {
   data: void;
   status: 404;
 };
 
-export type updateBuildingResponseSuccess = updateBuildingResponse200 & {
-  headers: Headers;
-};
-export type updateBuildingResponseError = (
-  updateBuildingResponse403 | updateBuildingResponse404
+export type buildingsControllerUpdateResponseSuccess =
+  buildingsControllerUpdateResponse200 & {
+    headers: Headers;
+  };
+export type buildingsControllerUpdateResponseError = (
+  buildingsControllerUpdateResponse403 | buildingsControllerUpdateResponse404
 ) & {
   headers: Headers;
 };
 
-export type updateBuildingResponse =
-  updateBuildingResponseSuccess | updateBuildingResponseError;
+export type buildingsControllerUpdateResponse =
+  | buildingsControllerUpdateResponseSuccess
+  | buildingsControllerUpdateResponseError;
 
-export const getUpdateBuildingUrl = (id: string) => {
+export const getBuildingsControllerUpdateUrl = (id: string) => {
   return `/api/v1/buildings/${id}`;
 };
 
 /**
  * @summary Update a building
  */
-export const updateBuilding = async (
+export const buildingsControllerUpdate = async (
   id: string,
   updateBuildingDto: UpdateBuildingDto,
   options?: RequestInit,
-): Promise<updateBuildingResponse> => {
-  return apiClient<updateBuildingResponse>(getUpdateBuildingUrl(id), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateBuildingDto),
-  });
+): Promise<buildingsControllerUpdateResponse> => {
+  return apiClient<buildingsControllerUpdateResponse>(
+    getBuildingsControllerUpdateUrl(id),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateBuildingDto),
+    },
+  );
 };
 
-export const getUpdateBuildingMutationOptions = <
+export const getBuildingsControllerUpdateMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerUpdate>>,
     TError,
     { id: string; data: UpdateBuildingDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateBuilding>>,
+  Awaited<ReturnType<typeof buildingsControllerUpdate>>,
   TError,
   { id: string; data: UpdateBuildingDto },
   TContext
 > => {
-  const mutationKey = ['updateBuilding'];
+  const mutationKey = ['buildingsControllerUpdate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -1392,30 +1530,30 @@ export const getUpdateBuildingMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerUpdate>>,
     { id: string; data: UpdateBuildingDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return updateBuilding(id, data);
+    return buildingsControllerUpdate(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateBuildingMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateBuilding>>
+export type BuildingsControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof buildingsControllerUpdate>>
 >;
-export type UpdateBuildingMutationBody = UpdateBuildingDto;
-export type UpdateBuildingMutationError = void;
+export type BuildingsControllerUpdateMutationBody = UpdateBuildingDto;
+export type BuildingsControllerUpdateMutationError = void;
 
 /**
  * @summary Update a building
  */
-export const useUpdateBuilding = <TError = void, TContext = unknown>(
+export const useBuildingsControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateBuilding>>,
+      Awaited<ReturnType<typeof buildingsControllerUpdate>>,
       TError,
       { id: string; data: UpdateBuildingDto },
       TContext
@@ -1423,75 +1561,83 @@ export const useUpdateBuilding = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateBuilding>>,
+  Awaited<ReturnType<typeof buildingsControllerUpdate>>,
   TError,
   { id: string; data: UpdateBuildingDto },
   TContext
 > => {
-  return useMutation(getUpdateBuildingMutationOptions(options), queryClient);
+  return useMutation(
+    getBuildingsControllerUpdateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type deleteBuildingResponse200 = {
+export type buildingsControllerRemoveResponse200 = {
   data: Building;
   status: 200;
 };
 
-export type deleteBuildingResponse403 = {
+export type buildingsControllerRemoveResponse403 = {
   data: void;
   status: 403;
 };
 
-export type deleteBuildingResponse404 = {
+export type buildingsControllerRemoveResponse404 = {
   data: void;
   status: 404;
 };
 
-export type deleteBuildingResponseSuccess = deleteBuildingResponse200 & {
-  headers: Headers;
-};
-export type deleteBuildingResponseError = (
-  deleteBuildingResponse403 | deleteBuildingResponse404
+export type buildingsControllerRemoveResponseSuccess =
+  buildingsControllerRemoveResponse200 & {
+    headers: Headers;
+  };
+export type buildingsControllerRemoveResponseError = (
+  buildingsControllerRemoveResponse403 | buildingsControllerRemoveResponse404
 ) & {
   headers: Headers;
 };
 
-export type deleteBuildingResponse =
-  deleteBuildingResponseSuccess | deleteBuildingResponseError;
+export type buildingsControllerRemoveResponse =
+  | buildingsControllerRemoveResponseSuccess
+  | buildingsControllerRemoveResponseError;
 
-export const getDeleteBuildingUrl = (id: string) => {
+export const getBuildingsControllerRemoveUrl = (id: string) => {
   return `/api/v1/buildings/${id}`;
 };
 
 /**
  * @summary Delete a building
  */
-export const deleteBuilding = async (
+export const buildingsControllerRemove = async (
   id: string,
   options?: RequestInit,
-): Promise<deleteBuildingResponse> => {
-  return apiClient<deleteBuildingResponse>(getDeleteBuildingUrl(id), {
-    ...options,
-    method: 'DELETE',
-  });
+): Promise<buildingsControllerRemoveResponse> => {
+  return apiClient<buildingsControllerRemoveResponse>(
+    getBuildingsControllerRemoveUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
 };
 
-export const getDeleteBuildingMutationOptions = <
+export const getBuildingsControllerRemoveMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerRemove>>,
     TError,
     { id: string },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteBuilding>>,
+  Awaited<ReturnType<typeof buildingsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ['deleteBuilding'];
+  const mutationKey = ['buildingsControllerRemove'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -1501,30 +1647,30 @@ export const getDeleteBuildingMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteBuilding>>,
+    Awaited<ReturnType<typeof buildingsControllerRemove>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return deleteBuilding(id);
+    return buildingsControllerRemove(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteBuildingMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteBuilding>>
+export type BuildingsControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof buildingsControllerRemove>>
 >;
 
-export type DeleteBuildingMutationError = void;
+export type BuildingsControllerRemoveMutationError = void;
 
 /**
  * @summary Delete a building
  */
-export const useDeleteBuilding = <TError = void, TContext = unknown>(
+export const useBuildingsControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteBuilding>>,
+      Awaited<ReturnType<typeof buildingsControllerRemove>>,
       TError,
       { id: string },
       TContext
@@ -1532,51 +1678,59 @@ export const useDeleteBuilding = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteBuilding>>,
+  Awaited<ReturnType<typeof buildingsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  return useMutation(getDeleteBuildingMutationOptions(options), queryClient);
+  return useMutation(
+    getBuildingsControllerRemoveMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getAvailableRoomsResponse200 = {
+export type roomsControllerGetAvailableRoomsResponse200 = {
   data: Room[];
   status: 200;
 };
 
-export type getAvailableRoomsResponseSuccess = getAvailableRoomsResponse200 & {
-  headers: Headers;
-};
-export type getAvailableRoomsResponse = getAvailableRoomsResponseSuccess;
+export type roomsControllerGetAvailableRoomsResponseSuccess =
+  roomsControllerGetAvailableRoomsResponse200 & {
+    headers: Headers;
+  };
+export type roomsControllerGetAvailableRoomsResponse =
+  roomsControllerGetAvailableRoomsResponseSuccess;
 
-export const getGetAvailableRoomsUrl = () => {
+export const getRoomsControllerGetAvailableRoomsUrl = () => {
   return `/api/v1/rooms/available`;
 };
 
 /**
  * @summary Get available rooms (Public)
  */
-export const getAvailableRooms = async (
+export const roomsControllerGetAvailableRooms = async (
   options?: RequestInit,
-): Promise<getAvailableRoomsResponse> => {
-  return apiClient<getAvailableRoomsResponse>(getGetAvailableRoomsUrl(), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<roomsControllerGetAvailableRoomsResponse> => {
+  return apiClient<roomsControllerGetAvailableRoomsResponse>(
+    getRoomsControllerGetAvailableRoomsUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetAvailableRoomsQueryKey = () => {
+export const getRoomsControllerGetAvailableRoomsQueryKey = () => {
   return [`/api/v1/rooms/available`] as const;
 };
 
-export const getGetAvailableRoomsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getAvailableRooms>>,
+export const getRoomsControllerGetAvailableRoomsQueryOptions = <
+  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
   TError = unknown,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
-      Awaited<ReturnType<typeof getAvailableRooms>>,
+      Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
       TError,
       TData
     >
@@ -1584,41 +1738,42 @@ export const getGetAvailableRoomsQueryOptions = <
 }) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetAvailableRoomsQueryKey();
+  const queryKey =
+    queryOptions?.queryKey ?? getRoomsControllerGetAvailableRoomsQueryKey();
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getAvailableRooms>>
-  > = ({ signal }) => getAvailableRooms({ signal });
+    Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
+  > = ({ signal }) => roomsControllerGetAvailableRooms({ signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getAvailableRooms>>,
+    Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetAvailableRoomsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getAvailableRooms>>
+export type RoomsControllerGetAvailableRoomsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
 >;
-export type GetAvailableRoomsQueryError = unknown;
+export type RoomsControllerGetAvailableRoomsQueryError = unknown;
 
-export function useGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof getAvailableRooms>>,
+export function useRoomsControllerGetAvailableRooms<
+  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
   TError = unknown,
 >(
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getAvailableRooms>>,
+        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAvailableRooms>>,
+          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
           TError,
-          Awaited<ReturnType<typeof getAvailableRooms>>
+          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
         >,
         'initialData'
       >;
@@ -1627,23 +1782,23 @@ export function useGetAvailableRooms<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof getAvailableRooms>>,
+export function useRoomsControllerGetAvailableRooms<
+  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getAvailableRooms>>,
+        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAvailableRooms>>,
+          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
           TError,
-          Awaited<ReturnType<typeof getAvailableRooms>>
+          Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>
         >,
         'initialData'
       >;
@@ -1652,14 +1807,14 @@ export function useGetAvailableRooms<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof getAvailableRooms>>,
+export function useRoomsControllerGetAvailableRooms<
+  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getAvailableRooms>>,
+        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
         TError,
         TData
       >
@@ -1673,14 +1828,14 @@ export function useGetAvailableRooms<
  * @summary Get available rooms (Public)
  */
 
-export function useGetAvailableRooms<
-  TData = Awaited<ReturnType<typeof getAvailableRooms>>,
+export function useRoomsControllerGetAvailableRooms<
+  TData = Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getAvailableRooms>>,
+        Awaited<ReturnType<typeof roomsControllerGetAvailableRooms>>,
         TError,
         TData
       >
@@ -1690,7 +1845,7 @@ export function useGetAvailableRooms<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetAvailableRoomsQueryOptions(options);
+  const queryOptions = getRoomsControllerGetAvailableRoomsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -1700,49 +1855,54 @@ export function useGetAvailableRooms<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type createRoomResponse201 = {
+export type roomsControllerCreateResponse201 = {
   data: Room;
   status: 201;
 };
 
-export type createRoomResponseSuccess = createRoomResponse201 & {
-  headers: Headers;
-};
-export type createRoomResponse = createRoomResponseSuccess;
+export type roomsControllerCreateResponseSuccess =
+  roomsControllerCreateResponse201 & {
+    headers: Headers;
+  };
+export type roomsControllerCreateResponse =
+  roomsControllerCreateResponseSuccess;
 
-export const getCreateRoomUrl = () => {
+export const getRoomsControllerCreateUrl = () => {
   return `/api/v1/rooms`;
 };
 
-export const createRoom = async (
+export const roomsControllerCreate = async (
   createRoomDto: CreateRoomDto,
   options?: RequestInit,
-): Promise<createRoomResponse> => {
-  return apiClient<createRoomResponse>(getCreateRoomUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createRoomDto),
-  });
+): Promise<roomsControllerCreateResponse> => {
+  return apiClient<roomsControllerCreateResponse>(
+    getRoomsControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createRoomDto),
+    },
+  );
 };
 
-export const getCreateRoomMutationOptions = <
+export const getRoomsControllerCreateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createRoom>>,
+    Awaited<ReturnType<typeof roomsControllerCreate>>,
     TError,
     { data: CreateRoomDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createRoom>>,
+  Awaited<ReturnType<typeof roomsControllerCreate>>,
   TError,
   { data: CreateRoomDto },
   TContext
 > => {
-  const mutationKey = ['createRoom'];
+  const mutationKey = ['roomsControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -1752,27 +1912,27 @@ export const getCreateRoomMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createRoom>>,
+    Awaited<ReturnType<typeof roomsControllerCreate>>,
     { data: CreateRoomDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createRoom(data);
+    return roomsControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateRoomMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createRoom>>
+export type RoomsControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof roomsControllerCreate>>
 >;
-export type CreateRoomMutationBody = CreateRoomDto;
-export type CreateRoomMutationError = unknown;
+export type RoomsControllerCreateMutationBody = CreateRoomDto;
+export type RoomsControllerCreateMutationError = unknown;
 
-export const useCreateRoom = <TError = unknown, TContext = unknown>(
+export const useRoomsControllerCreate = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createRoom>>,
+      Awaited<ReturnType<typeof roomsControllerCreate>>,
       TError,
       { data: CreateRoomDto },
       TContext
@@ -1780,25 +1940,32 @@ export const useCreateRoom = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createRoom>>,
+  Awaited<ReturnType<typeof roomsControllerCreate>>,
   TError,
   { data: CreateRoomDto },
   TContext
 > => {
-  return useMutation(getCreateRoomMutationOptions(options), queryClient);
+  return useMutation(
+    getRoomsControllerCreateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getRoomsResponse200 = {
+export type roomsControllerFindAllResponse200 = {
   data: Room[];
   status: 200;
 };
 
-export type getRoomsResponseSuccess = getRoomsResponse200 & {
-  headers: Headers;
-};
-export type getRoomsResponse = getRoomsResponseSuccess;
+export type roomsControllerFindAllResponseSuccess =
+  roomsControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type roomsControllerFindAllResponse =
+  roomsControllerFindAllResponseSuccess;
 
-export const getGetRoomsUrl = (params: GetRoomsParams) => {
+export const getRoomsControllerFindAllUrl = (
+  params: RoomsControllerFindAllParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -1814,65 +1981,79 @@ export const getGetRoomsUrl = (params: GetRoomsParams) => {
     : `/api/v1/rooms`;
 };
 
-export const getRooms = async (
-  params: GetRoomsParams,
+export const roomsControllerFindAll = async (
+  params: RoomsControllerFindAllParams,
   options?: RequestInit,
-): Promise<getRoomsResponse> => {
-  return apiClient<getRoomsResponse>(getGetRoomsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<roomsControllerFindAllResponse> => {
+  return apiClient<roomsControllerFindAllResponse>(
+    getRoomsControllerFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetRoomsQueryKey = (params?: GetRoomsParams) => {
+export const getRoomsControllerFindAllQueryKey = (
+  params?: RoomsControllerFindAllParams,
+) => {
   return [`/api/v1/rooms`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetRoomsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRooms>>,
+export const getRoomsControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetRoomsParams,
+  params: RoomsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRoomsQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getRoomsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRooms>>> = ({
-    signal,
-  }) => getRooms(params, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof roomsControllerFindAll>>
+  > = ({ signal }) => roomsControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRooms>>,
+    Awaited<ReturnType<typeof roomsControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetRoomsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRooms>>
+export type RoomsControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof roomsControllerFindAll>>
 >;
-export type GetRoomsQueryError = unknown;
+export type RoomsControllerFindAllQueryError = unknown;
 
-export function useGetRooms<
-  TData = Awaited<ReturnType<typeof getRooms>>,
+export function useRoomsControllerFindAll<
+  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetRoomsParams,
+  params: RoomsControllerFindAllParams,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRooms>>,
+          Awaited<ReturnType<typeof roomsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getRooms>>
+          Awaited<ReturnType<typeof roomsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -1881,20 +2062,24 @@ export function useGetRooms<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRooms<
-  TData = Awaited<ReturnType<typeof getRooms>>,
+export function useRoomsControllerFindAll<
+  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetRoomsParams,
+  params: RoomsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRooms>>,
+          Awaited<ReturnType<typeof roomsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getRooms>>
+          Awaited<ReturnType<typeof roomsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -1903,14 +2088,18 @@ export function useGetRooms<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRooms<
-  TData = Awaited<ReturnType<typeof getRooms>>,
+export function useRoomsControllerFindAll<
+  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetRoomsParams,
+  params: RoomsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -1918,21 +2107,25 @@ export function useGetRooms<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetRooms<
-  TData = Awaited<ReturnType<typeof getRooms>>,
+export function useRoomsControllerFindAll<
+  TData = Awaited<ReturnType<typeof roomsControllerFindAll>>,
   TError = unknown,
 >(
-  params: GetRoomsParams,
+  params: RoomsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRooms>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetRoomsQueryOptions(params, options);
+  const queryOptions = getRoomsControllerFindAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -1942,82 +2135,98 @@ export function useGetRooms<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getRoomResponse200 = {
+export type roomsControllerFindOneResponse200 = {
   data: Room;
   status: 200;
 };
 
-export type getRoomResponseSuccess = getRoomResponse200 & {
-  headers: Headers;
-};
-export type getRoomResponse = getRoomResponseSuccess;
+export type roomsControllerFindOneResponseSuccess =
+  roomsControllerFindOneResponse200 & {
+    headers: Headers;
+  };
+export type roomsControllerFindOneResponse =
+  roomsControllerFindOneResponseSuccess;
 
-export const getGetRoomUrl = (id: string) => {
+export const getRoomsControllerFindOneUrl = (id: string) => {
   return `/api/v1/rooms/${id}`;
 };
 
-export const getRoom = async (
+export const roomsControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getRoomResponse> => {
-  return apiClient<getRoomResponse>(getGetRoomUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<roomsControllerFindOneResponse> => {
+  return apiClient<roomsControllerFindOneResponse>(
+    getRoomsControllerFindOneUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetRoomQueryKey = (id: string) => {
+export const getRoomsControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/rooms/${id}`] as const;
 };
 
-export const getGetRoomQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRoom>>,
+export const getRoomsControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoom>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRoomQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getRoomsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoom>>> = ({
-    signal,
-  }) => getRoom(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof roomsControllerFindOne>>
+  > = ({ signal }) => roomsControllerFindOne(id, { signal });
 
   return {
     queryKey,
     queryFn,
     enabled: id !== null && id !== undefined,
     ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getRoom>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof roomsControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetRoomQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRoom>>
+export type RoomsControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof roomsControllerFindOne>>
 >;
-export type GetRoomQueryError = unknown;
+export type RoomsControllerFindOneQueryError = unknown;
 
-export function useGetRoom<
-  TData = Awaited<ReturnType<typeof getRoom>>,
+export function useRoomsControllerFindOne<
+  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoom>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRoom>>,
+          Awaited<ReturnType<typeof roomsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getRoom>>
+          Awaited<ReturnType<typeof roomsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -2026,20 +2235,24 @@ export function useGetRoom<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRoom<
-  TData = Awaited<ReturnType<typeof getRoom>>,
+export function useRoomsControllerFindOne<
+  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoom>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRoom>>,
+          Awaited<ReturnType<typeof roomsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getRoom>>
+          Awaited<ReturnType<typeof roomsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -2048,14 +2261,18 @@ export function useGetRoom<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRoom<
-  TData = Awaited<ReturnType<typeof getRoom>>,
+export function useRoomsControllerFindOne<
+  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoom>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -2063,21 +2280,25 @@ export function useGetRoom<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetRoom<
-  TData = Awaited<ReturnType<typeof getRoom>>,
+export function useRoomsControllerFindOne<
+  TData = Awaited<ReturnType<typeof roomsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoom>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof roomsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetRoomQueryOptions(id, options);
+  const queryOptions = getRoomsControllerFindOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2087,50 +2308,55 @@ export function useGetRoom<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type updateRoomResponse200 = {
+export type roomsControllerUpdateResponse200 = {
   data: Room;
   status: 200;
 };
 
-export type updateRoomResponseSuccess = updateRoomResponse200 & {
-  headers: Headers;
-};
-export type updateRoomResponse = updateRoomResponseSuccess;
+export type roomsControllerUpdateResponseSuccess =
+  roomsControllerUpdateResponse200 & {
+    headers: Headers;
+  };
+export type roomsControllerUpdateResponse =
+  roomsControllerUpdateResponseSuccess;
 
-export const getUpdateRoomUrl = (id: string) => {
+export const getRoomsControllerUpdateUrl = (id: string) => {
   return `/api/v1/rooms/${id}`;
 };
 
-export const updateRoom = async (
+export const roomsControllerUpdate = async (
   id: string,
   updateRoomDto: UpdateRoomDto,
   options?: RequestInit,
-): Promise<updateRoomResponse> => {
-  return apiClient<updateRoomResponse>(getUpdateRoomUrl(id), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateRoomDto),
-  });
+): Promise<roomsControllerUpdateResponse> => {
+  return apiClient<roomsControllerUpdateResponse>(
+    getRoomsControllerUpdateUrl(id),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateRoomDto),
+    },
+  );
 };
 
-export const getUpdateRoomMutationOptions = <
+export const getRoomsControllerUpdateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateRoom>>,
+    Awaited<ReturnType<typeof roomsControllerUpdate>>,
     TError,
     { id: string; data: UpdateRoomDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateRoom>>,
+  Awaited<ReturnType<typeof roomsControllerUpdate>>,
   TError,
   { id: string; data: UpdateRoomDto },
   TContext
 > => {
-  const mutationKey = ['updateRoom'];
+  const mutationKey = ['roomsControllerUpdate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -2140,27 +2366,27 @@ export const getUpdateRoomMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateRoom>>,
+    Awaited<ReturnType<typeof roomsControllerUpdate>>,
     { id: string; data: UpdateRoomDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return updateRoom(id, data);
+    return roomsControllerUpdate(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateRoomMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateRoom>>
+export type RoomsControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof roomsControllerUpdate>>
 >;
-export type UpdateRoomMutationBody = UpdateRoomDto;
-export type UpdateRoomMutationError = unknown;
+export type RoomsControllerUpdateMutationBody = UpdateRoomDto;
+export type RoomsControllerUpdateMutationError = unknown;
 
-export const useUpdateRoom = <TError = unknown, TContext = unknown>(
+export const useRoomsControllerUpdate = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateRoom>>,
+      Awaited<ReturnType<typeof roomsControllerUpdate>>,
       TError,
       { id: string; data: UpdateRoomDto },
       TContext
@@ -2168,55 +2394,63 @@ export const useUpdateRoom = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateRoom>>,
+  Awaited<ReturnType<typeof roomsControllerUpdate>>,
   TError,
   { id: string; data: UpdateRoomDto },
   TContext
 > => {
-  return useMutation(getUpdateRoomMutationOptions(options), queryClient);
+  return useMutation(
+    getRoomsControllerUpdateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type deleteRoomResponse200 = {
+export type roomsControllerRemoveResponse200 = {
   data: Room;
   status: 200;
 };
 
-export type deleteRoomResponseSuccess = deleteRoomResponse200 & {
-  headers: Headers;
-};
-export type deleteRoomResponse = deleteRoomResponseSuccess;
+export type roomsControllerRemoveResponseSuccess =
+  roomsControllerRemoveResponse200 & {
+    headers: Headers;
+  };
+export type roomsControllerRemoveResponse =
+  roomsControllerRemoveResponseSuccess;
 
-export const getDeleteRoomUrl = (id: string) => {
+export const getRoomsControllerRemoveUrl = (id: string) => {
   return `/api/v1/rooms/${id}`;
 };
 
-export const deleteRoom = async (
+export const roomsControllerRemove = async (
   id: string,
   options?: RequestInit,
-): Promise<deleteRoomResponse> => {
-  return apiClient<deleteRoomResponse>(getDeleteRoomUrl(id), {
-    ...options,
-    method: 'DELETE',
-  });
+): Promise<roomsControllerRemoveResponse> => {
+  return apiClient<roomsControllerRemoveResponse>(
+    getRoomsControllerRemoveUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
 };
 
-export const getDeleteRoomMutationOptions = <
+export const getRoomsControllerRemoveMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteRoom>>,
+    Awaited<ReturnType<typeof roomsControllerRemove>>,
     TError,
     { id: string },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteRoom>>,
+  Awaited<ReturnType<typeof roomsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ['deleteRoom'];
+  const mutationKey = ['roomsControllerRemove'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -2226,27 +2460,27 @@ export const getDeleteRoomMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteRoom>>,
+    Awaited<ReturnType<typeof roomsControllerRemove>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return deleteRoom(id);
+    return roomsControllerRemove(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteRoomMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteRoom>>
+export type RoomsControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof roomsControllerRemove>>
 >;
 
-export type DeleteRoomMutationError = unknown;
+export type RoomsControllerRemoveMutationError = unknown;
 
-export const useDeleteRoom = <TError = unknown, TContext = unknown>(
+export const useRoomsControllerRemove = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteRoom>>,
+      Awaited<ReturnType<typeof roomsControllerRemove>>,
       TError,
       { id: string },
       TContext
@@ -2254,57 +2488,65 @@ export const useDeleteRoom = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteRoom>>,
+  Awaited<ReturnType<typeof roomsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  return useMutation(getDeleteRoomMutationOptions(options), queryClient);
+  return useMutation(
+    getRoomsControllerRemoveMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type createRentalResponse201 = {
+export type rentalsControllerCreateResponse201 = {
   data: Rental;
   status: 201;
 };
 
-export type createRentalResponseSuccess = createRentalResponse201 & {
-  headers: Headers;
-};
-export type createRentalResponse = createRentalResponseSuccess;
+export type rentalsControllerCreateResponseSuccess =
+  rentalsControllerCreateResponse201 & {
+    headers: Headers;
+  };
+export type rentalsControllerCreateResponse =
+  rentalsControllerCreateResponseSuccess;
 
-export const getCreateRentalUrl = () => {
+export const getRentalsControllerCreateUrl = () => {
   return `/api/v1/rentals`;
 };
 
-export const createRental = async (
+export const rentalsControllerCreate = async (
   createRentalDto: CreateRentalDto,
   options?: RequestInit,
-): Promise<createRentalResponse> => {
-  return apiClient<createRentalResponse>(getCreateRentalUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createRentalDto),
-  });
+): Promise<rentalsControllerCreateResponse> => {
+  return apiClient<rentalsControllerCreateResponse>(
+    getRentalsControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createRentalDto),
+    },
+  );
 };
 
-export const getCreateRentalMutationOptions = <
+export const getRentalsControllerCreateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createRental>>,
+    Awaited<ReturnType<typeof rentalsControllerCreate>>,
     TError,
     { data: CreateRentalDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createRental>>,
+  Awaited<ReturnType<typeof rentalsControllerCreate>>,
   TError,
   { data: CreateRentalDto },
   TContext
 > => {
-  const mutationKey = ['createRental'];
+  const mutationKey = ['rentalsControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -2314,27 +2556,30 @@ export const getCreateRentalMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createRental>>,
+    Awaited<ReturnType<typeof rentalsControllerCreate>>,
     { data: CreateRentalDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createRental(data);
+    return rentalsControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateRentalMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createRental>>
+export type RentalsControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof rentalsControllerCreate>>
 >;
-export type CreateRentalMutationBody = CreateRentalDto;
-export type CreateRentalMutationError = unknown;
+export type RentalsControllerCreateMutationBody = CreateRentalDto;
+export type RentalsControllerCreateMutationError = unknown;
 
-export const useCreateRental = <TError = unknown, TContext = unknown>(
+export const useRentalsControllerCreate = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createRental>>,
+      Awaited<ReturnType<typeof rentalsControllerCreate>>,
       TError,
       { data: CreateRentalDto },
       TContext
@@ -2342,25 +2587,32 @@ export const useCreateRental = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createRental>>,
+  Awaited<ReturnType<typeof rentalsControllerCreate>>,
   TError,
   { data: CreateRentalDto },
   TContext
 > => {
-  return useMutation(getCreateRentalMutationOptions(options), queryClient);
+  return useMutation(
+    getRentalsControllerCreateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getRentalsResponse200 = {
+export type rentalsControllerFindAllResponse200 = {
   data: Rental[];
   status: 200;
 };
 
-export type getRentalsResponseSuccess = getRentalsResponse200 & {
-  headers: Headers;
-};
-export type getRentalsResponse = getRentalsResponseSuccess;
+export type rentalsControllerFindAllResponseSuccess =
+  rentalsControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type rentalsControllerFindAllResponse =
+  rentalsControllerFindAllResponseSuccess;
 
-export const getGetRentalsUrl = (params?: GetRentalsParams) => {
+export const getRentalsControllerFindAllUrl = (
+  params?: RentalsControllerFindAllParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -2376,65 +2628,79 @@ export const getGetRentalsUrl = (params?: GetRentalsParams) => {
     : `/api/v1/rentals`;
 };
 
-export const getRentals = async (
-  params?: GetRentalsParams,
+export const rentalsControllerFindAll = async (
+  params?: RentalsControllerFindAllParams,
   options?: RequestInit,
-): Promise<getRentalsResponse> => {
-  return apiClient<getRentalsResponse>(getGetRentalsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<rentalsControllerFindAllResponse> => {
+  return apiClient<rentalsControllerFindAllResponse>(
+    getRentalsControllerFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetRentalsQueryKey = (params?: GetRentalsParams) => {
+export const getRentalsControllerFindAllQueryKey = (
+  params?: RentalsControllerFindAllParams,
+) => {
   return [`/api/v1/rentals`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetRentalsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRentals>>,
+export const getRentalsControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetRentalsParams,
+  params?: RentalsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRentalsQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getRentalsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRentals>>> = ({
-    signal,
-  }) => getRentals(params, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof rentalsControllerFindAll>>
+  > = ({ signal }) => rentalsControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRentals>>,
+    Awaited<ReturnType<typeof rentalsControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetRentalsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRentals>>
+export type RentalsControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof rentalsControllerFindAll>>
 >;
-export type GetRentalsQueryError = unknown;
+export type RentalsControllerFindAllQueryError = unknown;
 
-export function useGetRentals<
-  TData = Awaited<ReturnType<typeof getRentals>>,
+export function useRentalsControllerFindAll<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
   TError = unknown,
 >(
-  params: undefined | GetRentalsParams,
+  params: undefined | RentalsControllerFindAllParams,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRentals>>,
+          Awaited<ReturnType<typeof rentalsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getRentals>>
+          Awaited<ReturnType<typeof rentalsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -2443,20 +2709,24 @@ export function useGetRentals<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRentals<
-  TData = Awaited<ReturnType<typeof getRentals>>,
+export function useRentalsControllerFindAll<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetRentalsParams,
+  params?: RentalsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRentals>>,
+          Awaited<ReturnType<typeof rentalsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getRentals>>
+          Awaited<ReturnType<typeof rentalsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -2465,14 +2735,18 @@ export function useGetRentals<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRentals<
-  TData = Awaited<ReturnType<typeof getRentals>>,
+export function useRentalsControllerFindAll<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetRentalsParams,
+  params?: RentalsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -2480,21 +2754,25 @@ export function useGetRentals<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetRentals<
-  TData = Awaited<ReturnType<typeof getRentals>>,
+export function useRentalsControllerFindAll<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetRentalsParams,
+  params?: RentalsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRentals>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetRentalsQueryOptions(params, options);
+  const queryOptions = getRentalsControllerFindAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2504,82 +2782,98 @@ export function useGetRentals<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getRentalResponse200 = {
+export type rentalsControllerFindOneResponse200 = {
   data: Rental;
   status: 200;
 };
 
-export type getRentalResponseSuccess = getRentalResponse200 & {
-  headers: Headers;
-};
-export type getRentalResponse = getRentalResponseSuccess;
+export type rentalsControllerFindOneResponseSuccess =
+  rentalsControllerFindOneResponse200 & {
+    headers: Headers;
+  };
+export type rentalsControllerFindOneResponse =
+  rentalsControllerFindOneResponseSuccess;
 
-export const getGetRentalUrl = (id: string) => {
+export const getRentalsControllerFindOneUrl = (id: string) => {
   return `/api/v1/rentals/${id}`;
 };
 
-export const getRental = async (
+export const rentalsControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getRentalResponse> => {
-  return apiClient<getRentalResponse>(getGetRentalUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<rentalsControllerFindOneResponse> => {
+  return apiClient<rentalsControllerFindOneResponse>(
+    getRentalsControllerFindOneUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetRentalQueryKey = (id: string) => {
+export const getRentalsControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/rentals/${id}`] as const;
 };
 
-export const getGetRentalQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRental>>,
+export const getRentalsControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRental>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRentalQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getRentalsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRental>>> = ({
-    signal,
-  }) => getRental(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof rentalsControllerFindOne>>
+  > = ({ signal }) => rentalsControllerFindOne(id, { signal });
 
   return {
     queryKey,
     queryFn,
     enabled: id !== null && id !== undefined,
     ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getRental>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof rentalsControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetRentalQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRental>>
+export type RentalsControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof rentalsControllerFindOne>>
 >;
-export type GetRentalQueryError = unknown;
+export type RentalsControllerFindOneQueryError = unknown;
 
-export function useGetRental<
-  TData = Awaited<ReturnType<typeof getRental>>,
+export function useRentalsControllerFindOne<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRental>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRental>>,
+          Awaited<ReturnType<typeof rentalsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getRental>>
+          Awaited<ReturnType<typeof rentalsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -2588,20 +2882,24 @@ export function useGetRental<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRental<
-  TData = Awaited<ReturnType<typeof getRental>>,
+export function useRentalsControllerFindOne<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRental>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRental>>,
+          Awaited<ReturnType<typeof rentalsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getRental>>
+          Awaited<ReturnType<typeof rentalsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -2610,14 +2908,18 @@ export function useGetRental<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetRental<
-  TData = Awaited<ReturnType<typeof getRental>>,
+export function useRentalsControllerFindOne<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRental>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -2625,21 +2927,25 @@ export function useGetRental<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetRental<
-  TData = Awaited<ReturnType<typeof getRental>>,
+export function useRentalsControllerFindOne<
+  TData = Awaited<ReturnType<typeof rentalsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRental>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof rentalsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetRentalQueryOptions(id, options);
+  const queryOptions = getRentalsControllerFindOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2649,50 +2955,55 @@ export function useGetRental<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type updateRentalResponse200 = {
+export type rentalsControllerUpdateResponse200 = {
   data: Rental;
   status: 200;
 };
 
-export type updateRentalResponseSuccess = updateRentalResponse200 & {
-  headers: Headers;
-};
-export type updateRentalResponse = updateRentalResponseSuccess;
+export type rentalsControllerUpdateResponseSuccess =
+  rentalsControllerUpdateResponse200 & {
+    headers: Headers;
+  };
+export type rentalsControllerUpdateResponse =
+  rentalsControllerUpdateResponseSuccess;
 
-export const getUpdateRentalUrl = (id: string) => {
+export const getRentalsControllerUpdateUrl = (id: string) => {
   return `/api/v1/rentals/${id}`;
 };
 
-export const updateRental = async (
+export const rentalsControllerUpdate = async (
   id: string,
   updateRentalDto: UpdateRentalDto,
   options?: RequestInit,
-): Promise<updateRentalResponse> => {
-  return apiClient<updateRentalResponse>(getUpdateRentalUrl(id), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateRentalDto),
-  });
+): Promise<rentalsControllerUpdateResponse> => {
+  return apiClient<rentalsControllerUpdateResponse>(
+    getRentalsControllerUpdateUrl(id),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateRentalDto),
+    },
+  );
 };
 
-export const getUpdateRentalMutationOptions = <
+export const getRentalsControllerUpdateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateRental>>,
+    Awaited<ReturnType<typeof rentalsControllerUpdate>>,
     TError,
     { id: string; data: UpdateRentalDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateRental>>,
+  Awaited<ReturnType<typeof rentalsControllerUpdate>>,
   TError,
   { id: string; data: UpdateRentalDto },
   TContext
 > => {
-  const mutationKey = ['updateRental'];
+  const mutationKey = ['rentalsControllerUpdate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -2702,27 +3013,30 @@ export const getUpdateRentalMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateRental>>,
+    Awaited<ReturnType<typeof rentalsControllerUpdate>>,
     { id: string; data: UpdateRentalDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return updateRental(id, data);
+    return rentalsControllerUpdate(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateRentalMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateRental>>
+export type RentalsControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof rentalsControllerUpdate>>
 >;
-export type UpdateRentalMutationBody = UpdateRentalDto;
-export type UpdateRentalMutationError = unknown;
+export type RentalsControllerUpdateMutationBody = UpdateRentalDto;
+export type RentalsControllerUpdateMutationError = unknown;
 
-export const useUpdateRental = <TError = unknown, TContext = unknown>(
+export const useRentalsControllerUpdate = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateRental>>,
+      Awaited<ReturnType<typeof rentalsControllerUpdate>>,
       TError,
       { id: string; data: UpdateRentalDto },
       TContext
@@ -2730,55 +3044,63 @@ export const useUpdateRental = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateRental>>,
+  Awaited<ReturnType<typeof rentalsControllerUpdate>>,
   TError,
   { id: string; data: UpdateRentalDto },
   TContext
 > => {
-  return useMutation(getUpdateRentalMutationOptions(options), queryClient);
+  return useMutation(
+    getRentalsControllerUpdateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type deleteRentalResponse200 = {
+export type rentalsControllerRemoveResponse200 = {
   data: Rental;
   status: 200;
 };
 
-export type deleteRentalResponseSuccess = deleteRentalResponse200 & {
-  headers: Headers;
-};
-export type deleteRentalResponse = deleteRentalResponseSuccess;
+export type rentalsControllerRemoveResponseSuccess =
+  rentalsControllerRemoveResponse200 & {
+    headers: Headers;
+  };
+export type rentalsControllerRemoveResponse =
+  rentalsControllerRemoveResponseSuccess;
 
-export const getDeleteRentalUrl = (id: string) => {
+export const getRentalsControllerRemoveUrl = (id: string) => {
   return `/api/v1/rentals/${id}`;
 };
 
-export const deleteRental = async (
+export const rentalsControllerRemove = async (
   id: string,
   options?: RequestInit,
-): Promise<deleteRentalResponse> => {
-  return apiClient<deleteRentalResponse>(getDeleteRentalUrl(id), {
-    ...options,
-    method: 'DELETE',
-  });
+): Promise<rentalsControllerRemoveResponse> => {
+  return apiClient<rentalsControllerRemoveResponse>(
+    getRentalsControllerRemoveUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
 };
 
-export const getDeleteRentalMutationOptions = <
+export const getRentalsControllerRemoveMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteRental>>,
+    Awaited<ReturnType<typeof rentalsControllerRemove>>,
     TError,
     { id: string },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteRental>>,
+  Awaited<ReturnType<typeof rentalsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ['deleteRental'];
+  const mutationKey = ['rentalsControllerRemove'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -2788,27 +3110,30 @@ export const getDeleteRentalMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteRental>>,
+    Awaited<ReturnType<typeof rentalsControllerRemove>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return deleteRental(id);
+    return rentalsControllerRemove(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteRentalMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteRental>>
+export type RentalsControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof rentalsControllerRemove>>
 >;
 
-export type DeleteRentalMutationError = unknown;
+export type RentalsControllerRemoveMutationError = unknown;
 
-export const useDeleteRental = <TError = unknown, TContext = unknown>(
+export const useRentalsControllerRemove = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteRental>>,
+      Awaited<ReturnType<typeof rentalsControllerRemove>>,
       TError,
       { id: string },
       TContext
@@ -2816,70 +3141,78 @@ export const useDeleteRental = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteRental>>,
+  Awaited<ReturnType<typeof rentalsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  return useMutation(getDeleteRentalMutationOptions(options), queryClient);
+  return useMutation(
+    getRentalsControllerRemoveMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type createBillResponse201 = {
+export type billsControllerCreateResponse201 = {
   data: Bill;
   status: 201;
 };
 
-export type createBillResponse403 = {
+export type billsControllerCreateResponse403 = {
   data: void;
   status: 403;
 };
 
-export type createBillResponseSuccess = createBillResponse201 & {
-  headers: Headers;
-};
-export type createBillResponseError = createBillResponse403 & {
-  headers: Headers;
-};
+export type billsControllerCreateResponseSuccess =
+  billsControllerCreateResponse201 & {
+    headers: Headers;
+  };
+export type billsControllerCreateResponseError =
+  billsControllerCreateResponse403 & {
+    headers: Headers;
+  };
 
-export type createBillResponse =
-  createBillResponseSuccess | createBillResponseError;
+export type billsControllerCreateResponse =
+  billsControllerCreateResponseSuccess | billsControllerCreateResponseError;
 
-export const getCreateBillUrl = () => {
+export const getBillsControllerCreateUrl = () => {
   return `/api/v1/bills`;
 };
 
 /**
  * @summary Create a new bill
  */
-export const createBill = async (
+export const billsControllerCreate = async (
   createBillDto: CreateBillDto,
   options?: RequestInit,
-): Promise<createBillResponse> => {
-  return apiClient<createBillResponse>(getCreateBillUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createBillDto),
-  });
+): Promise<billsControllerCreateResponse> => {
+  return apiClient<billsControllerCreateResponse>(
+    getBillsControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createBillDto),
+    },
+  );
 };
 
-export const getCreateBillMutationOptions = <
+export const getBillsControllerCreateMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createBill>>,
+    Awaited<ReturnType<typeof billsControllerCreate>>,
     TError,
     { data: CreateBillDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createBill>>,
+  Awaited<ReturnType<typeof billsControllerCreate>>,
   TError,
   { data: CreateBillDto },
   TContext
 > => {
-  const mutationKey = ['createBill'];
+  const mutationKey = ['billsControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -2889,30 +3222,30 @@ export const getCreateBillMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createBill>>,
+    Awaited<ReturnType<typeof billsControllerCreate>>,
     { data: CreateBillDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createBill(data);
+    return billsControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateBillMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createBill>>
+export type BillsControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof billsControllerCreate>>
 >;
-export type CreateBillMutationBody = CreateBillDto;
-export type CreateBillMutationError = void;
+export type BillsControllerCreateMutationBody = CreateBillDto;
+export type BillsControllerCreateMutationError = void;
 
 /**
  * @summary Create a new bill
  */
-export const useCreateBill = <TError = void, TContext = unknown>(
+export const useBillsControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createBill>>,
+      Awaited<ReturnType<typeof billsControllerCreate>>,
       TError,
       { data: CreateBillDto },
       TContext
@@ -2920,25 +3253,32 @@ export const useCreateBill = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createBill>>,
+  Awaited<ReturnType<typeof billsControllerCreate>>,
   TError,
   { data: CreateBillDto },
   TContext
 > => {
-  return useMutation(getCreateBillMutationOptions(options), queryClient);
+  return useMutation(
+    getBillsControllerCreateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getBillsResponse200 = {
+export type billsControllerFindAllResponse200 = {
   data: Bill[];
   status: 200;
 };
 
-export type getBillsResponseSuccess = getBillsResponse200 & {
-  headers: Headers;
-};
-export type getBillsResponse = getBillsResponseSuccess;
+export type billsControllerFindAllResponseSuccess =
+  billsControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type billsControllerFindAllResponse =
+  billsControllerFindAllResponseSuccess;
 
-export const getGetBillsUrl = (params?: GetBillsParams) => {
+export const getBillsControllerFindAllUrl = (
+  params?: BillsControllerFindAllParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -2957,65 +3297,79 @@ export const getGetBillsUrl = (params?: GetBillsParams) => {
 /**
  * @summary Get all bills
  */
-export const getBills = async (
-  params?: GetBillsParams,
+export const billsControllerFindAll = async (
+  params?: BillsControllerFindAllParams,
   options?: RequestInit,
-): Promise<getBillsResponse> => {
-  return apiClient<getBillsResponse>(getGetBillsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<billsControllerFindAllResponse> => {
+  return apiClient<billsControllerFindAllResponse>(
+    getBillsControllerFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetBillsQueryKey = (params?: GetBillsParams) => {
+export const getBillsControllerFindAllQueryKey = (
+  params?: BillsControllerFindAllParams,
+) => {
   return [`/api/v1/bills`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetBillsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getBills>>,
+export const getBillsControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetBillsParams,
+  params?: BillsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetBillsQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getBillsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBills>>> = ({
-    signal,
-  }) => getBills(params, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof billsControllerFindAll>>
+  > = ({ signal }) => billsControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getBills>>,
+    Awaited<ReturnType<typeof billsControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetBillsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getBills>>
+export type BillsControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof billsControllerFindAll>>
 >;
-export type GetBillsQueryError = unknown;
+export type BillsControllerFindAllQueryError = unknown;
 
-export function useGetBills<
-  TData = Awaited<ReturnType<typeof getBills>>,
+export function useBillsControllerFindAll<
+  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
   TError = unknown,
 >(
-  params: undefined | GetBillsParams,
+  params: undefined | BillsControllerFindAllParams,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBills>>,
+          Awaited<ReturnType<typeof billsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getBills>>
+          Awaited<ReturnType<typeof billsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -3024,20 +3378,24 @@ export function useGetBills<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBills<
-  TData = Awaited<ReturnType<typeof getBills>>,
+export function useBillsControllerFindAll<
+  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetBillsParams,
+  params?: BillsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBills>>,
+          Awaited<ReturnType<typeof billsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getBills>>
+          Awaited<ReturnType<typeof billsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -3046,14 +3404,18 @@ export function useGetBills<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBills<
-  TData = Awaited<ReturnType<typeof getBills>>,
+export function useBillsControllerFindAll<
+  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetBillsParams,
+  params?: BillsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -3064,21 +3426,25 @@ export function useGetBills<
  * @summary Get all bills
  */
 
-export function useGetBills<
-  TData = Awaited<ReturnType<typeof getBills>>,
+export function useBillsControllerFindAll<
+  TData = Awaited<ReturnType<typeof billsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetBillsParams,
+  params?: BillsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBills>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetBillsQueryOptions(params, options);
+  const queryOptions = getBillsControllerFindAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -3088,94 +3454,111 @@ export function useGetBills<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getBillResponse200 = {
+export type billsControllerFindOneResponse200 = {
   data: Bill;
   status: 200;
 };
 
-export type getBillResponse404 = {
+export type billsControllerFindOneResponse404 = {
   data: void;
   status: 404;
 };
 
-export type getBillResponseSuccess = getBillResponse200 & {
-  headers: Headers;
-};
-export type getBillResponseError = getBillResponse404 & {
-  headers: Headers;
-};
+export type billsControllerFindOneResponseSuccess =
+  billsControllerFindOneResponse200 & {
+    headers: Headers;
+  };
+export type billsControllerFindOneResponseError =
+  billsControllerFindOneResponse404 & {
+    headers: Headers;
+  };
 
-export type getBillResponse = getBillResponseSuccess | getBillResponseError;
+export type billsControllerFindOneResponse =
+  billsControllerFindOneResponseSuccess | billsControllerFindOneResponseError;
 
-export const getGetBillUrl = (id: string) => {
+export const getBillsControllerFindOneUrl = (id: string) => {
   return `/api/v1/bills/${id}`;
 };
 
 /**
  * @summary Get a bill by ID
  */
-export const getBill = async (
+export const billsControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getBillResponse> => {
-  return apiClient<getBillResponse>(getGetBillUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<billsControllerFindOneResponse> => {
+  return apiClient<billsControllerFindOneResponse>(
+    getBillsControllerFindOneUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetBillQueryKey = (id: string) => {
+export const getBillsControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/bills/${id}`] as const;
 };
 
-export const getGetBillQueryOptions = <
-  TData = Awaited<ReturnType<typeof getBill>>,
+export const getBillsControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBill>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetBillQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getBillsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBill>>> = ({
-    signal,
-  }) => getBill(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof billsControllerFindOne>>
+  > = ({ signal }) => billsControllerFindOne(id, { signal });
 
   return {
     queryKey,
     queryFn,
     enabled: id !== null && id !== undefined,
     ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getBill>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof billsControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetBillQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getBill>>
+export type BillsControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof billsControllerFindOne>>
 >;
-export type GetBillQueryError = void;
+export type BillsControllerFindOneQueryError = void;
 
-export function useGetBill<
-  TData = Awaited<ReturnType<typeof getBill>>,
+export function useBillsControllerFindOne<
+  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBill>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBill>>,
+          Awaited<ReturnType<typeof billsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getBill>>
+          Awaited<ReturnType<typeof billsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -3184,20 +3567,24 @@ export function useGetBill<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBill<
-  TData = Awaited<ReturnType<typeof getBill>>,
+export function useBillsControllerFindOne<
+  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBill>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getBill>>,
+          Awaited<ReturnType<typeof billsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getBill>>
+          Awaited<ReturnType<typeof billsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -3206,14 +3593,18 @@ export function useGetBill<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBill<
-  TData = Awaited<ReturnType<typeof getBill>>,
+export function useBillsControllerFindOne<
+  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBill>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -3224,21 +3615,25 @@ export function useGetBill<
  * @summary Get a bill by ID
  */
 
-export function useGetBill<
-  TData = Awaited<ReturnType<typeof getBill>>,
+export function useBillsControllerFindOne<
+  TData = Awaited<ReturnType<typeof billsControllerFindOne>>,
   TError = void,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getBill>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof billsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetBillQueryOptions(id, options);
+  const queryOptions = getBillsControllerFindOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -3248,70 +3643,74 @@ export function useGetBill<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type updateBillResponse200 = {
+export type billsControllerUpdateResponse200 = {
   data: Bill;
   status: 200;
 };
 
-export type updateBillResponse403 = {
+export type billsControllerUpdateResponse403 = {
   data: void;
   status: 403;
 };
 
-export type updateBillResponse404 = {
+export type billsControllerUpdateResponse404 = {
   data: void;
   status: 404;
 };
 
-export type updateBillResponseSuccess = updateBillResponse200 & {
-  headers: Headers;
-};
-export type updateBillResponseError = (
-  updateBillResponse403 | updateBillResponse404
+export type billsControllerUpdateResponseSuccess =
+  billsControllerUpdateResponse200 & {
+    headers: Headers;
+  };
+export type billsControllerUpdateResponseError = (
+  billsControllerUpdateResponse403 | billsControllerUpdateResponse404
 ) & {
   headers: Headers;
 };
 
-export type updateBillResponse =
-  updateBillResponseSuccess | updateBillResponseError;
+export type billsControllerUpdateResponse =
+  billsControllerUpdateResponseSuccess | billsControllerUpdateResponseError;
 
-export const getUpdateBillUrl = (id: string) => {
+export const getBillsControllerUpdateUrl = (id: string) => {
   return `/api/v1/bills/${id}`;
 };
 
 /**
  * @summary Update a bill
  */
-export const updateBill = async (
+export const billsControllerUpdate = async (
   id: string,
   updateBillDto: UpdateBillDto,
   options?: RequestInit,
-): Promise<updateBillResponse> => {
-  return apiClient<updateBillResponse>(getUpdateBillUrl(id), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateBillDto),
-  });
+): Promise<billsControllerUpdateResponse> => {
+  return apiClient<billsControllerUpdateResponse>(
+    getBillsControllerUpdateUrl(id),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateBillDto),
+    },
+  );
 };
 
-export const getUpdateBillMutationOptions = <
+export const getBillsControllerUpdateMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateBill>>,
+    Awaited<ReturnType<typeof billsControllerUpdate>>,
     TError,
     { id: string; data: UpdateBillDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateBill>>,
+  Awaited<ReturnType<typeof billsControllerUpdate>>,
   TError,
   { id: string; data: UpdateBillDto },
   TContext
 > => {
-  const mutationKey = ['updateBill'];
+  const mutationKey = ['billsControllerUpdate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -3321,30 +3720,30 @@ export const getUpdateBillMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateBill>>,
+    Awaited<ReturnType<typeof billsControllerUpdate>>,
     { id: string; data: UpdateBillDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return updateBill(id, data);
+    return billsControllerUpdate(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateBillMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateBill>>
+export type BillsControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof billsControllerUpdate>>
 >;
-export type UpdateBillMutationBody = UpdateBillDto;
-export type UpdateBillMutationError = void;
+export type BillsControllerUpdateMutationBody = UpdateBillDto;
+export type BillsControllerUpdateMutationError = void;
 
 /**
  * @summary Update a bill
  */
-export const useUpdateBill = <TError = void, TContext = unknown>(
+export const useBillsControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateBill>>,
+      Awaited<ReturnType<typeof billsControllerUpdate>>,
       TError,
       { id: string; data: UpdateBillDto },
       TContext
@@ -3352,75 +3751,82 @@ export const useUpdateBill = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateBill>>,
+  Awaited<ReturnType<typeof billsControllerUpdate>>,
   TError,
   { id: string; data: UpdateBillDto },
   TContext
 > => {
-  return useMutation(getUpdateBillMutationOptions(options), queryClient);
+  return useMutation(
+    getBillsControllerUpdateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type deleteBillResponse200 = {
+export type billsControllerRemoveResponse200 = {
   data: void;
   status: 200;
 };
 
-export type deleteBillResponse403 = {
+export type billsControllerRemoveResponse403 = {
   data: void;
   status: 403;
 };
 
-export type deleteBillResponse404 = {
+export type billsControllerRemoveResponse404 = {
   data: void;
   status: 404;
 };
 
-export type deleteBillResponseSuccess = deleteBillResponse200 & {
-  headers: Headers;
-};
-export type deleteBillResponseError = (
-  deleteBillResponse403 | deleteBillResponse404
+export type billsControllerRemoveResponseSuccess =
+  billsControllerRemoveResponse200 & {
+    headers: Headers;
+  };
+export type billsControllerRemoveResponseError = (
+  billsControllerRemoveResponse403 | billsControllerRemoveResponse404
 ) & {
   headers: Headers;
 };
 
-export type deleteBillResponse =
-  deleteBillResponseSuccess | deleteBillResponseError;
+export type billsControllerRemoveResponse =
+  billsControllerRemoveResponseSuccess | billsControllerRemoveResponseError;
 
-export const getDeleteBillUrl = (id: string) => {
+export const getBillsControllerRemoveUrl = (id: string) => {
   return `/api/v1/bills/${id}`;
 };
 
 /**
  * @summary Delete a bill
  */
-export const deleteBill = async (
+export const billsControllerRemove = async (
   id: string,
   options?: RequestInit,
-): Promise<deleteBillResponse> => {
-  return apiClient<deleteBillResponse>(getDeleteBillUrl(id), {
-    ...options,
-    method: 'DELETE',
-  });
+): Promise<billsControllerRemoveResponse> => {
+  return apiClient<billsControllerRemoveResponse>(
+    getBillsControllerRemoveUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
 };
 
-export const getDeleteBillMutationOptions = <
+export const getBillsControllerRemoveMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteBill>>,
+    Awaited<ReturnType<typeof billsControllerRemove>>,
     TError,
     { id: string },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteBill>>,
+  Awaited<ReturnType<typeof billsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ['deleteBill'];
+  const mutationKey = ['billsControllerRemove'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -3430,30 +3836,30 @@ export const getDeleteBillMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteBill>>,
+    Awaited<ReturnType<typeof billsControllerRemove>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return deleteBill(id);
+    return billsControllerRemove(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteBillMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteBill>>
+export type BillsControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof billsControllerRemove>>
 >;
 
-export type DeleteBillMutationError = void;
+export type BillsControllerRemoveMutationError = void;
 
 /**
  * @summary Delete a bill
  */
-export const useDeleteBill = <TError = void, TContext = unknown>(
+export const useBillsControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteBill>>,
+      Awaited<ReturnType<typeof billsControllerRemove>>,
       TError,
       { id: string },
       TContext
@@ -3461,79 +3867,87 @@ export const useDeleteBill = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteBill>>,
+  Awaited<ReturnType<typeof billsControllerRemove>>,
   TError,
   { id: string },
   TContext
 > => {
-  return useMutation(getDeleteBillMutationOptions(options), queryClient);
+  return useMutation(
+    getBillsControllerRemoveMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type confirmBillPaymentResponse200 = {
+export type billsControllerConfirmPaymentResponse200 = {
   data: Bill;
   status: 200;
 };
 
-export type confirmBillPaymentResponse403 = {
+export type billsControllerConfirmPaymentResponse403 = {
   data: void;
   status: 403;
 };
 
-export type confirmBillPaymentResponse404 = {
+export type billsControllerConfirmPaymentResponse404 = {
   data: void;
   status: 404;
 };
 
-export type confirmBillPaymentResponseSuccess =
-  confirmBillPaymentResponse200 & {
+export type billsControllerConfirmPaymentResponseSuccess =
+  billsControllerConfirmPaymentResponse200 & {
     headers: Headers;
   };
-export type confirmBillPaymentResponseError = (
-  confirmBillPaymentResponse403 | confirmBillPaymentResponse404
+export type billsControllerConfirmPaymentResponseError = (
+  | billsControllerConfirmPaymentResponse403
+  | billsControllerConfirmPaymentResponse404
 ) & {
   headers: Headers;
 };
 
-export type confirmBillPaymentResponse =
-  confirmBillPaymentResponseSuccess | confirmBillPaymentResponseError;
+export type billsControllerConfirmPaymentResponse =
+  | billsControllerConfirmPaymentResponseSuccess
+  | billsControllerConfirmPaymentResponseError;
 
-export const getConfirmBillPaymentUrl = (id: string) => {
+export const getBillsControllerConfirmPaymentUrl = (id: string) => {
   return `/api/v1/bills/${id}/confirm`;
 };
 
 /**
  * @summary Confirm payment for a bill
  */
-export const confirmBillPayment = async (
+export const billsControllerConfirmPayment = async (
   id: string,
   confirmPaymentDto: ConfirmPaymentDto,
   options?: RequestInit,
-): Promise<confirmBillPaymentResponse> => {
-  return apiClient<confirmBillPaymentResponse>(getConfirmBillPaymentUrl(id), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(confirmPaymentDto),
-  });
+): Promise<billsControllerConfirmPaymentResponse> => {
+  return apiClient<billsControllerConfirmPaymentResponse>(
+    getBillsControllerConfirmPaymentUrl(id),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(confirmPaymentDto),
+    },
+  );
 };
 
-export const getConfirmBillPaymentMutationOptions = <
+export const getBillsControllerConfirmPaymentMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof confirmBillPayment>>,
+    Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
     TError,
     { id: string; data: ConfirmPaymentDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof confirmBillPayment>>,
+  Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
   TError,
   { id: string; data: ConfirmPaymentDto },
   TContext
 > => {
-  const mutationKey = ['confirmBillPayment'];
+  const mutationKey = ['billsControllerConfirmPayment'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -3543,30 +3957,33 @@ export const getConfirmBillPaymentMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof confirmBillPayment>>,
+    Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
     { id: string; data: ConfirmPaymentDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return confirmBillPayment(id, data);
+    return billsControllerConfirmPayment(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type ConfirmBillPaymentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof confirmBillPayment>>
+export type BillsControllerConfirmPaymentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof billsControllerConfirmPayment>>
 >;
-export type ConfirmBillPaymentMutationBody = ConfirmPaymentDto;
-export type ConfirmBillPaymentMutationError = void;
+export type BillsControllerConfirmPaymentMutationBody = ConfirmPaymentDto;
+export type BillsControllerConfirmPaymentMutationError = void;
 
 /**
  * @summary Confirm payment for a bill
  */
-export const useConfirmBillPayment = <TError = void, TContext = unknown>(
+export const useBillsControllerConfirmPayment = <
+  TError = void,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof confirmBillPayment>>,
+      Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
       TError,
       { id: string; data: ConfirmPaymentDto },
       TContext
@@ -3574,60 +3991,65 @@ export const useConfirmBillPayment = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof confirmBillPayment>>,
+  Awaited<ReturnType<typeof billsControllerConfirmPayment>>,
   TError,
   { id: string; data: ConfirmPaymentDto },
   TContext
 > => {
   return useMutation(
-    getConfirmBillPaymentMutationOptions(options),
+    getBillsControllerConfirmPaymentMutationOptions(options),
     queryClient,
   );
 };
 
-export type createPaymentResponse201 = {
+export type paymentsControllerCreateResponse201 = {
   data: Payment;
   status: 201;
 };
 
-export type createPaymentResponseSuccess = createPaymentResponse201 & {
-  headers: Headers;
-};
-export type createPaymentResponse = createPaymentResponseSuccess;
+export type paymentsControllerCreateResponseSuccess =
+  paymentsControllerCreateResponse201 & {
+    headers: Headers;
+  };
+export type paymentsControllerCreateResponse =
+  paymentsControllerCreateResponseSuccess;
 
-export const getCreatePaymentUrl = () => {
+export const getPaymentsControllerCreateUrl = () => {
   return `/api/v1/payments`;
 };
 
-export const createPayment = async (
+export const paymentsControllerCreate = async (
   createPaymentDto: CreatePaymentDto,
   options?: RequestInit,
-): Promise<createPaymentResponse> => {
-  return apiClient<createPaymentResponse>(getCreatePaymentUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createPaymentDto),
-  });
+): Promise<paymentsControllerCreateResponse> => {
+  return apiClient<paymentsControllerCreateResponse>(
+    getPaymentsControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createPaymentDto),
+    },
+  );
 };
 
-export const getCreatePaymentMutationOptions = <
+export const getPaymentsControllerCreateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createPayment>>,
+    Awaited<ReturnType<typeof paymentsControllerCreate>>,
     TError,
     { data: CreatePaymentDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createPayment>>,
+  Awaited<ReturnType<typeof paymentsControllerCreate>>,
   TError,
   { data: CreatePaymentDto },
   TContext
 > => {
-  const mutationKey = ['createPayment'];
+  const mutationKey = ['paymentsControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -3637,27 +4059,30 @@ export const getCreatePaymentMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createPayment>>,
+    Awaited<ReturnType<typeof paymentsControllerCreate>>,
     { data: CreatePaymentDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createPayment(data);
+    return paymentsControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreatePaymentMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createPayment>>
+export type PaymentsControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof paymentsControllerCreate>>
 >;
-export type CreatePaymentMutationBody = CreatePaymentDto;
-export type CreatePaymentMutationError = unknown;
+export type PaymentsControllerCreateMutationBody = CreatePaymentDto;
+export type PaymentsControllerCreateMutationError = unknown;
 
-export const useCreatePayment = <TError = unknown, TContext = unknown>(
+export const usePaymentsControllerCreate = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createPayment>>,
+      Awaited<ReturnType<typeof paymentsControllerCreate>>,
       TError,
       { data: CreatePaymentDto },
       TContext
@@ -3665,25 +4090,32 @@ export const useCreatePayment = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createPayment>>,
+  Awaited<ReturnType<typeof paymentsControllerCreate>>,
   TError,
   { data: CreatePaymentDto },
   TContext
 > => {
-  return useMutation(getCreatePaymentMutationOptions(options), queryClient);
+  return useMutation(
+    getPaymentsControllerCreateMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getPaymentsResponse200 = {
+export type paymentsControllerFindAllResponse200 = {
   data: Payment[];
   status: 200;
 };
 
-export type getPaymentsResponseSuccess = getPaymentsResponse200 & {
-  headers: Headers;
-};
-export type getPaymentsResponse = getPaymentsResponseSuccess;
+export type paymentsControllerFindAllResponseSuccess =
+  paymentsControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type paymentsControllerFindAllResponse =
+  paymentsControllerFindAllResponseSuccess;
 
-export const getGetPaymentsUrl = (params?: GetPaymentsParams) => {
+export const getPaymentsControllerFindAllUrl = (
+  params?: PaymentsControllerFindAllParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -3699,65 +4131,79 @@ export const getGetPaymentsUrl = (params?: GetPaymentsParams) => {
     : `/api/v1/payments`;
 };
 
-export const getPayments = async (
-  params?: GetPaymentsParams,
+export const paymentsControllerFindAll = async (
+  params?: PaymentsControllerFindAllParams,
   options?: RequestInit,
-): Promise<getPaymentsResponse> => {
-  return apiClient<getPaymentsResponse>(getGetPaymentsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<paymentsControllerFindAllResponse> => {
+  return apiClient<paymentsControllerFindAllResponse>(
+    getPaymentsControllerFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetPaymentsQueryKey = (params?: GetPaymentsParams) => {
+export const getPaymentsControllerFindAllQueryKey = (
+  params?: PaymentsControllerFindAllParams,
+) => {
   return [`/api/v1/payments`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetPaymentsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getPayments>>,
+export const getPaymentsControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetPaymentsParams,
+  params?: PaymentsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetPaymentsQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getPaymentsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPayments>>> = ({
-    signal,
-  }) => getPayments(params, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof paymentsControllerFindAll>>
+  > = ({ signal }) => paymentsControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getPayments>>,
+    Awaited<ReturnType<typeof paymentsControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetPaymentsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getPayments>>
+export type PaymentsControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof paymentsControllerFindAll>>
 >;
-export type GetPaymentsQueryError = unknown;
+export type PaymentsControllerFindAllQueryError = unknown;
 
-export function useGetPayments<
-  TData = Awaited<ReturnType<typeof getPayments>>,
+export function usePaymentsControllerFindAll<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
   TError = unknown,
 >(
-  params: undefined | GetPaymentsParams,
+  params: undefined | PaymentsControllerFindAllParams,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPayments>>,
+          Awaited<ReturnType<typeof paymentsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getPayments>>
+          Awaited<ReturnType<typeof paymentsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -3766,20 +4212,24 @@ export function useGetPayments<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetPayments<
-  TData = Awaited<ReturnType<typeof getPayments>>,
+export function usePaymentsControllerFindAll<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetPaymentsParams,
+  params?: PaymentsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPayments>>,
+          Awaited<ReturnType<typeof paymentsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getPayments>>
+          Awaited<ReturnType<typeof paymentsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -3788,14 +4238,18 @@ export function useGetPayments<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetPayments<
-  TData = Awaited<ReturnType<typeof getPayments>>,
+export function usePaymentsControllerFindAll<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetPaymentsParams,
+  params?: PaymentsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -3803,21 +4257,28 @@ export function useGetPayments<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetPayments<
-  TData = Awaited<ReturnType<typeof getPayments>>,
+export function usePaymentsControllerFindAll<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetPaymentsParams,
+  params?: PaymentsControllerFindAllParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetPaymentsQueryOptions(params, options);
+  const queryOptions = getPaymentsControllerFindAllQueryOptions(
+    params,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -3827,52 +4288,62 @@ export function useGetPayments<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getPaymentResponse200 = {
+export type paymentsControllerFindOneResponse200 = {
   data: Payment;
   status: 200;
 };
 
-export type getPaymentResponseSuccess = getPaymentResponse200 & {
-  headers: Headers;
-};
-export type getPaymentResponse = getPaymentResponseSuccess;
+export type paymentsControllerFindOneResponseSuccess =
+  paymentsControllerFindOneResponse200 & {
+    headers: Headers;
+  };
+export type paymentsControllerFindOneResponse =
+  paymentsControllerFindOneResponseSuccess;
 
-export const getGetPaymentUrl = (id: string) => {
+export const getPaymentsControllerFindOneUrl = (id: string) => {
   return `/api/v1/payments/${id}`;
 };
 
-export const getPayment = async (
+export const paymentsControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getPaymentResponse> => {
-  return apiClient<getPaymentResponse>(getGetPaymentUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<paymentsControllerFindOneResponse> => {
+  return apiClient<paymentsControllerFindOneResponse>(
+    getPaymentsControllerFindOneUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetPaymentQueryKey = (id: string) => {
+export const getPaymentsControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/payments/${id}`] as const;
 };
 
-export const getGetPaymentQueryOptions = <
-  TData = Awaited<ReturnType<typeof getPayment>>,
+export const getPaymentsControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayment>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetPaymentQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getPaymentsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPayment>>> = ({
-    signal,
-  }) => getPayment(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof paymentsControllerFindOne>>
+  > = ({ signal }) => paymentsControllerFindOne(id, { signal });
 
   return {
     queryKey,
@@ -3880,31 +4351,35 @@ export const getGetPaymentQueryOptions = <
     enabled: id !== null && id !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getPayment>>,
+    Awaited<ReturnType<typeof paymentsControllerFindOne>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetPaymentQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getPayment>>
+export type PaymentsControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof paymentsControllerFindOne>>
 >;
-export type GetPaymentQueryError = unknown;
+export type PaymentsControllerFindOneQueryError = unknown;
 
-export function useGetPayment<
-  TData = Awaited<ReturnType<typeof getPayment>>,
+export function usePaymentsControllerFindOne<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayment>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPayment>>,
+          Awaited<ReturnType<typeof paymentsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getPayment>>
+          Awaited<ReturnType<typeof paymentsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -3913,20 +4388,24 @@ export function useGetPayment<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetPayment<
-  TData = Awaited<ReturnType<typeof getPayment>>,
+export function usePaymentsControllerFindOne<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayment>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPayment>>,
+          Awaited<ReturnType<typeof paymentsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getPayment>>
+          Awaited<ReturnType<typeof paymentsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -3935,14 +4414,18 @@ export function useGetPayment<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetPayment<
-  TData = Awaited<ReturnType<typeof getPayment>>,
+export function usePaymentsControllerFindOne<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayment>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -3950,21 +4433,25 @@ export function useGetPayment<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetPayment<
-  TData = Awaited<ReturnType<typeof getPayment>>,
+export function usePaymentsControllerFindOne<
+  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getPayment>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetPaymentQueryOptions(id, options);
+  const queryOptions = getPaymentsControllerFindOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -3974,28 +4461,28 @@ export function useGetPayment<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type createMaintenanceRequestResponse201 = {
+export type maintenanceControllerCreateResponse201 = {
   data: MaintenanceRequest;
   status: 201;
 };
 
-export type createMaintenanceRequestResponseSuccess =
-  createMaintenanceRequestResponse201 & {
+export type maintenanceControllerCreateResponseSuccess =
+  maintenanceControllerCreateResponse201 & {
     headers: Headers;
   };
-export type createMaintenanceRequestResponse =
-  createMaintenanceRequestResponseSuccess;
+export type maintenanceControllerCreateResponse =
+  maintenanceControllerCreateResponseSuccess;
 
-export const getCreateMaintenanceRequestUrl = () => {
+export const getMaintenanceControllerCreateUrl = () => {
   return `/api/v1/maintenance`;
 };
 
-export const createMaintenanceRequest = async (
+export const maintenanceControllerCreate = async (
   createMaintenanceDto: CreateMaintenanceDto,
   options?: RequestInit,
-): Promise<createMaintenanceRequestResponse> => {
-  return apiClient<createMaintenanceRequestResponse>(
-    getCreateMaintenanceRequestUrl(),
+): Promise<maintenanceControllerCreateResponse> => {
+  return apiClient<maintenanceControllerCreateResponse>(
+    getMaintenanceControllerCreateUrl(),
     {
       ...options,
       method: 'POST',
@@ -4005,23 +4492,23 @@ export const createMaintenanceRequest = async (
   );
 };
 
-export const getCreateMaintenanceRequestMutationOptions = <
+export const getMaintenanceControllerCreateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerCreate>>,
     TError,
     { data: CreateMaintenanceDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createMaintenanceRequest>>,
+  Awaited<ReturnType<typeof maintenanceControllerCreate>>,
   TError,
   { data: CreateMaintenanceDto },
   TContext
 > => {
-  const mutationKey = ['createMaintenanceRequest'];
+  const mutationKey = ['maintenanceControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -4031,30 +4518,30 @@ export const getCreateMaintenanceRequestMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerCreate>>,
     { data: CreateMaintenanceDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createMaintenanceRequest(data);
+    return maintenanceControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateMaintenanceRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createMaintenanceRequest>>
+export type MaintenanceControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof maintenanceControllerCreate>>
 >;
-export type CreateMaintenanceRequestMutationBody = CreateMaintenanceDto;
-export type CreateMaintenanceRequestMutationError = unknown;
+export type MaintenanceControllerCreateMutationBody = CreateMaintenanceDto;
+export type MaintenanceControllerCreateMutationError = unknown;
 
-export const useCreateMaintenanceRequest = <
+export const useMaintenanceControllerCreate = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createMaintenanceRequest>>,
+      Awaited<ReturnType<typeof maintenanceControllerCreate>>,
       TError,
       { data: CreateMaintenanceDto },
       TContext
@@ -4062,31 +4549,31 @@ export const useCreateMaintenanceRequest = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createMaintenanceRequest>>,
+  Awaited<ReturnType<typeof maintenanceControllerCreate>>,
   TError,
   { data: CreateMaintenanceDto },
   TContext
 > => {
   return useMutation(
-    getCreateMaintenanceRequestMutationOptions(options),
+    getMaintenanceControllerCreateMutationOptions(options),
     queryClient,
   );
 };
 
-export type getMaintenanceRequestsResponse200 = {
+export type maintenanceControllerFindAllResponse200 = {
   data: MaintenanceRequest[];
   status: 200;
 };
 
-export type getMaintenanceRequestsResponseSuccess =
-  getMaintenanceRequestsResponse200 & {
+export type maintenanceControllerFindAllResponseSuccess =
+  maintenanceControllerFindAllResponse200 & {
     headers: Headers;
   };
-export type getMaintenanceRequestsResponse =
-  getMaintenanceRequestsResponseSuccess;
+export type maintenanceControllerFindAllResponse =
+  maintenanceControllerFindAllResponseSuccess;
 
-export const getGetMaintenanceRequestsUrl = (
-  params?: GetMaintenanceRequestsParams,
+export const getMaintenanceControllerFindAllUrl = (
+  params?: MaintenanceControllerFindAllParams,
 ) => {
   const normalizedParams = new URLSearchParams();
 
@@ -4103,12 +4590,12 @@ export const getGetMaintenanceRequestsUrl = (
     : `/api/v1/maintenance`;
 };
 
-export const getMaintenanceRequests = async (
-  params?: GetMaintenanceRequestsParams,
+export const maintenanceControllerFindAll = async (
+  params?: MaintenanceControllerFindAllParams,
   options?: RequestInit,
-): Promise<getMaintenanceRequestsResponse> => {
-  return apiClient<getMaintenanceRequestsResponse>(
-    getGetMaintenanceRequestsUrl(params),
+): Promise<maintenanceControllerFindAllResponse> => {
+  return apiClient<maintenanceControllerFindAllResponse>(
+    getMaintenanceControllerFindAllUrl(params),
     {
       ...options,
       method: 'GET',
@@ -4116,21 +4603,21 @@ export const getMaintenanceRequests = async (
   );
 };
 
-export const getGetMaintenanceRequestsQueryKey = (
-  params?: GetMaintenanceRequestsParams,
+export const getMaintenanceControllerFindAllQueryKey = (
+  params?: MaintenanceControllerFindAllParams,
 ) => {
   return [`/api/v1/maintenance`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetMaintenanceRequestsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
+export const getMaintenanceControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetMaintenanceRequestsParams,
+  params?: MaintenanceControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequests>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
         TError,
         TData
       >
@@ -4140,42 +4627,42 @@ export const getGetMaintenanceRequestsQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetMaintenanceRequestsQueryKey(params);
+    queryOptions?.queryKey ?? getMaintenanceControllerFindAllQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getMaintenanceRequests>>
-  > = ({ signal }) => getMaintenanceRequests(params, { signal });
+    Awaited<ReturnType<typeof maintenanceControllerFindAll>>
+  > = ({ signal }) => maintenanceControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getMaintenanceRequests>>,
+    Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetMaintenanceRequestsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getMaintenanceRequests>>
+export type MaintenanceControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof maintenanceControllerFindAll>>
 >;
-export type GetMaintenanceRequestsQueryError = unknown;
+export type MaintenanceControllerFindAllQueryError = unknown;
 
-export function useGetMaintenanceRequests<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
+export function useMaintenanceControllerFindAll<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
   TError = unknown,
 >(
-  params: undefined | GetMaintenanceRequestsParams,
+  params: undefined | MaintenanceControllerFindAllParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequests>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMaintenanceRequests>>,
+          Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getMaintenanceRequests>>
+          Awaited<ReturnType<typeof maintenanceControllerFindAll>>
         >,
         'initialData'
       >;
@@ -4184,24 +4671,24 @@ export function useGetMaintenanceRequests<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetMaintenanceRequests<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
+export function useMaintenanceControllerFindAll<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetMaintenanceRequestsParams,
+  params?: MaintenanceControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequests>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMaintenanceRequests>>,
+          Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getMaintenanceRequests>>
+          Awaited<ReturnType<typeof maintenanceControllerFindAll>>
         >,
         'initialData'
       >;
@@ -4210,15 +4697,15 @@ export function useGetMaintenanceRequests<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetMaintenanceRequests<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
+export function useMaintenanceControllerFindAll<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetMaintenanceRequestsParams,
+  params?: MaintenanceControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequests>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
         TError,
         TData
       >
@@ -4229,15 +4716,15 @@ export function useGetMaintenanceRequests<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetMaintenanceRequests<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequests>>,
+export function useMaintenanceControllerFindAll<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetMaintenanceRequestsParams,
+  params?: MaintenanceControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequests>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindAll>>,
         TError,
         TData
       >
@@ -4247,7 +4734,10 @@ export function useGetMaintenanceRequests<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetMaintenanceRequestsQueryOptions(params, options);
+  const queryOptions = getMaintenanceControllerFindAllQueryOptions(
+    params,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -4257,28 +4747,28 @@ export function useGetMaintenanceRequests<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getMaintenanceRequestResponse200 = {
+export type maintenanceControllerFindOneResponse200 = {
   data: MaintenanceRequest;
   status: 200;
 };
 
-export type getMaintenanceRequestResponseSuccess =
-  getMaintenanceRequestResponse200 & {
+export type maintenanceControllerFindOneResponseSuccess =
+  maintenanceControllerFindOneResponse200 & {
     headers: Headers;
   };
-export type getMaintenanceRequestResponse =
-  getMaintenanceRequestResponseSuccess;
+export type maintenanceControllerFindOneResponse =
+  maintenanceControllerFindOneResponseSuccess;
 
-export const getGetMaintenanceRequestUrl = (id: string) => {
+export const getMaintenanceControllerFindOneUrl = (id: string) => {
   return `/api/v1/maintenance/${id}`;
 };
 
-export const getMaintenanceRequest = async (
+export const maintenanceControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getMaintenanceRequestResponse> => {
-  return apiClient<getMaintenanceRequestResponse>(
-    getGetMaintenanceRequestUrl(id),
+): Promise<maintenanceControllerFindOneResponse> => {
+  return apiClient<maintenanceControllerFindOneResponse>(
+    getMaintenanceControllerFindOneUrl(id),
     {
       ...options,
       method: 'GET',
@@ -4286,19 +4776,19 @@ export const getMaintenanceRequest = async (
   );
 };
 
-export const getGetMaintenanceRequestQueryKey = (id: string) => {
+export const getMaintenanceControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/maintenance/${id}`] as const;
 };
 
-export const getGetMaintenanceRequestQueryOptions = <
-  TData = Awaited<ReturnType<typeof getMaintenanceRequest>>,
+export const getMaintenanceControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequest>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
         TError,
         TData
       >
@@ -4308,11 +4798,11 @@ export const getGetMaintenanceRequestQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetMaintenanceRequestQueryKey(id);
+    queryOptions?.queryKey ?? getMaintenanceControllerFindOneQueryKey(id);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getMaintenanceRequest>>
-  > = ({ signal }) => getMaintenanceRequest(id, { signal });
+    Awaited<ReturnType<typeof maintenanceControllerFindOne>>
+  > = ({ signal }) => maintenanceControllerFindOne(id, { signal });
 
   return {
     queryKey,
@@ -4320,35 +4810,35 @@ export const getGetMaintenanceRequestQueryOptions = <
     enabled: id !== null && id !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetMaintenanceRequestQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getMaintenanceRequest>>
+export type MaintenanceControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof maintenanceControllerFindOne>>
 >;
-export type GetMaintenanceRequestQueryError = unknown;
+export type MaintenanceControllerFindOneQueryError = unknown;
 
-export function useGetMaintenanceRequest<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequest>>,
+export function useMaintenanceControllerFindOne<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequest>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMaintenanceRequest>>,
+          Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getMaintenanceRequest>>
+          Awaited<ReturnType<typeof maintenanceControllerFindOne>>
         >,
         'initialData'
       >;
@@ -4357,24 +4847,24 @@ export function useGetMaintenanceRequest<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetMaintenanceRequest<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequest>>,
+export function useMaintenanceControllerFindOne<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequest>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMaintenanceRequest>>,
+          Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getMaintenanceRequest>>
+          Awaited<ReturnType<typeof maintenanceControllerFindOne>>
         >,
         'initialData'
       >;
@@ -4383,15 +4873,15 @@ export function useGetMaintenanceRequest<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetMaintenanceRequest<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequest>>,
+export function useMaintenanceControllerFindOne<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequest>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
         TError,
         TData
       >
@@ -4402,15 +4892,15 @@ export function useGetMaintenanceRequest<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetMaintenanceRequest<
-  TData = Awaited<ReturnType<typeof getMaintenanceRequest>>,
+export function useMaintenanceControllerFindOne<
+  TData = Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMaintenanceRequest>>,
+        Awaited<ReturnType<typeof maintenanceControllerFindOne>>,
         TError,
         TData
       >
@@ -4420,7 +4910,7 @@ export function useGetMaintenanceRequest<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetMaintenanceRequestQueryOptions(id, options);
+  const queryOptions = getMaintenanceControllerFindOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -4430,29 +4920,29 @@ export function useGetMaintenanceRequest<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type updateMaintenanceRequestResponse200 = {
+export type maintenanceControllerUpdateResponse200 = {
   data: MaintenanceRequest;
   status: 200;
 };
 
-export type updateMaintenanceRequestResponseSuccess =
-  updateMaintenanceRequestResponse200 & {
+export type maintenanceControllerUpdateResponseSuccess =
+  maintenanceControllerUpdateResponse200 & {
     headers: Headers;
   };
-export type updateMaintenanceRequestResponse =
-  updateMaintenanceRequestResponseSuccess;
+export type maintenanceControllerUpdateResponse =
+  maintenanceControllerUpdateResponseSuccess;
 
-export const getUpdateMaintenanceRequestUrl = (id: string) => {
+export const getMaintenanceControllerUpdateUrl = (id: string) => {
   return `/api/v1/maintenance/${id}`;
 };
 
-export const updateMaintenanceRequest = async (
+export const maintenanceControllerUpdate = async (
   id: string,
   updateMaintenanceDto: UpdateMaintenanceDto,
   options?: RequestInit,
-): Promise<updateMaintenanceRequestResponse> => {
-  return apiClient<updateMaintenanceRequestResponse>(
-    getUpdateMaintenanceRequestUrl(id),
+): Promise<maintenanceControllerUpdateResponse> => {
+  return apiClient<maintenanceControllerUpdateResponse>(
+    getMaintenanceControllerUpdateUrl(id),
     {
       ...options,
       method: 'PATCH',
@@ -4462,23 +4952,23 @@ export const updateMaintenanceRequest = async (
   );
 };
 
-export const getUpdateMaintenanceRequestMutationOptions = <
+export const getMaintenanceControllerUpdateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
     TError,
     { id: string; data: UpdateMaintenanceDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateMaintenanceRequest>>,
+  Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
   TError,
   { id: string; data: UpdateMaintenanceDto },
   TContext
 > => {
-  const mutationKey = ['updateMaintenanceRequest'];
+  const mutationKey = ['maintenanceControllerUpdate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -4488,30 +4978,30 @@ export const getUpdateMaintenanceRequestMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
     { id: string; data: UpdateMaintenanceDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return updateMaintenanceRequest(id, data);
+    return maintenanceControllerUpdate(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateMaintenanceRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateMaintenanceRequest>>
+export type MaintenanceControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof maintenanceControllerUpdate>>
 >;
-export type UpdateMaintenanceRequestMutationBody = UpdateMaintenanceDto;
-export type UpdateMaintenanceRequestMutationError = unknown;
+export type MaintenanceControllerUpdateMutationBody = UpdateMaintenanceDto;
+export type MaintenanceControllerUpdateMutationError = unknown;
 
-export const useUpdateMaintenanceRequest = <
+export const useMaintenanceControllerUpdate = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateMaintenanceRequest>>,
+      Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
       TError,
       { id: string; data: UpdateMaintenanceDto },
       TContext
@@ -4519,40 +5009,40 @@ export const useUpdateMaintenanceRequest = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateMaintenanceRequest>>,
+  Awaited<ReturnType<typeof maintenanceControllerUpdate>>,
   TError,
   { id: string; data: UpdateMaintenanceDto },
   TContext
 > => {
   return useMutation(
-    getUpdateMaintenanceRequestMutationOptions(options),
+    getMaintenanceControllerUpdateMutationOptions(options),
     queryClient,
   );
 };
 
-export type respondMaintenanceRequestResponse200 = {
+export type maintenanceControllerRespondResponse200 = {
   data: MaintenanceRequest;
   status: 200;
 };
 
-export type respondMaintenanceRequestResponseSuccess =
-  respondMaintenanceRequestResponse200 & {
+export type maintenanceControllerRespondResponseSuccess =
+  maintenanceControllerRespondResponse200 & {
     headers: Headers;
   };
-export type respondMaintenanceRequestResponse =
-  respondMaintenanceRequestResponseSuccess;
+export type maintenanceControllerRespondResponse =
+  maintenanceControllerRespondResponseSuccess;
 
-export const getRespondMaintenanceRequestUrl = (id: string) => {
+export const getMaintenanceControllerRespondUrl = (id: string) => {
   return `/api/v1/maintenance/${id}/respond`;
 };
 
-export const respondMaintenanceRequest = async (
+export const maintenanceControllerRespond = async (
   id: string,
   respondMaintenanceDto: RespondMaintenanceDto,
   options?: RequestInit,
-): Promise<respondMaintenanceRequestResponse> => {
-  return apiClient<respondMaintenanceRequestResponse>(
-    getRespondMaintenanceRequestUrl(id),
+): Promise<maintenanceControllerRespondResponse> => {
+  return apiClient<maintenanceControllerRespondResponse>(
+    getMaintenanceControllerRespondUrl(id),
     {
       ...options,
       method: 'POST',
@@ -4562,23 +5052,23 @@ export const respondMaintenanceRequest = async (
   );
 };
 
-export const getRespondMaintenanceRequestMutationOptions = <
+export const getMaintenanceControllerRespondMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof respondMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerRespond>>,
     TError,
     { id: string; data: RespondMaintenanceDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof respondMaintenanceRequest>>,
+  Awaited<ReturnType<typeof maintenanceControllerRespond>>,
   TError,
   { id: string; data: RespondMaintenanceDto },
   TContext
 > => {
-  const mutationKey = ['respondMaintenanceRequest'];
+  const mutationKey = ['maintenanceControllerRespond'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -4588,30 +5078,30 @@ export const getRespondMaintenanceRequestMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof respondMaintenanceRequest>>,
+    Awaited<ReturnType<typeof maintenanceControllerRespond>>,
     { id: string; data: RespondMaintenanceDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return respondMaintenanceRequest(id, data);
+    return maintenanceControllerRespond(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type RespondMaintenanceRequestMutationResult = NonNullable<
-  Awaited<ReturnType<typeof respondMaintenanceRequest>>
+export type MaintenanceControllerRespondMutationResult = NonNullable<
+  Awaited<ReturnType<typeof maintenanceControllerRespond>>
 >;
-export type RespondMaintenanceRequestMutationBody = RespondMaintenanceDto;
-export type RespondMaintenanceRequestMutationError = unknown;
+export type MaintenanceControllerRespondMutationBody = RespondMaintenanceDto;
+export type MaintenanceControllerRespondMutationError = unknown;
 
-export const useRespondMaintenanceRequest = <
+export const useMaintenanceControllerRespond = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof respondMaintenanceRequest>>,
+      Awaited<ReturnType<typeof maintenanceControllerRespond>>,
       TError,
       { id: string; data: RespondMaintenanceDto },
       TContext
@@ -4619,85 +5109,99 @@ export const useRespondMaintenanceRequest = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof respondMaintenanceRequest>>,
+  Awaited<ReturnType<typeof maintenanceControllerRespond>>,
   TError,
   { id: string; data: RespondMaintenanceDto },
   TContext
 > => {
   return useMutation(
-    getRespondMaintenanceRequestMutationOptions(options),
+    getMaintenanceControllerRespondMutationOptions(options),
     queryClient,
   );
 };
 
-export type getChatGroupsResponse200 = {
+export type chatControllerGetGroupsResponse200 = {
   data: ChatGroup[];
   status: 200;
 };
 
-export type getChatGroupsResponseSuccess = getChatGroupsResponse200 & {
-  headers: Headers;
-};
-export type getChatGroupsResponse = getChatGroupsResponseSuccess;
+export type chatControllerGetGroupsResponseSuccess =
+  chatControllerGetGroupsResponse200 & {
+    headers: Headers;
+  };
+export type chatControllerGetGroupsResponse =
+  chatControllerGetGroupsResponseSuccess;
 
-export const getGetChatGroupsUrl = () => {
+export const getChatControllerGetGroupsUrl = () => {
   return `/api/v1/chat/groups`;
 };
 
-export const getChatGroups = async (
+export const chatControllerGetGroups = async (
   options?: RequestInit,
-): Promise<getChatGroupsResponse> => {
-  return apiClient<getChatGroupsResponse>(getGetChatGroupsUrl(), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<chatControllerGetGroupsResponse> => {
+  return apiClient<chatControllerGetGroupsResponse>(
+    getChatControllerGetGroupsUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetChatGroupsQueryKey = () => {
+export const getChatControllerGetGroupsQueryKey = () => {
   return [`/api/v1/chat/groups`] as const;
 };
 
-export const getGetChatGroupsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getChatGroups>>,
+export const getChatControllerGetGroupsQueryOptions = <
+  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getChatGroups>>, TError, TData>
+    UseQueryOptions<
+      Awaited<ReturnType<typeof chatControllerGetGroups>>,
+      TError,
+      TData
+    >
   >;
 }) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetChatGroupsQueryKey();
+  const queryKey =
+    queryOptions?.queryKey ?? getChatControllerGetGroupsQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getChatGroups>>> = ({
-    signal,
-  }) => getChatGroups({ signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof chatControllerGetGroups>>
+  > = ({ signal }) => chatControllerGetGroups({ signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getChatGroups>>,
+    Awaited<ReturnType<typeof chatControllerGetGroups>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetChatGroupsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getChatGroups>>
+export type ChatControllerGetGroupsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof chatControllerGetGroups>>
 >;
-export type GetChatGroupsQueryError = unknown;
+export type ChatControllerGetGroupsQueryError = unknown;
 
-export function useGetChatGroups<
-  TData = Awaited<ReturnType<typeof getChatGroups>>,
+export function useChatControllerGetGroups<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
   TError = unknown,
 >(
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroups>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroups>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getChatGroups>>,
+          Awaited<ReturnType<typeof chatControllerGetGroups>>,
           TError,
-          Awaited<ReturnType<typeof getChatGroups>>
+          Awaited<ReturnType<typeof chatControllerGetGroups>>
         >,
         'initialData'
       >;
@@ -4706,19 +5210,23 @@ export function useGetChatGroups<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetChatGroups<
-  TData = Awaited<ReturnType<typeof getChatGroups>>,
+export function useChatControllerGetGroups<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroups>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroups>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getChatGroups>>,
+          Awaited<ReturnType<typeof chatControllerGetGroups>>,
           TError,
-          Awaited<ReturnType<typeof getChatGroups>>
+          Awaited<ReturnType<typeof chatControllerGetGroups>>
         >,
         'initialData'
       >;
@@ -4727,13 +5235,17 @@ export function useGetChatGroups<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetChatGroups<
-  TData = Awaited<ReturnType<typeof getChatGroups>>,
+export function useChatControllerGetGroups<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroups>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroups>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -4741,20 +5253,24 @@ export function useGetChatGroups<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetChatGroups<
-  TData = Awaited<ReturnType<typeof getChatGroups>>,
+export function useChatControllerGetGroups<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroups>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroups>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroups>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetChatGroupsQueryOptions(options);
+  const queryOptions = getChatControllerGetGroupsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -4764,52 +5280,62 @@ export function useGetChatGroups<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getChatGroupResponse200 = {
+export type chatControllerGetGroupResponse200 = {
   data: ChatGroup;
   status: 200;
 };
 
-export type getChatGroupResponseSuccess = getChatGroupResponse200 & {
-  headers: Headers;
-};
-export type getChatGroupResponse = getChatGroupResponseSuccess;
+export type chatControllerGetGroupResponseSuccess =
+  chatControllerGetGroupResponse200 & {
+    headers: Headers;
+  };
+export type chatControllerGetGroupResponse =
+  chatControllerGetGroupResponseSuccess;
 
-export const getGetChatGroupUrl = (id: string) => {
+export const getChatControllerGetGroupUrl = (id: string) => {
   return `/api/v1/chat/groups/${id}`;
 };
 
-export const getChatGroup = async (
+export const chatControllerGetGroup = async (
   id: string,
   options?: RequestInit,
-): Promise<getChatGroupResponse> => {
-  return apiClient<getChatGroupResponse>(getGetChatGroupUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<chatControllerGetGroupResponse> => {
+  return apiClient<chatControllerGetGroupResponse>(
+    getChatControllerGetGroupUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetChatGroupQueryKey = (id: string) => {
+export const getChatControllerGetGroupQueryKey = (id: string) => {
   return [`/api/v1/chat/groups/${id}`] as const;
 };
 
-export const getGetChatGroupQueryOptions = <
-  TData = Awaited<ReturnType<typeof getChatGroup>>,
+export const getChatControllerGetGroupQueryOptions = <
+  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroup>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroup>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetChatGroupQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getChatControllerGetGroupQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getChatGroup>>> = ({
-    signal,
-  }) => getChatGroup(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof chatControllerGetGroup>>
+  > = ({ signal }) => chatControllerGetGroup(id, { signal });
 
   return {
     queryKey,
@@ -4817,31 +5343,35 @@ export const getGetChatGroupQueryOptions = <
     enabled: id !== null && id !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getChatGroup>>,
+    Awaited<ReturnType<typeof chatControllerGetGroup>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetChatGroupQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getChatGroup>>
+export type ChatControllerGetGroupQueryResult = NonNullable<
+  Awaited<ReturnType<typeof chatControllerGetGroup>>
 >;
-export type GetChatGroupQueryError = unknown;
+export type ChatControllerGetGroupQueryError = unknown;
 
-export function useGetChatGroup<
-  TData = Awaited<ReturnType<typeof getChatGroup>>,
+export function useChatControllerGetGroup<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroup>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroup>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getChatGroup>>,
+          Awaited<ReturnType<typeof chatControllerGetGroup>>,
           TError,
-          Awaited<ReturnType<typeof getChatGroup>>
+          Awaited<ReturnType<typeof chatControllerGetGroup>>
         >,
         'initialData'
       >;
@@ -4850,20 +5380,24 @@ export function useGetChatGroup<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetChatGroup<
-  TData = Awaited<ReturnType<typeof getChatGroup>>,
+export function useChatControllerGetGroup<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroup>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroup>>,
+        TError,
+        TData
+      >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getChatGroup>>,
+          Awaited<ReturnType<typeof chatControllerGetGroup>>,
           TError,
-          Awaited<ReturnType<typeof getChatGroup>>
+          Awaited<ReturnType<typeof chatControllerGetGroup>>
         >,
         'initialData'
       >;
@@ -4872,14 +5406,18 @@ export function useGetChatGroup<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetChatGroup<
-  TData = Awaited<ReturnType<typeof getChatGroup>>,
+export function useChatControllerGetGroup<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroup>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroup>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
@@ -4887,21 +5425,25 @@ export function useGetChatGroup<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetChatGroup<
-  TData = Awaited<ReturnType<typeof getChatGroup>>,
+export function useChatControllerGetGroup<
+  TData = Awaited<ReturnType<typeof chatControllerGetGroup>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getChatGroup>>, TError, TData>
+      UseQueryOptions<
+        Awaited<ReturnType<typeof chatControllerGetGroup>>,
+        TError,
+        TData
+      >
     >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetChatGroupQueryOptions(id, options);
+  const queryOptions = getChatControllerGetGroupQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -4911,19 +5453,21 @@ export function useGetChatGroup<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getGroupMessagesResponse200 = {
+export type chatControllerGetMessagesResponse200 = {
   data: Message[];
   status: 200;
 };
 
-export type getGroupMessagesResponseSuccess = getGroupMessagesResponse200 & {
-  headers: Headers;
-};
-export type getGroupMessagesResponse = getGroupMessagesResponseSuccess;
+export type chatControllerGetMessagesResponseSuccess =
+  chatControllerGetMessagesResponse200 & {
+    headers: Headers;
+  };
+export type chatControllerGetMessagesResponse =
+  chatControllerGetMessagesResponseSuccess;
 
-export const getGetGroupMessagesUrl = (
+export const getChatControllerGetMessagesUrl = (
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
 ) => {
   const normalizedParams = new URLSearchParams();
 
@@ -4940,13 +5484,13 @@ export const getGetGroupMessagesUrl = (
     : `/api/v1/chat/groups/${id}/messages`;
 };
 
-export const getGroupMessages = async (
+export const chatControllerGetMessages = async (
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
   options?: RequestInit,
-): Promise<getGroupMessagesResponse> => {
-  return apiClient<getGroupMessagesResponse>(
-    getGetGroupMessagesUrl(id, params),
+): Promise<chatControllerGetMessagesResponse> => {
+  return apiClient<chatControllerGetMessagesResponse>(
+    getChatControllerGetMessagesUrl(id, params),
     {
       ...options,
       method: 'GET',
@@ -4954,9 +5498,9 @@ export const getGroupMessages = async (
   );
 };
 
-export const getGetGroupMessagesQueryKey = (
+export const getChatControllerGetMessagesQueryKey = (
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
 ) => {
   return [
     `/api/v1/chat/groups/${id}/messages`,
@@ -4964,16 +5508,16 @@ export const getGetGroupMessagesQueryKey = (
   ] as const;
 };
 
-export const getGetGroupMessagesQueryOptions = <
-  TData = Awaited<ReturnType<typeof getGroupMessages>>,
+export const getChatControllerGetMessagesQueryOptions = <
+  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
   TError = unknown,
 >(
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getGroupMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetMessages>>,
         TError,
         TData
       >
@@ -4983,11 +5527,11 @@ export const getGetGroupMessagesQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetGroupMessagesQueryKey(id, params);
+    queryOptions?.queryKey ?? getChatControllerGetMessagesQueryKey(id, params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getGroupMessages>>
-  > = ({ signal }) => getGroupMessages(id, params, { signal });
+    Awaited<ReturnType<typeof chatControllerGetMessages>>
+  > = ({ signal }) => chatControllerGetMessages(id, params, { signal });
 
   return {
     queryKey,
@@ -4995,36 +5539,36 @@ export const getGetGroupMessagesQueryOptions = <
     enabled: id !== null && id !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getGroupMessages>>,
+    Awaited<ReturnType<typeof chatControllerGetMessages>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetGroupMessagesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getGroupMessages>>
+export type ChatControllerGetMessagesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof chatControllerGetMessages>>
 >;
-export type GetGroupMessagesQueryError = unknown;
+export type ChatControllerGetMessagesQueryError = unknown;
 
-export function useGetGroupMessages<
-  TData = Awaited<ReturnType<typeof getGroupMessages>>,
+export function useChatControllerGetMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
   TError = unknown,
 >(
   id: string,
-  params: undefined | GetGroupMessagesParams,
+  params: undefined | ChatControllerGetMessagesParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getGroupMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetMessages>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getGroupMessages>>,
+          Awaited<ReturnType<typeof chatControllerGetMessages>>,
           TError,
-          Awaited<ReturnType<typeof getGroupMessages>>
+          Awaited<ReturnType<typeof chatControllerGetMessages>>
         >,
         'initialData'
       >;
@@ -5033,25 +5577,25 @@ export function useGetGroupMessages<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetGroupMessages<
-  TData = Awaited<ReturnType<typeof getGroupMessages>>,
+export function useChatControllerGetMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
   TError = unknown,
 >(
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getGroupMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetMessages>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getGroupMessages>>,
+          Awaited<ReturnType<typeof chatControllerGetMessages>>,
           TError,
-          Awaited<ReturnType<typeof getGroupMessages>>
+          Awaited<ReturnType<typeof chatControllerGetMessages>>
         >,
         'initialData'
       >;
@@ -5060,16 +5604,16 @@ export function useGetGroupMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetGroupMessages<
-  TData = Awaited<ReturnType<typeof getGroupMessages>>,
+export function useChatControllerGetMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
   TError = unknown,
 >(
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getGroupMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetMessages>>,
         TError,
         TData
       >
@@ -5080,16 +5624,16 @@ export function useGetGroupMessages<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetGroupMessages<
-  TData = Awaited<ReturnType<typeof getGroupMessages>>,
+export function useChatControllerGetMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetMessages>>,
   TError = unknown,
 >(
   id: string,
-  params?: GetGroupMessagesParams,
+  params?: ChatControllerGetMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getGroupMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetMessages>>,
         TError,
         TData
       >
@@ -5099,7 +5643,11 @@ export function useGetGroupMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetGroupMessagesQueryOptions(id, params, options);
+  const queryOptions = getChatControllerGetMessagesQueryOptions(
+    id,
+    params,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -5109,50 +5657,55 @@ export function useGetGroupMessages<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type sendGroupMessageResponse201 = {
+export type chatControllerSendMessageResponse201 = {
   data: Message;
   status: 201;
 };
 
-export type sendGroupMessageResponseSuccess = sendGroupMessageResponse201 & {
-  headers: Headers;
-};
-export type sendGroupMessageResponse = sendGroupMessageResponseSuccess;
+export type chatControllerSendMessageResponseSuccess =
+  chatControllerSendMessageResponse201 & {
+    headers: Headers;
+  };
+export type chatControllerSendMessageResponse =
+  chatControllerSendMessageResponseSuccess;
 
-export const getSendGroupMessageUrl = (id: string) => {
+export const getChatControllerSendMessageUrl = (id: string) => {
   return `/api/v1/chat/groups/${id}/messages`;
 };
 
-export const sendGroupMessage = async (
+export const chatControllerSendMessage = async (
   id: string,
   sendMessageDto: SendMessageDto,
   options?: RequestInit,
-): Promise<sendGroupMessageResponse> => {
-  return apiClient<sendGroupMessageResponse>(getSendGroupMessageUrl(id), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(sendMessageDto),
-  });
+): Promise<chatControllerSendMessageResponse> => {
+  return apiClient<chatControllerSendMessageResponse>(
+    getChatControllerSendMessageUrl(id),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(sendMessageDto),
+    },
+  );
 };
 
-export const getSendGroupMessageMutationOptions = <
+export const getChatControllerSendMessageMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof sendGroupMessage>>,
+    Awaited<ReturnType<typeof chatControllerSendMessage>>,
     TError,
     { id: string; data: SendMessageDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof sendGroupMessage>>,
+  Awaited<ReturnType<typeof chatControllerSendMessage>>,
   TError,
   { id: string; data: SendMessageDto },
   TContext
 > => {
-  const mutationKey = ['sendGroupMessage'];
+  const mutationKey = ['chatControllerSendMessage'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -5162,27 +5715,30 @@ export const getSendGroupMessageMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof sendGroupMessage>>,
+    Awaited<ReturnType<typeof chatControllerSendMessage>>,
     { id: string; data: SendMessageDto }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return sendGroupMessage(id, data);
+    return chatControllerSendMessage(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type SendGroupMessageMutationResult = NonNullable<
-  Awaited<ReturnType<typeof sendGroupMessage>>
+export type ChatControllerSendMessageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof chatControllerSendMessage>>
 >;
-export type SendGroupMessageMutationBody = SendMessageDto;
-export type SendGroupMessageMutationError = unknown;
+export type ChatControllerSendMessageMutationBody = SendMessageDto;
+export type ChatControllerSendMessageMutationError = unknown;
 
-export const useSendGroupMessage = <TError = unknown, TContext = unknown>(
+export const useChatControllerSendMessage = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof sendGroupMessage>>,
+      Awaited<ReturnType<typeof chatControllerSendMessage>>,
       TError,
       { id: string; data: SendMessageDto },
       TContext
@@ -5190,27 +5746,32 @@ export const useSendGroupMessage = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof sendGroupMessage>>,
+  Awaited<ReturnType<typeof chatControllerSendMessage>>,
   TError,
   { id: string; data: SendMessageDto },
   TContext
 > => {
-  return useMutation(getSendGroupMessageMutationOptions(options), queryClient);
+  return useMutation(
+    getChatControllerSendMessageMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type getDirectMessagesResponse200 = {
+export type chatControllerGetDirectMessagesResponse200 = {
   data: Message[];
   status: 200;
 };
 
-export type getDirectMessagesResponseSuccess = getDirectMessagesResponse200 & {
-  headers: Headers;
-};
-export type getDirectMessagesResponse = getDirectMessagesResponseSuccess;
+export type chatControllerGetDirectMessagesResponseSuccess =
+  chatControllerGetDirectMessagesResponse200 & {
+    headers: Headers;
+  };
+export type chatControllerGetDirectMessagesResponse =
+  chatControllerGetDirectMessagesResponseSuccess;
 
-export const getGetDirectMessagesUrl = (
+export const getChatControllerGetDirectMessagesUrl = (
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
 ) => {
   const normalizedParams = new URLSearchParams();
 
@@ -5227,13 +5788,13 @@ export const getGetDirectMessagesUrl = (
     : `/api/v1/chat/direct/${userId}`;
 };
 
-export const getDirectMessages = async (
+export const chatControllerGetDirectMessages = async (
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
   options?: RequestInit,
-): Promise<getDirectMessagesResponse> => {
-  return apiClient<getDirectMessagesResponse>(
-    getGetDirectMessagesUrl(userId, params),
+): Promise<chatControllerGetDirectMessagesResponse> => {
+  return apiClient<chatControllerGetDirectMessagesResponse>(
+    getChatControllerGetDirectMessagesUrl(userId, params),
     {
       ...options,
       method: 'GET',
@@ -5241,9 +5802,9 @@ export const getDirectMessages = async (
   );
 };
 
-export const getGetDirectMessagesQueryKey = (
+export const getChatControllerGetDirectMessagesQueryKey = (
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
 ) => {
   return [
     `/api/v1/chat/direct/${userId}`,
@@ -5251,16 +5812,16 @@ export const getGetDirectMessagesQueryKey = (
   ] as const;
 };
 
-export const getGetDirectMessagesQueryOptions = <
-  TData = Awaited<ReturnType<typeof getDirectMessages>>,
+export const getChatControllerGetDirectMessagesQueryOptions = <
+  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
   TError = unknown,
 >(
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getDirectMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
         TError,
         TData
       >
@@ -5270,11 +5831,13 @@ export const getGetDirectMessagesQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetDirectMessagesQueryKey(userId, params);
+    queryOptions?.queryKey ??
+    getChatControllerGetDirectMessagesQueryKey(userId, params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getDirectMessages>>
-  > = ({ signal }) => getDirectMessages(userId, params, { signal });
+    Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
+  > = ({ signal }) =>
+    chatControllerGetDirectMessages(userId, params, { signal });
 
   return {
     queryKey,
@@ -5282,36 +5845,36 @@ export const getGetDirectMessagesQueryOptions = <
     enabled: userId !== null && userId !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getDirectMessages>>,
+    Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetDirectMessagesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getDirectMessages>>
+export type ChatControllerGetDirectMessagesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
 >;
-export type GetDirectMessagesQueryError = unknown;
+export type ChatControllerGetDirectMessagesQueryError = unknown;
 
-export function useGetDirectMessages<
-  TData = Awaited<ReturnType<typeof getDirectMessages>>,
+export function useChatControllerGetDirectMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
   TError = unknown,
 >(
   userId: string,
-  params: undefined | GetDirectMessagesParams,
+  params: undefined | ChatControllerGetDirectMessagesParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getDirectMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getDirectMessages>>,
+          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
           TError,
-          Awaited<ReturnType<typeof getDirectMessages>>
+          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
         >,
         'initialData'
       >;
@@ -5320,25 +5883,25 @@ export function useGetDirectMessages<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetDirectMessages<
-  TData = Awaited<ReturnType<typeof getDirectMessages>>,
+export function useChatControllerGetDirectMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
   TError = unknown,
 >(
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getDirectMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getDirectMessages>>,
+          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
           TError,
-          Awaited<ReturnType<typeof getDirectMessages>>
+          Awaited<ReturnType<typeof chatControllerGetDirectMessages>>
         >,
         'initialData'
       >;
@@ -5347,16 +5910,16 @@ export function useGetDirectMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetDirectMessages<
-  TData = Awaited<ReturnType<typeof getDirectMessages>>,
+export function useChatControllerGetDirectMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
   TError = unknown,
 >(
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getDirectMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
         TError,
         TData
       >
@@ -5367,16 +5930,16 @@ export function useGetDirectMessages<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetDirectMessages<
-  TData = Awaited<ReturnType<typeof getDirectMessages>>,
+export function useChatControllerGetDirectMessages<
+  TData = Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
   TError = unknown,
 >(
   userId: string,
-  params?: GetDirectMessagesParams,
+  params?: ChatControllerGetDirectMessagesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getDirectMessages>>,
+        Awaited<ReturnType<typeof chatControllerGetDirectMessages>>,
         TError,
         TData
       >
@@ -5386,7 +5949,7 @@ export function useGetDirectMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetDirectMessagesQueryOptions(
+  const queryOptions = getChatControllerGetDirectMessagesQueryOptions(
     userId,
     params,
     options,
@@ -5400,50 +5963,55 @@ export function useGetDirectMessages<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type sendDirectMessageResponse201 = {
+export type chatControllerSendDirectMessageResponse201 = {
   data: Message;
   status: 201;
 };
 
-export type sendDirectMessageResponseSuccess = sendDirectMessageResponse201 & {
-  headers: Headers;
-};
-export type sendDirectMessageResponse = sendDirectMessageResponseSuccess;
+export type chatControllerSendDirectMessageResponseSuccess =
+  chatControllerSendDirectMessageResponse201 & {
+    headers: Headers;
+  };
+export type chatControllerSendDirectMessageResponse =
+  chatControllerSendDirectMessageResponseSuccess;
 
-export const getSendDirectMessageUrl = (userId: string) => {
+export const getChatControllerSendDirectMessageUrl = (userId: string) => {
   return `/api/v1/chat/direct/${userId}`;
 };
 
-export const sendDirectMessage = async (
+export const chatControllerSendDirectMessage = async (
   userId: string,
   sendMessageDto: SendMessageDto,
   options?: RequestInit,
-): Promise<sendDirectMessageResponse> => {
-  return apiClient<sendDirectMessageResponse>(getSendDirectMessageUrl(userId), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(sendMessageDto),
-  });
+): Promise<chatControllerSendDirectMessageResponse> => {
+  return apiClient<chatControllerSendDirectMessageResponse>(
+    getChatControllerSendDirectMessageUrl(userId),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(sendMessageDto),
+    },
+  );
 };
 
-export const getSendDirectMessageMutationOptions = <
+export const getChatControllerSendDirectMessageMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof sendDirectMessage>>,
+    Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
     TError,
     { userId: string; data: SendMessageDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof sendDirectMessage>>,
+  Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
   TError,
   { userId: string; data: SendMessageDto },
   TContext
 > => {
-  const mutationKey = ['sendDirectMessage'];
+  const mutationKey = ['chatControllerSendDirectMessage'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -5453,27 +6021,30 @@ export const getSendDirectMessageMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof sendDirectMessage>>,
+    Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
     { userId: string; data: SendMessageDto }
   > = (props) => {
     const { userId, data } = props ?? {};
 
-    return sendDirectMessage(userId, data);
+    return chatControllerSendDirectMessage(userId, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type SendDirectMessageMutationResult = NonNullable<
-  Awaited<ReturnType<typeof sendDirectMessage>>
+export type ChatControllerSendDirectMessageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof chatControllerSendDirectMessage>>
 >;
-export type SendDirectMessageMutationBody = SendMessageDto;
-export type SendDirectMessageMutationError = unknown;
+export type ChatControllerSendDirectMessageMutationBody = SendMessageDto;
+export type ChatControllerSendDirectMessageMutationError = unknown;
 
-export const useSendDirectMessage = <TError = unknown, TContext = unknown>(
+export const useChatControllerSendDirectMessage = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof sendDirectMessage>>,
+      Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
       TError,
       { userId: string; data: SendMessageDto },
       TContext
@@ -5481,58 +6052,65 @@ export const useSendDirectMessage = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof sendDirectMessage>>,
+  Awaited<ReturnType<typeof chatControllerSendDirectMessage>>,
   TError,
   { userId: string; data: SendMessageDto },
   TContext
 > => {
-  return useMutation(getSendDirectMessageMutationOptions(options), queryClient);
+  return useMutation(
+    getChatControllerSendDirectMessageMutationOptions(options),
+    queryClient,
+  );
 };
 
-export type createNotificationResponse201 = {
+export type notificationsControllerCreateResponse201 = {
   data: Notification;
   status: 201;
 };
 
-export type createNotificationResponseSuccess =
-  createNotificationResponse201 & {
+export type notificationsControllerCreateResponseSuccess =
+  notificationsControllerCreateResponse201 & {
     headers: Headers;
   };
-export type createNotificationResponse = createNotificationResponseSuccess;
+export type notificationsControllerCreateResponse =
+  notificationsControllerCreateResponseSuccess;
 
-export const getCreateNotificationUrl = () => {
+export const getNotificationsControllerCreateUrl = () => {
   return `/api/v1/notifications`;
 };
 
-export const createNotification = async (
+export const notificationsControllerCreate = async (
   createNotificationDto: CreateNotificationDto,
   options?: RequestInit,
-): Promise<createNotificationResponse> => {
-  return apiClient<createNotificationResponse>(getCreateNotificationUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createNotificationDto),
-  });
+): Promise<notificationsControllerCreateResponse> => {
+  return apiClient<notificationsControllerCreateResponse>(
+    getNotificationsControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createNotificationDto),
+    },
+  );
 };
 
-export const getCreateNotificationMutationOptions = <
+export const getNotificationsControllerCreateMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createNotification>>,
+    Awaited<ReturnType<typeof notificationsControllerCreate>>,
     TError,
     { data: CreateNotificationDto },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createNotification>>,
+  Awaited<ReturnType<typeof notificationsControllerCreate>>,
   TError,
   { data: CreateNotificationDto },
   TContext
 > => {
-  const mutationKey = ['createNotification'];
+  const mutationKey = ['notificationsControllerCreate'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -5542,27 +6120,30 @@ export const getCreateNotificationMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createNotification>>,
+    Awaited<ReturnType<typeof notificationsControllerCreate>>,
     { data: CreateNotificationDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createNotification(data);
+    return notificationsControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateNotificationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createNotification>>
+export type NotificationsControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof notificationsControllerCreate>>
 >;
-export type CreateNotificationMutationBody = CreateNotificationDto;
-export type CreateNotificationMutationError = unknown;
+export type NotificationsControllerCreateMutationBody = CreateNotificationDto;
+export type NotificationsControllerCreateMutationError = unknown;
 
-export const useCreateNotification = <TError = unknown, TContext = unknown>(
+export const useNotificationsControllerCreate = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createNotification>>,
+      Awaited<ReturnType<typeof notificationsControllerCreate>>,
       TError,
       { data: CreateNotificationDto },
       TContext
@@ -5570,28 +6151,32 @@ export const useCreateNotification = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createNotification>>,
+  Awaited<ReturnType<typeof notificationsControllerCreate>>,
   TError,
   { data: CreateNotificationDto },
   TContext
 > => {
   return useMutation(
-    getCreateNotificationMutationOptions(options),
+    getNotificationsControllerCreateMutationOptions(options),
     queryClient,
   );
 };
 
-export type getNotificationsResponse200 = {
+export type notificationsControllerFindAllResponse200 = {
   data: Notification[];
   status: 200;
 };
 
-export type getNotificationsResponseSuccess = getNotificationsResponse200 & {
-  headers: Headers;
-};
-export type getNotificationsResponse = getNotificationsResponseSuccess;
+export type notificationsControllerFindAllResponseSuccess =
+  notificationsControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type notificationsControllerFindAllResponse =
+  notificationsControllerFindAllResponseSuccess;
 
-export const getGetNotificationsUrl = (params?: GetNotificationsParams) => {
+export const getNotificationsControllerFindAllUrl = (
+  params?: NotificationsControllerFindAllParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -5607,31 +6192,34 @@ export const getGetNotificationsUrl = (params?: GetNotificationsParams) => {
     : `/api/v1/notifications`;
 };
 
-export const getNotifications = async (
-  params?: GetNotificationsParams,
+export const notificationsControllerFindAll = async (
+  params?: NotificationsControllerFindAllParams,
   options?: RequestInit,
-): Promise<getNotificationsResponse> => {
-  return apiClient<getNotificationsResponse>(getGetNotificationsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<notificationsControllerFindAllResponse> => {
+  return apiClient<notificationsControllerFindAllResponse>(
+    getNotificationsControllerFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetNotificationsQueryKey = (
-  params?: GetNotificationsParams,
+export const getNotificationsControllerFindAllQueryKey = (
+  params?: NotificationsControllerFindAllParams,
 ) => {
   return [`/api/v1/notifications`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetNotificationsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getNotifications>>,
+export const getNotificationsControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetNotificationsParams,
+  params?: NotificationsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotifications>>,
+        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
         TError,
         TData
       >
@@ -5641,42 +6229,42 @@ export const getGetNotificationsQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetNotificationsQueryKey(params);
+    queryOptions?.queryKey ?? getNotificationsControllerFindAllQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getNotifications>>
-  > = ({ signal }) => getNotifications(params, { signal });
+    Awaited<ReturnType<typeof notificationsControllerFindAll>>
+  > = ({ signal }) => notificationsControllerFindAll(params, { signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getNotifications>>,
+    Awaited<ReturnType<typeof notificationsControllerFindAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetNotificationsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getNotifications>>
+export type NotificationsControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof notificationsControllerFindAll>>
 >;
-export type GetNotificationsQueryError = unknown;
+export type NotificationsControllerFindAllQueryError = unknown;
 
-export function useGetNotifications<
-  TData = Awaited<ReturnType<typeof getNotifications>>,
+export function useNotificationsControllerFindAll<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
   TError = unknown,
 >(
-  params: undefined | GetNotificationsParams,
+  params: undefined | NotificationsControllerFindAllParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotifications>>,
+        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getNotifications>>,
+          Awaited<ReturnType<typeof notificationsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getNotifications>>
+          Awaited<ReturnType<typeof notificationsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -5685,24 +6273,24 @@ export function useGetNotifications<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetNotifications<
-  TData = Awaited<ReturnType<typeof getNotifications>>,
+export function useNotificationsControllerFindAll<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetNotificationsParams,
+  params?: NotificationsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotifications>>,
+        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getNotifications>>,
+          Awaited<ReturnType<typeof notificationsControllerFindAll>>,
           TError,
-          Awaited<ReturnType<typeof getNotifications>>
+          Awaited<ReturnType<typeof notificationsControllerFindAll>>
         >,
         'initialData'
       >;
@@ -5711,15 +6299,15 @@ export function useGetNotifications<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetNotifications<
-  TData = Awaited<ReturnType<typeof getNotifications>>,
+export function useNotificationsControllerFindAll<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetNotificationsParams,
+  params?: NotificationsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotifications>>,
+        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
         TError,
         TData
       >
@@ -5730,15 +6318,15 @@ export function useGetNotifications<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetNotifications<
-  TData = Awaited<ReturnType<typeof getNotifications>>,
+export function useNotificationsControllerFindAll<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
   TError = unknown,
 >(
-  params?: GetNotificationsParams,
+  params?: NotificationsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotifications>>,
+        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
         TError,
         TData
       >
@@ -5748,7 +6336,10 @@ export function useGetNotifications<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetNotificationsQueryOptions(params, options);
+  const queryOptions = getNotificationsControllerFindAllQueryOptions(
+    params,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -5758,27 +6349,27 @@ export function useGetNotifications<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getUnreadNotificationCountResponse200 = {
+export type notificationsControllerGetUnreadCountResponse200 = {
   data: number;
   status: 200;
 };
 
-export type getUnreadNotificationCountResponseSuccess =
-  getUnreadNotificationCountResponse200 & {
+export type notificationsControllerGetUnreadCountResponseSuccess =
+  notificationsControllerGetUnreadCountResponse200 & {
     headers: Headers;
   };
-export type getUnreadNotificationCountResponse =
-  getUnreadNotificationCountResponseSuccess;
+export type notificationsControllerGetUnreadCountResponse =
+  notificationsControllerGetUnreadCountResponseSuccess;
 
-export const getGetUnreadNotificationCountUrl = () => {
+export const getNotificationsControllerGetUnreadCountUrl = () => {
   return `/api/v1/notifications/unread/count`;
 };
 
-export const getUnreadNotificationCount = async (
+export const notificationsControllerGetUnreadCount = async (
   options?: RequestInit,
-): Promise<getUnreadNotificationCountResponse> => {
-  return apiClient<getUnreadNotificationCountResponse>(
-    getGetUnreadNotificationCountUrl(),
+): Promise<notificationsControllerGetUnreadCountResponse> => {
+  return apiClient<notificationsControllerGetUnreadCountResponse>(
+    getNotificationsControllerGetUnreadCountUrl(),
     {
       ...options,
       method: 'GET',
@@ -5786,17 +6377,17 @@ export const getUnreadNotificationCount = async (
   );
 };
 
-export const getGetUnreadNotificationCountQueryKey = () => {
+export const getNotificationsControllerGetUnreadCountQueryKey = () => {
   return [`/api/v1/notifications/unread/count`] as const;
 };
 
-export const getGetUnreadNotificationCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+export const getNotificationsControllerGetUnreadCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
   TError = unknown,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
-      Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+      Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
       TError,
       TData
     >
@@ -5805,41 +6396,42 @@ export const getGetUnreadNotificationCountQueryOptions = <
   const { query: queryOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetUnreadNotificationCountQueryKey();
+    queryOptions?.queryKey ??
+    getNotificationsControllerGetUnreadCountQueryKey();
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getUnreadNotificationCount>>
-  > = ({ signal }) => getUnreadNotificationCount({ signal });
+    Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
+  > = ({ signal }) => notificationsControllerGetUnreadCount({ signal });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+    Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetUnreadNotificationCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getUnreadNotificationCount>>
+export type NotificationsControllerGetUnreadCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
 >;
-export type GetUnreadNotificationCountQueryError = unknown;
+export type NotificationsControllerGetUnreadCountQueryError = unknown;
 
-export function useGetUnreadNotificationCount<
-  TData = Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+export function useNotificationsControllerGetUnreadCount<
+  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
   TError = unknown,
 >(
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
           TError,
-          Awaited<ReturnType<typeof getUnreadNotificationCount>>
+          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
         >,
         'initialData'
       >;
@@ -5848,23 +6440,23 @@ export function useGetUnreadNotificationCount<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetUnreadNotificationCount<
-  TData = Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+export function useNotificationsControllerGetUnreadCount<
+  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
           TError,
-          Awaited<ReturnType<typeof getUnreadNotificationCount>>
+          Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
         >,
         'initialData'
       >;
@@ -5873,14 +6465,14 @@ export function useGetUnreadNotificationCount<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetUnreadNotificationCount<
-  TData = Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+export function useNotificationsControllerGetUnreadCount<
+  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
         TError,
         TData
       >
@@ -5891,14 +6483,14 @@ export function useGetUnreadNotificationCount<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetUnreadNotificationCount<
-  TData = Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+export function useNotificationsControllerGetUnreadCount<
+  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getUnreadNotificationCount>>,
+        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
         TError,
         TData
       >
@@ -5908,7 +6500,8 @@ export function useGetUnreadNotificationCount<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetUnreadNotificationCountQueryOptions(options);
+  const queryOptions =
+    getNotificationsControllerGetUnreadCountQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -5918,43 +6511,48 @@ export function useGetUnreadNotificationCount<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type getNotificationResponse200 = {
+export type notificationsControllerFindOneResponse200 = {
   data: Notification;
   status: 200;
 };
 
-export type getNotificationResponseSuccess = getNotificationResponse200 & {
-  headers: Headers;
-};
-export type getNotificationResponse = getNotificationResponseSuccess;
+export type notificationsControllerFindOneResponseSuccess =
+  notificationsControllerFindOneResponse200 & {
+    headers: Headers;
+  };
+export type notificationsControllerFindOneResponse =
+  notificationsControllerFindOneResponseSuccess;
 
-export const getGetNotificationUrl = (id: string) => {
+export const getNotificationsControllerFindOneUrl = (id: string) => {
   return `/api/v1/notifications/${id}`;
 };
 
-export const getNotification = async (
+export const notificationsControllerFindOne = async (
   id: string,
   options?: RequestInit,
-): Promise<getNotificationResponse> => {
-  return apiClient<getNotificationResponse>(getGetNotificationUrl(id), {
-    ...options,
-    method: 'GET',
-  });
+): Promise<notificationsControllerFindOneResponse> => {
+  return apiClient<notificationsControllerFindOneResponse>(
+    getNotificationsControllerFindOneUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
 };
 
-export const getGetNotificationQueryKey = (id: string) => {
+export const getNotificationsControllerFindOneQueryKey = (id: string) => {
   return [`/api/v1/notifications/${id}`] as const;
 };
 
-export const getGetNotificationQueryOptions = <
-  TData = Awaited<ReturnType<typeof getNotification>>,
+export const getNotificationsControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotification>>,
+        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
         TError,
         TData
       >
@@ -5963,11 +6561,12 @@ export const getGetNotificationQueryOptions = <
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetNotificationQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getNotificationsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getNotification>>> = ({
-    signal,
-  }) => getNotification(id, { signal });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof notificationsControllerFindOne>>
+  > = ({ signal }) => notificationsControllerFindOne(id, { signal });
 
   return {
     queryKey,
@@ -5975,35 +6574,35 @@ export const getGetNotificationQueryOptions = <
     enabled: id !== null && id !== undefined,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getNotification>>,
+    Awaited<ReturnType<typeof notificationsControllerFindOne>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetNotificationQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getNotification>>
+export type NotificationsControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof notificationsControllerFindOne>>
 >;
-export type GetNotificationQueryError = unknown;
+export type NotificationsControllerFindOneQueryError = unknown;
 
-export function useGetNotification<
-  TData = Awaited<ReturnType<typeof getNotification>>,
+export function useNotificationsControllerFindOne<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotification>>,
+        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getNotification>>,
+          Awaited<ReturnType<typeof notificationsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getNotification>>
+          Awaited<ReturnType<typeof notificationsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -6012,24 +6611,24 @@ export function useGetNotification<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetNotification<
-  TData = Awaited<ReturnType<typeof getNotification>>,
+export function useNotificationsControllerFindOne<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotification>>,
+        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getNotification>>,
+          Awaited<ReturnType<typeof notificationsControllerFindOne>>,
           TError,
-          Awaited<ReturnType<typeof getNotification>>
+          Awaited<ReturnType<typeof notificationsControllerFindOne>>
         >,
         'initialData'
       >;
@@ -6038,15 +6637,15 @@ export function useGetNotification<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetNotification<
-  TData = Awaited<ReturnType<typeof getNotification>>,
+export function useNotificationsControllerFindOne<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotification>>,
+        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
         TError,
         TData
       >
@@ -6057,15 +6656,15 @@ export function useGetNotification<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetNotification<
-  TData = Awaited<ReturnType<typeof getNotification>>,
+export function useNotificationsControllerFindOne<
+  TData = Awaited<ReturnType<typeof notificationsControllerFindOne>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getNotification>>,
+        Awaited<ReturnType<typeof notificationsControllerFindOne>>,
         TError,
         TData
       >
@@ -6075,7 +6674,10 @@ export function useGetNotification<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetNotificationQueryOptions(id, options);
+  const queryOptions = getNotificationsControllerFindOneQueryOptions(
+    id,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -6085,28 +6687,28 @@ export function useGetNotification<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type markNotificationAsReadResponse200 = {
+export type notificationsControllerMarkAsReadResponse200 = {
   data: Notification;
   status: 200;
 };
 
-export type markNotificationAsReadResponseSuccess =
-  markNotificationAsReadResponse200 & {
+export type notificationsControllerMarkAsReadResponseSuccess =
+  notificationsControllerMarkAsReadResponse200 & {
     headers: Headers;
   };
-export type markNotificationAsReadResponse =
-  markNotificationAsReadResponseSuccess;
+export type notificationsControllerMarkAsReadResponse =
+  notificationsControllerMarkAsReadResponseSuccess;
 
-export const getMarkNotificationAsReadUrl = (id: string) => {
+export const getNotificationsControllerMarkAsReadUrl = (id: string) => {
   return `/api/v1/notifications/${id}/read`;
 };
 
-export const markNotificationAsRead = async (
+export const notificationsControllerMarkAsRead = async (
   id: string,
   options?: RequestInit,
-): Promise<markNotificationAsReadResponse> => {
-  return apiClient<markNotificationAsReadResponse>(
-    getMarkNotificationAsReadUrl(id),
+): Promise<notificationsControllerMarkAsReadResponse> => {
+  return apiClient<notificationsControllerMarkAsReadResponse>(
+    getNotificationsControllerMarkAsReadUrl(id),
     {
       ...options,
       method: 'PATCH',
@@ -6114,23 +6716,23 @@ export const markNotificationAsRead = async (
   );
 };
 
-export const getMarkNotificationAsReadMutationOptions = <
+export const getNotificationsControllerMarkAsReadMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof markNotificationAsRead>>,
+    Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
     TError,
     { id: string },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof markNotificationAsRead>>,
+  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ['markNotificationAsRead'];
+  const mutationKey = ['notificationsControllerMarkAsRead'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -6140,27 +6742,30 @@ export const getMarkNotificationAsReadMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof markNotificationAsRead>>,
+    Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return markNotificationAsRead(id);
+    return notificationsControllerMarkAsRead(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type MarkNotificationAsReadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof markNotificationAsRead>>
+export type NotificationsControllerMarkAsReadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>
 >;
 
-export type MarkNotificationAsReadMutationError = unknown;
+export type NotificationsControllerMarkAsReadMutationError = unknown;
 
-export const useMarkNotificationAsRead = <TError = unknown, TContext = unknown>(
+export const useNotificationsControllerMarkAsRead = <
+  TError = unknown,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof markNotificationAsRead>>,
+      Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
       TError,
       { id: string },
       TContext
@@ -6168,38 +6773,38 @@ export const useMarkNotificationAsRead = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof markNotificationAsRead>>,
+  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
   TError,
   { id: string },
   TContext
 > => {
   return useMutation(
-    getMarkNotificationAsReadMutationOptions(options),
+    getNotificationsControllerMarkAsReadMutationOptions(options),
     queryClient,
   );
 };
 
-export type markAllNotificationsAsReadResponse200 = {
+export type notificationsControllerMarkAllAsReadResponse200 = {
   data: void;
   status: 200;
 };
 
-export type markAllNotificationsAsReadResponseSuccess =
-  markAllNotificationsAsReadResponse200 & {
+export type notificationsControllerMarkAllAsReadResponseSuccess =
+  notificationsControllerMarkAllAsReadResponse200 & {
     headers: Headers;
   };
-export type markAllNotificationsAsReadResponse =
-  markAllNotificationsAsReadResponseSuccess;
+export type notificationsControllerMarkAllAsReadResponse =
+  notificationsControllerMarkAllAsReadResponseSuccess;
 
-export const getMarkAllNotificationsAsReadUrl = () => {
+export const getNotificationsControllerMarkAllAsReadUrl = () => {
   return `/api/v1/notifications/read/all`;
 };
 
-export const markAllNotificationsAsRead = async (
+export const notificationsControllerMarkAllAsRead = async (
   options?: RequestInit,
-): Promise<markAllNotificationsAsReadResponse> => {
-  return apiClient<markAllNotificationsAsReadResponse>(
-    getMarkAllNotificationsAsReadUrl(),
+): Promise<notificationsControllerMarkAllAsReadResponse> => {
+  return apiClient<notificationsControllerMarkAllAsReadResponse>(
+    getNotificationsControllerMarkAllAsReadUrl(),
     {
       ...options,
       method: 'PATCH',
@@ -6207,23 +6812,23 @@ export const markAllNotificationsAsRead = async (
   );
 };
 
-export const getMarkAllNotificationsAsReadMutationOptions = <
+export const getNotificationsControllerMarkAllAsReadMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof markAllNotificationsAsRead>>,
+    Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
     TError,
     void,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof markAllNotificationsAsRead>>,
+  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
   TError,
   void,
   TContext
 > => {
-  const mutationKey = ['markAllNotificationsAsRead'];
+  const mutationKey = ['notificationsControllerMarkAllAsRead'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -6233,28 +6838,28 @@ export const getMarkAllNotificationsAsReadMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof markAllNotificationsAsRead>>,
+    Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
     void
   > = () => {
-    return markAllNotificationsAsRead();
+    return notificationsControllerMarkAllAsRead();
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type MarkAllNotificationsAsReadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof markAllNotificationsAsRead>>
+export type NotificationsControllerMarkAllAsReadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>
 >;
 
-export type MarkAllNotificationsAsReadMutationError = unknown;
+export type NotificationsControllerMarkAllAsReadMutationError = unknown;
 
-export const useMarkAllNotificationsAsRead = <
+export const useNotificationsControllerMarkAllAsRead = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof markAllNotificationsAsRead>>,
+      Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
       TError,
       void,
       TContext
@@ -6262,13 +6867,13 @@ export const useMarkAllNotificationsAsRead = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof markAllNotificationsAsRead>>,
+  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
   TError,
   void,
   TContext
 > => {
   return useMutation(
-    getMarkAllNotificationsAsReadMutationOptions(options),
+    getNotificationsControllerMarkAllAsReadMutationOptions(options),
     queryClient,
   );
 };

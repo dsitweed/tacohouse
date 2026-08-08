@@ -12,15 +12,11 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { NotificationsControllerFindAllType } from './notificationsControllerFindAllType';
 
-export type GetBuildingsParams = {
-/**
- * @minimum 1
- */
+export type NotificationsControllerFindAllParams = {
 page?: number;
-/**
- * @minimum 1
- */
 limit?: number;
-landlordId?: string;
+isRead?: boolean;
+type?: NotificationsControllerFindAllType;
 };

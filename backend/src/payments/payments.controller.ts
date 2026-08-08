@@ -1,10 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, Roles } from 'common/decorators';
 import { Payment as PaymentEntity } from 'generated/nestjs-dto';
 import type { Payment, User } from 'generated/prisma/client';
@@ -21,7 +16,6 @@ export class PaymentsController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD, UserRole.TENANT)
-  @ApiOperation({ operationId: 'createPayment' })
   @ApiResponse({ status: 201, type: PaymentEntity })
   create(
     @CurrentUser() currentUser: User,
@@ -31,7 +25,6 @@ export class PaymentsController {
   }
 
   @Get()
-  @ApiOperation({ operationId: 'getPayments' })
   @ApiResponse({ status: 200, type: PaymentEntity, isArray: true })
   findAll(
     @CurrentUser() currentUser: User,
@@ -41,7 +34,6 @@ export class PaymentsController {
   }
 
   @Get(':id')
-  @ApiOperation({ operationId: 'getPayment' })
   @ApiResponse({ status: 200, type: PaymentEntity })
   findOne(
     @CurrentUser() currentUser: User,

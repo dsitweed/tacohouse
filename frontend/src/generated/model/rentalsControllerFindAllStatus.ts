@@ -13,14 +13,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetNotificationsType = typeof GetNotificationsType[keyof typeof GetNotificationsType];
+export type RentalsControllerFindAllStatus = typeof RentalsControllerFindAllStatus[keyof typeof RentalsControllerFindAllStatus];
 
 
-export const GetNotificationsType = {
-  BILL_GENERATED: 'BILL_GENERATED',
-  PAYMENT_REMINDER: 'PAYMENT_REMINDER',
-  MAINTENANCE_UPDATE: 'MAINTENANCE_UPDATE',
-  CHAT_MESSAGE: 'CHAT_MESSAGE',
-  ANNOUNCEMENT: 'ANNOUNCEMENT',
-  SYSTEM: 'SYSTEM',
+export const RentalsControllerFindAllStatus = {
+  ACTIVE: 'ACTIVE',
+  NOTICE_GIVEN: 'NOTICE_GIVEN',
+  TERMINATED: 'TERMINATED',
 } as const;

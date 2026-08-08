@@ -13,8 +13,14 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetDirectMessagesParams = {
+export type BuildingsControllerFindAllParams = {
+/**
+ * @minimum 1
+ */
 page?: number;
+/**
+ * @minimum 1
+ */
 limit?: number;
-before?: string;
+landlordId?: string;
 };

@@ -12,16 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { MaintenanceControllerFindAllPriority } from './maintenanceControllerFindAllPriority';
+import type { MaintenanceControllerFindAllStatus } from './maintenanceControllerFindAllStatus';
 
-export type GetRoomsParams = {
-/**
- * @minimum 1
- */
+export type MaintenanceControllerFindAllParams = {
 page?: number;
-/**
- * @minimum 1
- */
 limit?: number;
-landlordId?: string;
-buildingId?: string;
+tenantId?: string;
+roomId?: string;
+status?: MaintenanceControllerFindAllStatus;
+priority?: MaintenanceControllerFindAllPriority;
 };

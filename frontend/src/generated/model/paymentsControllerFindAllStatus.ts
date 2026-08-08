@@ -13,8 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetGroupMessagesParams = {
-page?: number;
-limit?: number;
-before?: string;
-};
+export type PaymentsControllerFindAllStatus = typeof PaymentsControllerFindAllStatus[keyof typeof PaymentsControllerFindAllStatus];
+
+
+export const PaymentsControllerFindAllStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+} as const;

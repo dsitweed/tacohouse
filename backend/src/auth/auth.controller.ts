@@ -17,7 +17,7 @@ export class AuthController {
   // TODO: Need update logic save and clear token
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiOperation({ operationId: 'authLogin', summary: 'User login' })
+  @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginAuthDto })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ operationId: 'authRegister', summary: 'User registration' })
+  @ApiOperation({ summary: 'User registration' })
   @ApiResponse({ status: 201, description: 'Registration successful' })
   @ApiResponse({ status: 400, description: 'Invalid input' })
   register(@Body() registerAuthDto: RegisterAuthDto) {
@@ -36,7 +36,7 @@ export class AuthController {
   // TODO: Need update logic save and clear refresh token
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
-  @ApiOperation({ operationId: 'authRefresh', summary: 'Refresh access token' })
+  @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   create(@CurrentUser() user: User) {

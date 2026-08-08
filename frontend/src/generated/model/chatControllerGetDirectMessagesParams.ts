@@ -13,12 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMaintenanceRequestsPriority = typeof GetMaintenanceRequestsPriority[keyof typeof GetMaintenanceRequestsPriority];
-
-
-export const GetMaintenanceRequestsPriority = {
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-  URGENT: 'URGENT',
-} as const;
+export type ChatControllerGetDirectMessagesParams = {
+page?: number;
+limit?: number;
+before?: string;
+};

@@ -29,10 +29,7 @@ export class RoomsController {
 
   @Get('available')
   @Public()
-  @ApiOperation({
-    operationId: 'getAvailableRooms',
-    summary: 'Get available rooms (Public)',
-  })
+  @ApiOperation({ summary: 'Get available rooms (Public)' })
   @ApiResponse({
     status: 200,
     description: 'List of available rooms',
@@ -46,7 +43,6 @@ export class RoomsController {
   @Post()
   @ApiBearerAuth('JWT-auth')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'createRoom' })
   @ApiResponse({ status: 201, type: RoomEntity })
   create(
     @CurrentUser() currentUser: User,
@@ -57,7 +53,6 @@ export class RoomsController {
 
   @Get()
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ operationId: 'getRooms' })
   @ApiResponse({ status: 200, type: RoomEntity, isArray: true })
   findAll(@CurrentUser() currentUser: User, @Query() query: FindAllRoomsDto) {
     return this.roomsService.findAll(currentUser, query);
@@ -65,7 +60,6 @@ export class RoomsController {
 
   @Get(':id')
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ operationId: 'getRoom' })
   @ApiResponse({ status: 200, type: RoomEntity })
   findOne(
     @CurrentUser() currentUser: User,
@@ -76,7 +70,6 @@ export class RoomsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'updateRoom' })
   @ApiResponse({ status: 200, type: RoomEntity })
   update(
     @CurrentUser() currentUser: User,
@@ -88,7 +81,6 @@ export class RoomsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'deleteRoom' })
   @ApiResponse({ status: 200, type: RoomEntity })
   remove(
     @CurrentUser() currentUser: User,

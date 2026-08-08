@@ -12,11 +12,11 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { GetNotificationsType } from './getNotificationsType';
+import type { PaymentsControllerFindAllStatus } from './paymentsControllerFindAllStatus';
 
-export type GetNotificationsParams = {
+export type PaymentsControllerFindAllParams = {
 page?: number;
 limit?: number;
-isRead?: boolean;
-type?: GetNotificationsType;
+billId?: string;
+status?: PaymentsControllerFindAllStatus;
 };

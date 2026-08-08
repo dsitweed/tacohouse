@@ -13,12 +13,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetPaymentsStatus = typeof GetPaymentsStatus[keyof typeof GetPaymentsStatus];
+export type BillsControllerFindAllStatus = typeof BillsControllerFindAllStatus[keyof typeof BillsControllerFindAllStatus];
 
 
-export const GetPaymentsStatus = {
+export const BillsControllerFindAllStatus = {
   PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED',
+  PAID: 'PAID',
+  TENANT_CONFIRMED: 'TENANT_CONFIRMED',
+  LANDLORD_CONFIRMED: 'LANDLORD_CONFIRMED',
+  OVERDUE: 'OVERDUE',
 } as const;

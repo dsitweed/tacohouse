@@ -24,7 +24,7 @@
     },
     "/api/v1/auth/login": {
       "post": {
-        "operationId": "authLogin",
+        "operationId": "AuthController_login",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -52,7 +52,7 @@
     },
     "/api/v1/auth/register": {
       "post": {
-        "operationId": "authRegister",
+        "operationId": "AuthController_register",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -80,7 +80,7 @@
     },
     "/api/v1/auth/refresh": {
       "post": {
-        "operationId": "authRefresh",
+        "operationId": "AuthController_create",
         "parameters": [],
         "responses": {
           "200": {
@@ -98,7 +98,7 @@
     },
     "/api/v1/users/me": {
       "get": {
-        "operationId": "getCurrentUser",
+        "operationId": "UsersController_getCurrentUser",
         "parameters": [],
         "responses": {
           "200": {
@@ -123,7 +123,7 @@
         ]
       },
       "patch": {
-        "operationId": "updateProfile",
+        "operationId": "UsersController_update",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -160,7 +160,7 @@
     },
     "/api/v1/users/me/change-password": {
       "post": {
-        "operationId": "changePassword",
+        "operationId": "UsersController_changePassword",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -193,7 +193,7 @@
     },
     "/api/v1/buildings": {
       "post": {
-        "operationId": "createBuilding",
+        "operationId": "BuildingsController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -231,7 +231,7 @@
         ]
       },
       "get": {
-        "operationId": "getBuildings",
+        "operationId": "BuildingsController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -290,7 +290,7 @@
     },
     "/api/v1/buildings/{id}": {
       "get": {
-        "operationId": "getBuilding",
+        "operationId": "BuildingsController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -328,7 +328,7 @@
         ]
       },
       "patch": {
-        "operationId": "updateBuilding",
+        "operationId": "BuildingsController_update",
         "parameters": [
           {
             "name": "id",
@@ -379,7 +379,7 @@
         ]
       },
       "delete": {
-        "operationId": "deleteBuilding",
+        "operationId": "BuildingsController_remove",
         "parameters": [
           {
             "name": "id",
@@ -422,7 +422,7 @@
     },
     "/api/v1/rooms/available": {
       "get": {
-        "operationId": "getAvailableRooms",
+        "operationId": "RoomsController_getAvailableRooms",
         "parameters": [],
         "responses": {
           "200": {
@@ -447,7 +447,7 @@
     },
     "/api/v1/rooms": {
       "post": {
-        "operationId": "createRoom",
+        "operationId": "RoomsController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -476,13 +476,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rooms"
         ]
       },
       "get": {
-        "operationId": "getRooms",
+        "operationId": "RoomsController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -541,7 +540,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rooms"
         ]
@@ -549,7 +547,7 @@
     },
     "/api/v1/rooms/{id}": {
       "get": {
-        "operationId": "getRoom",
+        "operationId": "RoomsController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -577,13 +575,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rooms"
         ]
       },
       "patch": {
-        "operationId": "updateRoom",
+        "operationId": "RoomsController_update",
         "parameters": [
           {
             "name": "id",
@@ -616,13 +613,12 @@
             }
           }
         },
-        "summary": "",
         "tags": [
           "Rooms"
         ]
       },
       "delete": {
-        "operationId": "deleteRoom",
+        "operationId": "RoomsController_remove",
         "parameters": [
           {
             "name": "id",
@@ -645,7 +641,6 @@
             }
           }
         },
-        "summary": "",
         "tags": [
           "Rooms"
         ]
@@ -653,7 +648,7 @@
     },
     "/api/v1/rentals": {
       "post": {
-        "operationId": "createRental",
+        "operationId": "RentalsController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -682,13 +677,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rentals"
         ]
       },
       "get": {
-        "operationId": "getRentals",
+        "operationId": "RentalsController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -758,7 +752,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rentals"
         ]
@@ -766,7 +759,7 @@
     },
     "/api/v1/rentals/{id}": {
       "get": {
-        "operationId": "getRental",
+        "operationId": "RentalsController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -794,13 +787,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rentals"
         ]
       },
       "patch": {
-        "operationId": "updateRental",
+        "operationId": "RentalsController_update",
         "parameters": [
           {
             "name": "id",
@@ -838,13 +830,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rentals"
         ]
       },
       "delete": {
-        "operationId": "deleteRental",
+        "operationId": "RentalsController_remove",
         "parameters": [
           {
             "name": "id",
@@ -872,7 +863,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Rentals"
         ]
@@ -880,7 +870,7 @@
     },
     "/api/v1/bills": {
       "post": {
-        "operationId": "createBill",
+        "operationId": "BillsController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -918,7 +908,7 @@
         ]
       },
       "get": {
-        "operationId": "getBills",
+        "operationId": "BillsController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -998,7 +988,7 @@
     },
     "/api/v1/bills/{id}": {
       "get": {
-        "operationId": "getBill",
+        "operationId": "BillsController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -1036,7 +1026,7 @@
         ]
       },
       "patch": {
-        "operationId": "updateBill",
+        "operationId": "BillsController_update",
         "parameters": [
           {
             "name": "id",
@@ -1087,7 +1077,7 @@
         ]
       },
       "delete": {
-        "operationId": "deleteBill",
+        "operationId": "BillsController_remove",
         "parameters": [
           {
             "name": "id",
@@ -1123,7 +1113,7 @@
     },
     "/api/v1/bills/{id}/confirm": {
       "post": {
-        "operationId": "confirmBillPayment",
+        "operationId": "BillsController_confirmPayment",
         "parameters": [
           {
             "name": "id",
@@ -1176,7 +1166,7 @@
     },
     "/api/v1/payments": {
       "post": {
-        "operationId": "createPayment",
+        "operationId": "PaymentsController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1205,13 +1195,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Payments"
         ]
       },
       "get": {
-        "operationId": "getPayments",
+        "operationId": "PaymentsController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -1274,7 +1263,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Payments"
         ]
@@ -1282,7 +1270,7 @@
     },
     "/api/v1/payments/{id}": {
       "get": {
-        "operationId": "getPayment",
+        "operationId": "PaymentsController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -1310,7 +1298,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Payments"
         ]
@@ -1318,7 +1305,7 @@
     },
     "/api/v1/maintenance": {
       "post": {
-        "operationId": "createMaintenanceRequest",
+        "operationId": "MaintenanceController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1347,13 +1334,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Maintenance"
         ]
       },
       "get": {
-        "operationId": "getMaintenanceRequests",
+        "operationId": "MaintenanceController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -1438,7 +1424,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Maintenance"
         ]
@@ -1446,7 +1431,7 @@
     },
     "/api/v1/maintenance/{id}": {
       "get": {
-        "operationId": "getMaintenanceRequest",
+        "operationId": "MaintenanceController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -1474,13 +1459,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Maintenance"
         ]
       },
       "patch": {
-        "operationId": "updateMaintenanceRequest",
+        "operationId": "MaintenanceController_update",
         "parameters": [
           {
             "name": "id",
@@ -1518,7 +1502,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Maintenance"
         ]
@@ -1526,7 +1509,7 @@
     },
     "/api/v1/maintenance/{id}/respond": {
       "post": {
-        "operationId": "respondMaintenanceRequest",
+        "operationId": "MaintenanceController_respond",
         "parameters": [
           {
             "name": "id",
@@ -1564,7 +1547,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Maintenance"
         ]
@@ -1572,7 +1554,7 @@
     },
     "/api/v1/chat/groups": {
       "get": {
-        "operationId": "getChatGroups",
+        "operationId": "ChatController_getGroups",
         "parameters": [],
         "responses": {
           "200": {
@@ -1594,7 +1576,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Chat"
         ]
@@ -1602,7 +1583,7 @@
     },
     "/api/v1/chat/groups/{id}": {
       "get": {
-        "operationId": "getChatGroup",
+        "operationId": "ChatController_getGroup",
         "parameters": [
           {
             "name": "id",
@@ -1630,7 +1611,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Chat"
         ]
@@ -1638,7 +1618,7 @@
     },
     "/api/v1/chat/groups/{id}/messages": {
       "get": {
-        "operationId": "getGroupMessages",
+        "operationId": "ChatController_getMessages",
         "parameters": [
           {
             "name": "id",
@@ -1695,13 +1675,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Chat"
         ]
       },
       "post": {
-        "operationId": "sendGroupMessage",
+        "operationId": "ChatController_sendMessage",
         "parameters": [
           {
             "name": "id",
@@ -1739,7 +1718,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Chat"
         ]
@@ -1747,7 +1725,7 @@
     },
     "/api/v1/chat/direct/{userId}": {
       "get": {
-        "operationId": "getDirectMessages",
+        "operationId": "ChatController_getDirectMessages",
         "parameters": [
           {
             "name": "userId",
@@ -1804,13 +1782,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Chat"
         ]
       },
       "post": {
-        "operationId": "sendDirectMessage",
+        "operationId": "ChatController_sendDirectMessage",
         "parameters": [
           {
             "name": "userId",
@@ -1848,7 +1825,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Chat"
         ]
@@ -1856,7 +1832,7 @@
     },
     "/api/v1/notifications": {
       "post": {
-        "operationId": "createNotification",
+        "operationId": "NotificationsController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1885,13 +1861,12 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Notifications"
         ]
       },
       "get": {
-        "operationId": "getNotifications",
+        "operationId": "NotificationsController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -1956,7 +1931,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Notifications"
         ]
@@ -1964,7 +1938,7 @@
     },
     "/api/v1/notifications/unread/count": {
       "get": {
-        "operationId": "getUnreadNotificationCount",
+        "operationId": "NotificationsController_getUnreadCount",
         "parameters": [],
         "responses": {
           "200": {
@@ -1983,7 +1957,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Notifications"
         ]
@@ -1991,7 +1964,7 @@
     },
     "/api/v1/notifications/{id}": {
       "get": {
-        "operationId": "getNotification",
+        "operationId": "NotificationsController_findOne",
         "parameters": [
           {
             "name": "id",
@@ -2019,7 +1992,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Notifications"
         ]
@@ -2027,7 +1999,7 @@
     },
     "/api/v1/notifications/{id}/read": {
       "patch": {
-        "operationId": "markNotificationAsRead",
+        "operationId": "NotificationsController_markAsRead",
         "parameters": [
           {
             "name": "id",
@@ -2055,7 +2027,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Notifications"
         ]
@@ -2063,7 +2034,7 @@
     },
     "/api/v1/notifications/read/all": {
       "patch": {
-        "operationId": "markAllNotificationsAsRead",
+        "operationId": "NotificationsController_markAllAsRead",
         "parameters": [],
         "responses": {
           "200": {
@@ -2075,7 +2046,6 @@
             "JWT-auth": []
           }
         ],
-        "summary": "",
         "tags": [
           "Notifications"
         ]

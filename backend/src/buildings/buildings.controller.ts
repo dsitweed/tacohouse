@@ -32,10 +32,7 @@ export class BuildingsController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({
-    operationId: 'createBuilding',
-    summary: 'Create a new building',
-  })
+  @ApiOperation({ summary: 'Create a new building' })
   @ApiResponse({
     status: 201,
     description: 'Building created successfully',
@@ -50,7 +47,7 @@ export class BuildingsController {
   }
 
   @Get()
-  @ApiOperation({ operationId: 'getBuildings', summary: 'Get all buildings' })
+  @ApiOperation({ summary: 'Get all buildings' })
   @ApiResponse({
     status: 200,
     description: 'List of buildings',
@@ -65,7 +62,7 @@ export class BuildingsController {
   }
 
   @Get(':id')
-  @ApiOperation({ operationId: 'getBuilding', summary: 'Get a building by ID' })
+  @ApiOperation({ summary: 'Get a building by ID' })
   @ApiParam({ name: 'id', description: 'Building ID' })
   @ApiResponse({
     status: 200,
@@ -82,7 +79,7 @@ export class BuildingsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'updateBuilding', summary: 'Update a building' })
+  @ApiOperation({ summary: 'Update a building' })
   @ApiParam({ name: 'id', description: 'Building ID' })
   @ApiResponse({
     status: 200,
@@ -101,7 +98,7 @@ export class BuildingsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
-  @ApiOperation({ operationId: 'deleteBuilding', summary: 'Delete a building' })
+  @ApiOperation({ summary: 'Delete a building' })
   @ApiParam({ name: 'id', description: 'Building ID' })
   @ApiResponse({
     status: 200,

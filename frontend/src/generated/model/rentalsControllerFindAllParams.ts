@@ -12,11 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { GetPaymentsStatus } from './getPaymentsStatus';
+import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
 
-export type GetPaymentsParams = {
+export type RentalsControllerFindAllParams = {
 page?: number;
 limit?: number;
-billId?: string;
-status?: GetPaymentsStatus;
+roomId?: string;
+tenantId?: string;
+status?: RentalsControllerFindAllStatus;
 };
