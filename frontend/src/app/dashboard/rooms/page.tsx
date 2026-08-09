@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useRooms } from '@/hooks/api/useRooms';
-import { formatCurrency } from '@/libs/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { RoomStatus, UserRole } from '@/types';
+import { formatCurrency } from '@/utils';
 
 const statusColors: Record<
   RoomStatus,

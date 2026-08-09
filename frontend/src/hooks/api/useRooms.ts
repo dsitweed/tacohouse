@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { RoomsControllerFindAllParams } from '@/generated/model';
-import { apiClient, handleApiError } from '@/libs/apiClient';
+import { apiClient, handleApiError } from '@/libs';
 import { queryKeys } from '@/libs/queryKeys';
 import type { CreateRoomRequest, Room, UpdateRoomRequest } from '@/types';
 

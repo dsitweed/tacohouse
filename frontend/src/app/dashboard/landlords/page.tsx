@@ -5,14 +5,11 @@ import { Building2, Eye, Mail, Phone, Search, UserCog } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useBuildings } from '@/hooks/api/useBuildings';
-import { apiClient } from '@/libs/apiClient';
+import { apiClient } from '@/libs';
 import { useAuthStore } from '@/stores/authStore';
-import type { User } from '@/types';
 import { UserRole } from '@/types';
 
 // Hook to fetch landlords

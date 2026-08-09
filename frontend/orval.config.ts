@@ -14,7 +14,7 @@ export default defineConfig({
       mock: false, // Generates MSW mock handlers automatically
       override: {
         mutator: {
-          path: './src/lib/apiClient.ts', // Optional: attach auth tokens/interceptors
+          path: './src/libs/apiClient.ts', // Optional: attach auth tokens/interceptors
           name: 'apiClient',
         },
       },

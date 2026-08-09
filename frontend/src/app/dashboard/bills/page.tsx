@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useBills } from '@/hooks/api/useBills';
-import { formatCurrency } from '@/libs/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { BillStatus, UserRole } from '@/types';
+import { formatCurrency } from '@/utils';
 
 const statusColors: Record<
   BillStatus,

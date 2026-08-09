@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePayments } from '@/hooks/api/usePayments';
-import { formatCurrency } from '@/libs/utils';
 import { PaymentStatus } from '@/types';
+import { formatCurrency } from '@/utils';
 
 const statusColors: Record<
   PaymentStatus,

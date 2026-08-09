@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useBuildings } from '@/hooks/api/useBuildings';
-import { formatCurrency } from '@/libs/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { UserRole } from '@/types';
+import { formatCurrency } from '@/utils';
 
 export default function BuildingsPage() {
   const { user } = useAuthStore();
@@ -112,10 +112,10 @@ export default function BuildingsPage() {
                         {building.totalRooms || 0}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {formatCurrency(building.electricityRate || 0)}
+                        {formatCurrency(building.electricityRate)}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {formatCurrency(building.waterRate || 0)}
+                        {formatCurrency(building.waterRate)}
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant="success">Hoạt động</Badge>

@@ -15,9 +15,9 @@ import { useBills } from '@/hooks/api/useBills';
 import { useMaintenanceRequests } from '@/hooks/api/useMaintenance';
 import { useRentals } from '@/hooks/api/useRentals';
 import { useRooms } from '@/hooks/api/useRooms';
-import { formatCurrency } from '@/libs/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { BillStatus, RoomStatus, UserRole } from '@/types';
+import { formatCurrency } from '@/utils';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();

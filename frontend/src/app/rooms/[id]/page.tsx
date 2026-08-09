@@ -8,9 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { formatCurrency } from '@/libs/utils';
 import { getRoomById } from '@/server/rooms';
 import { RoomTypeLabels } from '@/types';
+import { formatCurrency } from '@/utils';
 
 export default async function RoomDetailPage({
   params,

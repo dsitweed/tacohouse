@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAvailableRooms } from '@/features/rooms';
-import { formatCurrency } from '@/libs/utils';
-import { type Room, RoomTypeLabels } from '@/types';
+import { RoomTypeLabels } from '@/types';
+import { formatCurrency } from '@/utils';
 
 export default function HomePage() {
   const { data: rooms, isLoading } = useAvailableRooms();
@@ -152,7 +152,7 @@ export default function HomePage() {
           </div>
         ) : rooms && rooms.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {rooms.slice(0, 9).map((room: Room) => (
+            {rooms.slice(0, 9).map((room) => (
               <Card key={room.id} className="overflow-hidden">
                 <div className="flex h-48 items-center justify-center bg-gradient-to-br from-indigo-100 to-indigo-200">
                   <Home className="h-16 w-16 text-indigo-400" />

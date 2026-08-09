@@ -1,5 +1,5 @@
 import { Room, RoomsControllerFindAllParams } from '@/generated/model';
-import { apiClient } from '@/libs/apiClient';
+import { apiClient } from '@/libs';
 
 export const roomsApi = {
   findAll: async (query?: RoomsControllerFindAllParams) => {
