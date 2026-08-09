@@ -34,3 +34,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Kiến trúc thư mục đề xuất
+- https://chatgpt.com/s/t_6a786011f5848191a3fa450649068d22
+
+## Vấn đề Date và timezone
+- Frontend và Backend đều quy định Date type
+- Nhưng khi gửi qua lại qua http thì lại chỉ có thể gửi string
+- Cần rất cẩn thận vấn đề timezone sẽ khiến dữ liệu không đồng nhất
+- toISOString() thì trả về kiểu: 2001-08-09T00:00:00.000Z

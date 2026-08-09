@@ -31,7 +31,9 @@ export default function RootLayout({
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          <main>{children}</main>
+        </AppProvider>
       </body>
     </html>
   );

@@ -1,17 +1,49 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { toast } from 'sonner';
 
 import { useAuthStore } from '@/stores/authStore';
 import { ApiError, ApiResponse } from '@/types';
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
 
-export const apiClient: AxiosInstance = axios.create({
+// Unwrap AxiosInstance to return ApiResponse<T> instead of AxiosResponse<ApiResponse<T>> for all methods
+type UnwrappedApiClient = Omit<
+  AxiosInstance,
+  'get' | 'post' | 'put' | 'patch' | 'delete'
+> & {
+  <T = unknown>(config: AxiosRequestConfig): Promise<ApiResponse<T>>;
+  get<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>>;
+  post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>>;
+  put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>>;
+  patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>>;
+  delete<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>>;
+};
+
+export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 100000,
   headers: {
     'Content-Type': 'application/json',
   },
-});
+}) as UnwrappedApiClient;
 
 apiClient.interceptors.request.use(
   (config) => {
@@ -60,7 +92,7 @@ async function refreshAccessToken(): Promise<string> {
 
 // Response interceptor to handle token refresh
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => response.data,
   async (error: AxiosError<ApiError>) => {
     const originalRequest = error.config as
       (AxiosRequestConfig & { _retry?: boolean }) | undefined;
@@ -99,26 +131,29 @@ apiClient.interceptors.response.use(
   },
 );
 
-// Helper function to extract data from API response
-export function extractData<T>(response: { data: ApiResponse<T> }): T {
-  return response.data.data;
-}
-
-// Helper function to handle API errors
+// Helper function to handle API errors. Also shows a error toast
 export function handleApiError(error: unknown): ApiError {
-  if (axios.isAxiosError(error)) {
-    const apiError = error.response?.data as ApiError;
-    return {
-      statusCode: error.response?.status || 500,
-      message: apiError?.message || error.message || 'An error occurred',
-      error: apiError?.error,
-      details: apiError?.details,
-    };
-  }
+  const apiErrorHandle = () => {
+    if (axios.isAxiosError(error)) {
+      const responseError = error.response?.data as ApiError;
 
-  return {
-    statusCode: 500,
-    message:
-      error instanceof Error ? error.message : 'An unknown error occurred',
+      return {
+        statusCode: error.response?.status || 500,
+        message: responseError?.message || error.message || 'An error occurred',
+        error: responseError?.error,
+        details: responseError?.details,
+      };
+    }
+
+    return {
+      statusCode: 500,
+      message:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+    };
   };
+
+  const apiError = apiErrorHandle();
+  toast.error(apiError.message);
+
+  return apiError;
 }

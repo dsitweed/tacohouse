@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { RegisterAuthDto } from '@/generated/model';
 import type { ApiResponse } from '@/lib/apiClient';
 import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
 import { queryKeys } from '@/lib/queryKeys';
@@ -23,7 +24,7 @@ const authApi = {
     return extractData(response);
   },
 
-  register: async (data: RegisterRequest) => {
+  register: async (data: RegisterAuthDto) => {
     const response = await apiClient.post<ApiResponse<User>>(
       '/auth/register',
       data,

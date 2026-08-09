@@ -1,5 +1,6 @@
 // Runtime enum objects + derived union types
 
+// TODO: remove type defined in FE use all Type of generated from BE schema
 export const UserRole = {
   ADMIN: 'ADMIN',
   LANDLORD: 'LANDLORD',
