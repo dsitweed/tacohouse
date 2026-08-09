@@ -1,12 +1,12 @@
 'use client';
 
-import { CheckCircle, Clock,CreditCard, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, CreditCard, XCircle } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePayments } from '@/hooks/api/usePayments';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/libs/utils';
 import { PaymentStatus } from '@/types';
 
 const statusColors: Record<

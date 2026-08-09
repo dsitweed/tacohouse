@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRegister } from '@/hooks/api/useAuth';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 const ROLES = [
   { value: 'LANDLORD', label: 'Chủ nhà / Quản lý', icon: Building2 },

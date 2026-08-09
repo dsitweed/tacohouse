@@ -15,7 +15,7 @@ import { useBills } from '@/hooks/api/useBills';
 import { useMaintenanceRequests } from '@/hooks/api/useMaintenance';
 import { useRentals } from '@/hooks/api/useRentals';
 import { useRooms } from '@/hooks/api/useRooms';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/libs/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { BillStatus, RoomStatus, UserRole } from '@/types';
 

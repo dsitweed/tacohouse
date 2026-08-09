@@ -52,6 +52,7 @@ const AVATARS = [
   '/images/login-avatar-3.jpg',
 ];
 
+// FIXME: Logged in user is not redirected to dashboard page, but stays on login page
 export default function LoginPage() {
   const router = useRouter();
   const loginMutation = useLogin();

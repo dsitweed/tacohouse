@@ -47,7 +47,7 @@ import {
 } from '@/components/ui';
 import { RegisterAuthDto, UserRole } from '@/generated/model';
 import { useRegister } from '@/hooks/api/useAuth';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { toDateOnlyString } from '@/utils';
 
 const registerFormSchema = z
@@ -80,6 +80,7 @@ const ROLES = [
   { value: UserRole.TENANT, label: 'Người thuê', icon: User },
 ] as const;
 
+// FIXME: Logged in user is not redirected to dashboard page, but stays on register page
 export default function RegisterPage() {
   const router = useRouter();
   const registerMutation = useRegister();
