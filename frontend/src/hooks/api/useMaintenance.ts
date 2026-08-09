@@ -5,10 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type {
-  ApiResponse,
   CreateMaintenanceRequest,
   MaintenanceListQuery,
   MaintenanceRequest,
@@ -18,10 +17,11 @@ import type {
 // Maintenance API functions
 const maintenanceApi = {
   getAll: async (query?: MaintenanceListQuery) => {
-    const response = await apiClient.get<
-      ApiResponse<{ data: MaintenanceRequest[]; pagination?: any }>
-    >('/maintenance', { params: query });
-    const result = extractData(response);
+    const response = await apiClient.get<{
+      data: MaintenanceRequest[];
+      pagination?: any;
+    }>('/maintenance', { params: query });
+    const result = response.data;
     // Handle paginated response
     if (result && typeof result === 'object' && 'data' in result) {
       return result as { data: MaintenanceRequest[]; pagination?: any };
@@ -30,34 +30,34 @@ const maintenanceApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<MaintenanceRequest>>(
+    const response = await apiClient.get<MaintenanceRequest>(
       `/maintenance/${id}`,
     );
-    return extractData(response);
+    return response.data;
   },
 
   create: async (data: CreateMaintenanceRequest) => {
-    const response = await apiClient.post<ApiResponse<MaintenanceRequest>>(
+    const response = await apiClient.post<MaintenanceRequest>(
       '/maintenance',
       data,
     );
-    return extractData(response);
+    return response.data;
   },
 
   update: async (id: string, data: UpdateMaintenanceRequest) => {
-    const response = await apiClient.patch<ApiResponse<MaintenanceRequest>>(
+    const response = await apiClient.patch<MaintenanceRequest>(
       `/maintenance/${id}`,
       data,
     );
-    return extractData(response);
+    return response.data;
   },
 
   respond: async (id: string, response: string) => {
-    const apiResponse = await apiClient.post<ApiResponse<MaintenanceRequest>>(
+    const apiResponse = await apiClient.post<MaintenanceRequest>(
       `/maintenance/${id}/respond`,
       { response },
     );
-    return extractData(apiResponse);
+    return apiResponse.data;
   },
 };
 

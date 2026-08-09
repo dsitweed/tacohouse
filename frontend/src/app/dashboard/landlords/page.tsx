@@ -10,8 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useBuildings } from '@/hooks/api/useBuildings';
-import type { ApiResponse } from '@/lib/apiClient';
-import { apiClient, extractData } from '@/lib/apiClient';
+import { apiClient } from '@/libs/apiClient';
 import { useAuthStore } from '@/stores/authStore';
 import type { User } from '@/types';
 import { UserRole } from '@/types';
@@ -22,13 +21,10 @@ function useLandlords() {
     queryKey: ['landlords'],
     queryFn: async () => {
       // Fetch all buildings and extract unique landlords
-      const buildingsResponse = await apiClient.get<ApiResponse<unknown>>(
-        '/buildings',
-        {
-          params: { page: 1, limit: 1000 },
-        },
-      );
-      const buildings = extractData(buildingsResponse);
+      const buildingsResponse = await apiClient.get<unknown>('/buildings', {
+        params: { page: 1, limit: 1000 },
+      });
+      const buildings = buildingsResponse.data;
       const buildingsData = Array.isArray(buildings)
         ? buildings
         : buildings && typeof buildings === 'object' && 'data' in buildings

@@ -5,10 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type {
-  ApiResponse,
   CreateRentalRequest,
   Rental,
   RentalListQuery,
@@ -18,12 +17,13 @@ import type {
 // Rental API functions
 const rentalsApi = {
   getAll: async (query?: RentalListQuery) => {
-    const response = await apiClient.get<
-      ApiResponse<{ data: Rental[]; pagination?: any }>
-    >('/rentals', {
+    const response = await apiClient.get<{
+      data: Rental[];
+      pagination?: any;
+    }>('/rentals', {
       params: query,
     });
-    const result = extractData(response);
+    const result = response.data;
     // Handle paginated response
     if (result && typeof result === 'object' && 'data' in result) {
       return result as { data: Rental[]; pagination?: any };
@@ -32,30 +32,22 @@ const rentalsApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Rental>>(`/rentals/${id}`);
-    return extractData(response);
+    const response = await apiClient.get<Rental>(`/rentals/${id}`);
+    return response.data;
   },
 
   create: async (data: CreateRentalRequest) => {
-    const response = await apiClient.post<ApiResponse<Rental>>(
-      '/rentals',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<Rental>('/rentals', data);
+    return response.data;
   },
 
   update: async (id: string, data: UpdateRentalRequest) => {
-    const response = await apiClient.patch<ApiResponse<Rental>>(
-      `/rentals/${id}`,
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.patch<Rental>(`/rentals/${id}`, data);
+    return response.data;
   },
 
   terminate: async (id: string) => {
-    const response = await apiClient.delete<ApiResponse<void>>(
-      `/rentals/${id}`,
-    );
+    const response = await apiClient.delete<void>(`/rentals/${id}`);
     return response.data;
   },
 };

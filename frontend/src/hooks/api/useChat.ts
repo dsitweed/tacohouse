@@ -5,10 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type {
-  ApiResponse,
   ChatGroup,
   Message,
   MessageListQuery,
@@ -18,48 +17,44 @@ import type {
 // Chat API functions
 const chatApi = {
   getGroups: async () => {
-    const response =
-      await apiClient.get<ApiResponse<ChatGroup[]>>('/chat/groups');
-    return extractData(response);
+    const response = await apiClient.get<ChatGroup[]>('/chat/groups');
+    return response.data;
   },
 
   getGroup: async (groupId: string) => {
-    const response = await apiClient.get<ApiResponse<ChatGroup>>(
-      `/chat/groups/${groupId}`,
-    );
-    return extractData(response);
+    const response = await apiClient.get<ChatGroup>(`/chat/groups/${groupId}`);
+    return response.data;
   },
 
   getMessages: async (groupId: string, query?: MessageListQuery) => {
-    const response = await apiClient.get<ApiResponse<Message[]>>(
+    const response = await apiClient.get<Message[]>(
       `/chat/groups/${groupId}/messages`,
       { params: query },
     );
-    return extractData(response);
+    return response.data;
   },
 
   sendMessage: async (groupId: string, data: SendMessageRequest) => {
-    const response = await apiClient.post<ApiResponse<Message>>(
+    const response = await apiClient.post<Message>(
       `/chat/groups/${groupId}/messages`,
       data,
     );
-    return extractData(response);
+    return response.data;
   },
 
   getDirectMessages: async (userId: string, query?: MessageListQuery) => {
-    const response = await apiClient.get<ApiResponse<Message[]>>(
-      `/chat/direct/${userId}`,
-      { params: query },
-    );
-    return extractData(response);
+    const response = await apiClient.get<Message[]>(`/chat/direct/${userId}`, {
+      params: query,
+    });
+    return response.data;
   },
 
   sendDirectMessage: async (userId: string, data: SendMessageRequest) => {
-    const response = await apiClient.post<ApiResponse<Message>>(
+    const response = await apiClient.post<Message>(
       `/chat/direct/${userId}`,
       data,
     );
-    return extractData(response);
+    return response.data;
   },
 };
 

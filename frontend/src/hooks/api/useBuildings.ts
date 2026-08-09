@@ -5,10 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type {
-  ApiResponse,
   Building,
   BuildingListQuery,
   CreateBuildingRequest,
@@ -18,12 +17,13 @@ import type {
 // Building API functions
 const buildingsApi = {
   getAll: async (query?: BuildingListQuery) => {
-    const response = await apiClient.get<
-      ApiResponse<{ data: Building[]; pagination?: unknown }>
-    >('/buildings', {
+    const response = await apiClient.get<{
+      data: Building[];
+      pagination?: unknown;
+    }>('/buildings', {
       params: query,
     });
-    const result = extractData(response);
+    const result = response.data;
 
     if (result && typeof result === 'object' && 'data' in result) {
       return result as { data: Building[]; pagination?: unknown };
@@ -36,32 +36,22 @@ const buildingsApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Building>>(
-      `/buildings/${id}`,
-    );
-    return extractData(response);
+    const response = await apiClient.get<Building>(`/buildings/${id}`);
+    return response.data;
   },
 
   create: async (data: CreateBuildingRequest) => {
-    const response = await apiClient.post<ApiResponse<Building>>(
-      '/buildings',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<Building>('/buildings', data);
+    return response.data;
   },
 
   update: async (id: string, data: UpdateBuildingRequest) => {
-    const response = await apiClient.patch<ApiResponse<Building>>(
-      `/buildings/${id}`,
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.patch<Building>(`/buildings/${id}`, data);
+    return response.data;
   },
 
   delete: async (id: string) => {
-    const response = await apiClient.delete<ApiResponse<void>>(
-      `/buildings/${id}`,
-    );
+    const response = await apiClient.delete<void>(`/buildings/${id}`);
     return response.data;
   },
 };

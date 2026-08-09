@@ -5,10 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type {
-  ApiResponse,
   Bill,
   BillListQuery,
   ConfirmPaymentRequest,
@@ -19,12 +18,13 @@ import type {
 // Bill API functions
 const billsApi = {
   getAll: async (query?: BillListQuery) => {
-    const response = await apiClient.get<
-      ApiResponse<{ data: Bill[]; pagination?: any }>
-    >('/bills', {
+    const response = await apiClient.get<{
+      data: Bill[];
+      pagination?: any;
+    }>('/bills', {
       params: query,
     });
-    const result = extractData(response);
+    const result = response.data;
     // Handle paginated response
     if (result && typeof result === 'object' && 'data' in result) {
       return result as { data: Bill[]; pagination?: any };
@@ -33,40 +33,32 @@ const billsApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Bill>>(`/bills/${id}`);
-    return extractData(response);
+    const response = await apiClient.get<Bill>(`/bills/${id}`);
+    return response.data;
   },
 
   getByRoom: async (roomId: string) => {
-    const response = await apiClient.get<ApiResponse<Bill[]>>(
-      `/rooms/${roomId}/bills`,
-    );
-    return extractData(response);
+    const response = await apiClient.get<Bill[]>(`/rooms/${roomId}/bills`);
+    return response.data;
   },
 
   create: async (data: CreateBillRequest) => {
-    const response = await apiClient.post<ApiResponse<Bill>>('/bills', data);
-    return extractData(response);
+    const response = await apiClient.post<Bill>('/bills', data);
+    return response.data;
   },
 
   update: async (id: string, data: UpdateBillRequest) => {
-    const response = await apiClient.patch<ApiResponse<Bill>>(
-      `/bills/${id}`,
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.patch<Bill>(`/bills/${id}`, data);
+    return response.data;
   },
 
   confirmPayment: async (id: string, data: ConfirmPaymentRequest) => {
-    const response = await apiClient.post<ApiResponse<Bill>>(
-      `/bills/${id}/confirm`,
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<Bill>(`/bills/${id}/confirm`, data);
+    return response.data;
   },
 
   cancel: async (id: string) => {
-    const response = await apiClient.delete<ApiResponse<void>>(`/bills/${id}`);
+    const response = await apiClient.delete<void>(`/bills/${id}`);
     return response.data;
   },
 };

@@ -1,21 +1,22 @@
 import { Room, RoomsControllerFindAllParams } from '@/generated/model';
-import { apiClient } from '@/lib/apiClient';
-import { ApiResponse } from '@/types';
+import { apiClient } from '@/libs/apiClient';
 
 export const roomsApi = {
   findAll: async (query?: RoomsControllerFindAllParams) => {
-    const response = await apiClient.get<ApiResponse<Room[]>>('/rooms', {
+    const response = await apiClient.get<Room[]>('/rooms', {
       params: query,
     });
 
-    return response;
+    return response.data;
   },
 
   findOne: async (id: string) => {
-    return apiClient.get<ApiResponse<Room>>(`/rooms/${id}`);
+    const response = await apiClient.get<Room>(`/rooms/${id}`);
+    return response.data;
   },
 
   getAvailableRooms: async () => {
-    return apiClient.get<ApiResponse<Room>>(`/rooms/available`);
+    const response = await apiClient.get<Room[]>(`/rooms/available`);
+    return response.data;
   },
 };

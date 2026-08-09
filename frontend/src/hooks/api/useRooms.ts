@@ -6,22 +6,17 @@ import {
 } from '@tanstack/react-query';
 
 import { RoomsControllerFindAllParams } from '@/generated/model';
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
-import type {
-  ApiResponse,
-  CreateRoomRequest,
-  Room,
-  UpdateRoomRequest,
-} from '@/types';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
+import type { CreateRoomRequest, Room, UpdateRoomRequest } from '@/types';
 
 // Room API functions
 const roomsApi = {
   findAll: async (query?: RoomsControllerFindAllParams) => {
-    const response = await apiClient.get<ApiResponse<Room[]>>('/rooms', {
+    const response = await apiClient.get<Room[]>('/rooms', {
       params: query,
     });
-    const data = extractData(response);
+    const data = response.data;
 
     if (Array.isArray(data)) {
       return data;
@@ -31,38 +26,34 @@ const roomsApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Room>>(`/rooms/${id}`);
-    return extractData(response);
+    const response = await apiClient.get<Room>(`/rooms/${id}`);
+    return response.data;
   },
 
   getByBuilding: async (buildingId: string) => {
-    const response = await apiClient.get<ApiResponse<Room[]>>(
+    const response = await apiClient.get<Room[]>(
       `/buildings/${buildingId}/rooms`,
     );
-    return extractData(response);
+    return response.data;
   },
 
   getAvailable: async () => {
-    const response =
-      await apiClient.get<ApiResponse<Room[]>>('/rooms/available');
-    return extractData(response);
+    const response = await apiClient.get<Room[]>('/rooms/available');
+    return response.data;
   },
 
   create: async (data: CreateRoomRequest) => {
-    const response = await apiClient.post<ApiResponse<Room>>('/rooms', data);
-    return extractData(response);
+    const response = await apiClient.post<Room>('/rooms', data);
+    return response.data;
   },
 
   update: async (id: string, data: UpdateRoomRequest) => {
-    const response = await apiClient.patch<ApiResponse<Room>>(
-      `/rooms/${id}`,
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.patch<Room>(`/rooms/${id}`, data);
+    return response.data;
   },
 
   delete: async (id: string) => {
-    const response = await apiClient.delete<ApiResponse<void>>(`/rooms/${id}`);
+    const response = await apiClient.delete<void>(`/rooms/${id}`);
     return response.data;
   },
 };

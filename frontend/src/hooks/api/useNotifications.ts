@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { ApiResponse } from '@/lib/apiClient';
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type {
   CreateNotificationRequest,
   Notification,
@@ -12,13 +11,10 @@ import type {
 // Notifications API functions
 const notificationsApi = {
   getAll: async (query?: NotificationListQuery) => {
-    const response = await apiClient.get<ApiResponse<unknown>>(
-      '/notifications',
-      {
-        params: query,
-      },
-    );
-    const result = extractData(response);
+    const response = await apiClient.get<unknown>('/notifications', {
+      params: query,
+    });
+    const result = response.data;
 
     if (result && typeof result === 'object' && 'data' in result) {
       return result as { data: Notification[]; pagination?: unknown };
@@ -31,25 +27,20 @@ const notificationsApi = {
   },
 
   getOne: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Notification>>(
-      `/notifications/${id}`,
-    );
-    return extractData(response);
+    const response = await apiClient.get<Notification>(`/notifications/${id}`);
+    return response.data;
   },
 
   create: async (data: CreateNotificationRequest) => {
-    const response = await apiClient.post<ApiResponse<Notification>>(
-      '/notifications',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<Notification>('/notifications', data);
+    return response.data;
   },
 
   markAsRead: async (id: string) => {
-    const response = await apiClient.patch<ApiResponse<Notification>>(
+    const response = await apiClient.patch<Notification>(
       `/notifications/${id}/read`,
     );
-    return extractData(response);
+    return response.data;
   },
 };
 

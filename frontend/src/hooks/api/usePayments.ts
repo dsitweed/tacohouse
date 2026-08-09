@@ -5,9 +5,8 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import type { ApiResponse } from '@/lib/apiClient';
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import type { CreatePaymentRequest, Payment, PaymentListQuery } from '@/types';
 
 export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
@@ -15,10 +14,10 @@ export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
 // Payment API functions
 const paymentsApi = {
   getAll: async (query?: PaymentListQuery) => {
-    const response = await apiClient.get<ApiResponse<unknown>>('/payments', {
+    const response = await apiClient.get<unknown>('/payments', {
       params: query,
     });
-    const result = extractData(response);
+    const result = response.data;
 
     if (result && typeof result === 'object' && 'data' in result) {
       return result as PaymentsListResult;
@@ -31,18 +30,13 @@ const paymentsApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiClient.get<ApiResponse<Payment>>(
-      `/payments/${id}`,
-    );
-    return extractData(response);
+    const response = await apiClient.get<Payment>(`/payments/${id}`);
+    return response.data;
   },
 
   create: async (data: CreatePaymentRequest) => {
-    const response = await apiClient.post<ApiResponse<Payment>>(
-      '/payments',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<Payment>('/payments', data);
+    return response.data;
   },
 };
 

@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { RegisterAuthDto } from '@/generated/model';
-import type { ApiResponse } from '@/lib/apiClient';
-import { apiClient, extractData, handleApiError } from '@/lib/apiClient';
-import { queryKeys } from '@/lib/queryKeys';
+import { apiClient, handleApiError } from '@/libs/apiClient';
+import { queryKeys } from '@/libs/queryKeys';
 import { useAuthStore } from '@/stores/authStore';
 import type {
   ChangePasswordRequest,
@@ -17,47 +16,39 @@ import type {
 // Auth API functions
 const authApi = {
   login: async (data: LoginRequest) => {
-    const response = await apiClient.post<ApiResponse<LoginResponse>>(
-      '/auth/login',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<LoginResponse>('/auth/login', data);
+    return response.data;
   },
 
   register: async (data: RegisterAuthDto) => {
-    const response = await apiClient.post<ApiResponse<User>>(
-      '/auth/register',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.post<User>('/auth/register', data);
+    return response.data;
   },
 
   refresh: async (refreshToken: string) => {
-    const response = await apiClient.post<
-      ApiResponse<{ accessToken: string; refreshToken: string }>
-    >('/auth/refresh', { refreshToken });
-    return extractData(response);
+    const response = await apiClient.post<{
+      accessToken: string;
+      refreshToken: string;
+    }>('/auth/refresh', { refreshToken });
+    return response.data;
   },
 
   getProfile: async () => {
-    const response = await apiClient.get<ApiResponse<User>>('/users/me');
-    return extractData(response);
+    const response = await apiClient.get<User>('/users/me');
+    return response.data;
   },
 
   updateProfile: async (data: UpdateUserProfileRequest) => {
-    const response = await apiClient.patch<ApiResponse<User>>(
-      '/users/me',
-      data,
-    );
-    return extractData(response);
+    const response = await apiClient.patch<User>('/users/me', data);
+    return response.data;
   },
 
   changePassword: async (data: ChangePasswordRequest) => {
-    const response = await apiClient.post<ApiResponse<User>>(
+    const response = await apiClient.post<User>(
       '/users/me/change-password',
       data,
     );
-    return extractData(response);
+    return response.data;
   },
 };
 
