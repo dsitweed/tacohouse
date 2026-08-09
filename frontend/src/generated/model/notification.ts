@@ -14,10 +14,12 @@
  */
 import type { NotificationType } from './notificationType';
 import type { RelatedEntityType } from './relatedEntityType';
+import type { User } from './user';
 
 export interface Notification {
   id: string;
   userId: string;
+  user?: User;
   title: string;
   message: string;
   type: NotificationType;

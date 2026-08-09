@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { User } from './user.entity';
+
 export class Account {
   @ApiProperty({
     type: 'string',
@@ -9,6 +11,11 @@ export class Account {
     type: 'string',
   })
   userId: string;
+  @ApiProperty({
+    type: () => User,
+    required: false,
+  })
+  user?: User;
   @ApiProperty({
     type: 'string',
   })

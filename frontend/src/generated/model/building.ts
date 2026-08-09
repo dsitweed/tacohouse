@@ -14,12 +14,14 @@
  */
 import type { ChatGroup } from './chatGroup';
 import type { Room } from './room';
+import type { User } from './user';
 import type { UserRole } from './userRole';
 
 export interface Building {
   id: string;
   landlordId: string;
   landlordRole: UserRole;
+  landlord?: User;
   name: string;
   address: string;
   /** @nullable */

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { BillStatus, Prisma } from '../prisma/client';
 import { Payment } from './payment.entity';
+import { Room } from './room.entity';
 
 export class Bill {
   @ApiProperty({
@@ -12,6 +13,11 @@ export class Bill {
     type: 'string',
   })
   roomId: string;
+  @ApiProperty({
+    type: () => Room,
+    required: false,
+  })
+  room?: Room;
   @ApiProperty({
     type: 'string',
     format: 'date-time',

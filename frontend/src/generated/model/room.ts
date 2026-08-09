@@ -13,6 +13,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { Bill } from './bill';
+import type { Building } from './building';
 import type { MaintenanceRequest } from './maintenanceRequest';
 import type { Rental } from './rental';
 import type { RoomEquipment } from './roomEquipment';
@@ -23,6 +24,7 @@ import type { UtilityRecord } from './utilityRecord';
 export interface Room {
   id: string;
   buildingId: string;
+  building?: Building;
   number: string;
   area: string;
   monthlyRent: string;

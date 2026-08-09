@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { Prisma, RoomStatus, RoomType } from '../prisma/client';
 import { Bill } from './bill.entity';
+import { Building } from './building.entity';
 import { MaintenanceRequest } from './maintenanceRequest.entity';
 import { Rental } from './rental.entity';
 import { RoomEquipment } from './roomEquipment.entity';
@@ -16,6 +17,11 @@ export class Room {
     type: 'string',
   })
   buildingId: string;
+  @ApiProperty({
+    type: () => Building,
+    required: false,
+  })
+  building?: Building;
   @ApiProperty({
     type: 'string',
   })

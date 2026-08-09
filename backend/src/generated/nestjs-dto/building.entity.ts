@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Prisma, UserRole } from '../prisma/client';
 import { ChatGroup } from './chatGroup.entity';
 import { Room } from './room.entity';
+import { User } from './user.entity';
 
 export class Building {
   @ApiProperty({
@@ -18,6 +19,11 @@ export class Building {
     enumName: 'UserRole',
   })
   landlordRole: UserRole;
+  @ApiProperty({
+    type: () => User,
+    required: false,
+  })
+  landlord?: User;
   @ApiProperty({
     type: 'string',
   })

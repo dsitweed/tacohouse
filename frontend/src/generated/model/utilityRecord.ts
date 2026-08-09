@@ -12,11 +12,13 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { Room } from './room';
 import type { UtilityType } from './utilityType';
 
 export interface UtilityRecord {
   id: string;
   roomId: string;
+  room?: Room;
   recordDate: string;
   utilityType: UtilityType;
   previousReading: string;

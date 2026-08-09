@@ -14,10 +14,12 @@
  */
 import type { BillStatus } from './billStatus';
 import type { Payment } from './payment';
+import type { Room } from './room';
 
 export interface Bill {
   id: string;
   roomId: string;
+  room?: Room;
   billingPeriod: string;
   dueDate: string;
   monthlyRent: string;

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { PaymentMethod, PaymentStatus, Prisma } from '../prisma/client';
+import { Bill } from './bill.entity';
 import { PaymentConfirmation } from './paymentConfirmation.entity';
 
 export class Payment {
@@ -12,6 +13,11 @@ export class Payment {
     type: 'string',
   })
   billId: string;
+  @ApiProperty({
+    type: () => Bill,
+    required: false,
+  })
+  bill?: Bill;
   @ApiProperty({
     type: 'string',
     format: 'Decimal.js',

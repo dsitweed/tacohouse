@@ -13,13 +13,17 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { RentalStatus } from './rentalStatus';
+import type { Room } from './room';
+import type { User } from './user';
 import type { UserRole } from './userRole';
 
 export interface Rental {
   id: string;
   tenantId: string;
   tenantRole: UserRole;
+  tenant?: User;
   roomId: string;
+  room?: Room;
   startDate: string;
   /** @nullable */
   endDate: string | null;

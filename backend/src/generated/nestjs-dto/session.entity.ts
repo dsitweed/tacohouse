@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { User } from './user.entity';
+
 export class Session {
   @ApiProperty({
     type: 'string',
@@ -9,6 +11,11 @@ export class Session {
     type: 'string',
   })
   userId: string;
+  @ApiProperty({
+    type: () => User,
+    required: false,
+  })
+  user?: User;
   @ApiProperty({
     type: 'string',
   })

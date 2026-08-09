@@ -12,6 +12,7 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { Bill } from './bill';
 import type { PaymentConfirmation } from './paymentConfirmation';
 import type { PaymentMethod } from './paymentMethod';
 import type { PaymentStatus } from './paymentStatus';
@@ -19,6 +20,7 @@ import type { PaymentStatus } from './paymentStatus';
 export interface Payment {
   id: string;
   billId: string;
+  bill?: Bill;
   amount: string;
   paymentMethod: PaymentMethod;
   paymentDate: string;

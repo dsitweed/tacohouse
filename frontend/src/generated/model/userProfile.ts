@@ -12,10 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { User } from './user';
 
 export interface UserProfile {
   id: string;
   userId: string;
+  user?: User;
   firstName: string;
   lastName: string;
   phone: string;

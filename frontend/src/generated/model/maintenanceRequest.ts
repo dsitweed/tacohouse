@@ -15,13 +15,17 @@
 import type { MaintenanceCategory } from './maintenanceCategory';
 import type { MaintenanceStatus } from './maintenanceStatus';
 import type { PriorityType } from './priorityType';
+import type { Room } from './room';
+import type { User } from './user';
 import type { UserRole } from './userRole';
 
 export interface MaintenanceRequest {
   id: string;
   tenantId: string;
   tenantRole: UserRole;
+  tenant?: User;
   roomId: string;
+  room?: Room;
   title: string;
   description: string;
   priority: PriorityType;

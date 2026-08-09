@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Prisma, UtilityType } from '../prisma/client';
+import { Room } from './room.entity';
 
 export class UtilityRecord {
   @ApiProperty({
@@ -11,6 +12,11 @@ export class UtilityRecord {
     type: 'string',
   })
   roomId: string;
+  @ApiProperty({
+    type: () => Room,
+    required: false,
+  })
+  room?: Room;
   @ApiProperty({
     type: 'string',
     format: 'date-time',

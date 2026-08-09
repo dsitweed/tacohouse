@@ -6,6 +6,8 @@ import {
   PriorityType,
   UserRole,
 } from '../prisma/client';
+import { Room } from './room.entity';
+import { User } from './user.entity';
 
 export class MaintenanceRequest {
   @ApiProperty({
@@ -22,9 +24,19 @@ export class MaintenanceRequest {
   })
   tenantRole: UserRole;
   @ApiProperty({
+    type: () => User,
+    required: false,
+  })
+  tenant?: User;
+  @ApiProperty({
     type: 'string',
   })
   roomId: string;
+  @ApiProperty({
+    type: () => Room,
+    required: false,
+  })
+  room?: Room;
   @ApiProperty({
     type: 'string',
   })

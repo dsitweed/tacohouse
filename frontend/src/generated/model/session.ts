@@ -12,10 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { User } from './user';
 
 export interface Session {
   id: string;
   userId: string;
+  user?: User;
   token: string;
   expiresAt: string;
   /** @nullable */

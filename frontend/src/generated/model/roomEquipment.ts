@@ -13,10 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { EquipmentCondition } from './equipmentCondition';
+import type { Room } from './room';
 
 export interface RoomEquipment {
   id: string;
   roomId: string;
+  room?: Room;
   name: string;
   /** @nullable */
   description: string | null;

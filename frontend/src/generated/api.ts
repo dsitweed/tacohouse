@@ -53,7 +53,7 @@ import type {
   User,
 } from './model';
 
-import { apiClient } from '../libs';
+import { apiClient } from '../libs/apiClient';
 export const getTacoHouseAPI = () => {
   const appControllerGetHello = () => {
     return apiClient<string>({ url: `/api/v1`, method: 'GET' });

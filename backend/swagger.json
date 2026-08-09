@@ -2216,76 +2216,6 @@
           "TENANT"
         ]
       },
-      "UserProfile": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string",
-            "nullable": true
-          },
-          "dateOfBirth": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "occupation": {
-            "type": "string"
-          },
-          "workplace": {
-            "type": "string"
-          },
-          "idCardFrontPhoto": {
-            "type": "string",
-            "nullable": true
-          },
-          "idCardBackPhoto": {
-            "type": "string",
-            "nullable": true
-          },
-          "portraitPhoto": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "firstName",
-          "lastName",
-          "phone",
-          "avatar",
-          "dateOfBirth",
-          "occupation",
-          "workplace",
-          "idCardFrontPhoto",
-          "idCardBackPhoto",
-          "portraitPhoto",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
       "Session": {
         "type": "object",
         "properties": {
@@ -2294,6 +2224,9 @@
           },
           "userId": {
             "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
           },
           "token": {
             "type": "string"
@@ -2338,6 +2271,9 @@
           },
           "userId": {
             "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
           },
           "providerId": {
             "type": "string"
@@ -2440,8 +2376,14 @@
               }
             ]
           },
+          "tenant": {
+            "$ref": "#/components/schemas/User"
+          },
           "roomId": {
             "type": "string"
+          },
+          "room": {
+            "$ref": "#/components/schemas/Room"
           },
           "startDate": {
             "type": "string",
@@ -2522,6 +2464,9 @@
           "roomId": {
             "type": "string"
           },
+          "room": {
+            "$ref": "#/components/schemas/Room"
+          },
           "name": {
             "type": "string"
           },
@@ -2593,6 +2538,9 @@
           },
           "roomId": {
             "type": "string"
+          },
+          "room": {
+            "$ref": "#/components/schemas/Room"
           },
           "recordDate": {
             "type": "string",
@@ -2679,6 +2627,9 @@
           "paymentId": {
             "type": "string"
           },
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          },
           "tenantId": {
             "type": "string"
           },
@@ -2688,6 +2639,9 @@
                 "$ref": "#/components/schemas/UserRole"
               }
             ]
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/User"
           },
           "tenantConfirmed": {
             "type": "boolean"
@@ -2747,6 +2701,9 @@
           },
           "billId": {
             "type": "string"
+          },
+          "bill": {
+            "$ref": "#/components/schemas/Bill"
           },
           "amount": {
             "type": "string",
@@ -2827,6 +2784,9 @@
           },
           "roomId": {
             "type": "string"
+          },
+          "room": {
+            "$ref": "#/components/schemas/Room"
           },
           "billingPeriod": {
             "type": "string",
@@ -2976,8 +2936,14 @@
               }
             ]
           },
+          "tenant": {
+            "$ref": "#/components/schemas/User"
+          },
           "roomId": {
             "type": "string"
+          },
+          "room": {
+            "$ref": "#/components/schemas/Room"
           },
           "title": {
             "type": "string"
@@ -3055,6 +3021,9 @@
           },
           "buildingId": {
             "type": "string"
+          },
+          "building": {
+            "$ref": "#/components/schemas/Building"
           },
           "number": {
             "type": "string"
@@ -3177,6 +3146,9 @@
           "senderId": {
             "type": "string"
           },
+          "senderUser": {
+            "$ref": "#/components/schemas/User"
+          },
           "content": {
             "type": "string"
           },
@@ -3204,9 +3176,27 @@
             "type": "string",
             "nullable": true
           },
+          "chatGroup": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChatGroup"
+              }
+            ]
+          },
           "recipientId": {
             "type": "string",
             "nullable": true
+          },
+          "recipientUser": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ]
           },
           "readAt": {
             "type": "string",
@@ -3246,8 +3236,14 @@
           "chatGroupId": {
             "type": "string"
           },
+          "chatGroup": {
+            "$ref": "#/components/schemas/ChatGroup"
+          },
           "userId": {
             "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
           },
           "joinedAt": {
             "type": "string",
@@ -3269,6 +3265,9 @@
           },
           "buildingId": {
             "type": "string"
+          },
+          "building": {
+            "$ref": "#/components/schemas/Building"
           },
           "name": {
             "type": "string"
@@ -3322,6 +3321,9 @@
                 "$ref": "#/components/schemas/UserRole"
               }
             ]
+          },
+          "landlord": {
+            "$ref": "#/components/schemas/User"
           },
           "name": {
             "type": "string"
@@ -3435,6 +3437,9 @@
           },
           "userId": {
             "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
           },
           "title": {
             "type": "string"
@@ -3600,6 +3605,79 @@
           "role",
           "isActive",
           "deletedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "occupation": {
+            "type": "string"
+          },
+          "workplace": {
+            "type": "string"
+          },
+          "idCardFrontPhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "idCardBackPhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "portraitPhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "firstName",
+          "lastName",
+          "phone",
+          "avatar",
+          "dateOfBirth",
+          "occupation",
+          "workplace",
+          "idCardFrontPhoto",
+          "idCardBackPhoto",
+          "portraitPhoto",
           "createdAt",
           "updatedAt"
         ]

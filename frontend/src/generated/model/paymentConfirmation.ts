@@ -12,13 +12,17 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { Payment } from './payment';
+import type { User } from './user';
 import type { UserRole } from './userRole';
 
 export interface PaymentConfirmation {
   id: string;
   paymentId: string;
+  payment?: Payment;
   tenantId: string;
   tenantRole: UserRole;
+  tenant?: User;
   tenantConfirmed: boolean;
   /** @nullable */
   tenantConfirmedAt: string | null;

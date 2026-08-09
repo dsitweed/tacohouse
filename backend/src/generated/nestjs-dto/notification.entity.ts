@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { NotificationType, RelatedEntityType } from '../prisma/client';
+import { User } from './user.entity';
 
 export class Notification {
   @ApiProperty({
@@ -11,6 +12,11 @@ export class Notification {
     type: 'string',
   })
   userId: string;
+  @ApiProperty({
+    type: () => User,
+    required: false,
+  })
+  user?: User;
   @ApiProperty({
     type: 'string',
   })

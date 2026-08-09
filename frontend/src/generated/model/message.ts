@@ -12,11 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { ChatGroup } from './chatGroup';
 import type { MessageType } from './messageType';
+import type { User } from './user';
 
 export interface Message {
   id: string;
   senderId: string;
+  senderUser?: User;
   content: string;
   messageType: MessageType;
   /** @nullable */
@@ -28,7 +31,11 @@ export interface Message {
   /** @nullable */
   chatGroupId: string | null;
   /** @nullable */
+  chatGroup?: ChatGroup | null;
+  /** @nullable */
   recipientId: string | null;
+  /** @nullable */
+  recipientUser?: User | null;
   /** @nullable */
   readAt: string | null;
   createdAt: string;

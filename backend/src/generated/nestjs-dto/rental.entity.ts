@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Prisma, RentalStatus, UserRole } from '../prisma/client';
+import { Room } from './room.entity';
+import { User } from './user.entity';
 
 export class Rental {
   @ApiProperty({
@@ -17,9 +19,19 @@ export class Rental {
   })
   tenantRole: UserRole;
   @ApiProperty({
+    type: () => User,
+    required: false,
+  })
+  tenant?: User;
+  @ApiProperty({
     type: 'string',
   })
   roomId: string;
+  @ApiProperty({
+    type: () => Room,
+    required: false,
+  })
+  room?: Room;
   @ApiProperty({
     type: 'string',
     format: 'date-time',

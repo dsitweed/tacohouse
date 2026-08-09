@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { EquipmentCondition } from '../prisma/client';
+import { Room } from './room.entity';
 
 export class RoomEquipment {
   @ApiProperty({
@@ -11,6 +12,11 @@ export class RoomEquipment {
     type: 'string',
   })
   roomId: string;
+  @ApiProperty({
+    type: () => Room,
+    required: false,
+  })
+  room?: Room;
   @ApiProperty({
     type: 'string',
   })

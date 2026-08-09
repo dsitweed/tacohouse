@@ -65,7 +65,6 @@ model User {
 model UserProfile {
   id     String @id @default(uuid())
   userId String @unique
-  /// @DtoEntityHidden
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   firstName   String
@@ -91,7 +90,6 @@ model UserProfile {
 model Session {
   id     String @id @default(uuid())
   userId String
-  /// @DtoEntityHidden
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   token     String   @unique // opaque/refresh token (store a hash in production)
@@ -110,7 +108,6 @@ model Session {
 model Account {
   id     String @id @default(uuid())
   userId String
-  /// @DtoEntityHidden
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   providerId String // 'credential' | 'google' | ...
@@ -151,7 +148,6 @@ model Building {
 
   landlordId   String
   landlordRole UserRole @default(LANDLORD) // pins owner to a LANDLORD user via composite FK
-  /// @DtoEntityHidden
   landlord     User     @relation("BuildingLandlord", fields: [landlordId, landlordRole], references: [id, role], onDelete: Cascade)
 
   name        String
@@ -182,7 +178,6 @@ model Building {
 model Room {
   id         String   @id @default(uuid())
   buildingId String
-  /// @DtoEntityHidden
   building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   // Room details
@@ -223,7 +218,6 @@ model Room {
 model RoomEquipment {
   id     String @id @default(uuid())
   roomId String
-  /// @DtoEntityHidden
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   name               String // washing machine, refrigerator, air conditioner, etc.
@@ -247,11 +241,9 @@ model Rental {
 
   tenantId   String
   tenantRole UserRole @default(TENANT)
-  /// @DtoEntityHidden
   tenant     User     @relation("RentalTenant", fields: [tenantId, tenantRole], references: [id, role], onDelete: Restrict)
 
   roomId String
-  /// @DtoEntityHidden
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
 
   startDate  DateTime
@@ -276,7 +268,6 @@ model Rental {
 model Bill {
   id     String @id @default(uuid())
   roomId String
-  /// @DtoEntityHidden
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
 
   billingPeriod DateTime // Start date of the billing cycle (e.g., first day → end of month)
@@ -322,7 +313,6 @@ model Bill {
 model Payment {
   id     String @id @default(uuid())
   billId String @unique
-  /// @DtoEntityHidden
   bill   Bill   @relation(fields: [billId], references: [id], onDelete: Restrict)
 
   amount        Decimal       @db.Decimal(14, 2)
@@ -349,12 +339,10 @@ model Payment {
 model PaymentConfirmation {
   id        String  @id @default(uuid())
   paymentId String  @unique
-  /// @DtoEntityHidden
   payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 
   tenantId   String
   tenantRole UserRole @default(TENANT)
-  /// @DtoEntityHidden
   tenant     User     @relation("ConfirmationTenant", fields: [tenantId, tenantRole], references: [id, role], onDelete: Restrict)
 
   tenantConfirmed   Boolean   @default(false)
@@ -377,7 +365,6 @@ model PaymentConfirmation {
 model UtilityRecord {
   id     String @id @default(uuid())
   roomId String
-  /// @DtoEntityHidden
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
 
   recordDate  DateTime
@@ -402,7 +389,6 @@ model UtilityRecord {
 model ChatGroup {
   id         String   @id @default(uuid())
   buildingId String   @unique
-  /// @DtoEntityHidden
   building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   name        String
@@ -420,11 +406,9 @@ model ChatGroup {
 model ChatGroupMember {
   id          String    @id @default(uuid())
   chatGroupId String
-  /// @DtoEntityHidden
   chatGroup   ChatGroup @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
 
   userId String
-  /// @DtoEntityHidden
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   joinedAt DateTime @default(now())
@@ -438,7 +422,6 @@ model Message {
   id String @id @default(uuid())
 
   senderId   String
-  /// @DtoEntityHidden
   senderUser User   @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
 
   content     String
@@ -451,12 +434,10 @@ model Message {
 
   // For group messages
   chatGroupId String?
-  /// @DtoEntityHidden
   chatGroup   ChatGroup? @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
 
   // For direct messages
   recipientId   String?
-  /// @DtoEntityHidden
   recipientUser User?   @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
 
   readAt DateTime? // Read tracking for direct messages
@@ -476,11 +457,9 @@ model MaintenanceRequest {
 
   tenantId   String
   tenantRole UserRole @default(TENANT)
-  /// @DtoEntityHidden
   tenant     User     @relation("MaintenanceTenant", fields: [tenantId, tenantRole], references: [id, role], onDelete: Cascade)
 
   roomId String
-  /// @DtoEntityHidden
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   title       String
@@ -509,7 +488,6 @@ model Notification {
   id String @id @default(uuid())
 
   userId String
-  /// @DtoEntityHidden
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   title   String

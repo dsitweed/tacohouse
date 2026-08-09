@@ -12,12 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { Building } from './building';
 import type { ChatGroupMember } from './chatGroupMember';
 import type { Message } from './message';
 
 export interface ChatGroup {
   id: string;
   buildingId: string;
+  building?: Building;
   name: string;
   /** @nullable */
   description: string | null;
