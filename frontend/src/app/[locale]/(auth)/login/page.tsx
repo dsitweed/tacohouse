@@ -5,6 +5,7 @@ import { Building2, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useIntlayer } from 'next-intlayer';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -40,12 +41,6 @@ import {
 } from '@/components/ui/input-group';
 import { useLogin } from '@/hooks/api/useAuth';
 
-const loginFormSchema = z.object({
-  email: z.email('Email không hợp lệ.'),
-  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự.'),
-  remember: z.boolean(),
-});
-
 const AVATARS = [
   '/images/login-avatar-1.jpg',
   '/images/login-avatar-2.jpg',
@@ -56,6 +51,14 @@ const AVATARS = [
 export default function LoginPage() {
   const router = useRouter();
   const loginMutation = useLogin();
+  const content = useIntlayer('loginPage');
+
+  const loginFormSchema = z.object({
+    email: z.email(String(content.validation.emailInvalid)),
+    password: z.string().min(6, String(content.validation.passwordMin)),
+    remember: z.boolean(),
+  });
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -100,27 +103,28 @@ export default function LoginPage() {
 
           <div className="flex max-w-xl flex-col gap-6">
             <h1 className="text-4xl leading-tight font-bold tracking-tight text-white">
-              Quản lý nhà trọ thông minh hơn <br />
-              với dữ liệu chuyên sâu.
+              {content.hero.title}
             </h1>
             <p className="text-base text-white/80">
-              Hơn 2.000 chủ nhà và quản lý chuyên nghiệp đang dùng nền tảng
-              TacoHouse để tối ưu tỷ lệ lấp đầy, tự động hóa bảo trì và gia tăng
-              lợi nhuận.
+              {content.hero.description}
             </p>
 
             <div className="flex gap-8 pt-6">
               <div>
-                <p className="text-2xl font-bold text-white">98%</p>
+                <p className="text-2xl font-bold text-white">
+                  {content.hero.retentionValue}
+                </p>
                 <p className="text-xs font-semibold tracking-wide text-white/60 uppercase">
-                  Tỷ lệ giữ chân khách thuê
+                  {content.hero.retentionLabel}
                 </p>
               </div>
               <div className="w-px bg-white/20" />
               <div>
-                <p className="text-2xl font-bold text-white">15 phút</p>
+                <p className="text-2xl font-bold text-white">
+                  {content.hero.responseValue}
+                </p>
                 <p className="text-xs font-semibold tracking-wide text-white/60 uppercase">
-                  Thời gian phản hồi
+                  {content.hero.responseLabel}
                 </p>
               </div>
             </div>
@@ -138,9 +142,7 @@ export default function LoginPage() {
               </AvatarGroup>
             </div>
             <p className="text-xs font-semibold text-white/70 italic">
-              {
-                '"Công cụ trực quan nhất trong bộ công cụ của tôi." — Chị Lan, Quản lý bất động sản'
-              }
+              {content.hero.quote}
             </p>
           </div>
         </div>
@@ -151,12 +153,12 @@ export default function LoginPage() {
           <CardHeader>
             <CardTitle>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                Chào mừng trở lại
+                {content.title}
               </h2>
             </CardTitle>
             <CardDescription>
               <p className="text-sm font-medium text-gray-600">
-                Đăng nhập để quản lý tài sản và khách thuê của bạn.
+                {content.subtitle}
               </p>
             </CardDescription>
 
@@ -164,25 +166,25 @@ export default function LoginPage() {
               <button
                 type="button"
                 disabled
-                title="Tính năng sắp ra mắt"
+                title={String(content.comingSoon)}
                 className="flex h-11 flex-1 cursor-not-allowed items-center justify-center rounded-lg border border-gray-300 text-sm font-medium text-gray-900 opacity-60"
               >
-                Google
+                {content.googleButton}
               </button>
               <button
                 type="button"
                 disabled
-                title="Tính năng sắp ra mắt"
+                title={String(content.comingSoon)}
                 className="flex h-11 flex-1 cursor-not-allowed items-center justify-center rounded-lg border border-gray-300 text-sm font-medium text-gray-900 opacity-60"
               >
-                Facebook
+                {content.facebookButton}
               </button>
             </div>
 
             <div className="mt-6 flex items-center">
               <div className="h-px flex-1 bg-gray-300" />
               <span className="px-4 text-xs font-semibold tracking-wide text-gray-500 uppercase">
-                Hoặc dùng email
+                {content.divider}
               </span>
               <div className="h-px flex-1 bg-gray-300" />
             </div>
@@ -195,7 +197,9 @@ export default function LoginPage() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="email">Email</FieldLabel>
+                      <FieldLabel htmlFor="email">
+                        {content.emailLabel}
+                      </FieldLabel>
                       <InputGroup>
                         <InputGroupAddon>
                           <Mail className="size-4 text-gray-400" />
@@ -218,7 +222,9 @@ export default function LoginPage() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
+                      <FieldLabel htmlFor="password">
+                        {content.passwordLabel}
+                      </FieldLabel>
                       <InputGroup>
                         <InputGroupAddon>
                           <Lock className="size-4 text-gray-400" />
@@ -272,16 +278,16 @@ export default function LoginPage() {
                               htmlFor="remember"
                               className="text-sm font-normal text-gray-700"
                             >
-                              Ghi nhớ đăng nhập
+                              {content.rememberMe}
                             </FieldLabel>
                           </Field>
                           <button
                             type="button"
                             disabled
-                            title="Tính năng sắp ra mắt"
+                            title={String(content.comingSoon)}
                             className="cursor-not-allowed text-sm font-medium text-indigo-600 opacity-60"
                           >
-                            Quên mật khẩu?
+                            {content.forgotPassword}
                           </button>
                         </FieldGroup>
                       </FieldSet>
@@ -301,16 +307,16 @@ export default function LoginPage() {
                 form="login-form"
                 className="h-12 rounded-xl bg-indigo-600 text-base font-semibold shadow-lg shadow-indigo-600/20 hover:bg-indigo-700"
               >
-                Đăng nhập
+                {content.submitButton}
               </Button>
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  {'Chưa có tài khoản? '}
+                  {content.noAccount}
                   <Link
                     href="/register"
                     className="font-medium text-indigo-600 hover:text-indigo-500"
                   >
-                    Tạo tài khoản mới
+                    {content.createAccount}
                   </Link>
                 </p>
               </div>

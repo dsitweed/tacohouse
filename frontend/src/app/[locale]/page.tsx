@@ -3,6 +3,7 @@
 import { DollarSign, Home, Search, Shield } from 'lucide-react';
 import Link from 'next/link';
 
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAvailableRooms } from '@/features/rooms';
@@ -37,6 +38,7 @@ export default function HomePage() {
               <Link href="/register">
                 <Button>Đăng ký</Button>
               </Link>
+              <LocaleSwitcher />
             </div>
           </div>
         </div>
