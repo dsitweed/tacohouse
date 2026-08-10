@@ -1,8 +1,9 @@
 import '../globals.css';
 
+import { getHTMLTextDir } from 'intlayer';
 import type { Metadata } from 'next';
 import { Geist_Mono, Inter } from 'next/font/google';
-import { getLocale } from 'next-intlayer/server';
+import { NextLayoutIntlayer } from 'next-intlayer';
 
 import { AppProvider } from '@/components/providers';
 export { generateStaticParams } from 'next-intlayer';
@@ -22,17 +23,14 @@ export const metadata: Metadata = {
   description: 'Manage your rental properties efficiently',
 };
 
-export default async function LocaleLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const locale = await getLocale();
+const LocaleLayout: NextLayoutIntlayer = async ({ children, params }) => {
+  const { locale } = await params;
 
   return (
     <html
       lang={locale}
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
+      dir={getHTMLTextDir(locale)}
     >
       <body className="min-h-full">
         <AppProvider locale={locale}>
@@ -41,4 +39,6 @@ export default async function LocaleLayout({
       </body>
     </html>
   );
-}
+};
+
+export default LocaleLayout;

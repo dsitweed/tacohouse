@@ -1,4 +1,4 @@
-import { Locale } from 'intlayer';
+import { LocalesValues } from 'intlayer';
 import { IntlayerClientProvider } from 'next-intlayer';
 import { ReactNode } from 'react';
 
@@ -10,7 +10,7 @@ export const AppProvider = ({
   locale,
 }: {
   children: ReactNode;
-  locale: Locale;
+  locale?: LocalesValues;
 }) => {
   return (
     <QueryProvider>
