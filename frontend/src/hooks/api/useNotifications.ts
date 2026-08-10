@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { apiClient, handleApiError } from '@/libs';
-import { queryKeys } from '@/libs/queryKeys';
+import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type {
   CreateNotificationRequest,
   Notification,

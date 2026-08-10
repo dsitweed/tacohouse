@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { RoomsControllerFindAllParams } from '@/generated/model';
-import { queryKeys } from '@/libs/queryKeys';
+import { queryKeys } from '@/libs';
 
 import { roomsApi } from '../api/roomsApi';
 

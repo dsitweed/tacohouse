@@ -1,14 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { RegisterAuthDto } from '@/generated/model';
-import { apiClient, handleApiError } from '@/libs';
-import { queryKeys } from '@/libs/queryKeys';
+import { apiClient, handleApiError, queryKeys } from '@/libs';
 import { useAuthStore } from '@/stores/authStore';
 import type {
   ChangePasswordRequest,
   LoginRequest,
   LoginResponse,
-  RegisterRequest,
   UpdateUserProfileRequest,
   User,
 } from '@/types';

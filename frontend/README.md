@@ -37,6 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Kiến trúc thư mục đề xuất
 - https://chatgpt.com/s/t_6a786011f5848191a3fa450649068d22
+- https://chatgpt.com/s/t_6a797302424081919c63eb7f3b5e568d
 
 ## Vấn đề Date và timezone
 - Frontend và Backend đều quy định Date type

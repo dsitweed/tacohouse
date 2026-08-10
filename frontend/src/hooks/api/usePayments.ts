@@ -5,8 +5,7 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, handleApiError } from '@/libs';
-import { queryKeys } from '@/libs/queryKeys';
+import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type { CreatePaymentRequest, Payment, PaymentListQuery } from '@/types';
 
 export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
