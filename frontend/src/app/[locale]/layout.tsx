@@ -31,6 +31,7 @@ const LocaleLayout: NextLayoutIntlayer = async ({ children, params }) => {
       lang={locale}
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
       dir={getHTMLTextDir(locale)}
+      suppressHydrationWarning
     >
       <body className="min-h-full">
         <AppProvider locale={locale}>
