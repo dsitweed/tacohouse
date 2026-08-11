@@ -16,6 +16,8 @@ export const queryKeys = {
   buildings: {
     all: ['buildings'] as const,
     lists: () => [...queryKeys.buildings.all, 'list'] as const,
+    roomsCreatedThisMonth: () =>
+      [...queryKeys.buildings.all, 'createdThisMonth'] as const,
     list: (filters?: { landlordId?: string; page?: number; limit?: number }) =>
       [...queryKeys.buildings.lists(), filters] as const,
     details: () => [...queryKeys.buildings.all, 'detail'] as const,
@@ -131,5 +133,10 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.notifications.details(), id] as const,
     unread: () => [...queryKeys.notifications.all, 'unread'] as const,
     count: () => [...queryKeys.notifications.all, 'count'] as const,
+  },
+
+  dashboard: {
+    all: ['dashboard'] as const,
+    revenueTrend: () => [...queryKeys.dashboard.all, 'revenueTrend'] as const,
   },
 } as const;

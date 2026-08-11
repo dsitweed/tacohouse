@@ -480,25 +480,31 @@ export default function RegisterPage() {
                       )}
                     />
                   </div>
+
+                  <Field orientation="horizontal" className="relative">
+                    <Checkbox
+                      id="agreeTerms"
+                      checked={agreeTerms}
+                      onCheckedChange={() => setAgreeTerms((prev) => !prev)}
+                    />
+                    <FieldLabel htmlFor="agreeTerms" className="text-gray-700">
+                      <span>
+                        Tôi đồng ý với{' '}
+                        <span className="text-indigo-600">
+                          Điều khoản dịch vụ
+                        </span>{' '}
+                        và{' '}
+                        <span className="text-indigo-600">
+                          Chính sách bảo mật
+                        </span>
+                        .
+                      </span>
+                    </FieldLabel>
+                  </Field>
                 </FieldGroup>
               </form>
             </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Field orientation="horizontal">
-                <Checkbox
-                  id="agreeTerms"
-                  checked={agreeTerms}
-                  onCheckedChange={() => setAgreeTerms((prev) => !prev)}
-                />
-                <FieldLabel htmlFor="agreeTerms" className="text-gray-700">
-                  <span>
-                    Tôi đồng ý với{' '}
-                    <span className="text-indigo-600">Điều khoản dịch vụ</span>{' '}
-                    và{' '}
-                    <span className="text-indigo-600">Chính sách bảo mật</span>.
-                  </span>
-                </FieldLabel>
-              </Field>
+            <CardFooter>
               <Button
                 type="submit"
                 form="register-form"

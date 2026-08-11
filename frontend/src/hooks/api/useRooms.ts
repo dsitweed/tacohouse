@@ -12,16 +12,9 @@ import type { CreateRoomRequest, Room, UpdateRoomRequest } from '@/types';
 // Room API functions
 const roomsApi = {
   findAll: async (query?: RoomsControllerFindAllParams) => {
-    const response = await apiClient.get<Room[]>('/rooms', {
+    return apiClient.get<Room[]>('/rooms', {
       params: query,
     });
-    const data = response.data;
-
-    if (Array.isArray(data)) {
-      return data;
-    }
-
-    return (data as { data?: Room[] })?.data || data;
   },
 
   getById: async (id: string) => {

@@ -265,7 +265,7 @@ export default function LoginPage() {
                       >
                         <FieldGroup
                           data-slot="checkbox-group"
-                          className="flex-row items-center justify-between"
+                          className="relative flex-row items-center justify-between"
                         >
                           <Field orientation="horizontal" className="w-auto">
                             <Checkbox

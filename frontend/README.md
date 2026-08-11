@@ -44,3 +44,15 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - Nhưng khi gửi qua lại qua http thì lại chỉ có thể gửi string
 - Cần rất cẩn thận vấn đề timezone sẽ khiến dữ liệu không đồng nhất
 - toISOString() thì trả về kiểu: 2001-08-09T00:00:00.000Z
+
+## Checkbox shadcn
+- tự thêm 1 div input absolute vào cuối cùng 
+- Cách sửa thêm relative vào cha của chechbox là được
+
+## Vấn đề dùng intlayer watch làm port 3000 ko thể kill được
+
+```sh
+pkill -f "next dev"
+pkill -f "intlayer watch"
+lsof -nP -iTCP:3000 -sTCP:LISTEN
+```

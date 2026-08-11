@@ -5,9 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
+import { Building } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type {
-  Building,
   BuildingListQuery,
   CreateBuildingRequest,
   UpdateBuildingRequest,
@@ -16,22 +16,13 @@ import type {
 // Building API functions
 const buildingsApi = {
   getAll: async (query?: BuildingListQuery) => {
-    const response = await apiClient.get<{
-      data: Building[];
-      pagination?: unknown;
-    }>('/buildings', {
+    return await apiClient.get<Building[]>('/buildings', {
       params: query,
     });
-    const result = response.data;
+  },
 
-    if (result && typeof result === 'object' && 'data' in result) {
-      return result as { data: Building[]; pagination?: unknown };
-    }
-
-    return {
-      data: Array.isArray(result) ? (result as Building[]) : [],
-      pagination: undefined,
-    };
+  getBuildingsCreatedThisMonth: async () => {
+    return await apiClient.get<Building[]>('/buildings');
   },
 
   getById: async (id: string) => {
@@ -61,6 +52,13 @@ export function useBuildings(query?: BuildingListQuery) {
     queryKey: queryKeys.buildings.list(query),
     queryFn: () => buildingsApi.getAll(query),
     staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+}
+
+export function useBuildingsCreatedThisMonth() {
+  return useQuery({
+    queryKey: queryKeys.buildings.list(),
+    queryFn: () => buildingsApi.getBuildingsCreatedThisMonth(),
   });
 }
 
