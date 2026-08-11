@@ -94,12 +94,12 @@ export default function LoginPage() {
 
         <div className="relative flex w-full flex-col justify-between p-12">
           {/* TODO: create logo component for web */}
-          <div className="flex items-center gap-3 text-white">
+          <Link href="/" className="flex items-center gap-3 text-white">
             <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-600">
               <Building2 className="size-5" />
             </div>
             <span className="text-2xl font-bold">TacoHouse</span>
-          </div>
+          </Link>
 
           <div className="flex max-w-xl flex-col gap-6">
             <h1 className="text-4xl leading-tight font-bold tracking-tight text-white">

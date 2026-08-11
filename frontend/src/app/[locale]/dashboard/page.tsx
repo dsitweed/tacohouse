@@ -607,7 +607,7 @@ const AdminLandlordDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               Thao tác nhanh
             </h3>
-            <Zap className='size-5 text-gray-500' />
+            <Zap className="size-5 text-gray-500" />
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-3">
             {quickActions.map(({ label, href, icon: Icon }) => (

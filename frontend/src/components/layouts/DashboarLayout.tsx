@@ -1,15 +1,15 @@
 'use client';
 
 import { Header } from './Header';
-import { Sidebar } from './Sidebar';
+import Sidebar from './Sidebar';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-slate-50/60">
       <Sidebar />
-      <div className="ml-64 flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col lg:ml-[260px]">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6 lg:py-4">{children}</main>
       </div>
     </div>
   );

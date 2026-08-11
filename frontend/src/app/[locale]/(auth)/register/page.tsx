@@ -148,14 +148,14 @@ export default function RegisterPage() {
       <div className="flex h-full flex-1 flex-col overflow-y-auto bg-white">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white/90 px-6 py-4 backdrop-blur-sm">
           {/* TODO: create logo component for web */}
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="flex size-8 items-center justify-center rounded-lg bg-indigo-600">
               <Building2 className="size-4 text-white" />
             </div>
             <span className="text-lg font-semibold text-gray-900">
               TacoHouse
             </span>
-          </div>
+          </Link>
           <Link
             href="/login"
             className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
@@ -401,7 +401,7 @@ export default function RegisterPage() {
                               open={popoverIsOpen}
                               onOpenChange={setPopoverIsOpen}
                             >
-                              <PopoverTrigger>
+                              <PopoverTrigger asChild>
                                 <Button
                                   id="dateOfBirth"
                                   type="button"

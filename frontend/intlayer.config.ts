@@ -1,4 +1,6 @@
-import { type IntlayerConfig, Locales } from 'intlayer';
+import { type IntlayerConfig } from 'intlayer';
+
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/utils/locale';
 
 /**
  * Intlayer configuration file documentation
@@ -7,11 +9,11 @@ import { type IntlayerConfig, Locales } from 'intlayer';
 
 const config: IntlayerConfig = {
   internationalization: {
-    locales: [Locales.ENGLISH, Locales.VIETNAMESE],
+    locales: SUPPORTED_LOCALES,
     /**
      * Default locale used as a fallback if the requested locale is not found.
      */
-    defaultLocale: Locales.VIETNAMESE,
+    defaultLocale: DEFAULT_LOCALE,
   },
   routing: {
     /**

@@ -6,6 +6,7 @@ import {
   Building2,
   CreditCard,
   DoorOpen,
+  FileText,
   LayoutDashboard,
   MessageSquare,
   Receipt,
@@ -17,152 +18,205 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { Avatar, AvatarImage, Separator } from '@/components/ui';
+import { UserRole } from '@/generated/model';
 import { useAuthStore } from '@/stores/authStore';
-import { UserRole } from '@/types';
-import { cn } from '@/utils';
+import { cn, removeLocaleFromPathname } from '@/utils';
 
-interface NavItem {
+const NAV_GROUP = ['main', 'financial', 'system'] as const;
+type NavGroupType = (typeof NAV_GROUP)[number];
+
+type NavItem = {
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   roles?: UserRole[];
-}
+  group: NavGroupType;
+};
 
 const navItems: NavItem[] = [
   {
     title: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+    group: 'main',
   },
   {
     title: 'Tòa nhà',
     href: '/dashboard/buildings',
     icon: Building2,
     roles: [UserRole.ADMIN, UserRole.LANDLORD],
+    group: 'main',
   },
   {
     title: 'Phòng',
     href: '/dashboard/rooms',
     icon: DoorOpen,
     roles: [UserRole.ADMIN, UserRole.LANDLORD],
+    group: 'main',
   },
   {
     title: 'Người thuê',
     href: '/dashboard/tenants',
     icon: Users,
     roles: [UserRole.ADMIN, UserRole.LANDLORD],
+    group: 'main',
+  },
+  {
+    title: 'Hợp đồng',
+    href: '/dashboard/rentals',
+    icon: FileText,
+    roles: [UserRole.ADMIN, UserRole.LANDLORD],
+    group: 'main',
   },
   {
     title: 'Hóa đơn',
     href: '/dashboard/bills',
     icon: Receipt,
+    group: 'financial',
   },
   {
     title: 'Thanh toán',
     href: '/dashboard/payments',
     icon: CreditCard,
+    group: 'financial',
   },
   {
-    title: 'Yêu cầu sửa chữa',
+    title: 'Sửa chữa',
     href: '/dashboard/maintenance',
     icon: Wrench,
-  },
-  {
-    title: 'Thông báo',
-    href: '/dashboard/notifications',
-    icon: Bell,
-  },
-  {
-    title: 'Chat',
-    href: '/dashboard/chat',
-    icon: MessageSquare,
-  },
-  {
-    title: 'Quản lý chủ nhà',
-    href: '/dashboard/landlords',
-    icon: UserCog,
-    roles: [UserRole.ADMIN],
+    group: 'financial',
   },
   {
     title: 'Báo cáo',
     href: '/dashboard/reports',
     icon: BarChart3,
     roles: [UserRole.ADMIN, UserRole.LANDLORD],
+    group: 'financial',
+  },
+  {
+    title: 'Thông báo',
+    href: '/dashboard/notifications',
+    icon: Bell,
+    group: 'system',
+  },
+  {
+    title: 'Chat',
+    href: '/dashboard/chat',
+    icon: MessageSquare,
+    group: 'system',
+  },
+  {
+    title: 'Quản lý chủ nhà',
+    href: '/dashboard/landlords',
+    icon: UserCog,
+    roles: [UserRole.ADMIN],
+    group: 'system',
   },
   {
     title: 'Cài đặt',
     href: '/dashboard/settings',
     icon: Settings,
+    group: 'system',
   },
 ];
 
-export function Sidebar() {
+export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuthStore();
   const role = user?.role;
+  const pathWithoutLocale = removeLocaleFromPathname(pathname);
 
-  const filteredNavItems = navItems.filter(
-    (item) => !item.roles || (role && item.roles.includes(role)),
-  );
+  const filterGroup = (group: NavGroupType) =>
+    navItems.filter(
+      (item) =>
+        item.group === group &&
+        (!item.roles || (role && item.roles.includes(role))),
+    );
+
+  const renderNavGroup = (items: NavItem[]) =>
+    items.map((item) => {
+      const Icon = item.icon;
+      const isActive =
+        pathWithoutLocale === item.href ||
+        (item.href !== '/dashboard' && pathWithoutLocale.startsWith(item.href));
+
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={cn(
+            'group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-100',
+            isActive
+              ? 'bg-indigo-50 font-semibold text-indigo-600 shadow-2xs'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+          )}
+        >
+          <Icon className="size-5 transition-colors" />
+          <span>{item.title}</span>
+        </Link>
+      );
+    });
 
   return (
     <aside className="fixed top-0 left-0 z-40 h-screen w-64 border-r border-gray-200 bg-white">
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col p-4">
         {/* Logo */}
-        <div className="flex h-16 items-center border-b border-gray-200 px-6">
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
-              <span className="text-lg font-bold text-white">T</span>
+        {/* TODO: componentize this */}
+        <div className="mb-4 flex items-center p-2">
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <Building2 className="size-5 text-white" />
             </div>
-            <span className="text-xl font-semibold text-gray-900">
-              Tacohouse
-            </span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold tracking-tight text-indigo-600">
+                TacoHouse
+              </span>
+              <span className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                PREMIUM ASSETS
+              </span>
+            </div>
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 px-3 py-4">
-          {filteredNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive =
-              pathname === item.href || pathname?.startsWith(item.href + '/');
+        <nav className="flex-1 space-y-1 overflow-y-auto pr-1">
+          {NAV_GROUP.map((nav, index) => {
+            const filterResult = filterGroup(nav);
 
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-700 hover:bg-gray-50',
+              <div key={nav}>
+                {index > 0 && filterResult.length > 0 && (
+                  <Separator className="my-3" />
                 )}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.title}</span>
-              </Link>
+                {renderNavGroup(filterResult)}
+              </div>
             );
           })}
         </nav>
 
         {/* User info */}
         {user && (
-          <div className="border-t border-gray-200 p-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100">
-                <span className="font-semibold text-indigo-600">
-                  {user.email?.[0]?.toUpperCase() || 'U'}
-                </span>
-              </div>
+          <div className="mt-auto border-t border-gray-200 pt-3">
+            <div className="flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-gray-50">
+              <Avatar>
+                <AvatarImage
+                  src={
+                    user.profile?.avatar ??
+                    `https://api.dicebear.com/10.x/thumbs/svg?seed=${user.email}`
+                  }
+                  alt="user avatar"
+                />
+              </Avatar>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-gray-900">
+                <p className="truncate text-sm font-semibold text-gray-900">
                   {user.profile?.firstName && user.profile?.lastName
-                    ? `${user.profile.firstName} ${user.profile.lastName}`
+                    ? `${user.profile.lastName} ${user.profile.firstName}`
                     : user.email}
                 </p>
-                <p className="truncate text-xs text-gray-500">
+                <p className="truncate text-xs font-medium text-gray-500">
                   {role === UserRole.ADMIN && 'Quản trị viên'}
-                  {role === UserRole.LANDLORD && 'Chủ nhà'}
+                  {role === UserRole.LANDLORD && 'Chủ nhà / Quản lý'}
                   {role === UserRole.TENANT && 'Người thuê'}
                 </p>
               </div>
