@@ -16,6 +16,7 @@ import { RentalsModule } from 'rentals/rentals.module';
 import { RoomsModule } from 'rooms/rooms.module';
 import { UsersModule } from 'users/users.module';
 
+import { DashboardModule } from './dashboard/dashboard.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -35,6 +36,7 @@ import { PrismaModule } from './prisma/prisma.module';
     MaintenanceModule,
     ChatModule,
     NotificationsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [
