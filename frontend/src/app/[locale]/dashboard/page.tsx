@@ -181,6 +181,7 @@ const AdminLandlordDashboard = () => {
 
   const notifications = notificationsData?.data ?? [];
 
+  // TODO: refactor for use backend api instead add logic to FE
   const stats = useMemo(() => {
     const buildings = buildingsData?.data ?? [];
     const rooms = roomsData?.data ?? [];

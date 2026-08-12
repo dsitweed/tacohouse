@@ -60,6 +60,7 @@ apiClient.interceptors.request.use(
 
 // Dedupe concurrent refresh call
 let refreshPromise: Promise<string> | null;
+const AUTH_ENDPOINTS_EXCLUDED_FROM_REFRESH = ['/auth/login', '/auth/register'];
 
 // TODO: use http only cookie instead of client state in zustand
 async function refreshAccessToken(): Promise<string> {
@@ -100,6 +101,9 @@ apiClient.interceptors.response.use(
     if (
       !originalRequest ||
       error.response?.status !== 401 ||
+      AUTH_ENDPOINTS_EXCLUDED_FROM_REFRESH.some((url) =>
+        originalRequest.url?.includes(url),
+      ) ||
       originalRequest._retry
     ) {
       return Promise.reject(error);
@@ -153,7 +157,9 @@ export function handleApiError(error: unknown): ApiError {
   };
 
   const apiError = apiErrorHandle();
-  toast.error(apiError.message);
+  toast.error(apiError.message, {
+    position: 'top-center',
+  });
 
   return apiError;
 }
