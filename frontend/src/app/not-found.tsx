@@ -21,7 +21,7 @@ export default function RootNotFound() {
 
   return (
     <html lang="vi" className={`${inter.variable} h-full antialiased`}>
-      <body className="flex h-full min-h-screen font-sans text-slate-800 antialiased">
+      <body className="flex h-full min-h-screen font-sans antialiased">
         <main className="relative flex h-full w-full flex-col overflow-hidden md:flex-row">
           {/* Left half: Content Area */}
           <div className="relative z-10 flex flex-1 flex-col justify-between border-b bg-slate-50/80 p-6 md:w-1/2 md:p-12 lg:p-16">
