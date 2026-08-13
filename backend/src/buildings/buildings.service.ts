@@ -42,13 +42,30 @@ export class BuildingsService {
     data: Building[];
     pagination: PaginationMeta;
   }> {
-    const { limit, page, landlordId } = query;
+    const { limit, page, landlordId, search } = query;
     const skip = (page - 1) * limit;
     // Authorization logic:
     // - ADMIN: View all buildings (can filter by landlordId)
     // - LANDLORD: View only your buildings
     // - TENANT: View buildings where they are renting
-    const where: Prisma.BuildingWhereInput = {};
+    const where: Prisma.BuildingWhereInput = {
+      ...(search && {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            address: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      }),
+    };
 
     if (currentUser.role === UserRole.ADMIN) {
       where.landlordId = landlordId;
@@ -110,6 +127,22 @@ export class BuildingsService {
   async findOne(currentUser: User, id: string) {
     const building = await this.prisma.building.findUnique({
       where: { id },
+      include: {
+        landlord: {
+          select: {
+            id: true,
+            email: true,
+            isActive: true,
+            deletedAt: true,
+            profile: true,
+          },
+        },
+        _count: {
+          select: {
+            rooms: true,
+          },
+        },
+      },
     });
     if (!building) {
       throw new NotFoundException();

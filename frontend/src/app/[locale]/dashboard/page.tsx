@@ -210,9 +210,6 @@ const AdminLandlordDashboard = () => {
     });
 
     const revenueTrend = dashboardRevenueTrendData?.data ?? [];
-    console.log({
-      revenueTrend,
-    });
     const monthlyRevenue = revenueTrend.at(-1)?.total ?? 0;
     const previousMonthRevenue = revenueTrend.at(-2)?.total ?? 0;
     const revenueDeltaPct =
@@ -241,19 +238,18 @@ const AdminLandlordDashboard = () => {
     const billTotal = paidAmount + pendingAmount + overdueAmount || 1;
 
     const in30Days = now.getTime() + 30 * 24 * 60 * 60 * 1000;
-    // const expiringRentals = rentals
-    //   .filter(
-    //     (rental) =>
-    //       rental.status === RentalStatus.ACTIVE &&
-    //       rental.endDate &&
-    //       new Date(rental.endDate).getTime() > now.getTime() &&
-    //       new Date(rental.endDate).getTime() <= in30Days,
-    //   )
-    //   .sort(
-    //     (a, b) =>
-    //       new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime(),
-    //   );
-    const expiringRentals = rentals;
+    const expiringRentals = rentals
+      .filter(
+        (rental) =>
+          rental.status === RentalStatus.ACTIVE &&
+          rental.endDate &&
+          new Date(rental.endDate).getTime() > now.getTime() &&
+          new Date(rental.endDate).getTime() <= in30Days,
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime(),
+      );
 
     const urgentMaintenance = maintenance.filter(
       (maintenance) =>

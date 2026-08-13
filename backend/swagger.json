@@ -260,6 +260,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

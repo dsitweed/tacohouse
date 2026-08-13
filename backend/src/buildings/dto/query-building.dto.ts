@@ -14,4 +14,8 @@ export class FindAllBuildingsDto {
   @IsOptional()
   @IsString()
   landlordId?: string;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

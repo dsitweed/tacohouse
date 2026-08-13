@@ -5,13 +5,9 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { Building } from '@/generated/model';
+import { Building, CreateBuildingDto } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type {
-  BuildingListQuery,
-  CreateBuildingRequest,
-  UpdateBuildingRequest,
-} from '@/types';
+import type { BuildingListQuery, UpdateBuildingRequest } from '@/types';
 
 // Building API functions
 const buildingsApi = {
@@ -30,7 +26,7 @@ const buildingsApi = {
     return response.data;
   },
 
-  create: async (data: CreateBuildingRequest) => {
+  create: async (data: CreateBuildingDto) => {
     const response = await apiClient.post<Building>('/buildings', data);
     return response.data;
   },

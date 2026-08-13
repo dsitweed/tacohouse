@@ -41,7 +41,7 @@ export function SkeletonPage({
 }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('mx-auto w-full max-w-3xl p-6', className)}
+      className={cn('mx-auto w-full max-w-3xl', className)}
       role="status"
       aria-busy="true"
       {...props}

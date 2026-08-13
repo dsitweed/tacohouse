@@ -1,4 +1,4 @@
-type Currency = 'VND' | 'USD' | 'JPY';
+export type Currency = 'VND' | 'USD' | 'JPY';
 
 const LocalMap: Record<Currency, string> = {
   VND: 'vi-VN',
@@ -11,7 +11,7 @@ export function formatCurrency(
   currency: Currency = 'VND',
 ): string {
   if (amount === null || amount === undefined) {
-    return '0';
+    return '';
   }
 
   const value = typeof amount === 'string' ? Number(amount) : amount;
