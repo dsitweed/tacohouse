@@ -138,6 +138,7 @@ export default function BuildingsPage() {
     },
   });
 
+  // TODO: add pagination and infinite scroll
   const { data: buildingsData, isLoading } = useBuildings({
     page: 1,
     limit: 20,
@@ -159,6 +160,7 @@ export default function BuildingsPage() {
         value: building.landlordId,
         label: landlordInfo,
       });
+      // FIXME: have bug when user is LANDLORD but can see other landlords' buildings
       if (user?.role === UserRole.LANDLORD) {
         landlordMap.set(user.id, {
           value: user.id,
@@ -182,26 +184,27 @@ export default function BuildingsPage() {
       id: building.id,
       name: building.name,
       address: building.address,
+      // TODO: fix this error
       roomsCount: building._count.rooms || building.rooms?.length || 0,
       occupancy: '80%',
       monthlyRevenue: 10000000,
-      status: 'ACTIVE',
-      image: imagesList[index % imagesList.length],
-      type: index % 2 === 0 ? 'residential' : 'commercial',
-      isReal: true,
+      status: 'ACTIVE', // TODO: fix this logic
+      image: imagesList[index % imagesList.length], // TODO: fix this logic
+      type: index % 2 === 0 ? 'residential' : 'commercial', // TODO: fix this logic
+      verified: true, // TODO: fix this logic (like Facebook verified badge)
     }));
   }, [buildings]);
 
   const filteredBuildings = useMemo(() => {
+    // TODO: fix this logic
     return displayBuildings.filter(
       (item) => activeTab === 'all' || item.type === activeTab,
     );
   }, [activeTab, displayBuildings]);
 
   const handleCreateBuilding = (data: z.infer<typeof newBuildingSchema>) => {
-    console.log({
-      data,
-    });
+    //FIXME: Create and reload buildings list
+    // FIXME: not return correct data, after create new building, the list of buildings is not updated
     createBuildingMutation.mutate(data, {
       onSuccess: () => {
         toast.success('Tòa nhà đã được tạo thành công');
@@ -379,7 +382,7 @@ export default function BuildingsPage() {
           {canCreate && (
             <Card className="cursor-pointer border border-dashed hover:border-blue-500 hover:bg-blue-50/40">
               <CardContent className="min-h-95">
-                <Dialog>
+                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                   <DialogTrigger className="flex h-full flex-col items-center justify-center text-center">
                     <div className="flex size-16 items-center justify-center rounded-full bg-blue-200 text-blue-800">
                       <Plus className="size-7" />
@@ -538,7 +541,7 @@ export default function BuildingsPage() {
                           )}
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                           <Controller
                             name="electricityRate"
                             control={form.control}
@@ -559,6 +562,7 @@ export default function BuildingsPage() {
                               </Field>
                             )}
                           />
+                          {/* TODO: > 1000 VND for waterRate and other rates */}
                           <Controller
                             name="waterRate"
                             control={form.control}
@@ -663,7 +667,7 @@ export default function BuildingsPage() {
                       </FieldGroup>
 
                       <div className="mt-6 flex justify-end gap-3 border-t pt-2">
-                        <DialogClose asChild>
+                        <DialogClose>
                           <Button type="button" variant="outline">
                             Hủy
                           </Button>
