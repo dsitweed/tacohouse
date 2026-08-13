@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { DashboardLayout } from '@/components/layouts/DashboarLayout';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function DashboardRootLayout({

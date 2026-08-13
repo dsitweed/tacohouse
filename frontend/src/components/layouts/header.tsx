@@ -51,8 +51,12 @@ export function Header() {
           className="relative flex size-9 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-200/60"
         >
           <Bell className="size-5" />
-          <Badge variant="destructive" className="absolute top-0 -right-2">
-            {notifications.length}
+          <Badge
+            variant="destructive"
+            size="sm"
+            className="absolute top-0 -right-2 bg-red-700 text-white"
+          >
+            {notifications.length > 99 ? '99+' : notifications.length}
           </Badge>
         </Link>
 
