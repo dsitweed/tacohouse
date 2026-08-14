@@ -203,7 +203,7 @@ export default function BuildingsPage() {
   }, [activeTab, displayBuildings]);
 
   const handleCreateBuilding = (data: z.infer<typeof newBuildingSchema>) => {
-    //FIXME: Create and reload buildings list
+    // FIXME: Create and reload buildings list
     // FIXME: not return correct data, after create new building, the list of buildings is not updated
     createBuildingMutation.mutate(data, {
       onSuccess: () => {
@@ -291,15 +291,17 @@ export default function BuildingsPage() {
                 {/* Card Image Banner */}
                 {/* TODO: use Aspect Ratio of Shadcn */}
                 <div className="relative h-48 w-full overflow-hidden">
-                  <Image
-                    src={building.image}
-                    alt={building.name}
-                    fill
-                    // TODO: fix size dependent on screen size
-                    sizes="50vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    unoptimized
-                  />
+                  <Link href={`/dashboard/buildings/${building.id}`}>
+                    <Image
+                      src={building.image}
+                      alt={building.name}
+                      fill
+                      // TODO: fix size dependent on screen size
+                      sizes="50vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      unoptimized
+                    />
+                  </Link>
                   {/* Active Status Badge */}
                   <Badge
                     variant={
@@ -323,9 +325,11 @@ export default function BuildingsPage() {
                 {/* Card Main Info */}
                 <div className="flex flex-1 flex-col gap-3 p-5 pt-0">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {building.name}
-                    </h3>
+                    <Link href={`/dashboard/buildings/${building.id}`}>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {building.name}
+                      </h3>
+                    </Link>
                     <div className="mt-1 flex items-center gap-1.5 text-gray-500">
                       <MapPin className="size-3.5 shrink-0" />
                       <span className="truncate">{building.address}</span>
