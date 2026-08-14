@@ -8,7 +8,6 @@ export {
   useLogin,
   useLogout,
   useProfile,
-  useRefreshToken,
   useRegister,
   useUpdateProfile,
 } from './useAuth';

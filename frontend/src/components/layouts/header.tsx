@@ -2,16 +2,15 @@
 
 import { Bell, CalendarDays, LogOut, Search } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
-import { useNotifications } from '@/hooks/api';
+import { useLogout, useNotifications } from '@/hooks/api';
 import { useAuthStore } from '@/stores/authStore';
 
 import { Avatar, AvatarImage, Badge, Separator } from '../ui';
 
 export function Header() {
-  const { logout, user } = useAuthStore();
-  const router = useRouter();
+  const { user } = useAuthStore();
+  const logoutMutation = useLogout();
   const { data: notificationsData } = useNotifications({
     page: 1,
     limit: 1000,
@@ -19,8 +18,7 @@ export function Header() {
   const notifications = notificationsData?.data ?? [];
 
   const handleLogout = () => {
-    logout();
-    router.push('/login');
+    logoutMutation.mutate();
   };
 
   const todayFormatted = new Date().toLocaleDateString('vi-VN', {

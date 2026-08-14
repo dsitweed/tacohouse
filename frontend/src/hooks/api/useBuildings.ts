@@ -10,7 +10,7 @@ import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type { BuildingListQuery, UpdateBuildingRequest } from '@/types';
 
 // Building API functions
-const buildingsApi = {
+export const buildingsApi = {
   getAll: async (query?: BuildingListQuery) => {
     return await apiClient.get<Building[]>('/buildings', {
       params: query,

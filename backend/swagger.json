@@ -80,7 +80,7 @@
     },
     "/api/v1/auth/refresh": {
       "post": {
-        "operationId": "AuthController_create",
+        "operationId": "AuthController_refresh",
         "parameters": [],
         "responses": {
           "200": {
@@ -91,6 +91,21 @@
           }
         },
         "summary": "Refresh access token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          }
+        },
+        "summary": "User logout",
         "tags": [
           "Auth"
         ]

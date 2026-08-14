@@ -10,7 +10,7 @@ import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type { CreateRoomRequest, Room, UpdateRoomRequest } from '@/types';
 
 // Room API functions
-const roomsApi = {
+export const roomsApi = {
   findAll: async (query?: RoomsControllerFindAllParams) => {
     return apiClient.get<Room[]>('/rooms', {
       params: query,

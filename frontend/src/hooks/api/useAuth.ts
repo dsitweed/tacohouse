@@ -23,12 +23,8 @@ const authApi = {
     return response.data;
   },
 
-  refresh: async (refreshToken: string) => {
-    const response = await apiClient.post<{
-      accessToken: string;
-      refreshToken: string;
-    }>('/auth/refresh', { refreshToken });
-    return response.data;
+  logout: async () => {
+    await apiClient.post('/auth/logout', {});
   },
 
   getProfile: async () => {
@@ -58,7 +54,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      login(data.user, data.accessToken, data.refreshToken);
+      // Only store user info - tokens are in httpOnly cookies
+      login(data.user);
       queryClient.setQueryData(queryKeys.auth.profile(), data.user);
     },
     onError: handleApiError,
@@ -68,18 +65,6 @@ export function useLogin() {
 export function useRegister() {
   return useMutation({
     mutationFn: authApi.register,
-    onError: handleApiError,
-  });
-}
-
-export function useRefreshToken() {
-  const { setTokens } = useAuthStore();
-
-  return useMutation({
-    mutationFn: authApi.refresh,
-    onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken);
-    },
     onError: handleApiError,
   });
 }
@@ -120,8 +105,18 @@ export function useLogout() {
   const queryClient = useQueryClient();
   const { logout } = useAuthStore();
 
-  return () => {
-    logout();
-    queryClient.clear();
-  };
+  return useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      logout();
+      queryClient.clear();
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login');
+      }
+    },
+    onError: () => {
+      logout();
+      queryClient.clear();
+    },
+  });
 }
