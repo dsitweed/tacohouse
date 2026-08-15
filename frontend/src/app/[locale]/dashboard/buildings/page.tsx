@@ -49,18 +49,12 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-  Separator,
   SkeletonPage,
   Textarea,
 } from '@/components/ui';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Dialog,
   DialogClose,
@@ -262,6 +256,7 @@ export default function BuildingsPage() {
         </div>
 
         <div>
+          {/* TODO: Use Tabs components instead */}
           <ButtonGroup>
             {typedEntries(BuildingTab).map(([tab, tabName]) => (
               <Button
@@ -291,7 +286,10 @@ export default function BuildingsPage() {
                 {/* Card Image Banner */}
                 {/* TODO: use Aspect Ratio of Shadcn */}
                 <div className="relative h-48 w-full overflow-hidden">
-                  <Link href={`/dashboard/buildings/${building.id}`}>
+                  <Link
+                    href={`/dashboard/buildings/${building.id}`}
+                    className="relative block h-full w-full"
+                  >
                     <Image
                       src={building.image}
                       alt={building.name}
@@ -412,6 +410,7 @@ export default function BuildingsPage() {
                     <form
                       id="create-building-form"
                       onSubmit={form.handleSubmit(handleCreateBuilding)}
+                      // FIXME: after close form now scroll to "Thêm tòa nhà mới" div
                     >
                       <FieldGroup>
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

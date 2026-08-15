@@ -1,6 +1,6 @@
 import { cn } from '@/utils';
 
-import { Card, CardContent } from './ui';
+import { Card, CardContent, CardFooter } from './ui';
 
 type KpiCardProps = {
   label: string;
@@ -12,6 +12,7 @@ type KpiCardProps = {
   };
   iconClassName?: string;
   textClassName?: string;
+  description?: React.ReactNode;
 };
 
 // TODO: update this component. Now using iconClassName and textClassName. But should use variant instead
@@ -23,10 +24,11 @@ export default function KpiCard({
   delta,
   iconClassName,
   textClassName,
+  description,
 }: KpiCardProps) {
   return (
     <Card>
-      <CardContent className="flex h-full flex-col justify-between px-4">
+      <CardContent className="flex h-full flex-col justify-between">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
             {label}
@@ -54,6 +56,7 @@ export default function KpiCard({
             </span>
           )}
         </div>
+        {description}
       </CardContent>
     </Card>
   );

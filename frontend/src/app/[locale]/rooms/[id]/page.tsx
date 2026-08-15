@@ -8,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getRoomById } from '@/server/rooms';
+import { useRoom } from '@/hooks/api';
+import { roomsApi } from '@/hooks/api/useRooms';
 import { RoomTypeLabels } from '@/types';
 import { formatCurrency } from '@/utils';
 
@@ -18,7 +19,7 @@ export default async function RoomDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const room = await getRoomById(id);
+  const room = await roomsApi.getById(id);
   if (!room) notFound();
 
   return (
