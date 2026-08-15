@@ -3,18 +3,57 @@
 @custom-variant dark (&:is(.dark *));
 /* Fix for Radix UI components that use data-state instead of data-checked */
 @custom-variant data-checked (&[data-state=checked]);
-:root {
-  /* Colors - Primary (Indigo/Blue) */
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
 
-  /* Colors - Secondary (Emerald/Green) */
-  --color-success-50: #ecfdf5;
-  --color-success-500: #10b981;
-  --color-success-600: #059669;
+:root {
+  /* Brand Palette Custom Variables */
+  --brand-primary: #2563eb;    /* Royal Blue */
+  --brand-secondary: #108981;  /* Teal / Emerald */
+  --brand-tertiary: #f59e0b;   /* Amber / Warning */
+  --brand-neutral: #64748b;    /* Slate Gray */
+
+  /* Light Theme Palette */
+  --background: oklch(0.985 0.005 240);
+  --background-gray: oklch(0.965 0.008 240);
+  --foreground: oklch(0.20 0.03 250);
+
+  /* Card & Popover */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.20 0.03 250);
+  --card-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.06);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.20 0.03 250);
+
+  /* Main Interactive Elements */
+  --primary: oklch(0.55 0.20 250);            /* Derived from #2563EB */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.58 0.12 180);          /* Derived from #108981 */
+  --secondary-foreground: oklch(0.985 0 0);
+
+  /* Muted & Accents */
+  --muted: oklch(0.96 0.01 240);
+  --muted-foreground: oklch(0.52 0.03 250);   /* Derived from #64748B */
+  --accent: oklch(0.94 0.02 250);
+  --accent-foreground: oklch(0.40 0.18 250);
+
+  /* Destructive & Warning */
+  --destructive: oklch(0.60 0.22 25);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Borders, Inputs, Focus Rings */
+  --border: oklch(0.91 0.015 240);
+  --input: oklch(0.91 0.015 240);
+  --ring: oklch(0.55 0.20 250);               /* Matches Primary */
+
+  /* Tailored Palette Swatches */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #2563eb;
+  --color-primary-600: #1d4ed8;
+  --color-primary-700: #1e40af;
+
+  --color-success-50: #f0fdf4;
+  --color-success-500: #108981;
+  --color-success-600: #0d6e67;
 
   /* Colors - Warning (Amber) */
   --color-warning-50: #fffbeb;
@@ -26,44 +65,75 @@
   --color-error-500: #ef4444;
   --color-error-600: #dc2626;
 
-  /* Background */
-  --background-gray: #f8f9fb;
-
-  /* Card */
-  --card-bg: #ffffff;
-  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
+  /* Radius & Sidebar Layout */
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar: oklch(0.98 0.005 240);
+  --sidebar-foreground: oklch(0.20 0.03 250);
+  --sidebar-primary: oklch(0.55 0.20 250);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.93 0.02 250);
+  --sidebar-accent-foreground: oklch(0.35 0.15 250);
+  --sidebar-border: oklch(0.91 0.015 240);
+  --sidebar-ring: oklch(0.55 0.20 250);
+
+  /* Charts */
+  --chart-1: #2563eb;
+  --chart-2: #108981;
+  --chart-3: #f59e0b;
+  --chart-4: #64748b;
+  --chart-5: #3b82f6;
+}
+
+.dark {
+  /* Dark Theme Palette (Cool Blue Slate Base) */
+  --background: oklch(0.14 0.025 250);
+  --background-gray: oklch(0.11 0.02 250);
+  --foreground: oklch(0.96 0.01 240);
+
+  /* Card & Popover */
+  --card: oklch(0.18 0.028 250);
+  --card-foreground: oklch(0.96 0.01 240);
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  --popover: oklch(0.18 0.028 250);
+  --popover-foreground: oklch(0.96 0.01 240);
+
+  /* Main Interactive Elements */
+  --primary: oklch(0.65 0.19 250);            /* Glowing #2563EB for dark mode */
+  --primary-foreground: oklch(0.14 0.025 250);
+  --secondary: oklch(0.68 0.13 180);          /* Brightened #108981 */
+  --secondary-foreground: oklch(0.14 0.025 250);
+
+  /* Muted & Accents */
+  --muted: oklch(0.22 0.025 250);
+  --muted-foreground: oklch(0.68 0.025 250);   /* Soft Slate */
+  --accent: oklch(0.24 0.04 250);
+  --accent-foreground: oklch(0.96 0.01 240);
+
+  /* Destructive */
+  --destructive: oklch(0.65 0.20 25);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Borders, Inputs, Focus Rings */
+  --border: oklch(0.25 0.025 250);
+  --input: oklch(0.25 0.025 250);
+  --ring: oklch(0.65 0.19 250);
+
+  /* Sidebar Layout */
+  --sidebar: oklch(0.16 0.025 250);
+  --sidebar-foreground: oklch(0.96 0.01 240);
+  --sidebar-primary: oklch(0.65 0.19 250);
+  --sidebar-primary-foreground: oklch(0.14 0.025 250);
+  --sidebar-accent: oklch(0.22 0.03 250);
+  --sidebar-accent-foreground: oklch(0.96 0.01 240);
+  --sidebar-border: oklch(0.23 0.025 250);
+  --sidebar-ring: oklch(0.65 0.19 250);
+
+  /* Charts */
+  --chart-1: #3b82f6;
+  --chart-2: #14b8a6;
+  --chart-3: #fbbf24;
+  --chart-4: #94a3b8;
+  --chart-5: #60a5fa;
 }
 
 @theme inline {
@@ -110,54 +180,62 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-body {
-  background: var(--background-gray);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased transition-colors duration-200;
   }
   html {
     @apply font-sans;
+  }
+  .leaflet-container {
+    @apply !bg-card !font-[inherit];
+  }
+  .leaflet-container a {
+    @apply !text-inherit;
+  }
+  .leaflet-div-icon {
+    @apply !bg-transparent !border-none;
+  }
+  .leaflet-popup-content-wrapper, .leaflet-popup-content, .leaflet-popup-content p {
+    @apply ![all:unset];
+  }
+  .leaflet-popup {
+    @apply !animate-none;
+  }
+  .leaflet-popup-close-button {
+    @apply ring-offset-background focus:ring-ring bg-secondary rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:outline-hidden;
+  }
+  .leaflet-tooltip, .leaflet-draw-tooltip {
+    @apply !bg-foreground !text-background !animate-none !rounded-md !border-none !p-0 !px-3 !py-1.5 !shadow-none;
+  }
+  .leaflet-draw-tooltip:before {
+    @apply bg-foreground !top-1/2 !right-0.5 size-2.5 translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] !border-none;
+  }
+  .leaflet-error-draw-tooltip {
+    @apply !bg-destructive !text-white;
+  }
+  .leaflet-error-draw-tooltip:before {
+    @apply bg-destructive;
+  }
+  .leaflet-draw-tooltip-subtext {
+    @apply !text-background;
+  }
+  .leaflet-popup-tip-container, .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before {
+    @apply hidden;
+  }
+  .leaflet-control-attribution {
+    @apply !bg-muted rounded-md !px-[4px] !py-[2px] text-[10px] !leading-none !text-inherit;
+  }
+  .leaflet-draw-guide-dash {
+    @apply rounded-full;
+  }
+  .leaflet-edit-marker-selected {
+    @apply !border-transparent !bg-transparent;
+  }
+  .marker-cluster div {
+    @apply font-[inherit];
   }
 }
