@@ -6,6 +6,7 @@ import {
 import type { MaintenanceRequest, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
 import { MaintenanceStatus, UserRole } from 'generated/prisma/enums';
+import { RoomWhereInput } from 'generated/prisma/models';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationMeta } from 'types';
 
@@ -94,9 +95,10 @@ export class MaintenanceService {
     if (roomId) where.roomId = roomId;
     if (status) where.status = status;
     if (priority) where.priority = priority;
+
     if (buildingId)
       where.room = {
-        buildingId,
+        buildingId: buildingId,
       };
 
     // Authorization logic
@@ -105,6 +107,7 @@ export class MaintenanceService {
     } else if (currentUser.role === UserRole.LANDLORD) {
       // Landlord can only see requests for their buildings
       where.room = {
+        ...(where.room as RoomWhereInput),
         building: {
           landlordId: currentUser.id,
         },
