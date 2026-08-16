@@ -4,7 +4,6 @@ import { LatLngExpression } from 'leaflet';
 import { ArrowLeft, Edit, FileText, MapPin, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 import {
   Breadcrumb,
@@ -23,7 +22,7 @@ import {
   TabsTrigger,
 } from '@/components/ui';
 import { Building, UserRole } from '@/generated/model';
-import { useBuilding, useUpdateBuilding } from '@/hooks/api';
+import { useBuilding } from '@/hooks/api';
 import { useAuthStore } from '@/stores/authStore';
 
 import OverviewTab from './OverviewTab';
@@ -39,8 +38,6 @@ const TabBar = {
   documents: 'Tài liệu',
 };
 
-type TabBarType = keyof typeof TabBar;
-
 type BuildingDetailProps = {
   id: string;
   initialBuilding: Building;
@@ -54,16 +51,11 @@ export default function BuildingDetail({
   initialBuilding,
 }: BuildingDetailProps) {
   const { user } = useAuthStore();
-  const form = useForm();
-
-  const [activeTab, setActiveTab] = useState<TabBarType>('overview');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const { data: building, isLoading } = useBuilding(id, {
     initialData: initialBuilding,
   });
-  const updateBuildingMutation = useUpdateBuilding();
 
   if (isLoading || !building) {
     return <SkeletonPage />;
@@ -72,8 +64,6 @@ export default function BuildingDetail({
   const canEdit =
     user?.role === UserRole.ADMIN ||
     (user?.role === UserRole.LANDLORD && building.landlordId === user.id);
-
-  const onSubmit = async () => {};
 
   return (
     <div className="min-h-screen">

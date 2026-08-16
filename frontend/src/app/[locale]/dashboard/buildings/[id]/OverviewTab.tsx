@@ -1,9 +1,8 @@
 'use client';
 
-import Autoplay from 'embla-carousel-autoplay';
 import { LatLngTuple } from 'leaflet';
 import { DollarSign, ExternalLink, TrendingUp, Wrench } from 'lucide-react';
-import Image from 'next/image';
+import { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import KpiCard from '@/components/KpiCard';
@@ -13,9 +12,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
   ChartContainer,
   Map,
   MapMarker,
@@ -31,6 +27,8 @@ import {
 import { useMaintenanceRequests } from '@/hooks/api';
 import { MAINTENANCE_STATUS_MAP } from '@/types';
 import { toDateOnlyString } from '@/utils';
+
+import BuildingGalleryModal from './BuildingGalleryModal';
 
 const revenueChartConfig = {
   gross: {
@@ -58,13 +56,6 @@ const MONTHLY_REVENUE_TREND = [
   { month: 'DEC', gross: 29500, expense: 7100 },
 ];
 
-const GALLERY_IMAGES = [
-  '/images/buildings/gallery/photo-1.png',
-  '/images/buildings/gallery/photo-2.png',
-  '/images/buildings/gallery/photo-3.png',
-  '/images/buildings/gallery/photo-4.png',
-];
-
 type OverviewTabProps = {
   buildingId: string;
   buildingName: string;
@@ -76,6 +67,8 @@ export default function OverviewTab({
   buildingName,
   buildingCoordinates,
 }: OverviewTabProps) {
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
   const { data: maintenanceData } = useMaintenanceRequests({
     buildingId,
   });
@@ -203,41 +196,21 @@ export default function OverviewTab({
         <Card className="lg:col-span-4">
           <CardHeader className="flex items-center justify-between gap-4">
             <h3 className="text-lg font-bold text-gray-900">Recent Photos</h3>
-            <Button variant="ghost" className="text-primary text-xs font-bold">
+            <Button
+              variant="ghost"
+              className="text-primary text-xs font-bold"
+              onClick={() => setIsGalleryOpen(true)}
+            >
               View Gallery
             </Button>
           </CardHeader>
           <CardContent>
-            {/* TODO: Update UI in the future */}
-            <Carousel
-              plugins={[
-                Autoplay({
-                  delay: 2000,
-                }),
-              ]}
-              opts={{
-                align: 'start',
-              }}
-              orientation="vertical"
-              className="w-full max-w-xs"
-            >
-              <CarouselContent className="-mt-1 h-60">
-                {GALLERY_IMAGES.map((imageUrl, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="basis-1/2 bg-red-50 pt-1"
-                  >
-                    <Image
-                      src={imageUrl}
-                      alt="Gallery image"
-                      width={800}
-                      height={800}
-                      className="object-cover"
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
+            {/* Gallery lightbox modal */}
+            <BuildingGalleryModal
+              buildingId={buildingId}
+              open={isGalleryOpen}
+              setOpen={setIsGalleryOpen}
+            />
           </CardContent>
         </Card>
       </div>

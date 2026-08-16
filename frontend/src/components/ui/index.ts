@@ -13,6 +13,7 @@ export * from './command';
 export * from './currency-input';
 export * from './dialog';
 export * from './dropdown-menu';
+export * from './empty';
 export * from './field';
 export * from './input';
 export * from './input-group';
