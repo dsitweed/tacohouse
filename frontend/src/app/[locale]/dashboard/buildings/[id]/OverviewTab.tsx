@@ -1,6 +1,5 @@
 'use client';
 
-import { VariantProps } from 'class-variance-authority';
 import Autoplay from 'embla-carousel-autoplay';
 import { LatLngTuple } from 'leaflet';
 import { DollarSign, ExternalLink, TrendingUp, Wrench } from 'lucide-react';
@@ -10,7 +9,6 @@ import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import KpiCard from '@/components/KpiCard';
 import {
   Badge,
-  badgeVariants,
   Button,
   Card,
   CardContent,
@@ -30,9 +28,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui';
-import { MaintenanceStatus } from '@/generated/model';
 import { useMaintenanceRequests } from '@/hooks/api';
-import { cn, toDateOnlyString } from '@/utils';
+import { MAINTENANCE_STATUS_MAP } from '@/types';
+import { toDateOnlyString } from '@/utils';
 
 const revenueChartConfig = {
   gross: {
@@ -66,31 +64,6 @@ const GALLERY_IMAGES = [
   '/images/buildings/gallery/photo-3.png',
   '/images/buildings/gallery/photo-4.png',
 ];
-
-const MAINTENANCE_STATUS_COLORS: Record<
-  MaintenanceStatus,
-  {
-    label: string;
-    variant: VariantProps<typeof badgeVariants>['variant'];
-  }
-> = {
-  [MaintenanceStatus.PENDING]: {
-    label: 'Chờ xử lý',
-    variant: 'pending',
-  },
-  [MaintenanceStatus.IN_PROGRESS]: {
-    label: 'Đang tiến hành',
-    variant: 'default',
-  },
-  [MaintenanceStatus.COMPLETED]: {
-    label: 'Hoàn thành',
-    variant: 'successLight',
-  },
-  [MaintenanceStatus.CANCELLED]: {
-    label: 'Đã hủy',
-    variant: 'destructive',
-  },
-};
 
 type OverviewTabProps = {
   buildingId: string;
@@ -280,6 +253,7 @@ export default function OverviewTab({
           </Button>
         </CardHeader>
         <CardContent>
+          {/* TODO: Update table with pagination and data table */}
           <Table>
             <TableHeader>
               <TableRow className="bg-blue-50 font-semibold tracking-wider uppercase">
@@ -300,9 +274,9 @@ export default function OverviewTab({
                   <TableCell>{item.category}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={MAINTENANCE_STATUS_COLORS[item.status].variant}
+                      variant={MAINTENANCE_STATUS_MAP[item.status].variant}
                     >
-                      {MAINTENANCE_STATUS_COLORS[item.status].label}
+                      {MAINTENANCE_STATUS_MAP[item.status].label}
                     </Badge>
                   </TableCell>
                   <TableCell>

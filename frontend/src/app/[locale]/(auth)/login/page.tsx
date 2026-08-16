@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+import { Spinner } from '@/components/ui';
 import {
   Avatar,
   AvatarFallback,
@@ -305,9 +306,10 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 form="login-form"
+                disabled={loginMutation.isPending}
                 className="h-12 rounded-xl bg-indigo-600 text-base font-semibold shadow-lg shadow-indigo-600/20 hover:bg-indigo-700"
               >
-                {content.submitButton}
+                {loginMutation.isPending ? <Spinner /> : content.submitButton}
               </Button>
               <div className="text-center">
                 <p className="text-sm text-gray-600">

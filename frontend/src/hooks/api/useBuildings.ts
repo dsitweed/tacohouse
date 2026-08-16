@@ -5,9 +5,13 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { Building, CreateBuildingDto } from '@/generated/model';
+import {
+  Building,
+  CreateBuildingDto,
+  UpdateBuildingDto,
+} from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type { BuildingListQuery, UpdateBuildingRequest } from '@/types';
+import type { BuildingListQuery } from '@/types';
 
 // Building API functions
 export const buildingsApi = {
@@ -31,7 +35,7 @@ export const buildingsApi = {
     return response.data;
   },
 
-  update: async (id: string, data: UpdateBuildingRequest) => {
+  update: async (id: string, data: UpdateBuildingDto) => {
     const response = await apiClient.patch<Building>(`/buildings/${id}`, data);
     return response.data;
   },
@@ -59,12 +63,12 @@ export function useBuildingsCreatedThisMonth() {
 }
 
 export function useBuilding(
-  id: string | undefined,
+  id: string,
   options?: Omit<UseQueryOptions<Building>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
-    queryKey: queryKeys.buildings.detail(id!),
-    queryFn: () => buildingsApi.getById(id!),
+    queryKey: queryKeys.buildings.detail(id),
+    queryFn: () => buildingsApi.getById(id),
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
@@ -87,7 +91,7 @@ export function useUpdateBuilding() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateBuildingRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateBuildingDto }) =>
       buildingsApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(queryKeys.buildings.detail(variables.id), data);

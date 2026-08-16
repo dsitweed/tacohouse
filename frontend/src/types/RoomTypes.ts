@@ -1,5 +1,10 @@
+import { VariantProps } from 'class-variance-authority';
+
+import { badgeVariants } from '@/components/ui';
+import { RoomStatus } from '@/generated/model';
+
 import type { Building } from './BuildingTypes';
-import type { EquipmentCondition, RoomStatus } from './EnumsTypes';
+import type { EquipmentCondition } from './EnumsTypes';
 import { RoomType } from './EnumsTypes';
 
 export interface Room {
@@ -40,4 +45,29 @@ export interface RoomEquipment {
 export const RoomTypeLabels: Record<RoomType, string> = {
   [RoomType.FULL_RIGHTS]: 'Phòng nguyên căn',
   [RoomType.PARTIAL_RIGHTS]: 'Phòng khép kín',
+};
+
+export const ROOM_STATUS_MAP: Record<
+  RoomStatus,
+  {
+    label: string;
+    variant: VariantProps<typeof badgeVariants>['variant'];
+  }
+> = {
+  [RoomStatus.PENDING_CHECKOUT]: {
+    label: 'Chờ xử lý',
+    variant: 'pending',
+  },
+  [RoomStatus.AVAILABLE]: {
+    label: 'Đang trống',
+    variant: 'successLight',
+  },
+  [RoomStatus.OCCUPIED]: {
+    label: 'Đang thuê',
+    variant: 'secondary',
+  },
+  [RoomStatus.MAINTENANCE]: {
+    label: 'Bảo trì',
+    variant: 'destructive',
+  },
 };

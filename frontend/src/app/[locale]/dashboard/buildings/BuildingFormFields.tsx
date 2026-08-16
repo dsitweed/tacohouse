@@ -1,0 +1,314 @@
+import { RefObject } from 'react';
+import { Controller, UseFormReturn } from 'react-hook-form';
+import * as z from 'zod';
+
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  CurrencyInput,
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  Input,
+  Textarea,
+} from '@/components/ui';
+import { UserRole } from '@/generated/model';
+import { useBuildings } from '@/hooks/api';
+import { useAuthStore } from '@/stores/authStore';
+
+export const buildingSchema = z.object({
+  name: z.string().min(1, 'Tên tòa nhà không được để trống'),
+  address: z.string().min(1, 'Địa chỉ không được để trống'),
+  description: z.string().min(1, 'Mô tả không được để trống'),
+  billingDate: z.number().optional(),
+  landlordId: z.string().min(1, 'Vui lòng chọn chủ sở hữu'),
+  electricityRate: z.number().min(0, 'Đơn giá điện phải lớn hơn hoặc bằng 0'),
+  waterRate: z.number().min(0, 'Đơn giá nước phải lớn hơn hoặc bằng 0'),
+  gasRate: z.number().min(0, 'Đơn giá gas phải lớn hơn hoặc bằng 0'),
+  managementFee: z
+    .number()
+    .min(0, 'Phí quản lý phải lớn hơn hoặc bằng 0')
+    .optional(),
+  cleaningFeePerPerson: z
+    .number()
+    .min(0, 'Phí vệ sinh phải lớn hơn hoặc bằng 0')
+    .optional(),
+  lightingFee: z
+    .number()
+    .min(0, 'Phí chiếu sáng phải lớn hơn hoặc bằng 0')
+    .optional(),
+});
+
+export type BuildingFormFieldsType = z.infer<typeof buildingSchema>;
+export const updateBuildingSchema = buildingSchema.partial();
+export type UpdateBuildingFieldsType = z.infer<typeof updateBuildingSchema>;
+
+type BuildingFormFieldsProps = {
+  form: UseFormReturn<BuildingFormFieldsType>;
+  dialogRef: RefObject<HTMLDivElement | null>;
+};
+
+export function BuildingFormFields({
+  form,
+  dialogRef,
+}: BuildingFormFieldsProps) {
+  const user = useAuthStore((state) => state.user);
+
+  const { data: buildingsData } = useBuildings({
+    page: 1,
+    limit: 100,
+  });
+  const buildings = buildingsData?.data ?? [];
+
+  const landlordsData = (() => {
+    const landlordMap = new Map<string, { value: string; label: string }>();
+
+    for (const building of buildings) {
+      landlordMap.set(building.landlordId, {
+        value: building.landlordId,
+        label:
+          building.landlord?.profile?.firstName ??
+          building.landlord?.email ??
+          building.landlordId,
+      });
+    }
+
+    // FIXME: have bug when user is LANDLORD but can see other landlords' buildings
+    // FIXME 1: Create GET /users?role=LANDLORD API to get all landlords (Admin only)
+    // FIXME 2: If user is LANDLORD, hidden landlordId field and auto set landlordId
+    // FIXME 3: Label just have firstName (need fullName)
+    if (user?.role === UserRole.LANDLORD) {
+      landlordMap.set(user.id, {
+        value: user.id,
+        label: 'Tôi (Chủ sở hữu)',
+      });
+    }
+
+    return [...landlordMap.values()];
+  })();
+
+  return (
+    <FieldGroup>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <Controller
+          name="name"
+          control={form.control}
+          rules={{
+            required: 'Tên tòa nhà không được để trống',
+          }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="name">
+                Tên tòa nhà
+                <span className="text-red-500">*</span>
+              </FieldLabel>
+              <Input
+                {...field}
+                id="name"
+                type="text"
+                aria-invalid={fieldState.invalid}
+                placeholder="Ví dụ: Taco House Landmark"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="landlordId"
+          control={form.control}
+          rules={{
+            required: 'Vui lòng chọn chủ sở hữu',
+          }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="landlordId">
+                Chủ sở hữu
+                <span className="text-red-500">*</span>
+              </FieldLabel>
+
+              <Combobox
+                items={landlordsData}
+                value={
+                  landlordsData.find((item) => item.value === field.value) ??
+                  null
+                }
+                onValueChange={(item) => field.onChange(item?.value ?? '')}
+              >
+                <ComboboxInput placeholder="Chọn chủ sở hữu" showClear />
+                <ComboboxContent container={dialogRef}>
+                  <ComboboxEmpty>Không tìm thấy chủ sở hữu</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item: (typeof landlordsData)[number]) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </div>
+
+      <Controller
+        name="address"
+        control={form.control}
+        rules={{
+          required: 'Địa chỉ tòa nhà không được để trống',
+        }}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="address">
+              Địa chỉ tòa nhà
+              <span className="text-red-500">*</span>
+            </FieldLabel>
+            <Input
+              {...field}
+              id="address"
+              type="text"
+              aria-invalid={fieldState.invalid}
+              placeholder="Ví dụ: 123 Đường ABC, Quận 1, TP. HCM"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="description"
+        control={form.control}
+        rules={{
+          required: 'Mô tả tòa nhà không được để trống',
+        }}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="description">
+              Mô tả tòa nhà
+              <span className="text-red-500">*</span>
+            </FieldLabel>
+            <Textarea
+              {...field}
+              id="description"
+              aria-invalid={fieldState.invalid}
+              placeholder="Ví dụ: Tòa nhà cao cấp với nhiều tiện ích. Phù hợp cho cả văn phòng và căn hộ."
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <Controller
+          name="electricityRate"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="electricityRate">
+                Giá điện (VNĐ/kWh)
+              </FieldLabel>
+              <CurrencyInput
+                {...field}
+                id="electricityRate"
+                aria-invalid={fieldState.invalid}
+                placeholder="Nhập đơn giá điện"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        {/* TODO: > 1000 VND for waterRate and other rates */}
+        <Controller
+          name="waterRate"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="waterRate">Giá nước (VNĐ/m³)</FieldLabel>
+              <CurrencyInput
+                {...field}
+                id="waterRate"
+                aria-invalid={fieldState.invalid}
+                placeholder="Nhập đơn giá nước"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="gasRate"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="gasRate">Giá gas (VNĐ/m³)</FieldLabel>
+              <CurrencyInput
+                {...field}
+                id="gasRate"
+                aria-invalid={fieldState.invalid}
+                placeholder="Nhập đơn giá gas"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="managementFee"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="managementFee">Phí quản lý</FieldLabel>
+              <CurrencyInput
+                {...field}
+                id="managementFee"
+                aria-invalid={fieldState.invalid}
+                placeholder="Nhập phí quản lý"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="cleaningFeePerPerson"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="cleaningFeePerPerson">
+                Đơn giá dọn dẹp
+              </FieldLabel>
+              <CurrencyInput
+                {...field}
+                id="cleaningFeePerPerson"
+                aria-invalid={fieldState.invalid}
+                placeholder="Nhập đơn giá dọn dẹp"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="lightingFee"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="lightingFee">
+                Đơn giá điện chiếu sáng
+              </FieldLabel>
+              <CurrencyInput
+                {...field}
+                id="lightingFee"
+                aria-invalid={fieldState.invalid}
+                placeholder="Nhập đơn giá điện chiếu sáng"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </div>
+    </FieldGroup>
+  );
+}

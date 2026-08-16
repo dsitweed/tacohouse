@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
-  Loader2,
   User,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -44,6 +43,7 @@ import {
   PopoverTrigger,
   RadioGroup,
   RadioGroupItem,
+  Spinner,
 } from '@/components/ui';
 import { RegisterAuthDto, UserRole } from '@/generated/model';
 import { useRegister } from '@/hooks/api/useAuth';
@@ -512,7 +512,7 @@ export default function RegisterPage() {
                 disabled={registerMutation.isPending || !agreeTerms}
               >
                 {registerMutation.isPending ? (
-                  <Loader2 className="size-4 animate-spin" />
+                  <Spinner />
                 ) : (
                   <>
                     Tạo tài khoản

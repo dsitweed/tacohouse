@@ -1,7 +1,7 @@
 'use client';
 
 import { LatLngExpression } from 'leaflet';
-import { ArrowLeft, Edit, MapPin, Plus } from 'lucide-react';
+import { ArrowLeft, Edit, FileText, MapPin, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -14,17 +14,21 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
+  Card,
+  CardContent,
   SkeletonPage,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components/ui';
-import { Building, MaintenanceStatus, UserRole } from '@/generated/model';
-import { useBuilding, useRooms, useUpdateBuilding } from '@/hooks/api';
+import { Building, UserRole } from '@/generated/model';
+import { useBuilding, useUpdateBuilding } from '@/hooks/api';
 import { useAuthStore } from '@/stores/authStore';
 
 import OverviewTab from './OverviewTab';
+import RoomsTab from './RoomsTab';
+import UpdateBuildingDialog from './UpdateBuildingDialog';
 
 const TabBar = {
   overview: 'Tổng quan',
@@ -61,13 +65,6 @@ export default function BuildingDetail({
   });
   const updateBuildingMutation = useUpdateBuilding();
 
-  const { data: roomsData } = useRooms({
-    buildingId: id,
-    page: 1,
-    limit: 100,
-  });
-  const buildingRooms = roomsData?.data ?? [];
-
   if (isLoading || !building) {
     return <SkeletonPage />;
   }
@@ -103,7 +100,7 @@ export default function BuildingDetail({
             </BreadcrumbList>
           </Breadcrumb>
 
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 capitalize">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900">
             {building?.name}
           </h1>
           <div className="flex items-center gap-1.5 text-gray-500">
@@ -115,7 +112,11 @@ export default function BuildingDetail({
         {/* Header Actions */}
         <div className="flex items-center gap-3">
           {canEdit && (
-            <Button className="" variant="outline">
+            <Button
+              className=""
+              variant="outline"
+              onClick={() => setIsEditModalOpen(true)}
+            >
               <Edit className="size-4" />
               Chỉnh sửa
             </Button>
@@ -132,7 +133,7 @@ export default function BuildingDetail({
 
       {/* Tab Navigation Bar */}
       <Tabs defaultValue={TabBar.overview}>
-        <TabsList variant="line">
+        <TabsList variant="line" className="gap-3">
           {Object.entries(TabBar).map(([key, value]) => (
             <TabsTrigger key={key} value={value}>
               {value}
@@ -146,7 +147,57 @@ export default function BuildingDetail({
             buildingCoordinates={buildingCoordinates}
           />
         </TabsContent>
+        <TabsContent value={TabBar.rooms}>
+          <RoomsTab buildingId={id} />
+        </TabsContent>
+        <TabsContent value={TabBar.maintenance}>
+          <Card>
+            <CardContent className="items-center text-center">
+              <FileText className="text-primary size-12" />
+              <p className="text-sm text-gray-500">
+                Chức năng này đang được phát triển. Vui lòng quay lại sau.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value={TabBar.incomeStatistics}>
+          <Card>
+            <CardContent className="items-center text-center">
+              <FileText className="text-primary size-12" />
+              <p className="text-sm text-gray-500">
+                Chức năng này đang được phát triển. Vui lòng quay lại sau.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value={TabBar.expenses}>
+          <Card>
+            <CardContent className="items-center text-center">
+              <FileText className="text-primary size-12" />
+              <p className="text-sm text-gray-500">
+                Chức năng này đang được phát triển. Vui lòng quay lại sau.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value={TabBar.documents}>
+          <Card>
+            <CardContent className="items-center text-center">
+              <FileText className="text-primary size-12" />
+              <p className="text-sm text-gray-500">
+                Chức năng này đang được phát triển. Vui lòng quay lại sau.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      {/* Edit Building Dialog */}
+      <UpdateBuildingDialog
+        open={isEditModalOpen}
+        setOpen={setIsEditModalOpen}
+        buildingId={id}
+      />
     </div>
   );
 }

@@ -95,6 +95,9 @@ export class RoomsService {
         where,
         include: {
           building: true,
+          rentals: {
+            include: { tenant: true },
+          },
         },
       }),
       this.prisma.room.count({ where }),
