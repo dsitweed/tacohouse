@@ -257,6 +257,16 @@ export default function OverviewTab({
                   </TableCell>
                 </TableRow>
               ))}
+
+              {maintenance.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">
+                    <p className="mt-4 text-sm font-bold">
+                      No active maintenance requests.
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
