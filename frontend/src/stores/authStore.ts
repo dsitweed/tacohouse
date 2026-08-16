@@ -20,7 +20,6 @@ interface AuthStore {
 
   // Actions
   login: (user: User) => void;
-  logout: () => void;
   updateUser: (user: Partial<User>) => void;
   setHydrated: () => void;
 }
@@ -37,13 +36,6 @@ export const useAuthStore = create<AuthStore>()(
           set({
             user,
             isAuthenticated: true,
-          });
-        },
-
-        logout: () => {
-          set({
-            user: null,
-            isAuthenticated: false,
           });
         },
 
@@ -78,3 +70,13 @@ export const useAuthStore = create<AuthStore>()(
     },
   ),
 );
+
+/**
+ * Clear auth state and redirect to login
+ */
+export const authLogout = () => {
+  localStorage.removeItem('auth-storage');
+  if (typeof window !== 'undefined') {
+    window.location.replace('/login');
+  }
+};

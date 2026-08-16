@@ -54,6 +54,8 @@ async function serverFetch<T>(
     redirect('/login');
   }
 
+  // TODO: handle other error (in error.tsx file)
+
   // Handle other errors
   if (!response.ok) {
     const errorData = (await response.json().catch(() => ({}))) as ApiError;

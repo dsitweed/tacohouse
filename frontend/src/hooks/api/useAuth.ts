@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { RegisterAuthDto } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import { useAuthStore } from '@/stores/authStore';
+import { authLogout, useAuthStore } from '@/stores/authStore';
 import type {
   ChangePasswordRequest,
   LoginRequest,
@@ -102,21 +102,10 @@ export function useChangePassword() {
 }
 
 export function useLogout() {
-  const queryClient = useQueryClient();
-  const { logout } = useAuthStore();
-
   return useMutation({
     mutationFn: authApi.logout,
-    onSuccess: () => {
-      logout();
-      queryClient.clear();
-      if (typeof window !== 'undefined') {
-        window.location.replace('/login');
-      }
-    },
-    onError: () => {
-      logout();
-      queryClient.clear();
+    onSettled: () => {
+      authLogout();
     },
   });
 }

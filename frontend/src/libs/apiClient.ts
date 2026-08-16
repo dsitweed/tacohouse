@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 
+import { authLogout } from '@/stores/authStore';
 import { ApiError, ApiResponse } from '@/types';
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
@@ -68,20 +69,6 @@ async function refreshAccessToken(): Promise<void> {
   );
 }
 
-/**
- * Clear auth state and redirect to login
- */
-function handleAuthFailure(): void {
-  // Clear Zustand store (async import to avoid circular dependency)
-  import('@/stores/authStore').then(({ useAuthStore }) => {
-    useAuthStore.getState().logout();
-  });
-
-  if (typeof window !== 'undefined') {
-    window.location.href = '/login';
-  }
-}
-
 // Response interceptor to handle token refresh and unwrap response
 apiClient.interceptors.response.use(
   (response) => response.data,
@@ -123,7 +110,8 @@ apiClient.interceptors.response.use(
       return apiClient(originalRequest);
     } catch {
       // TODO: add more logic logout
-      handleAuthFailure();
+      // Clear auth state and redirect to login
+      authLogout();
       return Promise.reject(error);
     }
   },
