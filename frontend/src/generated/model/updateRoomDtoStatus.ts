@@ -13,24 +13,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateUserProfileDto {
-  /** @maxLength 100 */
-  firstName?: string;
-  /** @maxLength 100 */
-  lastName?: string;
-  /** @maxLength 10 */
-  phone?: string;
-  /** @maxLength 500 */
-  avatar?: string;
-  dateOfBirth?: string;
-  /** @maxLength 100 */
-  occupation?: string;
-  /** @maxLength 100 */
-  workplace?: string;
-  /** @maxLength 500 */
-  idCardFrontPhoto?: string;
-  /** @maxLength 500 */
-  idCardBackPhoto?: string;
-  /** @maxLength 500 */
-  portraitPhoto?: string;
-}
+export type UpdateRoomDtoStatus = typeof UpdateRoomDtoStatus[keyof typeof UpdateRoomDtoStatus];
+
+
+export const UpdateRoomDtoStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OCCUPIED: 'OCCUPIED',
+  PENDING_CHECKOUT: 'PENDING_CHECKOUT',
+  MAINTENANCE: 'MAINTENANCE',
+} as const;

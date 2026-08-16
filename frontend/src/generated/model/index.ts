@@ -92,6 +92,8 @@ export * from './updatePasswordDto';
 export * from './updateRentalDto';
 export * from './updateRentalDtoStatus';
 export * from './updateRoomDto';
+export * from './updateRoomDtoRoomType';
+export * from './updateRoomDtoStatus';
 export * from './updateUserProfileDto';
 export * from './user';
 export * from './userProfile';

@@ -26,7 +26,7 @@ export class LoggingInterceptor implements NestInterceptor {
           Params: ${JSON.stringify(params)}
           Query: ${JSON.stringify(query)}
           Body: ${JSON.stringify(body)}
-          Data: ${JSON.stringify(data)}`,
+          Data: ${data}`,
         );
       }),
     );

@@ -56,7 +56,9 @@ export default function CreateBuildingDialog({
     // FIXME: not return correct data, after create new building, the list of buildings is not updated
     createBuildingMutation.mutate(data, {
       onSuccess: () => {
-        toast.success('Tòa nhà đã được tạo thành công');
+        toast.success('Tòa nhà đã được tạo thành công', {
+          position: 'top-center',
+        });
         setOpen(false);
         form.reset();
       },

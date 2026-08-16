@@ -61,7 +61,9 @@ export default function UpdateBuildingDialog({
       { id: buildingId, data },
       {
         onSuccess: () => {
-          toast.success('Tòa nhà đã được cập nhật thành công');
+          toast.success('Tòa nhà đã được cập nhật thành công', {
+            position: 'top-center',
+          });
           setOpen(false);
         },
       },

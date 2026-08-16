@@ -12,5 +12,23 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateRoomDtoRoomType } from './updateRoomDtoRoomType';
+import type { UpdateRoomDtoStatus } from './updateRoomDtoStatus';
 
-export interface UpdateRoomDto { [key: string]: unknown }
+export interface UpdateRoomDto {
+  number?: string;
+  buildingId?: string;
+  /** @minimum 1 */
+  area?: number;
+  /** @minimum 1 */
+  monthlyRent?: number;
+  /** @minimum 1 */
+  deposit?: number;
+  /** @minimum 1 */
+  maxTenants?: number;
+  roomType?: UpdateRoomDtoRoomType;
+  description?: string;
+  images?: string[];
+  status?: UpdateRoomDtoStatus;
+  availableFrom?: string;
+}

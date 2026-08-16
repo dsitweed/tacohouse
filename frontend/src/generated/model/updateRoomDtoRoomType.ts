@@ -13,24 +13,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateUserProfileDto {
-  /** @maxLength 100 */
-  firstName?: string;
-  /** @maxLength 100 */
-  lastName?: string;
-  /** @maxLength 10 */
-  phone?: string;
-  /** @maxLength 500 */
-  avatar?: string;
-  dateOfBirth?: string;
-  /** @maxLength 100 */
-  occupation?: string;
-  /** @maxLength 100 */
-  workplace?: string;
-  /** @maxLength 500 */
-  idCardFrontPhoto?: string;
-  /** @maxLength 500 */
-  idCardBackPhoto?: string;
-  /** @maxLength 500 */
-  portraitPhoto?: string;
-}
+export type UpdateRoomDtoRoomType = typeof UpdateRoomDtoRoomType[keyof typeof UpdateRoomDtoRoomType];
+
+
+export const UpdateRoomDtoRoomType = {
+  FULL_RIGHTS: 'FULL_RIGHTS',
+  PARTIAL_RIGHTS: 'PARTIAL_RIGHTS',
+} as const;

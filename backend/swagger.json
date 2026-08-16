@@ -3900,11 +3900,58 @@
       },
       "UpdateUserProfileDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "avatar": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "occupation": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "workplace": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "idCardFrontPhoto": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "idCardBackPhoto": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "portraitPhoto": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
       },
       "UpdatePasswordDto": {
         "type": "object",
         "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 50,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"
+          },
           "currentPassword": {
             "type": "string",
             "minLength": 6,
@@ -3917,6 +3964,7 @@
           }
         },
         "required": [
+          "password",
           "currentPassword",
           "confirmPassword"
         ]
@@ -4073,7 +4121,61 @@
       },
       "UpdateRoomDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "area": {
+            "type": "number",
+            "minimum": 1
+          },
+          "monthlyRent": {
+            "type": "number",
+            "minimum": 1
+          },
+          "deposit": {
+            "type": "number",
+            "default": 0,
+            "minimum": 1
+          },
+          "maxTenants": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1
+          },
+          "roomType": {
+            "enum": [
+              "FULL_RIGHTS",
+              "PARTIAL_RIGHTS"
+            ],
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "AVAILABLE",
+              "OCCUPIED",
+              "PENDING_CHECKOUT",
+              "MAINTENANCE"
+            ],
+            "type": "string"
+          },
+          "availableFrom": {
+            "format": "date-time",
+            "type": "string"
+          }
+        }
       },
       "CreateRentalDto": {
         "type": "object",
