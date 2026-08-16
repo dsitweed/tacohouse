@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Eye } from 'lucide-react';
+import { ArrowRight, Building2, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
@@ -26,6 +26,11 @@ export default function RoomsTab({ buildingId }: RoomsTabType) {
         <h2 className="text-xl font-bold text-gray-900">
           Danh sách phòng ({rooms.length})
         </h2>
+        <Link href={`/rooms?buildingId=${buildingId}`}>
+          <Button variant="outline" size="sm">
+            Xem tất cả <ArrowRight />
+          </Button>
+        </Link>
       </div>
 
       {rooms.length > 0 ? (
