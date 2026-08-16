@@ -13,4 +13,16 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateBuildingDto { [key: string]: unknown }
+export interface UpdateBuildingDto {
+  name?: string;
+  address?: string;
+  description?: string;
+  billingDate?: number;
+  landlordId?: string;
+  electricityRate?: number;
+  waterRate?: number;
+  gasRate?: number;
+  managementFee?: number;
+  cleaningFeePerPerson?: number;
+  lightingFee?: number;
+}

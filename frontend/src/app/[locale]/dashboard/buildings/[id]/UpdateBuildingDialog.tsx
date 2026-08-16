@@ -57,10 +57,8 @@ export default function UpdateBuildingDialog({
   });
 
   const handleEditBuilding = (data: UpdateBuildingFieldsType) => {
-    const { landlordId, ...updateBuildingDto } = data;
-
     updateBuildingMutate.mutate(
-      { id: buildingId, data: updateBuildingDto },
+      { id: buildingId, data },
       {
         onSuccess: () => {
           toast.success('Tòa nhà đã được cập nhật thành công');

@@ -3967,7 +3967,41 @@
       },
       "UpdateBuildingDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "billingDate": {
+            "type": "number"
+          },
+          "landlordId": {
+            "type": "string"
+          },
+          "electricityRate": {
+            "type": "number"
+          },
+          "waterRate": {
+            "type": "number"
+          },
+          "gasRate": {
+            "type": "number"
+          },
+          "managementFee": {
+            "type": "number"
+          },
+          "cleaningFeePerPerson": {
+            "type": "number"
+          },
+          "lightingFee": {
+            "type": "number"
+          }
+        }
       },
       "CreateRoomDto": {
         "type": "object",

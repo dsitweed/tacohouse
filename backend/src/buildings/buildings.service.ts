@@ -176,9 +176,17 @@ export class BuildingsService {
       throw new ForbiddenException();
     }
 
+    // TODO: Reconsider the logic
+    // Only ADMIN can change landlordId
+    const { landlordId, ...updateData } = updateBuildingDto;
+
     return this.prisma.building.update({
       where: { id: building.id },
-      data: updateBuildingDto,
+      data: {
+        ...updateData,
+        ...(currentUser.role === UserRole.ADMIN &&
+          landlordId && { landlordId }),
+      },
     });
   }
 
