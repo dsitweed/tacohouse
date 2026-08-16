@@ -1,11 +1,8 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ArrowRight,
-  Building2,
   Calendar,
-  Loader2,
   MapPin,
   MoreVertical,
   Plus,
@@ -15,8 +12,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -25,8 +21,6 @@ import {
   Rectangle,
   XAxis,
 } from 'recharts';
-import { toast } from 'sonner';
-import * as z from 'zod';
 
 import {
   ButtonGroup,
@@ -34,37 +28,21 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-  CurrencyInput,
   Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  Input,
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   SkeletonPage,
-  Textarea,
 } from '@/components/ui';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { useBuildings, useCreateBuilding } from '@/hooks/api/useBuildings';
+import { useBuildings } from '@/hooks/api/useBuildings';
 import { useAuthStore } from '@/stores/authStore';
 import { UserRole } from '@/types';
 import { formatCurrency, typedEntries } from '@/utils';
+
+import CreateBuildingDialog from './CreateBuildingDialog';
 
 // Revenue Forecast mock chart data
 const REVENUE_FORECAST = [
@@ -91,29 +69,6 @@ const BuildingTab = {
 };
 type BuildingTabType = keyof typeof BuildingTab;
 
-const newBuildingSchema = z.object({
-  name: z.string().min(1, 'Tên tòa nhà không được để trống'),
-  address: z.string().min(1, 'Địa chỉ không được để trống'),
-  description: z.string().min(1, 'Mô tả không được để trống'),
-  billingDate: z.number().optional(),
-  landlordId: z.string().min(1, 'Vui lòng chọn chủ sở hữu'),
-  electricityRate: z.number().min(0, 'Đơn giá điện phải lớn hơn hoặc bằng 0'),
-  waterRate: z.number().min(0, 'Đơn giá nước phải lớn hơn hoặc bằng 0'),
-  gasRate: z.number().min(0, 'Đơn giá gas phải lớn hơn hoặc bằng 0'),
-  managementFee: z
-    .number()
-    .min(0, 'Phí quản lý phải lớn hơn hoặc bằng 0')
-    .optional(),
-  cleaningFeePerPerson: z
-    .number()
-    .min(0, 'Phí vệ sinh phải lớn hơn hoặc bằng 0')
-    .optional(),
-  lightingFee: z
-    .number()
-    .min(0, 'Phí chiếu sáng phải lớn hơn hoặc bằng 0')
-    .optional(),
-});
-
 const revenueChartConfig = {
   revenue: {
     label: 'Doanh thu',
@@ -123,28 +78,9 @@ const revenueChartConfig = {
 export default function BuildingsPage() {
   const user = useAuthStore((state) => state.user);
   const [search, setSearch] = useState('');
-  const createBuildingMutation = useCreateBuilding();
   const [activeTab, setActiveTab] = useState<BuildingTabType>('all');
   // TODO: use global state instead
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // Radix Dialog blocks pointer events outside its content, so Base UI Combobox must portal into it
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const form = useForm<z.infer<typeof newBuildingSchema>>({
-    resolver: zodResolver(newBuildingSchema),
-    defaultValues: {
-      name: '',
-      address: '',
-      description: '',
-      billingDate: undefined,
-      landlordId: '',
-      electricityRate: 0,
-      waterRate: 0,
-      gasRate: 0,
-      managementFee: 0,
-      cleaningFeePerPerson: 0,
-      lightingFee: 0,
-    },
-  });
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // TODO: add pagination and infinite scroll
   const { data: buildingsData, isLoading } = useBuildings({
@@ -156,29 +92,6 @@ export default function BuildingsPage() {
 
   const canCreate =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
-  const landlordsData = (() => {
-    const landlordMap = new Map<string, { value: string; label: string }>();
-
-    for (const building of buildings) {
-      landlordMap.set(building.landlordId, {
-        value: building.landlordId,
-        label:
-          building.landlord?.profile?.firstName ??
-          building.landlord?.email ??
-          building.landlordId,
-      });
-    }
-
-    // FIXME: have bug when user is LANDLORD but can see other landlords' buildings
-    if (user?.role === UserRole.LANDLORD) {
-      landlordMap.set(user.id, {
-        value: user.id,
-        label: 'Tôi (Chủ sở hữu)',
-      });
-    }
-
-    return [...landlordMap.values()];
-  })();
 
   const displayBuildings = buildings.map((building, index) => ({
     id: building.id,
@@ -199,23 +112,9 @@ export default function BuildingsPage() {
     (item) => activeTab === 'all' || item.type === activeTab,
   );
 
-  const handleCreateBuilding = (data: z.infer<typeof newBuildingSchema>) => {
-    // FIXME: Create and reload buildings list
-    // FIXME: not return correct data, after create new building, the list of buildings is not updated
-    createBuildingMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success('Tòa nhà đã được tạo thành công');
-        setIsAddModalOpen(false);
-        form.reset();
-      },
-    });
-  };
-
   const maxRevenueMonth = REVENUE_FORECAST.reduce((max, item) =>
     max.revenue > item.revenue ? max : item,
   );
-
-  console.log('rerender');
 
   return (
     <div className="space-y-8">
@@ -236,7 +135,7 @@ export default function BuildingsPage() {
 
         {canCreate && (
           <Button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => setIsCreateModalOpen(true)}
             className="bg-blue-700 hover:bg-blue-800"
           >
             <Plus className="size-4" />
@@ -297,6 +196,7 @@ export default function BuildingsPage() {
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </Link>
+                  
                   {/* Active Status Badge */}
                   <Badge
                     variant={
@@ -306,6 +206,7 @@ export default function BuildingsPage() {
                   >
                     {building.status}
                   </Badge>
+
                   {/* Overlay Action */}
                   <Button
                     variant="secondary"
@@ -377,316 +278,24 @@ export default function BuildingsPage() {
             </Card>
           ))}
 
-          {/* Add new building */}
+          {/* Create new building */}
           {canCreate && (
-            <Card className="cursor-pointer border border-dashed hover:border-blue-500 hover:bg-blue-50/40">
-              <CardContent className="min-h-95">
-                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                  <DialogTrigger className="flex h-full flex-col items-center justify-center text-center">
-                    <div className="flex size-16 items-center justify-center rounded-full bg-blue-200 text-blue-800">
-                      <Plus className="size-7" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        Thêm tòa nhà mới
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Mở rộng danh mục đầu tư của bạn
-                      </p>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-2xl" ref={dialogRef}>
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-full bg-blue-100 text-blue-800">
-                        <Building2 className="size-5" />
-                      </div>
-                      <h2 className="text-xl font-bold text-gray-900">
-                        Thêm tòa nhà mới
-                      </h2>
-                    </div>
-                    <form
-                      id="create-building-form"
-                      onSubmit={form.handleSubmit(handleCreateBuilding)}
-                      // FIXME: after close form now scroll to "Thêm tòa nhà mới" div
-                    >
-                      <FieldGroup>
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                          <Controller
-                            name="name"
-                            control={form.control}
-                            rules={{
-                              required: 'Tên tòa nhà không được để trống',
-                            }}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="name">
-                                  Tên tòa nhà
-                                  <span className="text-red-500">*</span>
-                                </FieldLabel>
-                                <Input
-                                  {...field}
-                                  id="name"
-                                  type="text"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Ví dụ: Taco House Landmark"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                          <Controller
-                            name="landlordId"
-                            control={form.control}
-                            rules={{
-                              required: 'Vui lòng chọn chủ sở hữu',
-                            }}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="landlordId">
-                                  Chủ sở hữu
-                                  <span className="text-red-500">*</span>
-                                </FieldLabel>
-
-                                <Combobox
-                                  items={landlordsData}
-                                  value={
-                                    landlordsData.find(
-                                      (item) => item.value === field.value,
-                                    ) ?? null
-                                  }
-                                  onValueChange={(item) =>
-                                    field.onChange(item?.value ?? '')
-                                  }
-                                >
-                                  <ComboboxInput
-                                    placeholder="Chọn chủ sở hữu"
-                                    showClear
-                                  />
-                                  <ComboboxContent container={dialogRef}>
-                                    <ComboboxEmpty>
-                                      Không tìm thấy chủ sở hữu
-                                    </ComboboxEmpty>
-                                    <ComboboxList>
-                                      {(
-                                        item: (typeof landlordsData)[number],
-                                      ) => (
-                                        <ComboboxItem
-                                          key={item.value}
-                                          value={item}
-                                        >
-                                          {item.label}
-                                        </ComboboxItem>
-                                      )}
-                                    </ComboboxList>
-                                  </ComboboxContent>
-                                </Combobox>
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                        </div>
-
-                        <Controller
-                          name="address"
-                          control={form.control}
-                          rules={{
-                            required: 'Địa chỉ tòa nhà không được để trống',
-                          }}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="address">
-                                Địa chỉ tòa nhà
-                                <span className="text-red-500">*</span>
-                              </FieldLabel>
-                              <Input
-                                {...field}
-                                id="address"
-                                type="text"
-                                aria-invalid={fieldState.invalid}
-                                placeholder="Ví dụ: 123 Đường ABC, Quận 1, TP. HCM"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError errors={[fieldState.error]} />
-                              )}
-                            </Field>
-                          )}
-                        />
-
-                        <Controller
-                          name="description"
-                          control={form.control}
-                          rules={{
-                            required: 'Mô tả tòa nhà không được để trống',
-                          }}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="description">
-                                Mô tả tòa nhà
-                                <span className="text-red-500">*</span>
-                              </FieldLabel>
-                              <Textarea
-                                {...field}
-                                id="description"
-                                aria-invalid={fieldState.invalid}
-                                placeholder="Ví dụ: Tòa nhà cao cấp với nhiều tiện ích. Phù hợp cho cả văn phòng và căn hộ."
-                              />
-                              {fieldState.invalid && (
-                                <FieldError errors={[fieldState.error]} />
-                              )}
-                            </Field>
-                          )}
-                        />
-
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                          <Controller
-                            name="electricityRate"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="electricityRate">
-                                  Giá điện (VNĐ/kWh)
-                                </FieldLabel>
-                                <CurrencyInput
-                                  {...field}
-                                  id="electricityRate"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Nhập đơn giá điện"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                          {/* TODO: > 1000 VND for waterRate and other rates */}
-                          <Controller
-                            name="waterRate"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="waterRate">
-                                  Giá nước (VNĐ/m³)
-                                </FieldLabel>
-                                <CurrencyInput
-                                  {...field}
-                                  id="waterRate"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Nhập đơn giá nước"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                          <Controller
-                            name="gasRate"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="gasRate">
-                                  Giá gas (VNĐ/m³)
-                                </FieldLabel>
-                                <CurrencyInput
-                                  {...field}
-                                  id="gasRate"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Nhập đơn giá gas"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                          <Controller
-                            name="managementFee"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="managementFee">
-                                  Phí quản lý
-                                </FieldLabel>
-                                <CurrencyInput
-                                  {...field}
-                                  id="managementFee"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Nhập phí quản lý"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                          <Controller
-                            name="cleaningFeePerPerson"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="cleaningFeePerPerson">
-                                  Đơn giá dọn dẹp
-                                </FieldLabel>
-                                <CurrencyInput
-                                  {...field}
-                                  id="cleaningFeePerPerson"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Nhập đơn giá dọn dẹp"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                          <Controller
-                            name="lightingFee"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="lightingFee">
-                                  Đơn giá điện chiếu sáng
-                                </FieldLabel>
-                                <CurrencyInput
-                                  {...field}
-                                  id="lightingFee"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Nhập đơn giá điện chiếu sáng"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
-                          />
-                        </div>
-                      </FieldGroup>
-
-                      <div className="mt-6 flex justify-end gap-3 border-t pt-2">
-                        <DialogClose>
-                          <Button type="button" variant="outline">
-                            Hủy
-                          </Button>
-                        </DialogClose>
-                        <Button
-                          type="submit"
-                          className="bg-blue-700 hover:bg-blue-800"
-                          disabled={createBuildingMutation.isPending}
-                        >
-                          {createBuildingMutation.isPending ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            'Tạo tòa nhà'
-                          )}
-                        </Button>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+            <Card
+              className="cursor-pointer border border-dashed hover:border-blue-500 hover:bg-blue-50/40"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              <CardContent className="min-h-95 items-center justify-center text-center">
+                <div className="flex size-16 items-center justify-center rounded-full bg-blue-200 text-blue-800">
+                  <Plus className="size-7" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Thêm tòa nhà mới
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Mở rộng danh mục đầu tư của bạn
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -776,6 +385,12 @@ export default function BuildingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Create New Building Dialog */}
+      <CreateBuildingDialog
+        open={isCreateModalOpen}
+        setOpen={setIsCreateModalOpen}
+      />
     </div>
   );
 }
