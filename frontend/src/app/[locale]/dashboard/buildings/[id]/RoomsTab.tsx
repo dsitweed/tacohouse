@@ -26,7 +26,7 @@ export default function RoomsTab({ buildingId }: RoomsTabType) {
         <h2 className="text-xl font-bold text-gray-900">
           Danh sách phòng ({rooms.length})
         </h2>
-        <Link href={`/rooms?buildingId=${buildingId}`}>
+        <Link href={`/dashboard/rooms?buildingId=${buildingId}`}>
           <Button variant="outline" size="sm">
             Xem tất cả <ArrowRight />
           </Button>
