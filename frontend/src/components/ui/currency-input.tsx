@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import { formatCurrency, SUPPORTED_LOCALES_TYPE } from '@/utils';
-
 import { Input } from './input';
 
 export interface CurrencyInputProps extends Omit<
@@ -10,7 +8,6 @@ export interface CurrencyInputProps extends Omit<
 > {
   value: number | undefined;
   onChange: (value: number) => void;
-  locale?: SUPPORTED_LOCALES_TYPE;
 }
 
 /**
@@ -32,7 +29,7 @@ export interface CurrencyInputProps extends Omit<
  * />
  */
 const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
-  ({ value, onChange, locale = 'vi', ...props }, ref) => {
+  ({ value, onChange, ...props }, ref) => {
     const parseNumber = (str: string): number => {
       // Remove all non-digit characters
       const raw = str.replace(/\D/g, '');
@@ -49,7 +46,7 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
         ref={ref}
         type="text"
         inputMode="numeric"
-        value={formatCurrency(value, locale)}
+        value={value?.toLocaleString()}
         onChange={handleChange}
         {...props}
       />
