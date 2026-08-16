@@ -1,7 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { intlayerProxy } from 'next-intlayer/proxy';
 
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/utils/locale';
+import {
+  buildLocalePath,
+  getLocaleFromPath,
+  getPathWithoutLocale,
+} from '@/utils/locale';
 
 // Routes that require authentication
 const PROTECTED_ROUTES = ['/dashboard'];
@@ -15,35 +19,6 @@ const AUTH_ROUTES = ['/login', '/register'];
  */
 function isAuthenticated(request: NextRequest): boolean {
   return request.cookies.has('refreshToken');
-}
-
-/**
- * Remove locale prefix from pathname
- */
-function getPathWithoutLocale(pathname: string): string {
-  const localePattern = new RegExp(`^/(${SUPPORTED_LOCALES.join('|')})`);
-  return pathname.replace(localePattern, '') || '/';
-}
-
-/**
- * Get locale from pathname or default
- */
-function getLocaleFromPath(pathname: string): string {
-  const match = pathname.match(
-    new RegExp(`^/(${SUPPORTED_LOCALES.join('|')})`),
-  );
-  return match ? match[1] : DEFAULT_LOCALE;
-}
-
-/**
- * Build path with locale if needed
- */
-function buildLocalePath(path: string, locale: string): string {
-  // For default locale in prefix-no-default mode, don't add prefix
-  if (locale === DEFAULT_LOCALE) {
-    return path;
-  }
-  return `/${locale}${path}`;
 }
 
 /**

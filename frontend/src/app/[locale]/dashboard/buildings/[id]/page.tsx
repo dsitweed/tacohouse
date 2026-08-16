@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Building } from '@/generated/model';
 import { serverApi, ServerApiError } from '@/libs/serverApiClient';
 
-import BuildingDetail from './BuildingDetailClient';
+import BuildingDetail from './BuildingDetail';
 
 type PageProps = {
   params: Promise<{ id: string }>;

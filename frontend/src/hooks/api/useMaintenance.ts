@@ -5,6 +5,7 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
+import { MaintenanceControllerFindAllParams } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type {
   CreateMaintenanceRequest,
@@ -61,7 +62,9 @@ const maintenanceApi = {
 };
 
 // Hooks
-export function useMaintenanceRequests(query?: MaintenanceListQuery) {
+export function useMaintenanceRequests(
+  query?: MaintenanceControllerFindAllParams,
+) {
   return useQuery({
     queryKey: queryKeys.maintenance.list(query),
     queryFn: () => maintenanceApi.getAll(query),
@@ -79,24 +82,6 @@ export function useMaintenanceRequest(
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
-  });
-}
-
-export function useMaintenanceByTenant(tenantId: string | undefined) {
-  return useQuery({
-    queryKey: queryKeys.maintenance.byTenant(tenantId!),
-    queryFn: () => maintenanceApi.getAll({ tenantId }),
-    enabled: !!tenantId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-  });
-}
-
-export function useMaintenanceByRoom(roomId: string | undefined) {
-  return useQuery({
-    queryKey: queryKeys.maintenance.byRoom(roomId!),
-    queryFn: () => maintenanceApi.getAll({ roomId }),
-    enabled: !!roomId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }
 

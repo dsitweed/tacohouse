@@ -13,15 +13,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type BuildingsControllerFindAllParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   */
-  limit?: number;
-  landlordId?: string;
-  search?: string;
-};
+export type DashboardControllerGetRevenueTrend200Item = { [key: string]: unknown };

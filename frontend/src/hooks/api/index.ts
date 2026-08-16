@@ -65,8 +65,6 @@ export {
 // Maintenance hooks
 export {
   useCreateMaintenance,
-  useMaintenanceByRoom,
-  useMaintenanceByTenant,
   useMaintenanceRequest,
   useMaintenanceRequests,
   useRespondToMaintenance,

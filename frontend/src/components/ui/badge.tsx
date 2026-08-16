@@ -14,6 +14,8 @@ const badgeVariants = cva(
           'bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80',
         destructive:
           'bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20',
+        destructiveLight:
+          'bg-red-200/20 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300',
         outline:
           'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
         ghost:
@@ -23,8 +25,8 @@ const badgeVariants = cva(
           'bg-emerald-800 text-white border-emerald-200 dark:bg-emerald-950 dark:text-emerald-100 dark:border-emerald-800',
         successLight:
           'bg-green-200/20 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300',
-        destructiveLight:
-          'bg-red-200/20 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300',
+        pending:
+          'bg-yellow-200/20 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300',
       },
       size: {
         default: 'px-2.5 py-0.5 text-xs',

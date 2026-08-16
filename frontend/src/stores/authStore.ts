@@ -74,6 +74,7 @@ export const useAuthStore = create<AuthStore>()(
     ),
     {
       name: 'AuthStore',
+      enabled: process.env.NODE_ENV === 'development',
     },
   ),
 );

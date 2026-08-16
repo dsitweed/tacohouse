@@ -20,7 +20,11 @@ export default function RootNotFound() {
   };
 
   return (
-    <html lang="vi" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="vi"
+      className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body className="flex h-full min-h-screen font-sans antialiased">
         <main className="relative flex h-full w-full flex-col overflow-hidden md:flex-row">
           {/* Left half: Content Area */}

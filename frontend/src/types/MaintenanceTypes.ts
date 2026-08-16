@@ -22,5 +22,4 @@ export interface MaintenanceRequest {
   completionNote?: string | null;
   createdAt: string;
   updatedAt?: string;
-  udpatedAt?: string; // backend Prisma typo compatibility
 }

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Bar,
@@ -76,6 +76,14 @@ const REVENUE_FORECAST = [
   { month: 'Tháng 12', revenue: 82000, heightPct: 88 },
 ];
 
+const IMAGES_LIST = [
+  '/images/buildings/sunset-heights.png',
+  '/images/buildings/azure-bay.png',
+  '/images/buildings/oakwood-lofts.png',
+  '/images/buildings/emerald-garden.png',
+  'https://images.pexels.com/photos/9864028/pexels-photo-9864028.jpeg',
+];
+
 const BuildingTab = {
   all: 'Tất cả',
   residential: 'Nhà ở',
@@ -106,8 +114,14 @@ const newBuildingSchema = z.object({
     .optional(),
 });
 
+const revenueChartConfig = {
+  revenue: {
+    label: 'Doanh thu',
+  },
+} satisfies ChartConfig;
+
 export default function BuildingsPage() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const [search, setSearch] = useState('');
   const createBuildingMutation = useCreateBuilding();
   const [activeTab, setActiveTab] = useState<BuildingTabType>('all');
@@ -138,63 +152,52 @@ export default function BuildingsPage() {
     limit: 20,
     search,
   });
-  const buildings = useMemo(() => buildingsData?.data ?? [], [buildingsData]);
+  const buildings = buildingsData?.data ?? [];
 
   const canCreate =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
-  const landlordsData = useMemo(() => {
+  const landlordsData = (() => {
     const landlordMap = new Map<string, { value: string; label: string }>();
 
     for (const building of buildings) {
-      const landlordInfo =
-        building.landlord?.profile?.firstName ||
-        building.landlord?.email ||
-        building.landlordId;
       landlordMap.set(building.landlordId, {
         value: building.landlordId,
-        label: landlordInfo,
+        label:
+          building.landlord?.profile?.firstName ??
+          building.landlord?.email ??
+          building.landlordId,
       });
-      // FIXME: have bug when user is LANDLORD but can see other landlords' buildings
-      if (user?.role === UserRole.LANDLORD) {
-        landlordMap.set(user.id, {
-          value: user.id,
-          label: 'Tôi (Chủ sở hữu)',
-        });
-      }
+    }
+
+    // FIXME: have bug when user is LANDLORD but can see other landlords' buildings
+    if (user?.role === UserRole.LANDLORD) {
+      landlordMap.set(user.id, {
+        value: user.id,
+        label: 'Tôi (Chủ sở hữu)',
+      });
     }
 
     return [...landlordMap.values()];
-  }, [buildings, user]);
-  const displayBuildings = useMemo(() => {
-    const imagesList = [
-      '/images/buildings/sunset-heights.png',
-      '/images/buildings/azure-bay.png',
-      '/images/buildings/oakwood-lofts.png',
-      '/images/buildings/emerald-garden.png',
-      'https://images.pexels.com/photos/9864028/pexels-photo-9864028.jpeg',
-    ];
+  })();
 
-    return buildings.map((building, index) => ({
-      id: building.id,
-      name: building.name,
-      address: building.address,
-      // TODO: fix this error
-      roomsCount: building._count.rooms || building.rooms?.length || 0,
-      occupancy: '80%',
-      monthlyRevenue: 10000000,
-      status: 'ACTIVE', // TODO: fix this logic
-      image: imagesList[index % imagesList.length], // TODO: fix this logic
-      type: index % 2 === 0 ? 'residential' : 'commercial', // TODO: fix this logic
-      verified: true, // TODO: fix this logic (like Facebook verified badge)
-    }));
-  }, [buildings]);
+  const displayBuildings = buildings.map((building, index) => ({
+    id: building.id,
+    name: building.name,
+    address: building.address,
+    // TODO: fix this error
+    roomsCount: building._count.rooms || building.rooms?.length || 0,
+    occupancy: '80%',
+    monthlyRevenue: 10000000,
+    status: 'ACTIVE', // TODO: fix this logic
+    image: IMAGES_LIST[index % IMAGES_LIST.length], // TODO: fix this logic
+    type: index % 2 === 0 ? 'residential' : 'commercial', // TODO: fix this logic
+    verified: true, // TODO: fix this logic (like Facebook verified badge)
+  }));
 
-  const filteredBuildings = useMemo(() => {
-    // TODO: fix this logic
-    return displayBuildings.filter(
-      (item) => activeTab === 'all' || item.type === activeTab,
-    );
-  }, [activeTab, displayBuildings]);
+  // TODO: fix this logic
+  const filteredBuildings = displayBuildings.filter(
+    (item) => activeTab === 'all' || item.type === activeTab,
+  );
 
   const handleCreateBuilding = (data: z.infer<typeof newBuildingSchema>) => {
     // FIXME: Create and reload buildings list
@@ -212,12 +215,7 @@ export default function BuildingsPage() {
     max.revenue > item.revenue ? max : item,
   );
 
-  const revenueChartConfig = {
-    revenue: {
-      label: 'Doanh thu',
-      color: '#1e40af',
-    },
-  } satisfies ChartConfig;
+  console.log('rerender');
 
   return (
     <div className="space-y-8">
@@ -297,7 +295,6 @@ export default function BuildingsPage() {
                       // TODO: fix size dependent on screen size
                       sizes="50vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      unoptimized
                     />
                   </Link>
                   {/* Active Status Badge */}
@@ -738,17 +735,11 @@ export default function BuildingsPage() {
                   dataKey="revenue"
                   strokeWidth={2}
                   radius={8}
+                  opacity={0.8}
                   shape={({ index, ...props }: BarShapeProps) => {
-                    // FIXME: render qua nhieu lan
-                    // console.log({ index, props });
-
                     return (
                       <Rectangle
                         {...props}
-                        fillOpacity={0.8}
-                        stroke={props.payload.fill}
-                        strokeDasharray={4}
-                        strokeDashoffset={4}
                         fill={
                           props.payload.month === maxRevenueMonth.month
                             ? '#1e40af'

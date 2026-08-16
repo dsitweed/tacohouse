@@ -23,11 +23,14 @@ import type {
   ConfirmPaymentDto,
   CreateBillDto,
   CreateBuildingDto,
+  CreateDashboardDto,
   CreateMaintenanceDto,
   CreateNotificationDto,
   CreatePaymentDto,
   CreateRentalDto,
   CreateRoomDto,
+  DashboardControllerGetRevenueTrend200Item,
+  DashboardControllerGetRevenueTrendParams,
   LoginAuthDto,
   MaintenanceControllerFindAllParams,
   MaintenanceRequest,
@@ -45,6 +48,7 @@ import type {
   SendMessageDto,
   UpdateBillDto,
   UpdateBuildingDto,
+  UpdateDashboardDto,
   UpdateMaintenanceDto,
   UpdatePasswordDto,
   UpdateRentalDto,
@@ -86,8 +90,15 @@ export const getTacoHouseAPI = () => {
   /**
    * @summary Refresh access token
    */
-  const authControllerCreate = () => {
+  const authControllerRefresh = () => {
     return apiClient<void>({ url: `/api/v1/auth/refresh`, method: 'POST' });
+  };
+
+  /**
+   * @summary User logout
+   */
+  const authControllerLogout = () => {
+    return apiClient<void>({ url: `/api/v1/auth/logout`, method: 'POST' });
   };
 
   /**
@@ -359,7 +370,7 @@ export const getTacoHouseAPI = () => {
   };
 
   const maintenanceControllerFindAll = (
-    params?: MaintenanceControllerFindAllParams,
+    params: MaintenanceControllerFindAllParams,
   ) => {
     return apiClient<MaintenanceRequest[]>({
       url: `/api/v1/maintenance`,
@@ -508,11 +519,60 @@ export const getTacoHouseAPI = () => {
     });
   };
 
+  const dashboardControllerGetRevenueTrend = (
+    params: DashboardControllerGetRevenueTrendParams,
+  ) => {
+    return apiClient<DashboardControllerGetRevenueTrend200Item[]>({
+      url: `/api/v1/dashboard/revenue-trend`,
+      method: 'GET',
+      params,
+    });
+  };
+
+  const dashboardControllerCreate = (
+    createDashboardDto: CreateDashboardDto,
+  ) => {
+    return apiClient<string>({
+      url: `/api/v1/dashboard`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createDashboardDto,
+    });
+  };
+
+  const dashboardControllerFindAll = () => {
+    return apiClient<string>({ url: `/api/v1/dashboard`, method: 'GET' });
+  };
+
+  const dashboardControllerFindOne = (id: string) => {
+    return apiClient<string>({ url: `/api/v1/dashboard/${id}`, method: 'GET' });
+  };
+
+  const dashboardControllerUpdate = (
+    id: string,
+    updateDashboardDto: UpdateDashboardDto,
+  ) => {
+    return apiClient<string>({
+      url: `/api/v1/dashboard/${id}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: updateDashboardDto,
+    });
+  };
+
+  const dashboardControllerRemove = (id: string) => {
+    return apiClient<string>({
+      url: `/api/v1/dashboard/${id}`,
+      method: 'DELETE',
+    });
+  };
+
   return {
     appControllerGetHello,
     authControllerLogin,
     authControllerRegister,
-    authControllerCreate,
+    authControllerRefresh,
+    authControllerLogout,
     usersControllerGetCurrentUser,
     usersControllerUpdate,
     usersControllerChangePassword,
@@ -558,6 +618,12 @@ export const getTacoHouseAPI = () => {
     notificationsControllerFindOne,
     notificationsControllerMarkAsRead,
     notificationsControllerMarkAllAsRead,
+    dashboardControllerGetRevenueTrend,
+    dashboardControllerCreate,
+    dashboardControllerFindAll,
+    dashboardControllerFindOne,
+    dashboardControllerUpdate,
+    dashboardControllerRemove,
   };
 };
 export type AppControllerGetHelloResult = NonNullable<
@@ -573,9 +639,14 @@ export type AuthControllerRegisterResult = NonNullable<
     ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>
   >
 >;
-export type AuthControllerCreateResult = NonNullable<
+export type AuthControllerRefreshResult = NonNullable<
   Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerCreate']>
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRefresh']>
+  >
+>;
+export type AuthControllerLogoutResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogout']>
   >
 >;
 export type UsersControllerGetCurrentUserResult = NonNullable<
@@ -837,5 +908,37 @@ export type NotificationsControllerMarkAllAsReadResult = NonNullable<
     ReturnType<
       ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAllAsRead']
     >
+  >
+>;
+export type DashboardControllerGetRevenueTrendResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['dashboardControllerGetRevenueTrend']
+    >
+  >
+>;
+export type DashboardControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerCreate']>
+  >
+>;
+export type DashboardControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindAll']>
+  >
+>;
+export type DashboardControllerFindOneResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindOne']>
+  >
+>;
+export type DashboardControllerUpdateResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerUpdate']>
+  >
+>;
+export type DashboardControllerRemoveResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerRemove']>
   >
 >;

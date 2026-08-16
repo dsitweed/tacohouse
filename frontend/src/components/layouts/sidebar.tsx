@@ -21,7 +21,7 @@ import { usePathname } from 'next/navigation';
 import { Avatar, AvatarImage, Separator } from '@/components/ui';
 import { UserRole } from '@/generated/model';
 import { useAuthStore } from '@/stores/authStore';
-import { cn, removeLocaleFromPathname } from '@/utils';
+import { cn, getPathWithoutLocale } from '@/utils';
 
 const NAV_GROUP = ['main', 'financial', 'system'] as const;
 type NavGroupType = (typeof NAV_GROUP)[number];
@@ -125,7 +125,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuthStore();
   const role = user?.role;
-  const pathWithoutLocale = removeLocaleFromPathname(pathname);
+  const pathWithoutLocale = getPathWithoutLocale(pathname);
 
   const filterGroup = (group: NavGroupType) =>
     navItems.filter(

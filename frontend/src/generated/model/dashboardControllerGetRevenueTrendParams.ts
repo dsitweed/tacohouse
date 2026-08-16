@@ -12,16 +12,11 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { Object } from './object';
 
-export type BuildingsControllerFindAllParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   */
-  limit?: number;
-  landlordId?: string;
-  search?: string;
+export type DashboardControllerGetRevenueTrendParams = {
+/**
+ * @minimum 1
+ */
+months?: Object;
 };

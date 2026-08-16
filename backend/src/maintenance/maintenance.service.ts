@@ -76,7 +76,15 @@ export class MaintenanceService {
     data: MaintenanceRequest[];
     pagination: PaginationMeta;
   }> {
-    const { limit = 10, page = 1, tenantId, roomId, status, priority } = query;
+    const {
+      limit = 10,
+      page = 1,
+      tenantId,
+      roomId,
+      buildingId,
+      status,
+      priority,
+    } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.MaintenanceRequestWhereInput = {};
@@ -86,6 +94,10 @@ export class MaintenanceService {
     if (roomId) where.roomId = roomId;
     if (status) where.status = status;
     if (priority) where.priority = priority;
+    if (buildingId)
+      where.room = {
+        buildingId,
+      };
 
     // Authorization logic
     if (currentUser.role === UserRole.ADMIN) {

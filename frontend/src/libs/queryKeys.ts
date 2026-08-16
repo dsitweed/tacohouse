@@ -3,7 +3,10 @@
  * Centralized query key management for better organization and type safety
  */
 
-import { RoomsControllerFindAllParams } from '@/generated/model';
+import {
+  MaintenanceControllerFindAllParams,
+  RoomsControllerFindAllParams,
+} from '@/generated/model';
 
 export const queryKeys = {
   // Auth queries
@@ -95,14 +98,8 @@ export const queryKeys = {
   maintenance: {
     all: ['maintenance'] as const,
     lists: () => [...queryKeys.maintenance.all, 'list'] as const,
-    list: (filters?: {
-      tenantId?: string;
-      roomId?: string;
-      status?: string;
-      priority?: string;
-      page?: number;
-      limit?: number;
-    }) => [...queryKeys.maintenance.lists(), filters] as const,
+    list: (filters?: MaintenanceControllerFindAllParams) =>
+      [...queryKeys.maintenance.lists(), filters] as const,
     details: () => [...queryKeys.maintenance.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.maintenance.details(), id] as const,
     byTenant: (tenantId: string) =>

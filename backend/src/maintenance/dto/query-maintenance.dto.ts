@@ -20,6 +20,10 @@ export class FindAllMaintenanceDto {
   roomId?: string;
 
   @IsOptional()
+  @IsString()
+  buildingId: string;
+
+  @IsOptional()
   @IsEnum(MaintenanceStatus)
   status?: MaintenanceStatus;
 

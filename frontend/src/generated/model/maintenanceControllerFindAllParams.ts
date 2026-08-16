@@ -20,6 +20,7 @@ page?: number;
 limit?: number;
 tenantId?: string;
 roomId?: string;
+buildingId: string;
 status?: MaintenanceControllerFindAllStatus;
 priority?: MaintenanceControllerFindAllPriority;
 };

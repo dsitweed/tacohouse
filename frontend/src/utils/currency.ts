@@ -1,14 +1,8 @@
-export type Currency = 'VND' | 'USD' | 'JPY';
-
-const LocalMap: Record<Currency, string> = {
-  VND: 'vi-VN',
-  USD: 'en-US',
-  JPY: 'ja-JP',
-};
+import { LOCALE_CONFIG_MAP, SUPPORTED_LOCALES_TYPE } from '.';
 
 export function formatCurrency(
   amount: number | string | null | undefined,
-  currency: Currency = 'VND',
+  locale: SUPPORTED_LOCALES_TYPE = 'vi',
 ): string {
   if (amount === null || amount === undefined) {
     return '';
@@ -20,8 +14,8 @@ export function formatCurrency(
     return '';
   }
 
-  return value.toLocaleString(LocalMap[currency], {
+  return value.toLocaleString(LOCALE_CONFIG_MAP[locale].locale, {
     style: 'currency',
-    currency: currency,
+    currency: LOCALE_CONFIG_MAP[locale].currency,
   });
 }
