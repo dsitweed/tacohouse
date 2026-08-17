@@ -11,7 +11,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col lg:ml-[260px]">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6 lg:py-4">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6 [scrollbar-gutter:stable] lg:py-4">
+          {children}
+        </main>
       </div>
     </div>
   );
