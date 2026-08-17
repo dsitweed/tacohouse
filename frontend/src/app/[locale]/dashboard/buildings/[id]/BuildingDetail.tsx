@@ -93,7 +93,7 @@ export default function BuildingDetail({
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900">
             {building?.name}
           </h1>
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="mt-1 flex items-center gap-1.5 text-gray-500">
             <MapPin className="size-4 shrink-0" />
             <span className="text-xs">{building?.address}</span>
           </div>
