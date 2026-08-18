@@ -4071,7 +4071,7 @@
           "deposit": {
             "type": "number",
             "default": 0,
-            "minimum": 1
+            "minimum": 0
           },
           "maxTenants": {
             "type": "number",
@@ -4139,7 +4139,7 @@
           "deposit": {
             "type": "number",
             "default": 0,
-            "minimum": 1
+            "minimum": 0
           },
           "maxTenants": {
             "type": "number",

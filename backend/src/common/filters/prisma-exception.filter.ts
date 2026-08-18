@@ -8,23 +8,22 @@ export type ErrorCodeStatus = {
   message: string;
 };
 
-@Catch(Prisma.PrismaClientUnknownRequestError)
+@Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
-  private readonly defaultMapping: Record<string, ErrorCodeStatus | undefined> =
-    {
-      P2000: {
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'The provided value is too long for the column type.',
-      },
-      P2002: {
-        statusCode: HttpStatus.CONFLICT,
-        message: 'Unique constraint failed on one or more fields.',
-      },
-      P2025: {
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'The requested record was not found.',
-      },
-    };
+  private readonly defaultMapping: Record<string, ErrorCodeStatus> = {
+    P2000: {
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: 'The provided value is too long for the column type.',
+    },
+    P2002: {
+      statusCode: HttpStatus.CONFLICT,
+      message: 'Unique constraint failed on one or more fields.',
+    },
+    P2025: {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'The requested record was not found.',
+    },
+  };
 
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Response>();

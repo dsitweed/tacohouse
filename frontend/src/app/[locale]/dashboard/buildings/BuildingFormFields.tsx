@@ -138,6 +138,7 @@ export function BuildingFormFields({
                   null
                 }
                 onValueChange={(item) => field.onChange(item?.value ?? '')}
+                itemToStringLabel={(item) => item.label}
               >
                 <ComboboxInput placeholder="Chọn chủ sở hữu" showClear />
                 <ComboboxContent container={dialogRef}>

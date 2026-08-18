@@ -7,7 +7,7 @@ import LocaleSwitcher from '@/components/LocaleSwitcher';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAvailableRooms } from '@/features/rooms';
-import { RoomTypeLabels } from '@/types';
+import { ROOM_TYPES_MAPS } from '@/types';
 import { formatCurrency } from '@/utils';
 
 export default function HomePage() {
@@ -163,7 +163,7 @@ export default function HomePage() {
                     Phòng {room.number}, {room.building?.address}
                   </Link>
                   <p className="text-sm text-gray-600">
-                    {RoomTypeLabels[room.roomType]}
+                    {ROOM_TYPES_MAPS[room.roomType].label}
                   </p>
                   <p className="text-lg font-bold text-indigo-600">
                     {formatCurrency(room.monthlyRent)}

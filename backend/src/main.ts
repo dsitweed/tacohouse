@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { AppModule } from './app.module';
+import { PrismaClientExceptionFilter } from './common/filters';
 import {
   LoggingInterceptor,
   TransformResponseInterceptor,
@@ -44,6 +45,8 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalInterceptors(new TransformResponseInterceptor());
+
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
 
   app.use(cookieParser());
 

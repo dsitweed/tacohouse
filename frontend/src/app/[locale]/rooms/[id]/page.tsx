@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { useRoom } from '@/hooks/api';
 import { roomsApi } from '@/hooks/api/useRooms';
-import { RoomTypeLabels } from '@/types';
+import { ROOM_TYPES_MAPS } from '@/types';
 import { formatCurrency } from '@/utils';
 
 export default async function RoomDetailPage({
@@ -34,7 +34,9 @@ export default async function RoomDetailPage({
 
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">{RoomTypeLabels[room.roomType]}</Badge>
+            <Badge variant="secondary">
+              {ROOM_TYPES_MAPS[room.roomType].label}
+            </Badge>
             <Badge variant="outline">{room.status}</Badge>
           </div>
 

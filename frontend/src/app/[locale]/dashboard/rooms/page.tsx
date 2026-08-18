@@ -1,180 +1,451 @@
 'use client';
 
-import { DoorOpen, Edit, Eye, Plus, Search } from 'lucide-react';
+import { Download, Eye, Plus, SearchIcon, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
+import KpiCard from '@/components/KpiCard';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  ButtonGroup,
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  EmptyState,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  SkeletonPage,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Building, RoomStatus, UserRole } from '@/generated/model';
+import { useBuildings } from '@/hooks/api';
 import { useRooms } from '@/hooks/api/useRooms';
 import { useAuthStore } from '@/stores/authStore';
-import { RoomStatus, UserRole } from '@/types';
-import { formatCurrency } from '@/utils';
+import { ROOM_STATUS_MAP, RoomStatusMapsType } from '@/types';
+import { formatCurrency, toDateOnlyString } from '@/utils';
 
-const statusColors: Record<
-  RoomStatus,
-  'default' | 'success' | 'warning' | 'error'
-> = {
-  AVAILABLE: 'success',
-  OCCUPIED: 'default',
-  PENDING_CHECKOUT: 'warning',
-  MAINTENANCE: 'error',
-};
-
-const statusLabels: Record<RoomStatus, string> = {
-  AVAILABLE: 'Trống',
-  OCCUPIED: 'Đang thuê',
-  PENDING_CHECKOUT: 'Chờ trả phòng',
-  MAINTENANCE: 'Bảo trì',
-};
+import CreateRoomDialog from './CreateRoomDialog';
 
 export default function RoomsPage() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const searchParams = useSearchParams();
+  const initialBuildingId = searchParams.get('buildingId') ?? ''; // If not have buildingId search for all building
+
+  // Local sate
   const [search, setSearch] = useState('');
-  const { data, isLoading } = useRooms({
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [floorFilter, setFloorFilter] = useState('ALL');
+  const [selectedBuildingId, setSelectedBuildingId] =
+    useState(initialBuildingId);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const { data: roomData, isLoading: isRoomsLoading } = useRooms({
     page: 1,
     limit: 20,
   });
+  const rooms = useMemo(() => roomData?.data ?? [], [roomData]);
+  const { data: buildingsData } = useBuildings({ page: 1, limit: 100 });
+  const buildings = buildingsData?.data ?? [];
 
+  const maxFloorData = [
+    ...new Set(rooms.map((room) => getFloorNumber(room.number))),
+  ].map((floor) => ({
+    label: `Tầng ${floor}`,
+    value: floor.toString(),
+  }));
+
+  const displayRooms = useMemo(() => {
+    return rooms.map((room) => {
+      const activeRental = room.rentals?.find((r) => r.status === 'ACTIVE');
+      const tenantUser = activeRental?.tenant;
+      const tenantName = tenantUser?.profile
+        ? `${tenantUser.profile.lastName} ${tenantUser.profile.firstName}`
+        : tenantUser?.email || '-';
+
+      const tenantAvatar = tenantUser?.profile?.avatar;
+      const floor = getFloorNumber(room.number);
+
+      return {
+        id: room.id,
+        number: `Phòng ${room.number}`,
+        floor: `Tầng ${floor}`,
+        buildingName: room.building?.name || 'Tòa nhà',
+        details: `${room.area}m² • ${room.roomType === 'FULL_RIGHTS' ? 'Toàn quyền' : 'Bán quyền'}`,
+        monthRent: Number(room.monthlyRent),
+        status: room.status,
+        tenantName: room.status === 'OCCUPIED' ? tenantName : '-',
+        tenantAvatar: room.status === 'OCCUPIED' ? tenantAvatar : '',
+        contractEnd: activeRental?.endDate
+          ? toDateOnlyString(new Date(activeRental.endDate))
+          : '-',
+        buildingId: room.buildingId,
+      };
+    });
+  }, [rooms]);
+
+  // Filtered rooms based on search & filters
+  const filteredRooms = useMemo(() => {
+    return displayRooms.filter((room) => {
+      // Filter by building
+      if (selectedBuildingId !== '' && room.buildingId !== selectedBuildingId) {
+        return false;
+      }
+
+      // Filter by status
+      if (statusFilter !== 'ALL' && room.status !== statusFilter) {
+        return false;
+      }
+
+      // Filter by floor
+      if (floorFilter !== 'ALL') {
+        const floorNum = room.floor.replace(/\D/g, '');
+        if (floorNum !== floorFilter) return false;
+      }
+
+      // Filter by search text
+      if (search) {
+        const query = search.toLocaleLowerCase();
+        const matchNumber = room.number.toLocaleLowerCase().includes(query);
+        const matchBuilding = room.buildingName.toLowerCase().includes(query);
+        const matchTenant = room.tenantName.toLowerCase().includes(query);
+        if (!matchNumber && !matchBuilding && !matchTenant) return false;
+      }
+
+      return true;
+    });
+  }, [displayRooms, floorFilter, search, selectedBuildingId, statusFilter]);
+
+  // Calculated stats
+  const stats = useMemo(() => {
+    const occupied = displayRooms.filter((r) => r.status === 'OCCUPIED');
+    const vacant = displayRooms.filter((r) => r.status === 'AVAILABLE');
+    const maintenance = displayRooms.filter((r) => r.status === 'MAINTENANCE');
+    const pendingCheckout = displayRooms.filter(
+      (r) => r.status === 'PENDING_CHECKOUT',
+    );
+    const occupancyRate =
+      displayRooms.length > 0
+        ? ((occupied.length / displayRooms.length) * 100).toFixed(1)
+        : '0';
+
+    return {
+      total: displayRooms,
+      occupied,
+      vacant,
+      maintenance,
+      pendingCheckout,
+      occupancyRate,
+    };
+  }, [displayRooms]);
+
+  const handleExportCSV = () => {};
+
+  const handleResetFilters = () => {
+    setStatusFilter('ALL');
+    setFloorFilter('ALL');
+    setSelectedBuildingId('');
+    setSearch('');
+  };
+
+  if (!user) {
+    return <SkeletonPage />;
+  }
+
+  // TODO: make rule more tricter
   const canCreate =
-    user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
+    user.role === UserRole.ADMIN || user.role === UserRole.LANDLORD;
+
+  const selectedBuilding = buildings.find(
+    (build) => build.id === selectedBuildingId,
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Breadcrumbs & Page Header */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý phòng</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Quản lý thông tin các phòng trọ
-          </p>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard/buildings">
+                  Danh sách tòa nhà
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>
+                  {selectedBuilding ? selectedBuilding.name : 'Tất cả phòng'}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Rooms Management
+            </h1>
+            <p className="text-sm text-gray-500">
+              Manage and monitor all active rental units across your portfolio
+            </p>
+          </div>
         </div>
-        {canCreate && (
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Thêm phòng
+
+        {/* Top Header Action Button */}
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={handleExportCSV}
+            variant="outline"
+            disabled
+            title="Tinh năng xuất danh sách phòng đang được phát triển"
+          >
+            <Download className="size-4" /> Export List
           </Button>
+          {canCreate && (
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              <Plus />
+              Add New Room
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Dashboard Stats Bento Grid (4 Cards) */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiCard
+          label="TOTAL UNITS"
+          value={stats.total.length}
+          icon={TrendingUp}
+          description={
+            <div className="flex justify-end">
+              <Badge variant="successLight">100%</Badge>
+            </div>
+          }
+        />
+        <KpiCard
+          label="OCCUPIED"
+          value={stats.occupied.length}
+          icon={TrendingUp}
+          description={
+            <div className="flex justify-end">
+              <Badge variant="outline">{stats.occupancyRate}% Rate</Badge>
+            </div>
+          }
+        />
+        <KpiCard
+          label="VACANT"
+          value={stats.vacant.length}
+          icon={TrendingUp}
+          description={
+            <div className="flex justify-end">
+              <Badge variant="pending">Ready to Lease</Badge>
+            </div>
+          }
+        />
+        <KpiCard
+          label="MAINTENANCE"
+          value={stats.maintenance.length}
+          icon={TrendingUp}
+          description={
+            <div className="flex justify-end">
+              <Badge variant="destructive">Needs Attention</Badge>
+            </div>
+          }
+        />
+      </div>
+
+      {/* Filters & Controls Bar */}
+      <div className="bg-white-50 flex flex-col gap-4 rounded-xl bg-gray-100 p-4 lg:flex-row lg:justify-between">
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Search box */}
+          <ButtonGroup>
+            <InputGroup>
+              <InputGroupAddon>
+                <SearchIcon aria-hidden="true" />
+              </InputGroupAddon>
+              <InputGroupInput placeholder="Search keys..." />
+            </InputGroup>
+          </ButtonGroup>
+          {/* Building Selector */}
+          <Combobox
+            items={buildings}
+            value={
+              buildings.find((item) => item.id === selectedBuildingId) ?? null
+            }
+            onValueChange={(item) => setSelectedBuildingId(item?.id ?? '')}
+            itemToStringLabel={(item) => item.name}
+          >
+            <ComboboxInput placeholder="Select building" showClear />
+            <ComboboxContent>
+              <ComboboxEmpty>No buildings found</ComboboxEmpty>
+              <ComboboxList>
+                {(item: Building) => (
+                  <ComboboxItem key={item.id} value={item}>
+                    {item.name}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+          {/* Status Filter */}
+          <Combobox
+            items={Object.values(ROOM_STATUS_MAP)}
+            value={
+              Object.values(ROOM_STATUS_MAP).find(
+                ({ value }) => value === statusFilter,
+              ) ?? null
+            }
+            onValueChange={(item) => setStatusFilter(item?.value ?? 'ALL')}
+            itemToStringLabel={(item) => item.label}
+          >
+            <ComboboxInput
+              className="max-w-40"
+              placeholder="Select status"
+              showClear
+            />
+            <ComboboxContent>
+              <ComboboxEmpty>No status found</ComboboxEmpty>
+              <ComboboxList>
+                {(item: RoomStatusMapsType) => (
+                  <ComboboxItem key={item.value} value={item}>
+                    {item.label}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+          {/* Floor Filter */}
+          <Combobox
+            items={maxFloorData}
+            value={
+              maxFloorData.find((item) => item.value === floorFilter) ?? null
+            }
+            onValueChange={(item) => setFloorFilter(item?.value ?? 'ALL')}
+            itemToStringLabel={(item) => item.label}
+          >
+            <ComboboxInput
+              className="max-w-30"
+              placeholder="Select floor"
+              showClear
+            />
+            <ComboboxContent>
+              <ComboboxEmpty>No floor found</ComboboxEmpty>
+              <ComboboxList>
+                {(item: { label: string; value: string }) => (
+                  <ComboboxItem key={item.value} value={item}>
+                    {item.label}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        </div>
+        {/* Action Toggles */}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleResetFilters}>
+            Reset Filters
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Table Section */}
+      <div>
+        {isRoomsLoading ? (
+          <SkeletonPage />
+        ) : (
+          <Card className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-blue-50 font-semibold tracking-wider uppercase">
+                  <TableHead>Phòng #</TableHead>
+                  <TableHead>Tầng</TableHead>
+                  <TableHead>Tòa nhà</TableHead>
+                  <TableHead>Giá thuê</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Người thuê</TableHead>
+                  <TableHead>Kết thúc </TableHead>
+                  <TableHead>Chi tiết</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRooms.map((room) => (
+                  <TableRow key={room.id}>
+                    <TableCell className="">
+                      <p className="font-bold">{room.number}</p>
+                      <div className="text-xs text-gray-500">
+                        <p>{room.buildingName}</p>
+                        <p>{room.details}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{room.floor}</TableCell>
+                    <TableCell>{room.buildingName}</TableCell>
+                    <TableCell>{formatCurrency(room.monthRent)}</TableCell>
+                    <TableCell>
+                      <Badge variant={ROOM_STATUS_MAP[room.status].variant}>
+                        {ROOM_STATUS_MAP[room.status].label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Avatar>
+                        <AvatarImage src={room.tenantAvatar ?? ''} />
+                        <AvatarFallback>
+                          {room.tenantName.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>{room.contractEnd}</TableCell>
+                    <TableCell>
+                      <Link href={`dashboard/rooms/${room.id}`}>
+                        <Button variant="link" title="Xem chi tiết">
+                          <Eye className="size-4" />
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredRooms.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8}>
+                      {/* TODO: add pagination */}
+                      {/* TODO: use empty sate for table filter data */}
+                      <EmptyState />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Card>
         )}
       </div>
 
-      {/* Search */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Tìm kiếm phòng..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Rooms Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh sách phòng</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="py-12 text-center text-gray-500">Đang tải...</div>
-          ) : data?.data && data.data.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Phòng
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Tòa nhà
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Loại phòng
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Giá thuê
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Diện tích
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Trạng thái
-                    </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                      Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {data.data.map((room: any) => (
-                    <tr key={room.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-2">
-                          <DoorOpen className="h-5 w-5 text-gray-400" />
-                          <span className="font-medium text-gray-900">
-                            {room.number}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {room.building?.name || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {room.roomType === 'FULL_RIGHTS'
-                          ? 'Toàn quyền'
-                          : 'Bán quyền'}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {formatCurrency(room.monthlyRent)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {room.area}m²
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          variant={statusColors[room.status as RoomStatus]}
-                        >
-                          {statusLabels[room.status as RoomStatus]}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Link href={`/dashboard/rooms/${room.id}`}>
-                            <Button variant="ghost" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          {canCreate && (
-                            <Button variant="ghost" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="py-12 text-center">
-              <DoorOpen className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="mt-4 text-sm text-gray-600">Chưa có phòng nào</p>
-              {canCreate && (
-                <Button className="mt-4" variant="outline">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Thêm phòng đầu tiên
-                </Button>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <CreateRoomDialog
+        open={isCreateModalOpen}
+        setOpen={setIsCreateModalOpen}
+      />
     </div>
   );
+}
+
+function getFloorNumber(floorString: string) {
+  return Math.floor(Number(floorString.replace(/\D/g, '')) / 100) || 1;
 }

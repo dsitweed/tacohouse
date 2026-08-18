@@ -42,31 +42,47 @@ export interface RoomEquipment {
   updatedAt: string;
 }
 
-export const RoomTypeLabels: Record<RoomType, string> = {
-  [RoomType.FULL_RIGHTS]: 'Phòng nguyên căn',
-  [RoomType.PARTIAL_RIGHTS]: 'Phòng khép kín',
+export type RoomTypeMapsType = (typeof ROOM_TYPES_MAPS)[RoomType];
+export const ROOM_TYPES_MAPS: Record<
+  RoomType,
+  { value: RoomType; label: string }
+> = {
+  [RoomType.FULL_RIGHTS]: {
+    value: RoomType.FULL_RIGHTS,
+    label: 'Phòng nguyên căn',
+  },
+  [RoomType.PARTIAL_RIGHTS]: {
+    value: RoomType.PARTIAL_RIGHTS,
+    label: 'Phòng khép kín',
+  },
 };
 
+export type RoomStatusMapsType = (typeof ROOM_STATUS_MAP)[RoomStatus];
 export const ROOM_STATUS_MAP: Record<
   RoomStatus,
   {
+    value: RoomStatus;
     label: string;
     variant: VariantProps<typeof badgeVariants>['variant'];
   }
 > = {
   [RoomStatus.PENDING_CHECKOUT]: {
+    value: RoomStatus.PENDING_CHECKOUT,
     label: 'Chờ xử lý',
     variant: 'pending',
   },
   [RoomStatus.AVAILABLE]: {
+    value: RoomStatus.AVAILABLE,
     label: 'Đang trống',
     variant: 'successLight',
   },
   [RoomStatus.OCCUPIED]: {
+    value: RoomStatus.OCCUPIED,
     label: 'Đang thuê',
     variant: 'secondary',
   },
   [RoomStatus.MAINTENANCE]: {
+    value: RoomStatus.MAINTENANCE,
     label: 'Bảo trì',
     variant: 'destructive',
   },

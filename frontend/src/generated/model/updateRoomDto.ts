@@ -22,7 +22,7 @@ export interface UpdateRoomDto {
   area?: number;
   /** @minimum 1 */
   monthlyRent?: number;
-  /** @minimum 1 */
+  /** @minimum 0 */
   deposit?: number;
   /** @minimum 1 */
   maxTenants?: number;

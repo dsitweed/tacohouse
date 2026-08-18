@@ -32,7 +32,7 @@ export class CreateRoomDto {
 
   @IsOptional()
   @IsNumber()
-  @Min(1)
+  @Min(0)
   deposit: number = 0;
 
   @IsOptional()

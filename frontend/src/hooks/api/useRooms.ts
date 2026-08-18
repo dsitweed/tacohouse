@@ -5,9 +5,13 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { Room, RoomsControllerFindAllParams } from '@/generated/model';
+import {
+  CreateRoomDto,
+  Room,
+  RoomsControllerFindAllParams,
+} from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type { CreateRoomRequest, UpdateRoomRequest } from '@/types';
+import type { UpdateRoomRequest } from '@/types';
 
 // Room API functions
 export const roomsApi = {
@@ -34,7 +38,7 @@ export const roomsApi = {
     return response.data;
   },
 
-  create: async (data: CreateRoomRequest) => {
+  create: async (data: CreateRoomDto) => {
     const response = await apiClient.post<Room>('/rooms', data);
     return response.data;
   },
