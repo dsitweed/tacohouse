@@ -18,6 +18,8 @@ import { UsersModule } from 'users/users.module';
 
 import { DashboardModule } from './dashboard/dashboard.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { StorageModule } from './storage/storage.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { PrismaModule } from './prisma/prisma.module';
     ChatModule,
     NotificationsModule,
     DashboardModule,
+    UploadsModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [

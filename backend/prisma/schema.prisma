@@ -70,15 +70,15 @@ model UserProfile {
   firstName   String
   lastName    String
   phone       String
-  avatar      String?
+  avatar      String? // URL to avatar image
   dateOfBirth DateTime
   occupation  String
   workplace   String
 
   // Identity documents
-  idCardFrontPhoto String?
-  idCardBackPhoto  String?
-  portraitPhoto    String?
+  idCardFrontPhoto String? // URL to front side of ID card
+  idCardBackPhoto  String? // URL to back side of ID card
+  portraitPhoto    String? // URL to portrait photo for verification
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
