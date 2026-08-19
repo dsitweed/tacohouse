@@ -48,7 +48,7 @@ import {
 import { RegisterAuthDto, UserRole } from '@/generated/model';
 import { useRegister } from '@/hooks/api/useAuth';
 import { cn } from '@/utils';
-import { toDateOnlyString } from '@/utils';
+import { toApiDateString } from '@/utils';
 
 const registerFormSchema = z
   .object({
@@ -108,7 +108,7 @@ export default function RegisterPage() {
     const { confirmPassword, ...rest } = data;
     const registerAuthDto = {
       ...rest,
-      dateOfBirth: toDateOnlyString(rest.dateOfBirth),
+      dateOfBirth: toApiDateString(rest.dateOfBirth),
     } as RegisterAuthDto;
 
     registerMutation.mutate(registerAuthDto, {

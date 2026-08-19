@@ -35,7 +35,7 @@ import {
 import { Building, RoomStatus, RoomType } from '@/generated/model';
 import { useBuildings, useCreateRoom } from '@/hooks/api';
 import { ROOM_STATUS_MAP, ROOM_TYPES_MAPS, RoomTypeMapsType } from '@/types';
-import { toDateOnlyString } from '@/utils';
+import { toApiDateString } from '@/utils';
 
 import { buildingSchema } from '../buildings/BuildingFormFields';
 
@@ -99,9 +99,7 @@ export default function CreateRoomDialog({
     const { images, ...rest } = data;
     const createRoomDto = {
       ...rest,
-      availableFrom: rest.availableFrom
-        ? toDateOnlyString(rest.availableFrom)
-        : undefined,
+      availableFrom: toApiDateString(rest.availableFrom),
     };
 
     createRoomMutation.mutate(createRoomDto, {
@@ -109,12 +107,14 @@ export default function CreateRoomDialog({
         toast.success('Tạo phòng thành công', {
           position: 'top-center',
         });
+        form.reset();
+        setOpen(false);
       },
     });
   };
 
   return (
-    <Dialog open={true} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         ref={dialogRef}
         className="sm:max-w-2xl"
@@ -384,7 +384,7 @@ export default function CreateRoomDialog({
                           id="dateOfBirth"
                           type="button"
                           variant="outline"
-                          className="w-full justify-start font-normal"
+                          className="w-full justify-start bg-white font-normal"
                         >
                           <CalendarIcon />
                           {field.value ? (
@@ -402,6 +402,7 @@ export default function CreateRoomDialog({
                           selected={field.value}
                           defaultMonth={field.value}
                           captionLayout="dropdown"
+                          disabled={[{ before: new Date() }]}
                           onSelect={(date) => {
                             field.onChange(date);
                             setPopoverIsOpen(false);

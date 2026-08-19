@@ -99,6 +99,9 @@ export class RoomsService {
             include: { tenant: true },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       }),
       this.prisma.room.count({ where }),
     ]);

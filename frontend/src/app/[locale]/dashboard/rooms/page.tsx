@@ -35,10 +35,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui';
-import { Badge, badgeVariants } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Building, RoomStatus, UserRole } from '@/generated/model';
+import { Building, UserRole } from '@/generated/model';
 import { useBuildings } from '@/hooks/api';
 import { useRooms } from '@/hooks/api/useRooms';
 import { useAuthStore } from '@/stores/authStore';
@@ -51,6 +51,13 @@ export default function RoomsPage() {
   const user = useAuthStore((state) => state.user);
   const searchParams = useSearchParams();
   const initialBuildingId = searchParams.get('buildingId') ?? ''; // If not have buildingId search for all building
+  const { data: roomData, isLoading: isRoomsLoading } = useRooms({
+    page: 1,
+    limit: 20,
+  });
+  const rooms = useMemo(() => roomData?.data ?? [], [roomData]);
+  const { data: buildingsData } = useBuildings({ page: 1, limit: 100 });
+  const buildings = buildingsData?.data ?? [];
 
   // Local sate
   const [search, setSearch] = useState('');
@@ -59,14 +66,6 @@ export default function RoomsPage() {
   const [selectedBuildingId, setSelectedBuildingId] =
     useState(initialBuildingId);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-  const { data: roomData, isLoading: isRoomsLoading } = useRooms({
-    page: 1,
-    limit: 20,
-  });
-  const rooms = useMemo(() => roomData?.data ?? [], [roomData]);
-  const { data: buildingsData } = useBuildings({ page: 1, limit: 100 });
-  const buildings = buildingsData?.data ?? [];
 
   const maxFloorData = [
     ...new Set(rooms.map((room) => getFloorNumber(room.number))),
