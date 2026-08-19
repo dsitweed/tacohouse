@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsString, ValidateNested } from 'class-validator';
 import { UploadPurpose } from 'uploads/upload.config';
 
 class FileInfoDto {
@@ -14,9 +14,11 @@ export class CreatePresignedUrlsDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => FileInfoDto)
-  file: FileInfoDto;
+  files: FileInfoDto[];
 
+  @IsString()
   resourceId: string;
 
+  @IsEnum(UploadPurpose)
   purpose: UploadPurpose;
 }

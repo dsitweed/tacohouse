@@ -4739,8 +4739,11 @@
       "CreatePresignedUrlsDto": {
         "type": "object",
         "properties": {
-          "file": {
-            "$ref": "#/components/schemas/FileInfoDto"
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileInfoDto"
+            }
           },
           "resourceId": {
             "type": "string"
@@ -4759,7 +4762,7 @@
           }
         },
         "required": [
-          "file",
+          "files",
           "resourceId",
           "purpose"
         ]

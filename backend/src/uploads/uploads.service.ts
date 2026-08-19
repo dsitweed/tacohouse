@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { User, UserRole } from 'generated/prisma/client';
 import { extname } from 'path';
@@ -37,7 +41,7 @@ export class UploadsService {
     currentUser: User,
     createPresignedUrlsDto: CreatePresignedUrlsDto,
   ) {
-    const { file, resourceId, purpose } = createPresignedUrlsDto;
+    const { files, resourceId, purpose } = createPresignedUrlsDto;
     const config = UPLOAD_CONFIG[purpose];
 
     const isHavePermission = await this.checkPermission(
@@ -52,18 +56,30 @@ export class UploadsService {
       );
     }
 
-    if (!config.allowedContentTypes.includes(file.contentType)) {
-      throw new ForbiddenException(
-        'Invalid content type for this upload purpose.',
+    const invalidFile = files.find(
+      (file) => !config.allowedContentTypes.includes(file.contentType),
+    );
+
+    if (invalidFile) {
+      throw new BadRequestException(
+        `Invalid content type ${invalidFile.contentType} for this upload purpose`,
       );
     }
-    const fileExtension = extname(file.fileName);
-    const uniqueKey = `${UPLOAD_CONFIG[purpose].folderPath}/${resourceId}/${randomUUID()}${fileExtension}`;
-    return this.storageService.createPresignedUploadUrl(
-      uniqueKey,
-      file.contentType,
-      config.visibility === 'public',
+
+    const isPublic = config.visibility === 'public';
+
+    const data = await Promise.all(
+      files.map((file) => {
+        const uniqueKey = `${config.folderPath}/${resourceId}/${randomUUID()}${extname(file.fileName)}`;
+        return this.storageService.createPresignedUploadUrl(
+          uniqueKey,
+          file.contentType,
+          isPublic,
+        );
+      }),
     );
+
+    return { data };
   }
 
   create(createUploadDto: CreateUploadDto) {
