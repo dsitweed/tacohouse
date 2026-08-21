@@ -463,7 +463,7 @@ export default function RoomsPage() {
               <h2 className="text-xl font-bold">
                 Automate Maintenance Requests
               </h2>
-              <p className="text-xs">
+              <p className="text-muted text-xs">
                 Our new AI-driven system automatically schedules vendors and
                 updates tenants, reducing management overhead by up to 40%.
               </p>
