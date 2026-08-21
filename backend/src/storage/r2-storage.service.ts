@@ -1,11 +1,15 @@
 import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PresignedUrl } from 'uploads/entities/presigned-url.entity';
 
 @Injectable()
 export class R2StorageService {
@@ -33,7 +37,8 @@ export class R2StorageService {
     uniqueKey: string,
     contentType: string,
     isPublic: boolean,
-  ) {
+    fileName: string,
+  ): Promise<PresignedUrl> {
     const command = new PutObjectCommand({
       Bucket: isPublic ? this.publicBucketName : this.privateBucketName,
       Key: uniqueKey,
@@ -47,6 +52,7 @@ export class R2StorageService {
     return {
       uploadUrl,
       fileUrl: `${this.publicDomain}/${uniqueKey}`,
+      fileName: fileName,
       key: uniqueKey,
     };
   }
@@ -63,7 +69,50 @@ export class R2StorageService {
 
   async createPresignedDownloadUrl(key: string) {}
 
-  async delete(key: string) {}
+  async deleteObject(objectKey: string, isPublic: boolean) {
+    const bucket = isPublic ? this.publicBucketName : this.privateBucketName;
+
+    await this.s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: bucket,
+        Key: objectKey,
+      }),
+    );
+  }
+
+  async deleteObjectsByPrefix(prefixKey: string, isPublic: boolean) {
+    const bucket = isPublic ? this.publicBucketName : this.privateBucketName;
+    let continuationToken: string | undefined;
+
+    do {
+      const result = await this.s3Client.send(
+        new ListObjectsV2Command({
+          Bucket: bucket,
+          Prefix: prefixKey,
+          ContinuationToken: continuationToken,
+        }),
+      );
+
+      const objects = result.Contents ?? [];
+
+      if (objects.length > 0) {
+        await this.s3Client.send(
+          new DeleteObjectsCommand({
+            Bucket: bucket,
+            Delete: {
+              Objects: objects
+                .filter((object) => object.Key)
+                .map((object) => ({
+                  Key: object.Key,
+                })),
+            },
+          }),
+        );
+      }
+
+      continuationToken = result.NextContinuationToken;
+    } while (continuationToken);
+  }
 
   async exists(key: string) {}
 }

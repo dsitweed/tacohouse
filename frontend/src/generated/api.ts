@@ -27,6 +27,7 @@ import type {
   CreateMaintenanceDto,
   CreateNotificationDto,
   CreatePaymentDto,
+  CreatePresignedUrlsDto,
   CreateRentalDto,
   CreateRoomDto,
   DashboardControllerGetRevenueTrend200Item,
@@ -39,6 +40,7 @@ import type {
   NotificationsControllerFindAllParams,
   Payment,
   PaymentsControllerFindAllParams,
+  PresignedUrl,
   RegisterAuthDto,
   Rental,
   RentalsControllerFindAllParams,
@@ -54,891 +56,707 @@ import type {
   UpdateRentalDto,
   UpdateRoomDto,
   UpdateUserProfileDto,
-  User,
+  User
 } from './model';
 
 import { apiClient } from '../libs/apiClient';
 export const getTacoHouseAPI = () => {
-  const appControllerGetHello = () => {
-    return apiClient<string>({ url: `/api/v1`, method: 'GET' });
-  };
+const appControllerGetHello = (
 
-  /**
-   * @summary User login
-   */
-  const authControllerLogin = (loginAuthDto: LoginAuthDto) => {
-    return apiClient<void>({
-      url: `/api/v1/auth/login`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: loginAuthDto,
-    });
-  };
+ ) => {
+      return apiClient<string>(
+      {url: `/api/v1`, method: 'GET'
+    },
+      );
+    }
 
-  /**
-   * @summary User registration
-   */
-  const authControllerRegister = (registerAuthDto: RegisterAuthDto) => {
-    return apiClient<void>({
-      url: `/api/v1/auth/register`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: registerAuthDto,
-    });
-  };
+/**
+ * @summary User login
+ */
+const authControllerLogin = (
+    loginAuthDto: LoginAuthDto,
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/auth/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: loginAuthDto
+    },
+      );
+    }
 
-  /**
-   * @summary Refresh access token
-   */
-  const authControllerRefresh = () => {
-    return apiClient<void>({ url: `/api/v1/auth/refresh`, method: 'POST' });
-  };
+/**
+ * @summary User registration
+ */
+const authControllerRegister = (
+    registerAuthDto: RegisterAuthDto,
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/auth/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerAuthDto
+    },
+      );
+    }
 
-  /**
-   * @summary User logout
-   */
-  const authControllerLogout = () => {
-    return apiClient<void>({ url: `/api/v1/auth/logout`, method: 'POST' });
-  };
+/**
+ * @summary Refresh access token
+ */
+const authControllerRefresh = (
 
-  /**
-   * @summary Get current user profile
-   */
-  const usersControllerGetCurrentUser = () => {
-    return apiClient<User>({ url: `/api/v1/users/me`, method: 'GET' });
-  };
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/auth/refresh`, method: 'POST'
+    },
+      );
+    }
 
-  /**
-   * @summary Update current user profile
-   */
-  const usersControllerUpdate = (
+/**
+ * @summary User logout
+ */
+const authControllerLogout = (
+
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/auth/logout`, method: 'POST'
+    },
+      );
+    }
+
+/**
+ * @summary Get current user profile
+ */
+const usersControllerGetCurrentUser = (
+
+ ) => {
+      return apiClient<User>(
+      {url: `/api/v1/users/me`, method: 'GET'
+    },
+      );
+    }
+
+/**
+ * @summary Update current user profile
+ */
+const usersControllerUpdate = (
     updateUserProfileDto: UpdateUserProfileDto,
-  ) => {
-    return apiClient<User>({
-      url: `/api/v1/users/me`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateUserProfileDto,
-    });
-  };
+ ) => {
+      return apiClient<User>(
+      {url: `/api/v1/users/me`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserProfileDto
+    },
+      );
+    }
 
-  /**
-   * @summary Change user password
-   */
-  const usersControllerChangePassword = (
+/**
+ * @summary Change user password
+ */
+const usersControllerChangePassword = (
     updatePasswordDto: UpdatePasswordDto,
-  ) => {
-    return apiClient<void>({
-      url: `/api/v1/users/me/change-password`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: updatePasswordDto,
-    });
-  };
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/users/me/change-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: updatePasswordDto
+    },
+      );
+    }
 
-  /**
-   * @summary Create a new building
-   */
-  const buildingsControllerCreate = (createBuildingDto: CreateBuildingDto) => {
-    return apiClient<Building>({
-      url: `/api/v1/buildings`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createBuildingDto,
-    });
-  };
+/**
+ * @summary Create a new building
+ */
+const buildingsControllerCreate = (
+    createBuildingDto: CreateBuildingDto,
+ ) => {
+      return apiClient<Building>(
+      {url: `/api/v1/buildings`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createBuildingDto
+    },
+      );
+    }
 
-  /**
-   * @summary Get all buildings
-   */
-  const buildingsControllerFindAll = (
+/**
+ * @summary Get all buildings
+ */
+const buildingsControllerFindAll = (
     params: BuildingsControllerFindAllParams,
-  ) => {
-    return apiClient<Building[]>({
-      url: `/api/v1/buildings`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<Building[]>(
+      {url: `/api/v1/buildings`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  /**
-   * @summary Get a building by ID
-   */
-  const buildingsControllerFindOne = (id: string) => {
-    return apiClient<Building>({
-      url: `/api/v1/buildings/${id}`,
-      method: 'GET',
-    });
-  };
+/**
+ * @summary Get a building by ID
+ */
+const buildingsControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<Building>(
+      {url: `/api/v1/buildings/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  /**
-   * @summary Update a building
-   */
-  const buildingsControllerUpdate = (
+/**
+ * @summary Update a building
+ */
+const buildingsControllerUpdate = (
     id: string,
     updateBuildingDto: UpdateBuildingDto,
-  ) => {
-    return apiClient<Building>({
-      url: `/api/v1/buildings/${id}`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateBuildingDto,
-    });
-  };
+ ) => {
+      return apiClient<Building>(
+      {url: `/api/v1/buildings/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateBuildingDto
+    },
+      );
+    }
 
-  /**
-   * @summary Delete a building
-   */
-  const buildingsControllerRemove = (id: string) => {
-    return apiClient<Building>({
-      url: `/api/v1/buildings/${id}`,
-      method: 'DELETE',
-    });
-  };
+/**
+ * @summary Delete a building
+ */
+const buildingsControllerRemove = (
+    id: string,
+ ) => {
+      return apiClient<Building>(
+      {url: `/api/v1/buildings/${id}`, method: 'DELETE'
+    },
+      );
+    }
 
-  /**
-   * @summary Get available rooms (Public)
-   */
-  const roomsControllerGetAvailableRooms = () => {
-    return apiClient<Room[]>({ url: `/api/v1/rooms/available`, method: 'GET' });
-  };
+/**
+ * @summary Get available rooms (Public)
+ */
+const roomsControllerGetAvailableRooms = (
 
-  const roomsControllerCreate = (createRoomDto: CreateRoomDto) => {
-    return apiClient<Room>({
-      url: `/api/v1/rooms`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createRoomDto,
-    });
-  };
+ ) => {
+      return apiClient<Room[]>(
+      {url: `/api/v1/rooms/available`, method: 'GET'
+    },
+      );
+    }
 
-  const roomsControllerFindAll = (params: RoomsControllerFindAllParams) => {
-    return apiClient<Room[]>({ url: `/api/v1/rooms`, method: 'GET', params });
-  };
+const roomsControllerCreate = (
+    createRoomDto: CreateRoomDto,
+ ) => {
+      return apiClient<Room>(
+      {url: `/api/v1/rooms`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRoomDto
+    },
+      );
+    }
 
-  const roomsControllerFindOne = (id: string) => {
-    return apiClient<Room>({ url: `/api/v1/rooms/${id}`, method: 'GET' });
-  };
+const roomsControllerFindAll = (
+    params: RoomsControllerFindAllParams,
+ ) => {
+      return apiClient<Room[]>(
+      {url: `/api/v1/rooms`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const roomsControllerUpdate = (id: string, updateRoomDto: UpdateRoomDto) => {
-    return apiClient<Room>({
-      url: `/api/v1/rooms/${id}`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateRoomDto,
-    });
-  };
+const roomsControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<Room>(
+      {url: `/api/v1/rooms/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  const roomsControllerRemove = (id: string) => {
-    return apiClient<Room>({ url: `/api/v1/rooms/${id}`, method: 'DELETE' });
-  };
+const roomsControllerUpdate = (
+    id: string,
+    updateRoomDto: UpdateRoomDto,
+ ) => {
+      return apiClient<Room>(
+      {url: `/api/v1/rooms/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateRoomDto
+    },
+      );
+    }
 
-  const rentalsControllerCreate = (createRentalDto: CreateRentalDto) => {
-    return apiClient<Rental>({
-      url: `/api/v1/rentals`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createRentalDto,
-    });
-  };
+const roomsControllerRemove = (
+    id: string,
+ ) => {
+      return apiClient<Room>(
+      {url: `/api/v1/rooms/${id}`, method: 'DELETE'
+    },
+      );
+    }
 
-  const rentalsControllerFindAll = (
+const rentalsControllerCreate = (
+    createRentalDto: CreateRentalDto,
+ ) => {
+      return apiClient<Rental>(
+      {url: `/api/v1/rentals`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRentalDto
+    },
+      );
+    }
+
+const rentalsControllerFindAll = (
     params?: RentalsControllerFindAllParams,
-  ) => {
-    return apiClient<Rental[]>({
-      url: `/api/v1/rentals`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<Rental[]>(
+      {url: `/api/v1/rentals`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const rentalsControllerFindOne = (id: string) => {
-    return apiClient<Rental>({ url: `/api/v1/rentals/${id}`, method: 'GET' });
-  };
+const rentalsControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<Rental>(
+      {url: `/api/v1/rentals/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  const rentalsControllerUpdate = (
+const rentalsControllerUpdate = (
     id: string,
     updateRentalDto: UpdateRentalDto,
-  ) => {
-    return apiClient<Rental>({
-      url: `/api/v1/rentals/${id}`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateRentalDto,
-    });
-  };
+ ) => {
+      return apiClient<Rental>(
+      {url: `/api/v1/rentals/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateRentalDto
+    },
+      );
+    }
 
-  const rentalsControllerRemove = (id: string) => {
-    return apiClient<Rental>({
-      url: `/api/v1/rentals/${id}`,
-      method: 'DELETE',
-    });
-  };
+const rentalsControllerRemove = (
+    id: string,
+ ) => {
+      return apiClient<Rental>(
+      {url: `/api/v1/rentals/${id}`, method: 'DELETE'
+    },
+      );
+    }
 
-  /**
-   * @summary Create a new bill
-   */
-  const billsControllerCreate = (createBillDto: CreateBillDto) => {
-    return apiClient<Bill>({
-      url: `/api/v1/bills`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createBillDto,
-    });
-  };
+/**
+ * @summary Create a new bill
+ */
+const billsControllerCreate = (
+    createBillDto: CreateBillDto,
+ ) => {
+      return apiClient<Bill>(
+      {url: `/api/v1/bills`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createBillDto
+    },
+      );
+    }
 
-  /**
-   * @summary Get all bills
-   */
-  const billsControllerFindAll = (params?: BillsControllerFindAllParams) => {
-    return apiClient<Bill[]>({ url: `/api/v1/bills`, method: 'GET', params });
-  };
+/**
+ * @summary Get all bills
+ */
+const billsControllerFindAll = (
+    params?: BillsControllerFindAllParams,
+ ) => {
+      return apiClient<Bill[]>(
+      {url: `/api/v1/bills`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  /**
-   * @summary Get a bill by ID
-   */
-  const billsControllerFindOne = (id: string) => {
-    return apiClient<Bill>({ url: `/api/v1/bills/${id}`, method: 'GET' });
-  };
+/**
+ * @summary Get a bill by ID
+ */
+const billsControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<Bill>(
+      {url: `/api/v1/bills/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  /**
-   * @summary Update a bill
-   */
-  const billsControllerUpdate = (id: string, updateBillDto: UpdateBillDto) => {
-    return apiClient<Bill>({
-      url: `/api/v1/bills/${id}`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateBillDto,
-    });
-  };
+/**
+ * @summary Update a bill
+ */
+const billsControllerUpdate = (
+    id: string,
+    updateBillDto: UpdateBillDto,
+ ) => {
+      return apiClient<Bill>(
+      {url: `/api/v1/bills/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateBillDto
+    },
+      );
+    }
 
-  /**
-   * @summary Delete a bill
-   */
-  const billsControllerRemove = (id: string) => {
-    return apiClient<void>({ url: `/api/v1/bills/${id}`, method: 'DELETE' });
-  };
+/**
+ * @summary Delete a bill
+ */
+const billsControllerRemove = (
+    id: string,
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/bills/${id}`, method: 'DELETE'
+    },
+      );
+    }
 
-  /**
-   * @summary Confirm payment for a bill
-   */
-  const billsControllerConfirmPayment = (
+/**
+ * @summary Confirm payment for a bill
+ */
+const billsControllerConfirmPayment = (
     id: string,
     confirmPaymentDto: ConfirmPaymentDto,
-  ) => {
-    return apiClient<Bill>({
-      url: `/api/v1/bills/${id}/confirm`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: confirmPaymentDto,
-    });
-  };
+ ) => {
+      return apiClient<Bill>(
+      {url: `/api/v1/bills/${id}/confirm`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmPaymentDto
+    },
+      );
+    }
 
-  const paymentsControllerCreate = (createPaymentDto: CreatePaymentDto) => {
-    return apiClient<Payment>({
-      url: `/api/v1/payments`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createPaymentDto,
-    });
-  };
+const paymentsControllerCreate = (
+    createPaymentDto: CreatePaymentDto,
+ ) => {
+      return apiClient<Payment>(
+      {url: `/api/v1/payments`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPaymentDto
+    },
+      );
+    }
 
-  const paymentsControllerFindAll = (
+const paymentsControllerFindAll = (
     params?: PaymentsControllerFindAllParams,
-  ) => {
-    return apiClient<Payment[]>({
-      url: `/api/v1/payments`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<Payment[]>(
+      {url: `/api/v1/payments`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const paymentsControllerFindOne = (id: string) => {
-    return apiClient<Payment>({ url: `/api/v1/payments/${id}`, method: 'GET' });
-  };
+const paymentsControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<Payment>(
+      {url: `/api/v1/payments/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  const maintenanceControllerCreate = (
+const maintenanceControllerCreate = (
     createMaintenanceDto: CreateMaintenanceDto,
-  ) => {
-    return apiClient<MaintenanceRequest>({
-      url: `/api/v1/maintenance`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createMaintenanceDto,
-    });
-  };
+ ) => {
+      return apiClient<MaintenanceRequest>(
+      {url: `/api/v1/maintenance`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createMaintenanceDto
+    },
+      );
+    }
 
-  const maintenanceControllerFindAll = (
+const maintenanceControllerFindAll = (
     params: MaintenanceControllerFindAllParams,
-  ) => {
-    return apiClient<MaintenanceRequest[]>({
-      url: `/api/v1/maintenance`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<MaintenanceRequest[]>(
+      {url: `/api/v1/maintenance`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const maintenanceControllerFindOne = (id: string) => {
-    return apiClient<MaintenanceRequest>({
-      url: `/api/v1/maintenance/${id}`,
-      method: 'GET',
-    });
-  };
+const maintenanceControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<MaintenanceRequest>(
+      {url: `/api/v1/maintenance/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  const maintenanceControllerUpdate = (
+const maintenanceControllerUpdate = (
     id: string,
     updateMaintenanceDto: UpdateMaintenanceDto,
-  ) => {
-    return apiClient<MaintenanceRequest>({
-      url: `/api/v1/maintenance/${id}`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateMaintenanceDto,
-    });
-  };
+ ) => {
+      return apiClient<MaintenanceRequest>(
+      {url: `/api/v1/maintenance/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateMaintenanceDto
+    },
+      );
+    }
 
-  const maintenanceControllerRespond = (
+const maintenanceControllerRespond = (
     id: string,
     respondMaintenanceDto: RespondMaintenanceDto,
-  ) => {
-    return apiClient<MaintenanceRequest>({
-      url: `/api/v1/maintenance/${id}/respond`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: respondMaintenanceDto,
-    });
-  };
+ ) => {
+      return apiClient<MaintenanceRequest>(
+      {url: `/api/v1/maintenance/${id}/respond`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: respondMaintenanceDto
+    },
+      );
+    }
 
-  const chatControllerGetGroups = () => {
-    return apiClient<ChatGroup[]>({
-      url: `/api/v1/chat/groups`,
-      method: 'GET',
-    });
-  };
+const chatControllerGetGroups = (
 
-  const chatControllerGetGroup = (id: string) => {
-    return apiClient<ChatGroup>({
-      url: `/api/v1/chat/groups/${id}`,
-      method: 'GET',
-    });
-  };
+ ) => {
+      return apiClient<ChatGroup[]>(
+      {url: `/api/v1/chat/groups`, method: 'GET'
+    },
+      );
+    }
 
-  const chatControllerGetMessages = (
+const chatControllerGetGroup = (
+    id: string,
+ ) => {
+      return apiClient<ChatGroup>(
+      {url: `/api/v1/chat/groups/${id}`, method: 'GET'
+    },
+      );
+    }
+
+const chatControllerGetMessages = (
     id: string,
     params?: ChatControllerGetMessagesParams,
-  ) => {
-    return apiClient<Message[]>({
-      url: `/api/v1/chat/groups/${id}/messages`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<Message[]>(
+      {url: `/api/v1/chat/groups/${id}/messages`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const chatControllerSendMessage = (
+const chatControllerSendMessage = (
     id: string,
     sendMessageDto: SendMessageDto,
-  ) => {
-    return apiClient<Message>({
-      url: `/api/v1/chat/groups/${id}/messages`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: sendMessageDto,
-    });
-  };
+ ) => {
+      return apiClient<Message>(
+      {url: `/api/v1/chat/groups/${id}/messages`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sendMessageDto
+    },
+      );
+    }
 
-  const chatControllerGetDirectMessages = (
+const chatControllerGetDirectMessages = (
     userId: string,
     params?: ChatControllerGetDirectMessagesParams,
-  ) => {
-    return apiClient<Message[]>({
-      url: `/api/v1/chat/direct/${userId}`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<Message[]>(
+      {url: `/api/v1/chat/direct/${userId}`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const chatControllerSendDirectMessage = (
+const chatControllerSendDirectMessage = (
     userId: string,
     sendMessageDto: SendMessageDto,
-  ) => {
-    return apiClient<Message>({
-      url: `/api/v1/chat/direct/${userId}`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: sendMessageDto,
-    });
-  };
+ ) => {
+      return apiClient<Message>(
+      {url: `/api/v1/chat/direct/${userId}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sendMessageDto
+    },
+      );
+    }
 
-  const notificationsControllerCreate = (
+const notificationsControllerCreate = (
     createNotificationDto: CreateNotificationDto,
-  ) => {
-    return apiClient<Notification>({
-      url: `/api/v1/notifications`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createNotificationDto,
-    });
-  };
+ ) => {
+      return apiClient<Notification>(
+      {url: `/api/v1/notifications`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createNotificationDto
+    },
+      );
+    }
 
-  const notificationsControllerFindAll = (
+const notificationsControllerFindAll = (
     params?: NotificationsControllerFindAllParams,
-  ) => {
-    return apiClient<Notification[]>({
-      url: `/api/v1/notifications`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<Notification[]>(
+      {url: `/api/v1/notifications`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const notificationsControllerGetUnreadCount = () => {
-    return apiClient<number>({
-      url: `/api/v1/notifications/unread/count`,
-      method: 'GET',
-    });
-  };
+const notificationsControllerGetUnreadCount = (
 
-  const notificationsControllerFindOne = (id: string) => {
-    return apiClient<Notification>({
-      url: `/api/v1/notifications/${id}`,
-      method: 'GET',
-    });
-  };
+ ) => {
+      return apiClient<number>(
+      {url: `/api/v1/notifications/unread/count`, method: 'GET'
+    },
+      );
+    }
 
-  const notificationsControllerMarkAsRead = (id: string) => {
-    return apiClient<Notification>({
-      url: `/api/v1/notifications/${id}/read`,
-      method: 'PATCH',
-    });
-  };
+const notificationsControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<Notification>(
+      {url: `/api/v1/notifications/${id}`, method: 'GET'
+    },
+      );
+    }
 
-  const notificationsControllerMarkAllAsRead = () => {
-    return apiClient<void>({
-      url: `/api/v1/notifications/read/all`,
-      method: 'PATCH',
-    });
-  };
+const notificationsControllerMarkAsRead = (
+    id: string,
+ ) => {
+      return apiClient<Notification>(
+      {url: `/api/v1/notifications/${id}/read`, method: 'PATCH'
+    },
+      );
+    }
 
-  const dashboardControllerGetRevenueTrend = (
+const notificationsControllerMarkAllAsRead = (
+
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/notifications/read/all`, method: 'PATCH'
+    },
+      );
+    }
+
+const dashboardControllerGetRevenueTrend = (
     params: DashboardControllerGetRevenueTrendParams,
-  ) => {
-    return apiClient<DashboardControllerGetRevenueTrend200Item[]>({
-      url: `/api/v1/dashboard/revenue-trend`,
-      method: 'GET',
-      params,
-    });
-  };
+ ) => {
+      return apiClient<DashboardControllerGetRevenueTrend200Item[]>(
+      {url: `/api/v1/dashboard/revenue-trend`, method: 'GET',
+        params
+    },
+      );
+    }
 
-  const dashboardControllerCreate = (
+const dashboardControllerCreate = (
     createDashboardDto: CreateDashboardDto,
-  ) => {
-    return apiClient<string>({
-      url: `/api/v1/dashboard`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: createDashboardDto,
-    });
-  };
+ ) => {
+      return apiClient<string>(
+      {url: `/api/v1/dashboard`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createDashboardDto
+    },
+      );
+    }
 
-  const dashboardControllerFindAll = () => {
-    return apiClient<string>({ url: `/api/v1/dashboard`, method: 'GET' });
-  };
+const dashboardControllerFindAll = (
 
-  const dashboardControllerFindOne = (id: string) => {
-    return apiClient<string>({ url: `/api/v1/dashboard/${id}`, method: 'GET' });
-  };
+ ) => {
+      return apiClient<string>(
+      {url: `/api/v1/dashboard`, method: 'GET'
+    },
+      );
+    }
 
-  const dashboardControllerUpdate = (
+const dashboardControllerFindOne = (
+    id: string,
+ ) => {
+      return apiClient<string>(
+      {url: `/api/v1/dashboard/${id}`, method: 'GET'
+    },
+      );
+    }
+
+const dashboardControllerUpdate = (
     id: string,
     updateDashboardDto: UpdateDashboardDto,
-  ) => {
-    return apiClient<string>({
-      url: `/api/v1/dashboard/${id}`,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      data: updateDashboardDto,
-    });
-  };
+ ) => {
+      return apiClient<string>(
+      {url: `/api/v1/dashboard/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateDashboardDto
+    },
+      );
+    }
 
-  const dashboardControllerRemove = (id: string) => {
-    return apiClient<string>({
-      url: `/api/v1/dashboard/${id}`,
-      method: 'DELETE',
-    });
-  };
+const dashboardControllerRemove = (
+    id: string,
+ ) => {
+      return apiClient<string>(
+      {url: `/api/v1/dashboard/${id}`, method: 'DELETE'
+    },
+      );
+    }
 
-  return {
-    appControllerGetHello,
-    authControllerLogin,
-    authControllerRegister,
-    authControllerRefresh,
-    authControllerLogout,
-    usersControllerGetCurrentUser,
-    usersControllerUpdate,
-    usersControllerChangePassword,
-    buildingsControllerCreate,
-    buildingsControllerFindAll,
-    buildingsControllerFindOne,
-    buildingsControllerUpdate,
-    buildingsControllerRemove,
-    roomsControllerGetAvailableRooms,
-    roomsControllerCreate,
-    roomsControllerFindAll,
-    roomsControllerFindOne,
-    roomsControllerUpdate,
-    roomsControllerRemove,
-    rentalsControllerCreate,
-    rentalsControllerFindAll,
-    rentalsControllerFindOne,
-    rentalsControllerUpdate,
-    rentalsControllerRemove,
-    billsControllerCreate,
-    billsControllerFindAll,
-    billsControllerFindOne,
-    billsControllerUpdate,
-    billsControllerRemove,
-    billsControllerConfirmPayment,
-    paymentsControllerCreate,
-    paymentsControllerFindAll,
-    paymentsControllerFindOne,
-    maintenanceControllerCreate,
-    maintenanceControllerFindAll,
-    maintenanceControllerFindOne,
-    maintenanceControllerUpdate,
-    maintenanceControllerRespond,
-    chatControllerGetGroups,
-    chatControllerGetGroup,
-    chatControllerGetMessages,
-    chatControllerSendMessage,
-    chatControllerGetDirectMessages,
-    chatControllerSendDirectMessage,
-    notificationsControllerCreate,
-    notificationsControllerFindAll,
-    notificationsControllerGetUnreadCount,
-    notificationsControllerFindOne,
-    notificationsControllerMarkAsRead,
-    notificationsControllerMarkAllAsRead,
-    dashboardControllerGetRevenueTrend,
-    dashboardControllerCreate,
-    dashboardControllerFindAll,
-    dashboardControllerFindOne,
-    dashboardControllerUpdate,
-    dashboardControllerRemove,
-  };
-};
-export type AppControllerGetHelloResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['appControllerGetHello']>
-  >
->;
-export type AuthControllerLoginResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogin']>>
->;
-export type AuthControllerRegisterResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>
-  >
->;
-export type AuthControllerRefreshResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRefresh']>
-  >
->;
-export type AuthControllerLogoutResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogout']>
-  >
->;
-export type UsersControllerGetCurrentUserResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['usersControllerGetCurrentUser']
-    >
-  >
->;
-export type UsersControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerUpdate']>
-  >
->;
-export type UsersControllerChangePasswordResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['usersControllerChangePassword']
-    >
-  >
->;
-export type BuildingsControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerCreate']>
-  >
->;
-export type BuildingsControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindAll']>
-  >
->;
-export type BuildingsControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindOne']>
-  >
->;
-export type BuildingsControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerUpdate']>
-  >
->;
-export type BuildingsControllerRemoveResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerRemove']>
-  >
->;
-export type RoomsControllerGetAvailableRoomsResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['roomsControllerGetAvailableRooms']
-    >
-  >
->;
-export type RoomsControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerCreate']>
-  >
->;
-export type RoomsControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerFindAll']>
-  >
->;
-export type RoomsControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerFindOne']>
-  >
->;
-export type RoomsControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerUpdate']>
-  >
->;
-export type RoomsControllerRemoveResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerRemove']>
-  >
->;
-export type RentalsControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerCreate']>
-  >
->;
-export type RentalsControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindAll']>
-  >
->;
-export type RentalsControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindOne']>
-  >
->;
-export type RentalsControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerUpdate']>
-  >
->;
-export type RentalsControllerRemoveResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerRemove']>
-  >
->;
-export type BillsControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerCreate']>
-  >
->;
-export type BillsControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindAll']>
-  >
->;
-export type BillsControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindOne']>
-  >
->;
-export type BillsControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerUpdate']>
-  >
->;
-export type BillsControllerRemoveResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerRemove']>
-  >
->;
-export type BillsControllerConfirmPaymentResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['billsControllerConfirmPayment']
-    >
-  >
->;
-export type PaymentsControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerCreate']>
-  >
->;
-export type PaymentsControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindAll']>
-  >
->;
-export type PaymentsControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindOne']>
-  >
->;
-export type MaintenanceControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerCreate']
-    >
-  >
->;
-export type MaintenanceControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerFindAll']
-    >
-  >
->;
-export type MaintenanceControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerFindOne']
-    >
-  >
->;
-export type MaintenanceControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerUpdate']
-    >
-  >
->;
-export type MaintenanceControllerRespondResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['maintenanceControllerRespond']
-    >
-  >
->;
-export type ChatControllerGetGroupsResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetGroups']>
-  >
->;
-export type ChatControllerGetGroupResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetGroup']>
-  >
->;
-export type ChatControllerGetMessagesResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetMessages']>
-  >
->;
-export type ChatControllerSendMessageResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerSendMessage']>
-  >
->;
-export type ChatControllerGetDirectMessagesResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['chatControllerGetDirectMessages']
-    >
-  >
->;
-export type ChatControllerSendDirectMessageResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['chatControllerSendDirectMessage']
-    >
-  >
->;
-export type NotificationsControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['notificationsControllerCreate']
-    >
-  >
->;
-export type NotificationsControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['notificationsControllerFindAll']
-    >
-  >
->;
-export type NotificationsControllerGetUnreadCountResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<
-        typeof getTacoHouseAPI
-      >['notificationsControllerGetUnreadCount']
-    >
-  >
->;
-export type NotificationsControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['notificationsControllerFindOne']
-    >
-  >
->;
-export type NotificationsControllerMarkAsReadResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAsRead']
-    >
-  >
->;
-export type NotificationsControllerMarkAllAsReadResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAllAsRead']
-    >
-  >
->;
-export type DashboardControllerGetRevenueTrendResult = NonNullable<
-  Awaited<
-    ReturnType<
-      ReturnType<typeof getTacoHouseAPI>['dashboardControllerGetRevenueTrend']
-    >
-  >
->;
-export type DashboardControllerCreateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerCreate']>
-  >
->;
-export type DashboardControllerFindAllResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindAll']>
-  >
->;
-export type DashboardControllerFindOneResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindOne']>
-  >
->;
-export type DashboardControllerUpdateResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerUpdate']>
-  >
->;
-export type DashboardControllerRemoveResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerRemove']>
-  >
->;
+/**
+ * @summary Tạo presigned URL để upload file trực tiếp lên storage
+ */
+const uploadsControllerPresignedUrls = (
+    createPresignedUrlsDto: CreatePresignedUrlsDto,
+ ) => {
+      return apiClient<PresignedUrl[]>(
+      {url: `/api/v1/uploads/presigned-urls`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPresignedUrlsDto
+    },
+      );
+    }
+
+return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,uploadsControllerPresignedUrls}};
+export type AppControllerGetHelloResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['appControllerGetHello']>>>
+export type AuthControllerLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogin']>>>
+export type AuthControllerRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>>>
+export type AuthControllerRefreshResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRefresh']>>>
+export type AuthControllerLogoutResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogout']>>>
+export type UsersControllerGetCurrentUserResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerGetCurrentUser']>>>
+export type UsersControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerUpdate']>>>
+export type UsersControllerChangePasswordResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerChangePassword']>>>
+export type BuildingsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerCreate']>>>
+export type BuildingsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindAll']>>>
+export type BuildingsControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindOne']>>>
+export type BuildingsControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerUpdate']>>>
+export type BuildingsControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerRemove']>>>
+export type RoomsControllerGetAvailableRoomsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerGetAvailableRooms']>>>
+export type RoomsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerCreate']>>>
+export type RoomsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerFindAll']>>>
+export type RoomsControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerFindOne']>>>
+export type RoomsControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerUpdate']>>>
+export type RoomsControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['roomsControllerRemove']>>>
+export type RentalsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerCreate']>>>
+export type RentalsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindAll']>>>
+export type RentalsControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindOne']>>>
+export type RentalsControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerUpdate']>>>
+export type RentalsControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerRemove']>>>
+export type BillsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerCreate']>>>
+export type BillsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindAll']>>>
+export type BillsControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindOne']>>>
+export type BillsControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerUpdate']>>>
+export type BillsControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerRemove']>>>
+export type BillsControllerConfirmPaymentResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerConfirmPayment']>>>
+export type PaymentsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerCreate']>>>
+export type PaymentsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindAll']>>>
+export type PaymentsControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindOne']>>>
+export type MaintenanceControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['maintenanceControllerCreate']>>>
+export type MaintenanceControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['maintenanceControllerFindAll']>>>
+export type MaintenanceControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['maintenanceControllerFindOne']>>>
+export type MaintenanceControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['maintenanceControllerUpdate']>>>
+export type MaintenanceControllerRespondResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['maintenanceControllerRespond']>>>
+export type ChatControllerGetGroupsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetGroups']>>>
+export type ChatControllerGetGroupResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetGroup']>>>
+export type ChatControllerGetMessagesResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetMessages']>>>
+export type ChatControllerSendMessageResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerSendMessage']>>>
+export type ChatControllerGetDirectMessagesResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerGetDirectMessages']>>>
+export type ChatControllerSendDirectMessageResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['chatControllerSendDirectMessage']>>>
+export type NotificationsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['notificationsControllerCreate']>>>
+export type NotificationsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['notificationsControllerFindAll']>>>
+export type NotificationsControllerGetUnreadCountResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['notificationsControllerGetUnreadCount']>>>
+export type NotificationsControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['notificationsControllerFindOne']>>>
+export type NotificationsControllerMarkAsReadResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAsRead']>>>
+export type NotificationsControllerMarkAllAsReadResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['notificationsControllerMarkAllAsRead']>>>
+export type DashboardControllerGetRevenueTrendResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerGetRevenueTrend']>>>
+export type DashboardControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerCreate']>>>
+export type DashboardControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindAll']>>>
+export type DashboardControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindOne']>>>
+export type DashboardControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerUpdate']>>>
+export type DashboardControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerRemove']>>>
+export type UploadsControllerPresignedUrlsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerPresignedUrls']>>>

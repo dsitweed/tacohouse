@@ -2283,155 +2283,28 @@
         },
         "responses": {
           "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Uploads"
-        ]
-      }
-    },
-    "/api/v1/uploads": {
-      "post": {
-        "operationId": "UploadsController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUploadDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
+            "description": "Tạo presigned URL thành công.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PresignedUrl"
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ hoặc `contentType` không được phép với `purpose` đã chọn."
           }
         },
-        "tags": [
-          "Uploads"
-        ]
-      },
-      "get": {
-        "operationId": "UploadsController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Uploads"
-        ]
-      }
-    },
-    "/api/v1/uploads/{id}": {
-      "get": {
-        "operationId": "UploadsController_findOne",
-        "parameters": [
+        "security": [
           {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
+            "JWT-auth": []
           }
         ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Uploads"
-        ]
-      },
-      "patch": {
-        "operationId": "UploadsController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUploadDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Uploads"
-        ]
-      },
-      "delete": {
-        "operationId": "UploadsController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
+        "summary": "Tạo presigned URL để upload file trực tiếp lên storage",
         "tags": [
           "Uploads"
         ]
@@ -2484,6 +2357,10 @@
     {
       "name": "Notifications",
       "description": "Notification endpoints"
+    },
+    {
+      "name": "Uploads",
+      "description": "File upload endpoints"
     }
   ],
   "servers": [
@@ -4725,10 +4602,14 @@
         "type": "object",
         "properties": {
           "fileName": {
-            "type": "string"
+            "type": "string",
+            "description": "Tên file gốc, dùng để lấy phần mở rộng cho object key.",
+            "example": "phong-101.jpg"
           },
           "contentType": {
-            "type": "string"
+            "type": "string",
+            "description": "MIME type của file. Phải nằm trong danh sách cho phép của purpose tương ứng.",
+            "example": "image/jpeg"
           }
         },
         "required": [
@@ -4736,28 +4617,43 @@
           "contentType"
         ]
       },
+      "UploadPurpose": {
+        "type": "string",
+        "enum": [
+          "BUILDING_IMAGE",
+          "ROOM_IMAGE",
+          "USER_AVATAR",
+          "USER_ID_CARD_FRONT_PHOTO",
+          "USER_ID_CARD_BACK_PHOTO",
+          "USER_PORTRAIT_PHOTO",
+          "PAYMENT_RECEIPT_IMAGE"
+        ],
+        "description": "Mục đích upload. Quyết định thư mục lưu trữ, quyền truy cập, giới hạn dung lượng và định dạng file cho phép."
+      },
       "CreatePresignedUrlsDto": {
         "type": "object",
         "properties": {
           "files": {
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Danh sách file cần upload. Tối đa 10 file mỗi request.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/FileInfoDto"
             }
           },
           "resourceId": {
-            "type": "string"
+            "type": "string",
+            "description": "ID của resource mà file thuộc về (roomId, buildingId, userId, paymentId...). Dùng để kiểm tra quyền và tạo đường dẫn lưu trữ.",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "purpose": {
-            "type": "string",
-            "enum": [
-              "BUILDING_IMAGE",
-              "ROOM_IMAGE",
-              "USER_AVATAR",
-              "USER_ID_CARD_FRONT_PHOTO",
-              "USER_ID_CARD_BACK_PHOTO",
-              "USER_PORTRAIT_PHOTO",
-              "PAYMENT_RECEIPT_IMAGE"
+            "description": "Mục đích upload. Quyết định thư mục lưu trữ, quyền truy cập, giới hạn dung lượng và định dạng file cho phép.",
+            "example": "ROOM_IMAGE",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UploadPurpose"
+              }
             ]
           }
         },
@@ -4767,13 +4663,36 @@
           "purpose"
         ]
       },
-      "CreateUploadDto": {
+      "PresignedUrl": {
         "type": "object",
-        "properties": {}
-      },
-      "UpdateUploadDto": {
-        "type": "object",
-        "properties": {}
+        "properties": {
+          "uploadUrl": {
+            "type": "string",
+            "description": "URL để client PUT trực tiếp file lên storage. Hết hạn sau 300 giây.",
+            "example": "https://<account>.r2.cloudflarestorage.com/uploads/images/rooms/abc/1a2b.jpg?X-Amz-Signature=..."
+          },
+          "fileUrl": {
+            "type": "string",
+            "description": "URL công khai của file sau khi upload xong. Chỉ truy cập được với các purpose có visibility là public.",
+            "example": "https://cdn.tacohouse.com/uploads/images/rooms/abc/1a2b.jpg"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Tên file gốc được gửi từ client, dùng để map lại với file khi upload",
+            "example": "phong-101.jpg"
+          },
+          "key": {
+            "type": "string",
+            "description": "Object key trong bucket. Lưu lại giá trị này vào DB để gắn vào resource sau khi upload thành công.",
+            "example": "uploads/images/rooms/abc/1a2b.jpg"
+          }
+        },
+        "required": [
+          "uploadUrl",
+          "fileUrl",
+          "fileName",
+          "key"
+        ]
       }
     }
   }

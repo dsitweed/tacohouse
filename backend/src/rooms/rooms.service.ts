@@ -7,7 +7,9 @@ import type { Room, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
 import { PrismaService } from 'prisma/prisma.service';
+import { R2StorageService } from 'storage/r2-storage.service';
 import { PaginationMeta } from 'types';
+import { UPLOAD_CONFIG, UploadPurpose } from 'uploads/upload.config';
 
 import { FindAllRoomsDto } from './dto';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -21,7 +23,10 @@ type RoomWithLandlord = Room & {
 
 @Injectable()
 export class RoomsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly r2StorageService: R2StorageService,
+  ) {}
 
   async create(currentUser: User, createRoomDto: CreateRoomDto): Promise<Room> {
     // LANDLORD can creates room for themselves
@@ -172,6 +177,12 @@ export class RoomsService {
     if (!canAccessBuilding) {
       throw new ForbiddenException();
     }
+
+    const config = UPLOAD_CONFIG[UploadPurpose.ROOM_IMAGE];
+    await this.r2StorageService.deleteObjectsByPrefix(
+      `${config.folderPath}/${room.id}`,
+      config.visibility === 'public',
+    );
 
     return this.prisma.room.delete({
       where: { id },

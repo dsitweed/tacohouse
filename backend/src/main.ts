@@ -94,6 +94,7 @@ async function bootstrap() {
     .addTag('Maintenance', 'Maintenance request endpoints')
     .addTag('Chat', 'Chat and messaging endpoints')
     .addTag('Notifications', 'Notification endpoints')
+    .addTag('Uploads', 'File upload endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

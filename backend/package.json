@@ -22,7 +22,8 @@
     "prisma:seed": "ts-node prisma/seeds/index.ts",
     "prisma:reset": "prisma migrate reset --force",
     "db:seed": "pnpm prisma:seed",
-    "db:reset": "pnpm prisma:reset && pnpm prisma:seed"
+    "db:reset": "pnpm prisma:reset && pnpm prisma:seed",
+    "generate:types": "prisma generate && pnpm run format"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1113.0",

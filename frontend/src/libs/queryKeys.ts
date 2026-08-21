@@ -136,4 +136,9 @@ export const queryKeys = {
     all: ['dashboard'] as const,
     revenueTrend: () => [...queryKeys.dashboard.all, 'revenueTrend'] as const,
   },
+
+  uploads: {
+    all: ['uploads'] as const,
+    presignedUrls: () => [...queryKeys.uploads.all, 'presignedUrls'] as const,
+  },
 } as const;

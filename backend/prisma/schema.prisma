@@ -70,15 +70,15 @@ model UserProfile {
   firstName   String
   lastName    String
   phone       String
-  avatar      String? // URL to avatar image
+  avatar      String? // key to avatar image in bucket
   dateOfBirth DateTime
   occupation  String
   workplace   String
 
   // Identity documents
-  idCardFrontPhoto String? // URL to front side of ID card
-  idCardBackPhoto  String? // URL to back side of ID card
-  portraitPhoto    String? // URL to portrait photo for verification
+  idCardFrontPhoto String? // key to front side of ID card in bucket
+  idCardBackPhoto  String? // key to back side of ID card in bucket
+  portraitPhoto    String? // key to portrait photo for verification in bucket
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -188,7 +188,7 @@ model Room {
   maxTenants    Int        @default(1)
   roomType      RoomType
   description   String?
-  images        String[] // Array of image URLs
+  images        String[] // Array of key for images in bucket
   status        RoomStatus @default(AVAILABLE)
   availableFrom DateTime?
 
@@ -254,7 +254,7 @@ model Rental {
   depositPaid Decimal @default(0) @db.Decimal(14, 2) // Deposit amount paid by the tenant, can be deducted from future rent payments
 
   status         RentalStatus @default(ACTIVE)
-  contractImages String[] // Contract document images
+  contractImages String[] // Array of key for contract document images in bucket
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -351,7 +351,7 @@ model PaymentConfirmation {
   landlordConfirmed   Boolean   @default(false)
   landlordConfirmedAt DateTime?
 
-  proofImages String[] // Payment proof images
+  proofImages String[] // Array of key for payment proof images in bucket
   notes       String?
 
   createdAt DateTime @default(now())

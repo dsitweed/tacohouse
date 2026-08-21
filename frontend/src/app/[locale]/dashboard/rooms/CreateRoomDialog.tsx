@@ -32,8 +32,20 @@ import {
   Spinner,
   Textarea,
 } from '@/components/ui';
-import { Building, RoomStatus, RoomType } from '@/generated/model';
-import { useBuildings, useCreateRoom } from '@/hooks/api';
+import {
+  Building,
+  PresignedUrl,
+  RoomStatus,
+  RoomType,
+  UploadPurpose,
+} from '@/generated/model';
+import {
+  useBuildings,
+  useCreateRoom,
+  useDeleteRoom,
+  usePresignedUrls,
+  useUpdateRoom,
+} from '@/hooks/api';
 import { ROOM_STATUS_MAP, ROOM_TYPES_MAPS, RoomTypeMapsType } from '@/types';
 import { toApiDateString } from '@/utils';
 
@@ -77,6 +89,9 @@ export default function CreateRoomDialog({
   const buildings = buildingsData?.data ?? [];
 
   const createRoomMutation = useCreateRoom();
+  const createPresignedUrlMutation = usePresignedUrls();
+  const updateRoomMutation = useUpdateRoom();
+  const deleteRoomMutation = useDeleteRoom();
 
   const form = useForm<RoomFormFieldsType>({
     resolver: zodResolver(roomSchema),
@@ -94,23 +109,106 @@ export default function CreateRoomDialog({
       availableFrom: undefined,
     },
   });
-
-  const handleCreateRoom = (data: RoomFormFieldsType) => {
-    const { images, ...rest } = data;
-    const createRoomDto = {
-      ...rest,
-      availableFrom: toApiDateString(rest.availableFrom),
-    };
-
-    createRoomMutation.mutate(createRoomDto, {
-      onSuccess: () => {
-        toast.success('Tạo phòng thành công', {
-          position: 'top-center',
-        });
-        form.reset();
-        setOpen(false);
-      },
+  /**
+   * 1. Create room
+   * 2. If not have images -> return handle success
+   * 2. if have images -> Get presigned url
+   * 3. Upload images to storage
+   * 4. Update room with key (after upload images successful)
+   * 5. Close dialog, toast success
+   * 6 Error handling, delete room, delete images in storage if failed
+   */
+  const handleCreateRoom = async (data: RoomFormFieldsType) => {
+    console.log({
+      data,
     });
+
+    const { images, ...rest } = data;
+    let roomId: string | undefined;
+
+    try {
+      const newRoom = await createRoomMutation.mutateAsync({
+        ...rest,
+        availableFrom: toApiDateString(rest.availableFrom),
+      });
+
+      roomId = newRoom.id;
+
+      if (images.length === 0) {
+        handleCreateRoomSuccess();
+        return;
+      }
+
+      const presignedUrls = await createPresignedUrlMutation.mutateAsync({
+        files: images.map((image) => ({
+          fileName: image.name,
+          contentType: image.type,
+        })),
+        resourceId: newRoom.id,
+        purpose: UploadPurpose.ROOM_IMAGE,
+      });
+
+      await uploadImages(images, presignedUrls);
+
+      await updateRoomMutation.mutateAsync({
+        id: newRoom.id,
+        data: { images: presignedUrls.map((url) => url.key) },
+      });
+
+      handleCreateRoomSuccess();
+    } catch (error) {
+      console.error(error);
+
+      if (roomId) {
+        try {
+          await deleteRoomMutation.mutateAsync(roomId);
+        } catch (rollbackError) {
+          console.error('Rollback failed:', rollbackError);
+        }
+      }
+
+      handleCreateRoomError();
+    }
+  };
+
+  const handleCreateRoomError = () => {
+    toast.error('Tạo phòng thất bại', {
+      position: 'top-center',
+    });
+  };
+
+  const handleCreateRoomSuccess = () => {
+    toast.error('Tạo phòng thành công', {
+      position: 'top-center',
+    });
+    setOpen(false);
+    form.reset();
+  };
+
+  const uploadImages = async (
+    images: File[],
+    presignedUrls: PresignedUrl[],
+  ) => {
+    const urlsByFileName = new Map(
+      presignedUrls.map((url) => [url.fileName, url.uploadUrl]),
+    );
+
+    const uploadRequests = images.map((image) => {
+      const presignedUrl = urlsByFileName.get(image.name);
+      if (!presignedUrl) {
+        throw new Error(`No presigned URL found for file: ${image.name}`);
+      }
+
+      return fetch(presignedUrl, {
+        method: 'PUT',
+        body: image,
+        headers: {
+          'Content-Type': image.type,
+        },
+      });
+    });
+
+    return Promise.all(uploadRequests);
   };
 
   return (
@@ -280,10 +378,16 @@ export default function CreateRoomDialog({
                       {...field}
                       id="maxTenants"
                       type="number"
-                      min={1}
-                      max={5}
+                      min="1"
+                      max="5"
                       aria-invalid={fieldState.invalid}
                       placeholder="Nhập số lượng tối đa người thuê"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(
+                          value === '' ? undefined : Number(value),
+                        );
+                      }}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

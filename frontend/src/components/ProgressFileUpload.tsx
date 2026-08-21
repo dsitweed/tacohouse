@@ -1,6 +1,7 @@
 import { FileTextIcon, Trash2, Upload } from 'lucide-react';
 import Image from 'next/image';
 import { DragEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   Button,
@@ -13,6 +14,8 @@ import {
   ProgressValue,
 } from './ui';
 
+const MB_SIZE = 1024 * 1024;
+
 type UploadFileType = {
   file: File;
   imageUrl: string | null;
@@ -21,11 +24,13 @@ type UploadFileType = {
 type ProgressFileUploadProps = {
   value: File[];
   onChange: (files: File[]) => void;
+  MBSize?: number;
 };
 
 export default function ProgressFileUpload({
   value,
   onChange,
+  MBSize = 1,
 }: ProgressFileUploadProps) {
   const [uploadFiles, setUploadFiles] = useState<UploadFileType[]>(
     value.map((file) => ({ file, imageUrl: URL.createObjectURL(file) })),
@@ -48,12 +53,33 @@ export default function ProgressFileUpload({
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
 
-    const newFiles: UploadFileType[] = Array.from(files).map((file) => ({
-      file,
-      imageUrl: URL.createObjectURL(file),
-    }));
+    const validFiles: UploadFileType[] = [];
+    const rejectedFiles: string[] = [];
+    const maxSize = MBSize * MB_SIZE;
 
-    const updatedFiles = [...uploadFiles, ...newFiles];
+    Array.from(files).forEach((file) => {
+      if (file.size > maxSize) {
+        rejectedFiles.push(
+          `${file.name} (${(file.size / MB_SIZE).toFixed(2)}MB)`,
+        );
+      } else {
+        validFiles.push({
+          file,
+          imageUrl: URL.createObjectURL(file),
+        });
+      }
+    });
+
+    if (rejectedFiles.length > 0) {
+      toast.error(
+        `File(s) exceeds ${maxSize}MB limit: ${rejectedFiles.join(', ')}`,
+        {
+          position: 'top-center',
+        },
+      );
+    }
+
+    const updatedFiles = [...uploadFiles, ...validFiles];
     setUploadFiles(updatedFiles);
     onChange(updatedFiles.map(({ file }) => file));
   };
@@ -90,9 +116,8 @@ export default function ProgressFileUpload({
           <p className="text-foreground text-sm font-medium">
             Upload a project image
           </p>
-          <p>or, click to browse (4MB max)</p>
+          <p>or, click to browse ({MBSize}MB max)</p>
         </Label>
-
         <Input
           id="fileUpload"
           type="file"

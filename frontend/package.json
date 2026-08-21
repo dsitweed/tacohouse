@@ -9,7 +9,7 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format": "pnpm run lint && pnpm run prettier",
-    "generate:api": "orval --config orval.config.ts && prettier --write --no-config --single-quote src/generated/api.ts"
+    "generate:api": "orval --config orval.config.ts && pnpm run format"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

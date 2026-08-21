@@ -12,6 +12,7 @@ import { R2StorageService } from 'storage/r2-storage.service';
 import { CreatePresignedUrlsDto } from './dto/create-presigned-urls.dto';
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { UpdateUploadDto } from './dto/update-upload.dto';
+import { PresignedUrl } from './entities/presigned-url.entity';
 import { UPLOAD_CONFIG, UploadPurpose } from './upload.config';
 
 @Injectable()
@@ -40,7 +41,7 @@ export class UploadsService {
   async presignedUrls(
     currentUser: User,
     createPresignedUrlsDto: CreatePresignedUrlsDto,
-  ) {
+  ): Promise<PresignedUrl[]> {
     const { files, resourceId, purpose } = createPresignedUrlsDto;
     const config = UPLOAD_CONFIG[purpose];
 
@@ -68,18 +69,17 @@ export class UploadsService {
 
     const isPublic = config.visibility === 'public';
 
-    const data = await Promise.all(
+    return Promise.all(
       files.map((file) => {
         const uniqueKey = `${config.folderPath}/${resourceId}/${randomUUID()}${extname(file.fileName)}`;
         return this.storageService.createPresignedUploadUrl(
           uniqueKey,
           file.contentType,
           isPublic,
+          file.fileName,
         );
       }),
     );
-
-    return { data };
   }
 
   create(createUploadDto: CreateUploadDto) {

@@ -16,13 +16,14 @@ import type { BuildingListQuery } from '@/types';
 // Building API functions
 export const buildingsApi = {
   getAll: async (query?: BuildingListQuery) => {
-    return await apiClient.get<Building[]>('/buildings', {
+    return apiClient.get<Building[]>('/buildings', {
       params: query,
     });
   },
 
+  // TODO: Implement the API endpoint to get buildings created this month
   getBuildingsCreatedThisMonth: async () => {
-    return await apiClient.get<Building[]>('/buildings');
+    return apiClient.get<Building[]>('/buildings');
   },
 
   getById: async (id: string) => {
