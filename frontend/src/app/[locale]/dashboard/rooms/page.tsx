@@ -1,6 +1,14 @@
 'use client';
 
-import { Download, Eye, Plus, SearchIcon, TrendingUp } from 'lucide-react';
+import {
+  ArrowRight,
+  Download,
+  Eye,
+  Plus,
+  SearchIcon,
+  TrendingUp,
+} from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -37,7 +45,7 @@ import {
 } from '@/components/ui';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Building, UserRole } from '@/generated/model';
 import { useBuildings } from '@/hooks/api';
 import { useRooms } from '@/hooks/api/useRooms';
@@ -435,6 +443,54 @@ export default function RoomsPage() {
             </Table>
           </Card>
         )}
+      </div>
+
+      {/* Ad/Promotion Section */}
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card className="relative col-span-12 lg:col-span-8">
+          <Image
+            src="/images/buildings/emerald-garden.png"
+            alt="promotion-section-image"
+            fill
+            sizes="25vw"
+            className="absolute inset-0"
+          />
+          <div className="absolute inset-0 bg-blue-800/75" />
+
+          <CardContent className="z-1 flex min-h-52 items-start justify-end gap-6">
+            <div className="max-w-md text-white">
+              <h2 className="text-xl font-bold">
+                Automate Maintenance Requests
+              </h2>
+              <p className="text-xs">
+                Our new AI-driven system automatically schedules vendors and
+                updates tenants, reducing management overhead by up to 40%.
+              </p>
+            </div>
+            <Button variant="outline" className="border-none bg-white">
+              Learn More
+            </Button>
+          </CardContent>
+        </Card>
+        <Card className="col-span-12 bg-blue-50 lg:col-span-4">
+          <CardContent className="flex h-full items-center justify-center">
+            <div className="rounded-full bg-white p-3">
+              <TrendingUp className="text-primary size-7" />
+            </div>
+            <div className="max-w-60 text-center">
+              <h2 className="text-xl font-semibold">Portfolio Insights</h2>
+              <p className="text-muted-foreground text-xs">
+                Sunset Heights is currently performing 12% above the regional
+                average for occupancy rate.
+              </p>
+            </div>
+            <div className="text-primary flex items-center gap-1">
+              <span>View Report</span>
+              <ArrowRight className="size-4" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <CreateRoomDialog
