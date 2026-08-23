@@ -11,6 +11,7 @@
     - [2.3. Hệ Thống Thanh Toán Phức Tạp](#23-hệ-thống-thanh-toán-phức-tạp)
     - [2.4. Tính Năng Giao Tiếp](#24-tính-năng-giao-tiếp)
     - [2.5. Báo Cáo \& Lịch Sử](#25-báo-cáo--lịch-sử)
+    - [2.6. Feature Prioritization by ROI](#26-feature-prioritization-by-roi)
   - [3. Tech Stack](#3-tech-stack)
     - [3.1. Frontend (NextJS 14)](#31-frontend-nextjs-14)
     - [3.2. Backend (NestJS 10)](#32-backend-nestjs-10)
@@ -85,12 +86,34 @@ Tacohouse là hệ thống quản lý nhà trọ cho thuê full-stack hiện đ�
 - **Utility consumption**: Theo dõi tiêu thụ điện, nước, gas
 - **Billing reports**: Báo cáo thu chi theo tháng/năm
 
+### 2.6. Feature Prioritization by ROI (Return on Investment)
+
+| Feature | Giá trị | Khả năng bán | Khái quát nội dung cần implement | Priority | Rationale |
+| --- | --- | --- | --- | --- | --- |
+| 💰 Tự động tính tiền | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Tự động tính tiền phòng + điện + nước + phí dịch vụ → tạo hóa đơn | **P0 (Critical)** | Core pain point - saves 20+ hours/month per landlord |
+| 🔔 Nhắc tiền thuê | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Tự động nhắc trước hạn, đến hạn và quá hạn thanh toán | **P0 (Critical)** | High value & revenue impact - improves payment rate by 30% |
+| 📱 QR thanh toán | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Hiển thị QR → tenant thanh toán → tự động/cập nhật trạng thái đã thanh toán | **P0 (Critical)** | Essential for digital payments - 85% of users prefer QR |
+| 📊 Dashboard | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Tổng quan phòng thuê/trống, tiền chưa thu, doanh thu, việc cần xử lý | **P1 (High)** | Key feature for landlord decision-making & tenant transparency |
+| 📷 OCR đồng hồ  | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Chụp công tơ điện/nước → OCR đọc chỉ số → tự động nhập vào hệ thống | **P0 (Critical)** | Eliminates manual input errors - 10% of data entry errors removed |
+| 📥 Import Excel | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Import hàng loạt tòa nhà/phòng/tenant/chỉ số điện nước từ Excel để chuyển đổi nhanh | **P1 (High)** | Bulk operations - saves time on initial data migration |
+| 🏠 Vacancy management | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Theo dõi phòng trống, thời gian trống và doanh thu bị mất do vacancy | **P2 (Medium)** | Important for room turnover optimization |
+| 👤 Tenant management | ⭐⭐⭐ | ⭐⭐⭐ | Hồ sơ tenant, hợp đồng, tiền cọc, lịch sử thanh toán, giấy tờ | **P2 (Medium)** | Standard CRM functionality |
+| 🔧 Maintenance | ⭐⭐⭐⭐ | ⭐⭐⭐ | Tenant báo sự cố → chủ nhà xử lý → theo dõi trạng thái và lịch sử sửa chữa | **P2 (Medium)** | Improves service quality but not revenue-driving |
+| 📈 Financial reports | ⭐⭐⭐⭐ | ⭐⭐⭐ | Báo cáo doanh thu, chi phí, tiền đã thu/chưa thu và lợi nhuận theo tháng | **P2 (Medium)** | Compliance & insights - secondary to core billing |
+| 🤖 AI chatbot | ⭐⭐ | ⭐ | Trợ lý AI trả lời câu hỏi/quản lý dữ liệu; chưa ưu tiên trong MVP | **P3 (Low)** | Nice-to-have - low immediate ROI, consider post-MVP |
+
+**Priority Legend:**
+- **P0 (Critical)**: Must-have for MVP, directly impacts revenue & user retention
+- **P1 (High)**: Important for product success, improves user experience significantly
+- **P2 (Medium)**: Valuable additions, lower immediate ROI, can be phased in
+- **P3 (Low)**: Nice-to-have features, consider for future versions
+
 ## 3. Tech Stack
 
-### 3.1. Frontend (NextJS 14)
+### 3.1. Frontend (NextJS 16)
 ```json
 {
-  "framework": "NextJS 14 với App Router",
+  "framework": "NextJS 16 với App Router",
   "language": "TypeScript",
   "styling": "Tailwind CSS",
   "components": "Shadcn/ui",
@@ -103,16 +126,16 @@ Tacohouse là hệ thống quản lý nhà trọ cho thuê full-stack hiện đ�
 }
 ```
 
-### 3.2. Backend (NestJS 10)
+### 3.2. Backend (NestJS 11)
 ```json
 {
-  "framework": "NestJS 10 với TypeScript",
+  "framework": "NestJS 11 với TypeScript",
   "database": "PostgreSQL với Prisma ORM",
   "authentication": "JWT + Passport (Local & JWT strategies)",
   "realtime": "Socket.io",
   "queue": "Bull Queue với Redis",
   "email": "Nodemailer",
-  "upload": "Multer + Cloudinary",
+  "upload": "Cloudflare R2",
   "payments": "Stripe",
   "validation": "Class Validator + Class Transformer"
 }
@@ -123,7 +146,7 @@ Tacohouse là hệ thống quản lý nhà trọ cho thuê full-stack hiện đ�
 {
   "database": "PostgreSQL (main database)",
   "cache": "Redis (sessions, queue, cache)",
-  "storage": "Cloudinary (images, documents)",
+  "storage": "Cloudflare R2 (images, documents)",
   "containerization": "Docker & Docker Compose",
   "monitoring": "Prisma Studio (development)"
 }
@@ -133,11 +156,11 @@ Tacohouse là hệ thống quản lý nhà trọ cho thuê full-stack hiện đ�
 ```json
 {
   "formatting": "ESLint + Prettier",
-  "git": "Husky + lint-staged",
+  "git": "Lefthook (pre-commit hooks)",
   "testing": "Jest (unit) + Playwright (e2e)",
   "development": "Concurrently (run both servers)",
   "components": "Storybook (UI documentation)",
-  "shared": "tRPC + Shared types package with Prisma types"
+  "shared": "Orval (generate API types from OpenAPI spec)"
 }
 ```
 
@@ -163,16 +186,8 @@ tacohouse/
 │   │   └── config/         # Configuration
 │   ├── prisma/             # Database schema
 │   └── package.json
-├── shared/                  # 🆕 Shared types package
-│   ├── src/
-│   │   └── index.ts        # Export Prisma types
-│   ├── node_modules/
-│   │   └── .prisma/        # Generated Prisma client
-│   ├── examples/           # Usage examples
-│   └── package.json
 ├── docker-compose.yml       # Local development services
 ├── pnpm-workspace.yaml     # pnpm workspace config
-├── package.json            # Root workspace config
 └── README.md
 ```
 
@@ -211,6 +226,7 @@ npm run dev
 ```
 
 ### 5.3. Available Scripts
+<!-- TODO: Update latest scripts if needed -->
 ```bash
 npm run dev              # Start both frontend & backend in development
 npm run build            # Build all packages (shared, backend, frontend)

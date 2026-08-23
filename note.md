@@ -45,7 +45,7 @@ Database
 Storage
 
 * Amazon S3
-  hoặc Supabase storage.
+  hoặc Cloudflare R2 storage.
 
 Cache
 
