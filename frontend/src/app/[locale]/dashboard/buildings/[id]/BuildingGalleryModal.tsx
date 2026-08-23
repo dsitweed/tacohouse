@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
   Dialog,
   DialogContent,
-  EmptyState,
+  NoDataEmptyState,
 } from '@/components/ui';
 import { useBuilding } from '@/hooks/api';
 
@@ -35,7 +35,7 @@ export default function BuildingGalleryModal({
   const { data: building } = useBuilding(buildingId);
 
   if (!building) {
-    return <EmptyState />;
+    return <NoDataEmptyState />;
   }
 
   return (

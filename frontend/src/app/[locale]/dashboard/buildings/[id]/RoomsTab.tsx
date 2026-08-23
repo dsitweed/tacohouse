@@ -55,7 +55,7 @@ export default function RoomsTab({ buildingId }: RoomsTabType) {
                   {formatCurrency(room.monthlyRent)}/tháng
                 </p>
                 <Link
-                  href={`/rooms/${room.id}`}
+                  href={`/dashboard/rooms/${room.id}`}
                   className="flex w-full justify-end gap-1"
                 >
                   <Button variant="ghost" size="sm">

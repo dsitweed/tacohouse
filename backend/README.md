@@ -82,6 +82,12 @@ pnpm dlx prisma migrate deploy
 pnpm dlx prisma migrate reset
 ```
 
+## Logic tạo room và upload ảnh
+https://chatgpt.com/s/t_6a85c59fd5d08191b3b801139cdb6a63
+
+## Muốn lên Senior thì học gì 
+https://chatgpt.com/s/t_6a85d1527530819197f2153d7ee152c2
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:

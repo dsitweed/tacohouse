@@ -31,10 +31,10 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-  EmptyState,
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  NoDataEmptyState,
   SkeletonPage,
   Table,
   TableBody,
@@ -384,7 +384,7 @@ export default function RoomsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-blue-50 font-semibold tracking-wider uppercase">
-                  <TableHead>Phòng #</TableHead>
+                  <TableHead className="pl-4">Phòng #</TableHead>
                   <TableHead>Tầng</TableHead>
                   <TableHead>Tòa nhà</TableHead>
                   <TableHead>Giá thuê</TableHead>
@@ -397,7 +397,7 @@ export default function RoomsPage() {
               <TableBody>
                 {filteredRooms.map((room) => (
                   <TableRow key={room.id}>
-                    <TableCell className="">
+                    <TableCell className="pl-4">
                       <p className="font-bold">{room.number}</p>
                       <div className="text-xs text-gray-500">
                         <p>{room.buildingName}</p>
@@ -422,7 +422,7 @@ export default function RoomsPage() {
                     </TableCell>
                     <TableCell>{room.contractEnd}</TableCell>
                     <TableCell>
-                      <Link href={`dashboard/rooms/${room.id}`}>
+                      <Link href={`/dashboard/rooms/${room.id}`}>
                         <Button variant="link" title="Xem chi tiết">
                           <Eye className="size-4" />
                         </Button>
@@ -435,7 +435,7 @@ export default function RoomsPage() {
                     <TableCell colSpan={8}>
                       {/* TODO: add pagination */}
                       {/* TODO: use empty sate for table filter data */}
-                      <EmptyState />
+                      <NoDataEmptyState />
                     </TableCell>
                   </TableRow>
                 )}

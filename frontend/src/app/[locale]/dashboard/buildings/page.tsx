@@ -196,7 +196,7 @@ export default function BuildingsPage() {
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </Link>
-                  
+
                   {/* Active Status Badge */}
                   <Badge
                     variant={
@@ -308,7 +308,7 @@ export default function BuildingsPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-gray-900">
-              Dự báo doanh thu
+              Dự báo doanh thu <span className="text-xs">(VNĐ)</span>
             </h3>
             <div className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-gray-500">
               <Calendar className="size-3.5 text-blue-800" />
@@ -330,13 +330,13 @@ export default function BuildingsPage() {
                   content={
                     <ChartTooltipContent
                       hideIndicator
-                      labelFormatter={(_, payload) =>
-                        payload[0]?.payload?.month ?? ''
-                      }
-                      formatter={(value) => [
-                        formatCurrency(value as number),
-                        '',
-                      ]}
+                      // labelFormatter={(_, payload) =>
+                      //   payload[0]?.payload?.month ?? ''
+                      // }
+                      // formatter={(value) => [
+                      //   formatCurrency(value as number),
+                      //   '',
+                      // ]}
                     />
                   }
                 />

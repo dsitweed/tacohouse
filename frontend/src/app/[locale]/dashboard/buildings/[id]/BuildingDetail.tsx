@@ -75,15 +75,15 @@ export default function BuildingDetail({
               <BreadcrumbItem>
                 <BreadcrumbLink
                   href="/dashboard/buildings"
-                  className="flex items-center gap-1 text-xs font-semibold tracking-wider uppercase"
+                  className="flex items-center gap-1 text-xs font-semibold tracking-wider"
                 >
                   <ArrowLeft className="size-3.5" />
-                  Tòa nhà
+                  Danh sách tòa nhà
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="flex items-center gap-1 text-xs font-semibold tracking-wider uppercase">
+                <BreadcrumbPage className="flex items-center gap-1 text-xs font-semibold tracking-wider">
                   {building?.name}
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -108,7 +108,7 @@ export default function BuildingDetail({
               onClick={() => setIsEditModalOpen(true)}
             >
               <Edit className="size-4" />
-              Chỉnh sửa
+              <span>Chỉnh sửa</span>
             </Button>
           )}
 

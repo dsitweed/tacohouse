@@ -129,8 +129,13 @@ export class RoomsService {
     const room = await this.prisma.room.findUnique({
       where: { id },
       include: {
-        building: {
-          select: { landlordId: true },
+        building: true,
+        equipment: true,
+        rentals: {
+          where: { status: 'ACTIVE' },
+          include: {
+            tenant: { include: { profile: true } },
+          },
         },
       },
     });
