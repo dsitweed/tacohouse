@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DoorOpen } from 'lucide-react';
 import { useRef } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import {
@@ -31,7 +31,6 @@ import RoomFormFields, {
 type CreateRoomDialogType = {
   open: boolean;
   setOpen: (value: boolean) => void;
-  form?: UseFormReturn<RoomFormFieldsType>;
 };
 
 export default function CreateRoomDialog({

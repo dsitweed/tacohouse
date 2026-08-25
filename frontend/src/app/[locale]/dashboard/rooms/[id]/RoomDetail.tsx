@@ -50,6 +50,7 @@ import { ROOM_STATUS_MAP } from '@/types';
 import { formatCurrency, toDateOnlyString } from '@/utils';
 
 import ElectricityBarChart from './ElectricityBarChart';
+import UpdateRoomDialog from './UpdateRoomDialog';
 import WaterBarChart from './WaterBarChart';
 
 type RoomDetailProps = {
@@ -92,6 +93,8 @@ export default function RoomDetail({ id, initialRoom }: RoomDetailProps) {
   const [selectedPeriod, setSelectedPeriod] = useState(
     SelectedPeriodOptions[0],
   );
+  // TODO: use global openDialog state
+  const [openDialog, setOpenDialog] = useState(false);
 
   const { data: room, isLoading } = useRoom(id, {
     initialData: initialRoom,
@@ -139,7 +142,7 @@ export default function RoomDetail({ id, initialRoom }: RoomDetailProps) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setOpenDialog(true)}>
             <Pencil className="size-3.5" />
             <span>Edit detail</span>
           </Button>
@@ -392,6 +395,8 @@ export default function RoomDetail({ id, initialRoom }: RoomDetailProps) {
           </Card>
         </div>
       </div>
+
+      <UpdateRoomDialog roomId={id} open={openDialog} setOpen={setOpenDialog} />
     </div>
   );
 }

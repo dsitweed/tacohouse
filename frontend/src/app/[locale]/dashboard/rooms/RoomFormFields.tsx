@@ -1,5 +1,5 @@
 import { CalendarIcon } from 'lucide-react';
-import { RefObject, useState } from 'react';
+import { RefObject, useMemo, useState } from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -59,8 +59,12 @@ export default function RoomFormFields({
   dialogRef,
 }: RoomFormFieldsProps) {
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
-  const { data: buildingsData } = useBuildings();
-  const buildings = buildingsData?.data ?? [];
+  const { data: buildingsData } = useBuildings({ page: 1, limit: 1000 });
+  const buildings = useMemo(() => buildingsData?.data ?? [], [buildingsData]);
+  const buildingMap = useMemo(
+    () => new Map(buildings.map((building) => [building.id, building])),
+    [buildings],
+  );
 
   return (
     <FieldGroup>
@@ -76,13 +80,15 @@ export default function RoomFormFields({
               Tòa nhà
               <span className="text-red-500">*</span>
             </FieldLabel>
+            {/* TODO: now have 1 bug when open dialog from update room form, time to select correct buildingId is very slow */}
             <Combobox
               items={buildings}
-              value={buildings.find((item) => item.id === field.value) ?? null}
+              value={buildingMap.get(field.value) ?? null}
               onValueChange={(item) => field.onChange(item?.id ?? '')}
               itemToStringLabel={(item) => item.name}
             >
               <ComboboxInput
+                autoFocus={false}
                 aria-invalid={fieldState.invalid}
                 placeholder="Chọn tòa nhà"
                 showClear

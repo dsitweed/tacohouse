@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useRoom } from '@/hooks/api';
 import { roomsApi } from '@/hooks/api/useRooms';
 import { ROOM_TYPES_MAPS } from '@/types';
 import { formatCurrency } from '@/utils';

@@ -1,4 +1,4 @@
-import { RefObject } from 'react';
+import { RefObject, useMemo } from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -61,11 +61,11 @@ export function BuildingFormFields({
 
   const { data: buildingsData } = useBuildings({
     page: 1,
-    limit: 100,
+    limit: 1000,
   });
-  const buildings = buildingsData?.data ?? [];
+  const buildings = useMemo(() => buildingsData?.data ?? [], [buildingsData]);
 
-  const landlordsData = (() => {
+  const [landlordsData, landlordMap] = (() => {
     const landlordMap = new Map<string, { value: string; label: string }>();
 
     for (const building of buildings) {
@@ -89,7 +89,7 @@ export function BuildingFormFields({
       });
     }
 
-    return [...landlordMap.values()];
+    return [[...landlordMap.values()], landlordMap];
   })();
 
   return (
@@ -133,10 +133,7 @@ export function BuildingFormFields({
 
               <Combobox
                 items={landlordsData}
-                value={
-                  landlordsData.find((item) => item.value === field.value) ??
-                  null
-                }
+                value={landlordMap.get(field.value) ?? null}
                 onValueChange={(item) => field.onChange(item?.value ?? '')}
                 itemToStringLabel={(item) => item.label}
               >

@@ -89,7 +89,9 @@ export default function UpdateBuildingDialog({
           <div className="flex size-10 items-center justify-center rounded-full bg-blue-100 text-blue-800">
             <Building2 className="size-5" />
           </div>
-          <h2 className="text-xl font-bold">Chỉnh sửa thông tin tòa nhà</h2>
+          <h2 className="text-xl font-bold">
+            Chỉnh sửa thông tin tòa nhà {building?.name}
+          </h2>
         </div>
         <form
           id="edit-building-form"
@@ -103,7 +105,7 @@ export default function UpdateBuildingDialog({
                 Hủy
               </Button>
             </DialogClose>
-            <Button>
+            <Button disabled={updateBuildingMutate.isPending}>
               {updateBuildingMutate.isPending ? <Spinner /> : 'Lưu thay đổi'}
             </Button>
           </div>
