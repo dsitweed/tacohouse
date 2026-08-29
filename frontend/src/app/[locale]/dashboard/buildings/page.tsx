@@ -39,6 +39,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useBuildings } from '@/hooks/api/useBuildings';
 import { useAuthStore } from '@/stores/authStore';
+import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { UserRole } from '@/types';
 import { formatCurrency, typedEntries } from '@/utils';
 
@@ -79,10 +80,9 @@ export default function BuildingsPage() {
   const user = useAuthStore((state) => state.user);
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<BuildingTabType>('all');
-  // TODO: use global state instead
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // TODO: add pagination and infinite scroll
+  const { openDialog } = useDialogStore();
   const { data: buildingsData, isLoading } = useBuildings({
     page: 1,
     limit: 20,
@@ -135,7 +135,7 @@ export default function BuildingsPage() {
 
         {canCreate && (
           <Button
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => openDialog(DialogType.CREATE_BUILDING)}
             className="bg-blue-700 hover:bg-blue-800"
           >
             <Plus className="size-4" />
@@ -282,7 +282,7 @@ export default function BuildingsPage() {
           {canCreate && (
             <Card
               className="cursor-pointer border border-dashed hover:border-blue-500 hover:bg-blue-50/40"
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => openDialog(DialogType.CREATE_BUILDING)}
             >
               <CardContent className="min-h-95 items-center justify-center text-center">
                 <div className="flex size-16 items-center justify-center rounded-full bg-blue-200 text-blue-800">
@@ -387,10 +387,7 @@ export default function BuildingsPage() {
       </div>
 
       {/* Create New Building Dialog */}
-      <CreateBuildingDialog
-        open={isCreateModalOpen}
-        setOpen={setIsCreateModalOpen}
-      />
+      <CreateBuildingDialog />
     </div>
   );
 }

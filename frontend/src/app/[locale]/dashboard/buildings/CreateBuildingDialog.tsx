@@ -14,6 +14,7 @@ import {
   Spinner,
 } from '@/components/ui';
 import { useCreateBuilding } from '@/hooks/api';
+import { useDialogStore } from '@/stores/dialogStore';
 
 import {
   BuildingFormFields,
@@ -21,17 +22,13 @@ import {
   buildingSchema,
 } from './BuildingFormFields';
 
-type CreateBuildingDialogProps = {
-  open: boolean;
-  setOpen: (value: boolean) => void;
-};
+type CreateBuildingDialogProps = object;
 
-export default function CreateBuildingDialog({
-  open,
-  setOpen,
-}: CreateBuildingDialogProps) {
+export default function CreateBuildingDialog({}: CreateBuildingDialogProps) {
   // Radix Dialog blocks pointer events outside its content, so Base UI Combobox must portal into it
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  const { isOpen, isLoading, closeDialog, setLoading } = useDialogStore();
   const createBuildingMutation = useCreateBuilding();
 
   const form = useForm<BuildingFormFieldsType>({
@@ -51,22 +48,40 @@ export default function CreateBuildingDialog({
     },
   });
 
-  const handleCreateBuilding = (data: BuildingFormFieldsType) => {
+  const handleCreateBuilding = async (data: BuildingFormFieldsType) => {
     // FIXME: Create and reload buildings list
     // FIXME: not return correct data, after create new building, the list of buildings is not updated
-    createBuildingMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success('Tòa nhà đã được tạo thành công', {
-          position: 'top-center',
-        });
-        setOpen(false);
-        form.reset();
-      },
-    });
+
+    setLoading(true);
+
+    try {
+      await createBuildingMutation.mutateAsync(data);
+
+      toast.success('Tòa nhà đã được tạo thành công', {
+        position: 'top-center',
+      });
+
+      closeDialog();
+      form.reset();
+    } catch (error) {
+      console.error(error);
+      toast.error('Tạo tòa nhà thất bại', {
+        position: 'top-center',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isLoading) {
+          closeDialog();
+        }
+      }}
+    >
       <DialogContent
         className="sm:max-w-2xl"
         ref={dialogRef}
@@ -88,16 +103,16 @@ export default function CreateBuildingDialog({
 
           <div className="mt-6 flex justify-end gap-3 border-t pt-2">
             <DialogClose asChild>
-              <Button type="button" variant="outline">
+              <Button type="button" variant="outline" disabled={isLoading}>
                 Hủy
               </Button>
             </DialogClose>
             <Button
               type="submit"
               className="bg-blue-700 hover:bg-blue-800"
-              disabled={createBuildingMutation.isPending}
+              disabled={isLoading}
             >
-              {createBuildingMutation.isPending ? <Spinner /> : 'Tạo tòa nhà'}
+              {isLoading ? <Spinner /> : 'Tạo tòa nhà'}
             </Button>
           </div>
         </form>

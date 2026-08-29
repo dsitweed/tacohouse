@@ -23,7 +23,7 @@ import {
   useRoom,
   useUpdateRoom,
 } from '@/hooks/api';
-import { ExistingImageItem } from '@/types';
+import { useDialogStore } from '@/stores/dialogStore';
 import { toApiDateString } from '@/utils';
 
 import { uploadImages } from '../createRoom.utils';
@@ -34,18 +34,13 @@ import RoomFormFields, {
 } from '../RoomFormFields';
 
 type UpdateRoomDialogType = {
-  open: boolean;
-  setOpen: (value: boolean) => void;
   roomId: string;
 };
 
-export default function UpdateRoomDialog({
-  open,
-  setOpen,
-  roomId,
-}: UpdateRoomDialogType) {
+export default function UpdateRoomDialog({ roomId }: UpdateRoomDialogType) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
+  const { isOpen, isLoading, closeDialog, setLoading } = useDialogStore();
   const createPresignedUrlMutation = usePresignedUrls();
   const deleteObjectMutation = useDeleteObject();
   const updateRoomMutation = useUpdateRoom();
@@ -85,6 +80,8 @@ export default function UpdateRoomDialog({
     let uploadedPresignedUrls: PresignedUrl[] = [];
     let imageKeysToDelete: string[] = [];
 
+    setLoading(true);
+
     try {
       // Step 1: Update room basic info
       await updateRoomMutation.mutateAsync({
@@ -105,10 +102,6 @@ export default function UpdateRoomDialog({
           (image) => !currentExistingKeys.has(image),
         );
       }
-
-      console.log({
-        imageKeysToDelete,
-      });
 
       if (
         !images ||
@@ -161,7 +154,7 @@ export default function UpdateRoomDialog({
     } catch (error) {
       console.error('Error updating room:', error);
 
-      // Delete images from Cloudflare R2 if the update fails
+      // Delete newly uploaded images from R2 if the update fails
       if (uploadedPresignedUrls.length > 0) {
         await Promise.all(
           uploadedPresignedUrls.map((presignedUrl) =>
@@ -182,6 +175,8 @@ export default function UpdateRoomDialog({
       }
 
       handleUpdateRoomError();
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -189,7 +184,7 @@ export default function UpdateRoomDialog({
     toast.success('Cập nhật phòng thành công', {
       position: 'top-center',
     });
-    setOpen(false);
+    closeDialog();
     form.reset();
   };
 
@@ -201,10 +196,12 @@ export default function UpdateRoomDialog({
 
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onOpenChange={(open) => {
-        setOpen(open);
-        form.reset();
+        if (!open && !isLoading) {
+          closeDialog();
+          form.reset();
+        }
       }}
     >
       <DialogContent
@@ -231,12 +228,12 @@ export default function UpdateRoomDialog({
 
           <div className="mt-6 flex justify-end gap-3 border-t pt-2">
             <DialogClose asChild>
-              <Button variant="outline" type="button">
+              <Button variant="outline" type="button" disabled={isLoading}>
                 Hủy
               </Button>
             </DialogClose>
-            <Button disabled={updateRoomMutation.isPending}>
-              {updateRoomMutation.isPending ? <Spinner /> : 'Lưu thay đổi'}
+            <Button disabled={isLoading}>
+              {isLoading ? <Spinner /> : 'Lưu thay đổi'}
             </Button>
           </div>
         </form>

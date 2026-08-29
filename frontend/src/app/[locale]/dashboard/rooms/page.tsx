@@ -50,6 +50,7 @@ import { Building, UserRole } from '@/generated/model';
 import { useBuildings } from '@/hooks/api';
 import { useRooms } from '@/hooks/api/useRooms';
 import { useAuthStore } from '@/stores/authStore';
+import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { ROOM_STATUS_MAP, RoomStatusMapsType } from '@/types';
 import { formatCurrency, toDateOnlyString } from '@/utils';
 
@@ -57,6 +58,7 @@ import CreateRoomDialog from './CreateRoomDialog';
 
 export default function RoomsPage() {
   const user = useAuthStore((state) => state.user);
+  const { openDialog } = useDialogStore();
   const searchParams = useSearchParams();
   const initialBuildingId = searchParams.get('buildingId') ?? ''; // If not have buildingId search for all building
   const { data: roomData, isLoading: isRoomsLoading } = useRooms({
@@ -73,7 +75,6 @@ export default function RoomsPage() {
   const [floorFilter, setFloorFilter] = useState('ALL');
   const [selectedBuildingId, setSelectedBuildingId] =
     useState(initialBuildingId);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const maxFloorData = [
     ...new Set(rooms.map((room) => getFloorNumber(room.number))),
@@ -229,7 +230,7 @@ export default function RoomsPage() {
             <Download className="size-4" /> Export List
           </Button>
           {canCreate && (
-            <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Button onClick={() => openDialog(DialogType.CREATE_ROOM)}>
               <Plus />
               Add New Room
             </Button>
@@ -493,10 +494,7 @@ export default function RoomsPage() {
         </Card>
       </div>
 
-      <CreateRoomDialog
-        open={isCreateModalOpen}
-        setOpen={setIsCreateModalOpen}
-      />
+      <CreateRoomDialog />
     </div>
   );
 }

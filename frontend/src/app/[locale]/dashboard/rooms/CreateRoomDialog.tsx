@@ -20,6 +20,7 @@ import {
   usePresignedUrls,
   useUpdateRoom,
 } from '@/hooks/api';
+import { useDialogStore } from '@/stores/dialogStore';
 import { toApiDateString } from '@/utils';
 
 import { uploadImages } from './createRoom.utils';
@@ -28,17 +29,12 @@ import RoomFormFields, {
   roomSchema,
 } from './RoomFormFields';
 
-type CreateRoomDialogType = {
-  open: boolean;
-  setOpen: (value: boolean) => void;
-};
+type CreateRoomDialogType = object;
 
-export default function CreateRoomDialog({
-  open,
-  setOpen,
-}: CreateRoomDialogType) {
+export default function CreateRoomDialog({}: CreateRoomDialogType) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  const { isLoading, isOpen, setLoading, closeDialog } = useDialogStore();
   const createRoomMutation = useCreateRoom();
   const createPresignedUrlMutation = usePresignedUrls();
   const updateRoomMutation = useUpdateRoom();
@@ -63,6 +59,7 @@ export default function CreateRoomDialog({
       availableFrom: undefined,
     },
   });
+
   /**
    * 1. Create room
    * 2. If not have images -> return handle success
@@ -75,6 +72,9 @@ export default function CreateRoomDialog({
   const handleCreateRoom = async (data: RoomFormFieldsType) => {
     const { images, ...rest } = data;
     let roomId: string | undefined;
+
+    setLoading(true);
+
     try {
       const newRoom = await createRoomMutation.mutateAsync({
         ...rest,
@@ -118,6 +118,8 @@ export default function CreateRoomDialog({
       }
 
       handleCreateRoomError();
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,15 +130,22 @@ export default function CreateRoomDialog({
   };
 
   const handleCreateRoomSuccess = () => {
-    toast.error('Tạo phòng thành công', {
+    toast.success('Tạo phòng thành công', {
       position: 'top-center',
     });
-    setOpen(false);
+    closeDialog();
     form.reset();
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isLoading) {
+          closeDialog();
+        }
+      }}
+    >
       <DialogContent
         ref={dialogRef}
         className="sm:max-w-2xl"
@@ -158,12 +167,12 @@ export default function CreateRoomDialog({
           <RoomFormFields form={form} dialogRef={dialogRef} />
           <div className="mt-6 flex justify-end gap-3 border-t pt-2">
             <DialogClose asChild>
-              <Button variant="outline" type="button">
+              <Button variant="outline" type="button" disabled={isLoading}>
                 Hủy
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={createRoomMutation.isPending}>
-              {createRoomMutation.isPending ? <Spinner /> : 'Tạo phòng'}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? <Spinner /> : 'Tạo phòng'}
             </Button>
           </div>
         </form>

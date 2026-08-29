@@ -46,6 +46,7 @@ import {
 } from '@/components/ui';
 import { Room } from '@/generated/model';
 import { useRoom } from '@/hooks/api';
+import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { ROOM_STATUS_MAP } from '@/types';
 import { formatCurrency, toDateOnlyString } from '@/utils';
 
@@ -93,9 +94,7 @@ export default function RoomDetail({ id, initialRoom }: RoomDetailProps) {
   const [selectedPeriod, setSelectedPeriod] = useState(
     SelectedPeriodOptions[0],
   );
-  // TODO: use global openDialog state
-  const [openDialog, setOpenDialog] = useState(false);
-
+  const { openDialog } = useDialogStore();
   const { data: room, isLoading } = useRoom(id, {
     initialData: initialRoom,
   });
@@ -142,7 +141,10 @@ export default function RoomDetail({ id, initialRoom }: RoomDetailProps) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => setOpenDialog(true)}>
+          <Button
+            variant="outline"
+            onClick={() => openDialog(DialogType.UPDATE_ROOM)}
+          >
             <Pencil className="size-3.5" />
             <span>Edit detail</span>
           </Button>
@@ -396,7 +398,7 @@ export default function RoomDetail({ id, initialRoom }: RoomDetailProps) {
         </div>
       </div>
 
-      <UpdateRoomDialog roomId={id} open={openDialog} setOpen={setOpenDialog} />
+      <UpdateRoomDialog roomId={id} />
     </div>
   );
 }

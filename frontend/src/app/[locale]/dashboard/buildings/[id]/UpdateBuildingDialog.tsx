@@ -12,6 +12,7 @@ import {
   Spinner,
 } from '@/components/ui';
 import { useBuilding, useUpdateBuilding } from '@/hooks/api';
+import { useDialogStore } from '@/stores/dialogStore';
 
 import {
   BuildingFormFields,
@@ -21,18 +22,16 @@ import {
 } from '../BuildingFormFields';
 
 type UpdateBuildingDialogProps = {
-  open: boolean;
-  setOpen: (value: boolean) => void;
   buildingId: string;
 };
 
 export default function UpdateBuildingDialog({
-  open,
-  setOpen,
   buildingId,
 }: UpdateBuildingDialogProps) {
   // Radix Dialog blocks pointer events outside its content, so Base UI Combobox must portal into it
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  const { isOpen, isLoading, setLoading, closeDialog } = useDialogStore();
   const updateBuildingMutate = useUpdateBuilding();
 
   const { data: building } = useBuilding(buildingId);
@@ -56,26 +55,34 @@ export default function UpdateBuildingDialog({
       : undefined,
   });
 
-  const handleEditBuilding = (data: UpdateBuildingFieldsType) => {
-    updateBuildingMutate.mutate(
-      { id: buildingId, data },
-      {
-        onSuccess: () => {
-          toast.success('Tòa nhà đã được cập nhật thành công', {
-            position: 'top-center',
-          });
-          setOpen(false);
-        },
-      },
-    );
+  const handleEditBuilding = async (data: UpdateBuildingFieldsType) => {
+    try {
+      await updateBuildingMutate.mutateAsync({ id: buildingId, data });
+      toast.success('Tòa nhà đã được cập nhật thành công', {
+        position: 'top-center',
+      });
+
+      closeDialog();
+      form.reset();
+    } catch (error) {
+      console.error(error);
+
+      toast.error('Cập nhật tòa nhà thất bại', {
+        position: 'top-center',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onOpenChange={(open) => {
-        setOpen(open);
-        form.reset();
+        if (!open && !isLoading) {
+          closeDialog();
+          form.reset();
+        }
       }}
     >
       <DialogContent

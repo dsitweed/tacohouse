@@ -101,7 +101,6 @@ export default function RegisterPage() {
 
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  // TODO: use zustand and set global popoverOpen state
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
 
   const onSubmit = (data: z.infer<typeof registerFormSchema>) => {
