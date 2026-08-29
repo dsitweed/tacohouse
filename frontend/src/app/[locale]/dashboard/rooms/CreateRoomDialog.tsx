@@ -55,7 +55,10 @@ export default function CreateRoomDialog({
       maxTenants: 1,
       roomType: RoomType.FULL_RIGHTS,
       description: '',
-      images: [],
+      images: {
+        existingImages: [],
+        newImages: [],
+      },
       status: RoomStatus.AVAILABLE,
       availableFrom: undefined,
     },
@@ -72,7 +75,6 @@ export default function CreateRoomDialog({
   const handleCreateRoom = async (data: RoomFormFieldsType) => {
     const { images, ...rest } = data;
     let roomId: string | undefined;
-
     try {
       const newRoom = await createRoomMutation.mutateAsync({
         ...rest,
@@ -81,21 +83,22 @@ export default function CreateRoomDialog({
 
       roomId = newRoom.id;
 
-      if (images.length === 0) {
+      if (images.newImages.length === 0) {
         handleCreateRoomSuccess();
         return;
       }
 
       const presignedUrls = await createPresignedUrlMutation.mutateAsync({
-        files: images.map((image) => ({
-          fileName: image.name,
-          contentType: image.type,
+        files: images.newImages.map((item) => ({
+          fileName: item.file.name,
+          contentType: item.file.type,
+          fileId: item.id,
         })),
         resourceId: newRoom.id,
         purpose: UploadPurpose.ROOM_IMAGE,
       });
 
-      await uploadImages(images, presignedUrls);
+      await uploadImages(images.newImages, presignedUrls);
 
       await updateRoomMutation.mutateAsync({
         id: newRoom.id,

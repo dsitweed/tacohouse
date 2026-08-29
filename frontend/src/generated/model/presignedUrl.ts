@@ -18,8 +18,8 @@ export interface PresignedUrl {
   uploadUrl: string;
   /** URL công khai của file sau khi upload xong. Chỉ truy cập được với các purpose có visibility là public. */
   fileUrl: string;
-  /** Tên file gốc được gửi từ client, dùng để map lại với file khi upload */
-  fileName: string;
   /** Object key trong bucket. Lưu lại giá trị này vào DB để gắn vào resource sau khi upload thành công. */
   key: string;
+  /** ID của file trong frontend, dùng để map với presigned URL trả về. Không dùng để xác định quyền hay lưu trữ. */
+  fileId: string;
 }

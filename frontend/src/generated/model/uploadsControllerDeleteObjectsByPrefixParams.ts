@@ -12,12 +12,10 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { UploadsControllerDeleteObjectsByPrefixPurpose } from './uploadsControllerDeleteObjectsByPrefixPurpose';
 
-export interface FileInfoDto {
-  /** Tên file gốc, dùng để lấy phần mở rộng cho object key. */
-  fileName: string;
-  /** MIME type của file. Phải nằm trong danh sách cho phép của purpose tương ứng. */
-  contentType: string;
-  /** ID của file trong frontend, dùng để map với presigned URL trả về. Không dùng để xác định quyền hay lưu trữ. */
-  fileId: string;
-}
+export type UploadsControllerDeleteObjectsByPrefixParams = {
+prefix: string;
+purpose: UploadsControllerDeleteObjectsByPrefixPurpose;
+resourceId: string;
+};

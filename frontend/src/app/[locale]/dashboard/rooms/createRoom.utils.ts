@@ -1,4 +1,5 @@
 import { PresignedUrl } from '@/generated/model';
+import { NewImageItem } from '@/types';
 
 /**
  * Upload images to presigned URLs
@@ -6,33 +7,33 @@ import { PresignedUrl } from '@/generated/model';
  * @throws Error if upload fails or presigned URL not found
  */
 export const uploadImages = async (
-  images: File[],
+  imageItems: NewImageItem[],
   presignedUrls: PresignedUrl[],
 ): Promise<Response[]> => {
-  const urlsByFileName = new Map(
-    presignedUrls.map((url) => [url.fileName, url.uploadUrl]),
+  const urlsByFileId = new Map(
+    presignedUrls.map((url) => [url.fileId, url.uploadUrl]),
   );
 
-  const uploadRequests = images.map((image) => {
-    const presignedUrl = urlsByFileName.get(image.name);
+  const uploadRequests = imageItems.map(async (item) => {
+    const presignedUrl = urlsByFileId.get(item.id);
     if (!presignedUrl) {
-      throw new Error(`No presigned URL found for file: ${image.name}`);
+      throw new Error(`No presigned URL found for file: ${item.file?.name}`);
     }
 
-    return fetch(presignedUrl, {
+    const response = await fetch(presignedUrl, {
       method: 'PUT',
-      body: image,
+      body: item.file,
       headers: {
-        'Content-Type': image.type,
+        'Content-Type': item.file.type,
       },
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Upload failed for ${image.name}: ${response.status} ${response.statusText}`,
-        );
-      }
-      return response;
     });
+
+    if (!response.ok) {
+      throw new Error(
+        `Upload failed for ${item.file.name}: ${response.status} ${response.statusText}`,
+      );
+    }
+    return response;
   });
 
   return Promise.all(uploadRequests);

@@ -26,7 +26,14 @@ import {
 } from '@/components/ui';
 import { Building, RoomStatus, RoomType } from '@/generated/model';
 import { useBuildings } from '@/hooks/api';
-import { ROOM_STATUS_MAP, ROOM_TYPES_MAPS, RoomTypeMapsType } from '@/types';
+import {
+  ApiResponse,
+  ExistingImageItem,
+  imageItemSchema,
+  ROOM_STATUS_MAP,
+  ROOM_TYPES_MAPS,
+  RoomTypeMapsType,
+} from '@/types';
 
 export const roomSchema = z.object({
   buildingId: z.string().min(1, 'Vui lòng chọn tòa nhà'),
@@ -40,7 +47,7 @@ export const roomSchema = z.object({
     .max(5, 'Số lượng người tối đa nhỏ hơn hoặc bằng 5'),
   roomType: z.enum(RoomType),
   description: z.string().optional(),
-  images: z.array(z.instanceof(File)),
+  images: imageItemSchema,
   status: z.enum(RoomStatus),
   availableFrom: z.date().optional(),
 });
@@ -82,13 +89,13 @@ export default function RoomFormFields({
             </FieldLabel>
             {/* TODO: now have 1 bug when open dialog from update room form, time to select correct buildingId is very slow */}
             <Combobox
+              {...field}
               items={buildings}
               value={buildingMap.get(field.value) ?? null}
               onValueChange={(item) => field.onChange(item?.id ?? '')}
               itemToStringLabel={(item) => item.name}
             >
               <ComboboxInput
-                autoFocus={false}
                 aria-invalid={fieldState.invalid}
                 placeholder="Chọn tòa nhà"
                 showClear
@@ -346,7 +353,6 @@ export default function RoomFormFields({
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor="images">Hình ảnh</FieldLabel>
-            {/* FIXME: use upload component */}
             <ProgressFileUpload value={field.value} onChange={field.onChange} />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>

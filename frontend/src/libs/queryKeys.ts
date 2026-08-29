@@ -140,5 +140,7 @@ export const queryKeys = {
   uploads: {
     all: ['uploads'] as const,
     presignedUrls: () => [...queryKeys.uploads.all, 'presignedUrls'] as const,
+    deleteObject: () => [...queryKeys.uploads.all, 'deleteObject'] as const,
+    deleteObjectsByPrefix: () => [...queryKeys.uploads.all, 'deleteObjectsByPrefix'] as const,
   },
 } as const;

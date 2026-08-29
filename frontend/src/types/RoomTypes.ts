@@ -1,4 +1,5 @@
 import { VariantProps } from 'class-variance-authority';
+import * as z from 'zod';
 
 import { badgeVariants } from '@/components/ui';
 import { RoomStatus } from '@/generated/model';
@@ -87,3 +88,28 @@ export const ROOM_STATUS_MAP: Record<
     variant: 'destructive',
   },
 };
+
+export const existingImageItemSchema = z.object({
+  status: z.literal('existing'),
+  id: z.string(), // uuid or key
+  url: z.string(), // URL for review
+  key: z.string(), // key in R2 (existing image)
+  file: z.instanceof(File).optional(), // only for new images (When upload images, we will use this file to upload to R2)
+});
+
+export const newImageItemSchema = z.object({
+  status: z.literal('new'),
+  id: z.string(), // uuid or key
+  url: z.string(), // URL for review
+  file: z.instanceof(File), // only for new images (When upload images, we will use this file to upload to R2)
+  key: z.string().optional(), // key in R2 (existing image)
+});
+
+export const imageItemSchema = z.object({
+  existingImages: z.array(existingImageItemSchema),
+  newImages: z.array(newImageItemSchema),
+});
+
+export type ExistingImageItem = z.infer<typeof existingImageItemSchema>;
+export type NewImageItem = z.infer<typeof newImageItemSchema>;
+export type ImageFormState = z.infer<typeof imageItemSchema>;

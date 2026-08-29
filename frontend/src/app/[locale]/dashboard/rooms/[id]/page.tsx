@@ -26,6 +26,10 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
   const { id } = await params;
   const room = await getRoom(id);
 
+  console.log({
+    room,
+  });
+
   if (!room) {
     notFound();
   }

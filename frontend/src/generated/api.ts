@@ -56,6 +56,8 @@ import type {
   UpdateRentalDto,
   UpdateRoomDto,
   UpdateUserProfileDto,
+  UploadsControllerDeleteObjectParams,
+  UploadsControllerDeleteObjectsByPrefixParams,
   User
 } from './model';
 
@@ -702,7 +704,33 @@ const uploadsControllerPresignedUrls = (
       );
     }
 
-return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,uploadsControllerPresignedUrls}};
+/**
+ * @summary Xóa một file từ storage dựa trên key
+ */
+const uploadsControllerDeleteObject = (
+    params: UploadsControllerDeleteObjectParams,
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/uploads/object`, method: 'DELETE',
+        params
+    },
+      );
+    }
+
+/**
+ * @summary Xóa các file từ storage dựa trên prefix
+ */
+const uploadsControllerDeleteObjectsByPrefix = (
+    params: UploadsControllerDeleteObjectsByPrefixParams,
+ ) => {
+      return apiClient<void>(
+      {url: `/api/v1/uploads/prefix`, method: 'DELETE',
+        params
+    },
+      );
+    }
+
+return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,uploadsControllerPresignedUrls,uploadsControllerDeleteObject,uploadsControllerDeleteObjectsByPrefix}};
 export type AppControllerGetHelloResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['appControllerGetHello']>>>
 export type AuthControllerLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogin']>>>
 export type AuthControllerRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>>>
@@ -760,3 +788,5 @@ export type DashboardControllerFindOneResult = NonNullable<Awaited<ReturnType<Re
 export type DashboardControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerUpdate']>>>
 export type DashboardControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerRemove']>>>
 export type UploadsControllerPresignedUrlsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerPresignedUrls']>>>
+export type UploadsControllerDeleteObjectResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerDeleteObject']>>>
+export type UploadsControllerDeleteObjectsByPrefixResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerDeleteObjectsByPrefix']>>>

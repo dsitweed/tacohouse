@@ -55,4 +55,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 pkill -f "next dev"
 pkill -f "intlayer watch"
 lsof -nP -iTCP:3000 -sTCP:LISTEN
+kill -9 $(lsof -t -i:3000) 
 ```

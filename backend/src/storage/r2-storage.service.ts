@@ -36,8 +36,8 @@ export class R2StorageService {
   async createPresignedUploadUrl(
     uniqueKey: string,
     contentType: string,
+    fileId: string,
     isPublic: boolean,
-    fileName: string,
   ): Promise<PresignedUrl> {
     const command = new PutObjectCommand({
       Bucket: isPublic ? this.publicBucketName : this.privateBucketName,
@@ -52,8 +52,8 @@ export class R2StorageService {
     return {
       uploadUrl,
       fileUrl: `${this.publicDomain}/${uniqueKey}`,
-      fileName: fileName,
       key: uniqueKey,
+      fileId,
     };
   }
 

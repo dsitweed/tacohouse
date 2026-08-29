@@ -132,12 +132,17 @@ export function BuildingFormFields({
               </FieldLabel>
 
               <Combobox
+                {...field}
                 items={landlordsData}
                 value={landlordMap.get(field.value) ?? null}
                 onValueChange={(item) => field.onChange(item?.value ?? '')}
                 itemToStringLabel={(item) => item.label}
               >
-                <ComboboxInput placeholder="Chọn chủ sở hữu" showClear />
+                <ComboboxInput
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Chọn chủ sở hữu"
+                  showClear
+                />
                 <ComboboxContent container={dialogRef}>
                   <ComboboxEmpty>Không tìm thấy chủ sở hữu</ComboboxEmpty>
                   <ComboboxList>

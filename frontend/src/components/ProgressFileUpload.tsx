@@ -4,6 +4,12 @@ import { DragEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import {
+  type ExistingImageItem,
+  ImageFormState,
+  type NewImageItem,
+} from '@/types';
+
+import {
   Button,
   Card,
   CardContent,
@@ -16,14 +22,9 @@ import {
 
 const MB_SIZE = 1024 * 1024;
 
-type UploadFileType = {
-  file: File;
-  imageUrl: string | null;
-};
-
 type ProgressFileUploadProps = {
-  value: File[];
-  onChange: (files: File[]) => void;
+  value: ImageFormState;
+  onChange: (value: ImageFormState) => void;
   MBSize?: number;
 };
 
@@ -32,9 +33,7 @@ export default function ProgressFileUpload({
   onChange,
   MBSize = 1,
 }: ProgressFileUploadProps) {
-  const [uploadFiles, setUploadFiles] = useState<UploadFileType[]>(
-    value.map((file) => ({ file, imageUrl: URL.createObjectURL(file) })),
-  );
+  const [uploadFiles, setUploadFiles] = useState<ImageFormState>(value);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleBoxClick = () => {
@@ -53,48 +52,56 @@ export default function ProgressFileUpload({
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
 
-    const validFiles: UploadFileType[] = [];
-    const rejectedFiles: string[] = [];
+    const validFiles: NewImageItem[] = [];
+    const rejectedMessages: string[] = [];
     const maxSize = MBSize * MB_SIZE;
 
     Array.from(files).forEach((file) => {
       if (file.size > maxSize) {
-        rejectedFiles.push(
+        rejectedMessages.push(
           `${file.name} (${(file.size / MB_SIZE).toFixed(2)}MB)`,
         );
       } else {
         validFiles.push({
+          status: 'new',
+          id: crypto.randomUUID(),
           file,
-          imageUrl: URL.createObjectURL(file),
+          url: URL.createObjectURL(file),
         });
       }
     });
 
-    if (rejectedFiles.length > 0) {
+    if (rejectedMessages.length > 0) {
       toast.error(
-        `File(s) exceeds ${maxSize}MB limit: ${rejectedFiles.join(', ')}`,
+        `File(s) exceeds ${maxSize}MB limit: ${rejectedMessages.join(', ')}`,
         {
           position: 'top-center',
         },
       );
     }
 
-    const updatedFiles = [...uploadFiles, ...validFiles];
+    const updatedFiles: ImageFormState = {
+      existingImages: uploadFiles.existingImages,
+      newImages: [...uploadFiles.newImages, ...validFiles],
+    };
     setUploadFiles(updatedFiles);
-    onChange(updatedFiles.map(({ file }) => file));
+    onChange(updatedFiles);
   };
 
-  const onRemove = (fileName: string) => {
-    const remainingFiles = uploadFiles.filter(({ file, imageUrl }) => {
-      if (file.name !== fileName) return true;
-
-      if (imageUrl) URL.revokeObjectURL(imageUrl);
-
-      return false;
-    });
+  const removeImageFromState = (imageId: string) => {
+    const remainingFiles: ImageFormState = {
+      existingImages: uploadFiles.existingImages.filter(
+        ({ id }) => id !== imageId,
+      ),
+      newImages: uploadFiles.newImages.filter(({ url, id }) => {
+        if (id !== imageId) return true;
+        if (url) URL.revokeObjectURL(url);
+        return false;
+      }),
+    };
 
     setUploadFiles(remainingFiles);
-    onChange(remainingFiles.map(({ file }) => file));
+    onChange(remainingFiles);
   };
 
   return (
@@ -131,34 +138,30 @@ export default function ProgressFileUpload({
       </Card>
 
       <div className="space-y-3">
-        {uploadFiles &&
-          Array.from(uploadFiles).map(({ file, imageUrl }, index) => (
-            <UploadedFileItem
-              key={file.name + index}
-              fileName={file.name}
-              fileSize={file.size}
-              imageUrl={imageUrl}
-              onRemove={onRemove}
-            />
-          ))}
+        {uploadFiles.existingImages.map((imageItem) => (
+          <ExistingImageItem
+            key={imageItem.id}
+            imageItem={imageItem}
+            onRemove={removeImageFromState}
+          />
+        ))}
+        {uploadFiles.newImages.map((imageItem) => (
+          <NewImageItem
+            key={imageItem.id}
+            imageItem={imageItem}
+            onRemove={removeImageFromState}
+          />
+        ))}
       </div>
     </div>
   );
 }
-
-type UploadedFileItemProps = {
-  fileName: string;
-  fileSize: number;
-  imageUrl: string | null;
-  onRemove: (filename: string) => void;
+type NewImageItemProps = {
+  imageItem: NewImageItem;
+  onRemove: (fileId: string) => void;
 };
 
-function UploadedFileItem({
-  fileName,
-  fileSize,
-  imageUrl,
-  onRemove,
-}: UploadedFileItemProps) {
+function NewImageItem({ imageItem, onRemove }: NewImageItemProps) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -184,10 +187,10 @@ function UploadedFileItem({
     <Card className="py-2">
       <CardContent className="flex-row items-center gap-2 px-2">
         <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-sm">
-          {imageUrl ? (
+          {imageItem.url ? (
             <Image
-              src={imageUrl}
-              alt={fileName}
+              src={imageItem.url}
+              alt={imageItem.file.name}
               fill
               unoptimized
               className="object-cover"
@@ -200,15 +203,55 @@ function UploadedFileItem({
         </div>
         <Progress value={progress}>
           <ProgressLabel className="space-x-2">
-            <span className="text-foreground">{fileName}</span>
+            <span className="text-foreground">{imageItem.file.name}</span>
             <span className="text-muted-foreground whitespace-nowrap">
-              {Math.round(fileSize)} KB
+              {(imageItem.file.size / MB_SIZE).toFixed(1)} MB
             </span>
           </ProgressLabel>
           <ProgressValue />
         </Progress>
         <Button
-          onClick={() => onRemove(fileName)}
+          onClick={() => onRemove(imageItem.id)}
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          className="hover:text-red-500"
+        >
+          <Trash2 className="size-4" />
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+type ExistingImageItemProps = {
+  imageItem: ExistingImageItem;
+  onRemove: (fileId: string) => void;
+};
+
+function ExistingImageItem({ imageItem, onRemove }: ExistingImageItemProps) {
+  const imageUrl = imageItem.url.startsWith('http')
+    ? imageItem.url
+    : `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_DOMAIN}/${imageItem.url}`;
+
+  return (
+    <Card className="py-2">
+      <CardContent className="flex-row items-center gap-2 px-2">
+        <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-sm">
+          <Image
+            src={imageUrl}
+            alt="Existing image"
+            fill
+            unoptimized
+            className="object-cover"
+          />
+        </div>
+        <div className="flex-1 truncate">
+          <span className="text-foreground">{imageItem.file?.name}</span>
+          <span className="text-foregrou text-sm">Ảnh đã tải lên</span>
+        </div>
+        <Button
+          onClick={() => onRemove(imageItem.id)}
           type="button"
           variant="ghost"
           size="icon-sm"
