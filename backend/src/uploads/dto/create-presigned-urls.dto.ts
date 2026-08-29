@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { UploadPurpose } from 'uploads/upload.config';
 
-export class FileInfoDto {
+class FileInfoDto {
   @ApiProperty({
     type: 'string',
     description: 'Tên file gốc, dùng để lấy phần mở rộng cho object key.',
@@ -30,6 +30,16 @@ export class FileInfoDto {
   @IsNotEmpty()
   @IsString()
   contentType: string;
+
+  @ApiProperty({
+    type: 'string',
+    description:
+      'ID của file trong frontend, dùng để map với presigned URL trả về. Không dùng để xác định quyền hay lưu trữ.',
+    example: 'file-1234 hoặc uuid',
+  })
+  @IsNotEmpty()
+  @IsString()
+  fileId: string;
 }
 
 export class CreatePresignedUrlsDto {

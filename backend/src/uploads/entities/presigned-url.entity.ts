@@ -21,16 +21,16 @@ export class PresignedUrl {
   @ApiProperty({
     type: 'string',
     description:
-      'Tên file gốc được gửi từ client, dùng để map lại với file khi upload',
-    example: 'phong-101.jpg',
-  })
-  fileName: string;
-
-  @ApiProperty({
-    type: 'string',
-    description:
       'Object key trong bucket. Lưu lại giá trị này vào DB để gắn vào resource sau khi upload thành công.',
     example: 'uploads/images/rooms/abc/1a2b.jpg',
   })
   key: string;
+
+  @ApiProperty({
+    type: 'string',
+    description:
+      'ID của file trong frontend, dùng để map với presigned URL trả về. Không dùng để xác định quyền hay lưu trữ.',
+    example: 'file-1234 hoặc uuid',
+  })
+  fileId: string;
 }

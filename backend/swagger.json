@@ -2309,6 +2309,114 @@
           "Uploads"
         ]
       }
+    },
+    "/api/v1/uploads/object": {
+      "delete": {
+        "operationId": "UploadsController_deleteObject",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "purpose",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BUILDING_IMAGE",
+                "ROOM_IMAGE",
+                "USER_AVATAR",
+                "USER_ID_CARD_FRONT_PHOTO",
+                "USER_ID_CARD_BACK_PHOTO",
+                "USER_PORTRAIT_PHOTO",
+                "PAYMENT_RECEIPT_IMAGE"
+              ]
+            }
+          },
+          {
+            "name": "resourceId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Xóa một file từ storage dựa trên key",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/v1/uploads/prefix": {
+      "delete": {
+        "operationId": "UploadsController_deleteObjectsByPrefix",
+        "parameters": [
+          {
+            "name": "prefix",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "purpose",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BUILDING_IMAGE",
+                "ROOM_IMAGE",
+                "USER_AVATAR",
+                "USER_ID_CARD_FRONT_PHOTO",
+                "USER_ID_CARD_BACK_PHOTO",
+                "USER_PORTRAIT_PHOTO",
+                "PAYMENT_RECEIPT_IMAGE"
+              ]
+            }
+          },
+          {
+            "name": "resourceId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa file thành công."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Xóa các file từ storage dựa trên prefix",
+        "tags": [
+          "Uploads"
+        ]
+      }
     }
   },
   "info": {
@@ -4117,12 +4225,10 @@
           },
           "deposit": {
             "type": "number",
-            "default": 0,
             "minimum": 0
           },
           "maxTenants": {
             "type": "number",
-            "default": 1,
             "minimum": 1
           },
           "roomType": {
@@ -4160,8 +4266,6 @@
           "buildingId",
           "area",
           "monthlyRent",
-          "deposit",
-          "maxTenants",
           "roomType",
           "status"
         ]
@@ -4185,12 +4289,10 @@
           },
           "deposit": {
             "type": "number",
-            "default": 0,
             "minimum": 0
           },
           "maxTenants": {
             "type": "number",
-            "default": 1,
             "minimum": 1
           },
           "roomType": {
@@ -4610,11 +4712,17 @@
             "type": "string",
             "description": "MIME type của file. Phải nằm trong danh sách cho phép của purpose tương ứng.",
             "example": "image/jpeg"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "ID của file trong frontend, dùng để map với presigned URL trả về. Không dùng để xác định quyền hay lưu trữ.",
+            "example": "file-1234 hoặc uuid"
           }
         },
         "required": [
           "fileName",
-          "contentType"
+          "contentType",
+          "fileId"
         ]
       },
       "UploadPurpose": {
@@ -4676,22 +4784,22 @@
             "description": "URL công khai của file sau khi upload xong. Chỉ truy cập được với các purpose có visibility là public.",
             "example": "https://cdn.tacohouse.com/uploads/images/rooms/abc/1a2b.jpg"
           },
-          "fileName": {
-            "type": "string",
-            "description": "Tên file gốc được gửi từ client, dùng để map lại với file khi upload",
-            "example": "phong-101.jpg"
-          },
           "key": {
             "type": "string",
             "description": "Object key trong bucket. Lưu lại giá trị này vào DB để gắn vào resource sau khi upload thành công.",
             "example": "uploads/images/rooms/abc/1a2b.jpg"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "ID của file trong frontend, dùng để map với presigned URL trả về. Không dùng để xác định quyền hay lưu trữ.",
+            "example": "file-1234 hoặc uuid"
           }
         },
         "required": [
           "uploadUrl",
           "fileUrl",
-          "fileName",
-          "key"
+          "key",
+          "fileId"
         ]
       }
     }

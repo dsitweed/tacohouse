@@ -10,8 +10,8 @@ import { PrismaService } from 'prisma/prisma.service';
 import { R2StorageService } from 'storage/r2-storage.service';
 
 import { CreatePresignedUrlsDto } from './dto/create-presigned-urls.dto';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
+import { DeleteObjectDto } from './dto/delete-object.dto';
+import { DeleteObjectsByPrefixDto } from './dto/delete-objects-by-prefix.dto';
 import { PresignedUrl } from './entities/presigned-url.entity';
 import { UPLOAD_CONFIG, UploadPurpose } from './upload.config';
 
@@ -75,31 +75,54 @@ export class UploadsService {
         return this.storageService.createPresignedUploadUrl(
           uniqueKey,
           file.contentType,
+          file.fileId,
           isPublic,
-          file.fileName,
         );
       }),
     );
   }
 
-  create(createUploadDto: CreateUploadDto) {
-    return 'This action adds a new upload';
+  async deleteObject(user: User, deleteObjectDto: DeleteObjectDto) {
+    const { purpose, resourceId, key } = deleteObjectDto;
+    const isHavePermission = await this.checkPermission(
+      user,
+      purpose,
+      resourceId,
+    );
+
+    if (!isHavePermission) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this file.',
+      );
+    }
+
+    return this.storageService.deleteObject(
+      key,
+      UPLOAD_CONFIG[purpose].visibility === 'public',
+    );
   }
 
-  findAll() {
-    return `This action returns all uploads`;
-  }
+  async deleteObjectsByPrefix(
+    user: User,
+    deleteObjectByPrefixDto: DeleteObjectsByPrefixDto,
+  ) {
+    const { purpose, resourceId, prefix } = deleteObjectByPrefixDto;
+    const isHavePermission = await this.checkPermission(
+      user,
+      purpose,
+      resourceId,
+    );
 
-  findOne(id: number) {
-    return `This action returns a #${id} upload`;
-  }
+    if (!isHavePermission) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this file.',
+      );
+    }
 
-  update(id: number, updateUploadDto: UpdateUploadDto) {
-    return `This action updates a #${id} upload`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} upload`;
+    return this.storageService.deleteObjectsByPrefix(
+      prefix,
+      UPLOAD_CONFIG[purpose].visibility === 'public',
+    );
   }
 
   async checkPermission(

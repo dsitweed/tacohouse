@@ -33,12 +33,12 @@ export class CreateRoomDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  deposit: number = 0;
+  deposit?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(1)
-  maxTenants: number = 1;
+  maxTenants?: number;
 
   @IsEnum(RoomType)
   roomType: RoomType;

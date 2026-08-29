@@ -1,16 +1,7 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiExcludeEndpoint,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -19,8 +10,8 @@ import { CurrentUser } from 'common/decorators';
 import type { User } from 'generated/prisma/client';
 
 import { CreatePresignedUrlsDto } from './dto/create-presigned-urls.dto';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
+import { DeleteObjectDto } from './dto/delete-object.dto';
+import { DeleteObjectsByPrefixDto } from './dto/delete-objects-by-prefix.dto';
 import { PresignedUrl } from './entities/presigned-url.entity';
 import { UploadsService } from './uploads.service';
 
@@ -56,33 +47,34 @@ export class UploadsController {
     );
   }
 
-  @Post()
-  @ApiExcludeEndpoint()
-  create(@Body() createUploadDto: CreateUploadDto) {
-    return this.uploadsService.create(createUploadDto);
+  @Delete('object')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Xóa một file từ storage dựa trên key',
+  })
+  deleteObject(
+    @CurrentUser() user: User,
+    @Query() deleteObjectDto: DeleteObjectDto,
+  ) {
+    return this.uploadsService.deleteObject(user, deleteObjectDto);
   }
 
-  @Get()
-  @ApiExcludeEndpoint()
-  findAll() {
-    return this.uploadsService.findAll();
-  }
-
-  @Get(':id')
-  @ApiExcludeEndpoint()
-  findOne(@Param('id') id: string) {
-    return this.uploadsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  @ApiExcludeEndpoint()
-  update(@Param('id') id: string, @Body() updateUploadDto: UpdateUploadDto) {
-    return this.uploadsService.update(+id, updateUploadDto);
-  }
-
-  @Delete(':id')
-  @ApiExcludeEndpoint()
-  remove(@Param('id') id: string) {
-    return this.uploadsService.remove(+id);
+  @Delete('prefix')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Xóa các file từ storage dựa trên prefix',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Xóa file thành công.',
+  })
+  deleteObjectsByPrefix(
+    @CurrentUser() user: User,
+    @Query() deleteObjectsByPrefix: DeleteObjectsByPrefixDto,
+  ) {
+    return this.uploadsService.deleteObjectsByPrefix(
+      user,
+      deleteObjectsByPrefix,
+    );
   }
 }
