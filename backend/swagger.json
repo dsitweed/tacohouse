@@ -2267,6 +2267,169 @@
         ]
       }
     },
+    "/api/v1/dashboard/tenants/{tenantId}": {
+      "get": {
+        "description": "Get comprehensive tenant information including rentals, bills, payments, and maintenance requests",
+        "operationId": "DashboardController_getTenantDashboard",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Tenant user ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billsLimit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 12,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "billsPage",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "paymentsLimit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "paymentsPage",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "maintenanceLimit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "maintenancePage",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billStatus",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentStatus",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maintenanceStatus",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tenant dashboard details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDashboardResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access forbidden"
+          },
+          "404": {
+            "description": "Tenant not found"
+          }
+        },
+        "summary": "Get tenant dashboard details. Accessible to landlords (for their own buildings) and admins",
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
     "/api/v1/uploads/presigned-urls": {
       "post": {
         "operationId": "UploadsController_presignedUrls",
@@ -4699,6 +4862,126 @@
       "UpdateDashboardDto": {
         "type": "object",
         "properties": {}
+      },
+      "PaymentMetricsDto": {
+        "type": "object",
+        "properties": {
+          "paymentScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "totalPaid": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalOutstanding": {
+            "type": "number",
+            "minimum": 0
+          },
+          "consecutiveOnTimePayments": {
+            "type": "number",
+            "minimum": 0
+          },
+          "latePaymentCount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "lastPaymentDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "paymentTrend": {
+            "type": "string",
+            "enum": [
+              "EXCELLENT",
+              "GOOD",
+              "FAIR",
+              "POOR"
+            ]
+          }
+        },
+        "required": [
+          "paymentScore",
+          "totalPaid",
+          "totalOutstanding",
+          "consecutiveOnTimePayments",
+          "latePaymentCount",
+          "paymentTrend"
+        ]
+      },
+      "DocumentsDto": {
+        "type": "object",
+        "properties": {
+          "idCardFront": {
+            "type": "string"
+          },
+          "idCardBack": {
+            "type": "string"
+          },
+          "portrait": {
+            "type": "string"
+          },
+          "contractImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "contractImages"
+        ]
+      },
+      "TenantDashboardResponseDto": {
+        "type": "object",
+        "properties": {
+          "tenant": {
+            "type": "object"
+          },
+          "currentRental": {
+            "type": "object"
+          },
+          "rentalHistory": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "payments": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "maintenanceRequests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "paymentMetrics": {
+            "$ref": "#/components/schemas/PaymentMetricsDto"
+          },
+          "documents": {
+            "$ref": "#/components/schemas/DocumentsDto"
+          }
+        },
+        "required": [
+          "tenant",
+          "rentalHistory",
+          "bills",
+          "payments",
+          "maintenanceRequests",
+          "paymentMetrics",
+          "documents"
+        ]
       },
       "FileInfoDto": {
         "type": "object",

@@ -1,5 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsDateString, IsInt, IsOptional, Min } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import {
   Bill,
   Building,
@@ -79,19 +88,50 @@ export class GetTenantDashboardQueryDto {
 }
 
 export class PaymentMetricsDto {
-  paymentScore: number; // 0-100
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  paymentScore: number;
+
+  @IsNumber()
+  @Min(0)
   totalPaid: number;
+
+  @IsNumber()
+  @Min(0)
   totalOutstanding: number;
+
+  @IsNumber()
+  @Min(0)
   consecutiveOnTimePayments: number;
+
+  @IsNumber()
+  @Min(0)
   latePaymentCount: number;
+
+  @IsOptional()
+  @IsDateString()
   lastPaymentDate?: Date;
+
+  @IsOptional()
+  @IsString()
   paymentTrend: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
 }
 
 export class DocumentsDto {
+  @IsOptional()
+  @IsString()
   idCardFront?: string;
+  @IsOptional()
+  @IsString()
   idCardBack?: string;
+
+  @IsOptional()
+  @IsString()
   portrait?: string;
+
+  @IsArray()
+  @IsString({ each: true })
   contractImages: string[];
 }
 
@@ -105,9 +145,11 @@ export class TenantDashboardResponseDto {
     };
   };
 
+  @IsArray()
   rentalHistory: Rental[];
 
   // Bills for Current Rental
+  @IsArray()
   bills: Bill[];
 
   // Payment History with Confirmations
@@ -116,6 +158,7 @@ export class TenantDashboardResponseDto {
   })[];
 
   // Maintenance Requests by Tenant
+  @IsArray()
   maintenanceRequests: MaintenanceRequest[];
   paymentMetrics: PaymentMetricsDto;
   documents: DocumentsDto;
