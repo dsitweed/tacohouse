@@ -1,5 +1,4 @@
-import type { Building } from './BuildingTypes';
-import type { UserRole } from './EnumsTypes';
+import { Building, UserRole } from '@/generated/model';
 
 export interface UserProfile {
   id: string;

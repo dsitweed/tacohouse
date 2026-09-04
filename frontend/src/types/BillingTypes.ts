@@ -1,5 +1,6 @@
+import { Room } from '@/generated/model';
+
 import type { BillStatus, PaymentMethod, PaymentStatus } from './EnumsTypes';
-import type { Room } from './RoomTypes';
 
 export interface PaymentConfirmation {
   id: string;
