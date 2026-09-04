@@ -64,7 +64,8 @@ export class DashboardController {
   @Get('tenants/:tenantId')
   @Roles(UserRole.ADMIN, UserRole.LANDLORD)
   @ApiOperation({
-    summary: 'Get tenant dashboard details',
+    summary:
+      'Get tenant dashboard details. Accessible to landlords (for their own buildings) and admins',
     description:
       'Get comprehensive tenant information including rentals, bills, payments, and maintenance requests',
   })

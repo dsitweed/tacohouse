@@ -8,7 +8,9 @@ import {
   BillStatus,
   Payment,
   PaymentConfirmation,
+  Rental,
   User,
+  UserProfile,
   UserRole,
 } from 'generated/prisma/client';
 import { BillWhereInput } from 'generated/prisma/models';
@@ -16,6 +18,7 @@ import { PrismaService } from 'prisma/prisma.service';
 
 import {
   CreateDashboardDto,
+  DocumentsDto,
   GetTenantDashboardQueryDto,
   RevenueTrendQueryDto,
   TenantDashboardResponseDto,
@@ -170,7 +173,7 @@ export class DashboardService {
     });
 
     // Fetch bills for current rental (or last rental if no active)
-    const billsQuery: BillWhereInput = currentRental
+    const billsQuery: BillWhereInput | null = currentRental
       ? {
           roomId: currentRental.roomId,
         }
@@ -214,7 +217,27 @@ export class DashboardService {
     });
 
     // Calculate payment metrics
-    const paymentsMetrics = null;
+    const paymentMetrics = this.calculatePaymentMetrics(
+      bills,
+      payments as (Payment & { paymentConfirmation?: PaymentConfirmation })[],
+    );
+
+    // Collect documents
+    const documents = this.collectDocuments(
+      tenant as User & { profile: UserProfile },
+      rentals,
+    );
+
+    return {
+      tenant,
+      currentRental: currentRental || undefined,
+      rentalHistory: rentals,
+      bills,
+      payments,
+      maintenanceRequests,
+      paymentMetrics,
+      documents,
+    };
   }
 
   private calculatePaymentMetrics(
@@ -288,5 +311,29 @@ export class DashboardService {
       lastPaymentDate,
       paymentTrend,
     };
+  }
+
+  private collectDocuments(
+    tenant: User & { profile: UserProfile },
+    rentals: Rental[],
+  ): DocumentsDto {
+    const documents: DocumentsDto = {
+      idCardFront: tenant.profile.idCardFrontPhoto || undefined,
+      idCardBack: tenant.profile.idCardBackPhoto || undefined,
+      portrait: tenant.profile.portraitPhoto || undefined,
+      contractImages: [],
+    };
+
+    // Collect contract images from all rentals
+    for (const rental of rentals) {
+      if (rental.contractImages && Array.isArray(rental.contractImages)) {
+        documents.contractImages.push(...rental.contractImages);
+      }
+    }
+
+    // Remove duplicates
+    documents.contractImages = [...new Set(documents.contractImages)];
+
+    return documents;
   }
 }
