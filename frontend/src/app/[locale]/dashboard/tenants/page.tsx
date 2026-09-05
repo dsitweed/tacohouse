@@ -1,64 +1,182 @@
 'use client';
 
-import { Eye, Mail, Phone, Search, Users } from 'lucide-react';
+import {
+  AlertTriangle,
+  Building,
+  CheckCircle2,
+  Clock,
+  Eye,
+  Home,
+  Mail,
+  MessageSquare,
+  MoreHorizontal,
+  Phone,
+  Search,
+  TrendingUp,
+  UserPlus,
+  Users,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { PaymentStatus, RentalStatus, UserRole } from '@/generated/model';
 import { useRentals } from '@/hooks/api/useRentals';
 import { useAuthStore } from '@/stores/authStore';
-import { RentalStatus, UserRole } from '@/types';
+import { PAYMENT_STATUS_MAP, RENTAL_STATUS_MAP } from '@/types';
+import { cn, toDateOnlyString } from '@/utils';
+
+const RENTAL_STATUS_FILTER = [
+  {
+    value: 'ALL',
+    label: 'Tất cả',
+  },
+  {
+    value: 'ACTIVE',
+    label: 'Đang thuê',
+  },
+  {
+    value: 'NOTICE',
+    label: 'Sắp hết hạn / Báo chuyển',
+  },
+] as const;
+type RentalStatusFilter = (typeof RENTAL_STATUS_FILTER)[number]['value'];
 
 export default function TenantsPage() {
   const { user } = useAuthStore();
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<RentalStatusFilter>('ALL');
 
-  // Fetch rentals from API
   const { data: rentalsData, isLoading } = useRentals({
     page: 1,
     limit: 100,
-    status: RentalStatus.ACTIVE,
   });
 
-  // Extract tenants from active rentals
-  const tenants = useMemo(() => {
-    if (!rentalsData?.data) return [];
+  // TODO: Need push this logic to the BE for better performance
+  // Process & filter tenants
+  const { tenants, stats } = useMemo(() => {
+    if (!rentalsData?.data) {
+      return {
+        tenants: [],
+        stats: {
+          total: 0,
+          active: 0,
+          pendingPayment: 0,
+          renewalsDue: 0,
+        },
+      };
+    }
 
-    return rentalsData.data
-      .filter((rental) => rental.status === RentalStatus.ACTIVE)
-      .map((rental) => ({
-        id: rental.tenantId,
-        rentalId: rental.id,
-        profile: rental.tenant?.user?.profile || {
-          firstName: '',
-          lastName: '',
-          phone: '',
-        },
-        email: rental.tenant?.user?.email || '',
-        room: {
-          roomNumber: rental.room?.number || '',
-          building: { name: rental.room?.building?.name || '' },
-        },
+    const allRentals = rentalsData.data;
+
+    const mapped = allRentals.map((rental) => {
+      const firstName = rental.tenant?.profile?.firstName || '';
+      const lastName = rental.tenant?.profile?.lastName || '';
+      const fullName = `${firstName} ${lastName}`.trim() || 'Người thuê';
+      const initials =
+        (firstName[0] || '') + (lastName[0] || '') || fullName[0] || 'T';
+
+      // TODO: Replace with real data
+      // Mock contract/payment status for UI demonstration matching Figma
+      const isPendingPayment = rental.status === RentalStatus.NOTICE_GIVEN;
+      // TODO: Status for payment not have overdue (Confusing with bill status)
+      const paymentStatus: PaymentStatus =
+        rental.status === 'ACTIVE'
+          ? 'COMPLETED'
+          : isPendingPayment
+            ? 'PENDING'
+            : 'FAILED';
+
+      const createdAtFormatted = toDateOnlyString(new Date(rental.createdAt));
+
+      return {
+        id: rental.id,
+        tenantId: rental.tenantId,
+        fullName,
+        initials,
+        avatar: rental.tenant?.profile?.avatar || null,
+        phone: rental.tenant?.profile?.phone || 'Chưa cập nhật',
+        email: rental.tenant?.email || 'N/A',
+        roomNumber: rental.room?.number || 'N/A',
+        buildingName: rental.room?.building?.name || 'Tòa nhà N/A',
         status: rental.status,
-      }))
-      .filter((tenant) => {
-        if (!search) return true;
-        const searchLower = search.toLowerCase();
-        return (
-          tenant.profile.firstName?.toLowerCase().includes(searchLower) ||
-          tenant.profile.lastName?.toLowerCase().includes(searchLower) ||
-          tenant.email.toLowerCase().includes(searchLower) ||
-          tenant.profile.phone?.includes(search)
-        );
-      });
-  }, [rentalsData, search]);
+        paymentStatus,
+        createdAtFormatted,
+        startDate: rental.startDate,
+        endDate: rental.endDate,
+      };
+    });
+
+    // Calculate dynamic stats
+    const totalCount = mapped.length;
+    const activeCount = mapped.filter(
+      (t) => t.status === RentalStatus.ACTIVE,
+    ).length;
+    const pendingPaymentCount = mapped.filter(
+      (t) => t.paymentStatus === 'FAILED' || t.paymentStatus === 'PENDING',
+    ).length;
+    const renewalsCount = mapped.filter(
+      (t) => t.status === RentalStatus.NOTICE_GIVEN,
+    ).length;
+
+    // Filter by Tab and Search string
+    const filtered = mapped.filter((tenant) => {
+      // Tab filter
+      if (statusFilter === 'ACTIVE' && tenant.status !== RentalStatus.ACTIVE) {
+        return false;
+      }
+      if (
+        statusFilter === 'NOTICE' &&
+        tenant.status !== RentalStatus.NOTICE_GIVEN
+      ) {
+        return false;
+      }
+
+      // Search filter
+      if (!search) return true;
+      const s = search.toLowerCase();
+      return (
+        tenant.fullName.toLowerCase().includes(s) ||
+        tenant.email.toLowerCase().includes(s) ||
+        tenant.phone.includes(s) ||
+        tenant.roomNumber.toLowerCase().includes(s) ||
+        tenant.buildingName.toLowerCase().includes(s)
+      );
+    });
+
+    return {
+      tenants: filtered,
+      stats: {
+        total: totalCount,
+        active: activeCount,
+        pendingPayment: pendingPaymentCount,
+        renewalsDue: renewalsCount,
+      },
+    };
+  }, [rentalsData, search, statusFilter]);
 
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
+  // TODO: Update with Empty State component for users who cannot view this page
   if (!canView) {
     return (
       <Card>
@@ -70,130 +188,282 @@ export default function TenantsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 p-2 md:p-4">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
             Quản lý người thuê
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Quản lý thông tin người thuê và hợp đồng
+          <p className="mt-1 text-sm text-slate-500">
+            Quản lý thông tin người thuê, theo dõi hợp đồng và trạng thái thanh
+            toán
           </p>
         </div>
+        {/* TODO: add actions */}
+        <Button>
+          <UserPlus className="size-4" />
+          <span>Thêm người thuê</span>
+        </Button>
       </div>
 
-      {/* Search */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Tìm kiếm người thuê..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Card 1: Total Tenants */}
+        <Card>
+          <CardContent>
+            <div className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              Tổng người thuê
+            </div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">
+              {stats.total}
+            </div>
+            <div className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-600">
+              <TrendingUp className="size-4" />
+              <span>+12 tháng này</span>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Tenants List */}
-      <Card>
+        {/* Card 2: Active Contracts */}
+        <Card>
+          <CardContent>
+            <div className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              Hợp đồng hoạt động
+            </div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">
+              {stats.active}
+            </div>
+            <div className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-600">
+              <CheckCircle2 className="size-4" />
+              {/* TODO: fill with actual data */}
+              <span>90.2% tỷ lệ lấp đầy</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Pending Payments */}
+        <Card>
+          <CardContent>
+            <div className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              Chờ thanh toán
+            </div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">
+              {stats.pendingPayment}
+            </div>
+            <div className="mt-2 flex items-center gap-1 text-xs font-medium text-rose-600">
+              <AlertTriangle className="size-4" />
+              <span>Cần xử lý thanh toán</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Renewals Due */}
+        <Card>
+          <CardContent>
+            <div className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              Sắp hết hạn hợp đồng
+            </div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">
+              {stats.renewalsDue}
+            </div>
+            <div className="mt-2 flex items-center gap-1 text-xs font-medium text-amber-600">
+              <Clock className="size-4" />
+              <span>Trong 30 ngày tới</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Table Container */}
+      <Card className="overflow-hidden">
+        {/* Table Filters & Search Controls */}
         <CardHeader>
-          <CardTitle>Danh sách người thuê</CardTitle>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Filter Status Buttons */}
+              <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1">
+                {RENTAL_STATUS_FILTER.map((status) => (
+                  <Button
+                    key={status.value}
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setStatusFilter(status.value)}
+                    className={cn(
+                      'text-xs hover:bg-white',
+                      statusFilter === status.value
+                        ? 'text-primary bg-white'
+                        : 'text-gray-600 hover:text-gray-900',
+                    )}
+                  >
+                    {status.label}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Search Input */}
+              <div className="relative min-w-[220px]">
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  placeholder="Tìm người thuê, phòng..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="h-9 pl-9 text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-500">
+              <span>Hiển thị </span>
+              <span className="font-semibold text-gray-700">
+                {tenants.length}
+              </span>
+              <span> người thuê</span>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+
+        {/* Table Content */}
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="py-12 text-center">
-              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600"></div>
-              <p className="mt-4 text-sm text-gray-600">Đang tải...</p>
+            <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+              <div className="size-8 animate-spin rounded-full border-b-2 border-indigo-600" />
+              <p className="text-sm text-slate-500">
+                Đang tải danh sách người thuê...
+              </p>
             </div>
           ) : tenants.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Người thuê
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Email
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Số điện thoại
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Phòng đang thuê
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Trạng thái
-                    </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                      Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {tenants.map((tenant) => (
-                    <tr
-                      key={tenant.rentalId || tenant.id}
-                      className="hover:bg-gray-50"
-                    >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100">
-                            <Users className="h-5 w-5 text-indigo-600" />
+            <Table>
+              <TableHeader className="bg-slate-50">
+                <TableRow className="border-b border-slate-200 text-xs font-bold tracking-wider text-slate-600 uppercase">
+                  <TableHead className="pl-4">NGƯỜI THUÊ</TableHead>
+                  <TableHead>LIÊN HỆ</TableHead>
+                  <TableHead>TÒA NHÀ</TableHead>
+                  <TableHead>PHÒNG</TableHead>
+                  <TableHead>HỢP ĐỒNG</TableHead>
+                  <TableHead>THANH TOÁN</TableHead>
+                  <TableHead>THAO TÁC</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="[&_td]:py-3">
+                {tenants.map((tenant) => (
+                  <TableRow key={tenant.id}>
+                    <TableCell className="pl-4">
+                      <Link
+                        className="flex items-center gap-3"
+                        href={`/dashboard/tenants/${tenant.id}`}
+                      >
+                        <Avatar className="size-10 shrink-0">
+                          <AvatarImage
+                            src={tenant.avatar || ''}
+                            alt={tenant.fullName}
+                          />
+                          <AvatarFallback>{tenant.initials}</AvatarFallback>
+                        </Avatar>
+                        <div className="max-w-44 min-w-0 [&>div]:truncate">
+                          <div className="text-sm font-semibold text-slate-900">
+                            {tenant.fullName}
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {tenant.profile.firstName}{' '}
-                              {tenant.profile.lastName}
-                            </p>
+                          <div className="text-xs text-slate-400">
+                            Tham gia {tenant.createdAtFormatted}
                           </div>
                         </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        <div className="flex items-center space-x-2">
-                          <Mail className="h-4 w-4 text-gray-400" />
+                      </Link>
+                    </TableCell>
+
+                    {/* Contact Column */}
+                    <TableCell>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex items-center gap-1.5 text-slate-700">
+                          <Phone className="size-3.5 text-slate-400" />
+                          <span>{tenant.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-500">
+                          <Mail className="size-3.5 text-slate-400" />
                           <span>{tenant.email}</span>
                         </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        <div className="flex items-center space-x-2">
-                          <Phone className="h-4 w-4 text-gray-400" />
-                          <span>{tenant.profile.phone || 'N/A'}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {tenant.room?.roomNumber} -{' '}
-                        {tenant.room?.building?.name}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant="success">Đang thuê</Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/dashboard/rentals/${tenant.rentalId || tenant.id}`}
-                        >
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
+                      </div>
+                    </TableCell>
+
+                    {/* Building Column */}
+                    <TableCell>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-700">
+                        <Building className="size-3.5 shrink-0 text-slate-400" />
+                        <span className="max-w-44 truncate">
+                          {tenant.buildingName}
+                        </span>
+                      </div>
+                    </TableCell>
+
+                    {/* Room Column */}
+                    <TableCell>
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-indigo-600">
+                        <Home className="size-3.5 text-indigo-500" />
+                        <span>Phòng {tenant.roomNumber}</span>
+                      </div>
+                    </TableCell>
+
+                    {/* Contract Status Column */}
+                    <TableCell>
+                      <Badge
+                        variant={RENTAL_STATUS_MAP[tenant.status].badgeVariant}
+                      >
+                        {RENTAL_STATUS_MAP[tenant.status].label}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Payment Status Column */}
+                    <TableCell>
+                      <Badge
+                        variant={
+                          PAYMENT_STATUS_MAP[tenant.paymentStatus].badgeVariant
+                        }
+                      >
+                        {PAYMENT_STATUS_MAP[tenant.paymentStatus].title}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Actions Column */}
+                    <TableCell className="text-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon-sm">
+                            <MoreHorizontal className="size-4" />
                           </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="min-w-40">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/rentals/${tenant.id}`}>
+                              <Eye className="size-4" />
+                              <span>Xem hợp đồng</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/chat`}>
+                              <MessageSquare className="size-4" />
+                              <span>Gửi tin nhắn</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <div className="py-12 text-center">
-              <Users className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="mt-4 text-sm text-gray-600">
-                {search
-                  ? 'Không tìm thấy người thuê'
-                  : 'Chưa có người thuê nào'}
-              </p>
+            <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+              <Users className="size-12 text-slate-300" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-600">
+                  {search
+                    ? 'Không tìm thấy người thuê phù hợp'
+                    : 'Chưa có dữ liệu người thuê'}
+                </p>
+                <p className="text-xs text-slate-400">
+                  Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
+                </p>
+              </div>
             </div>
           )}
         </CardContent>

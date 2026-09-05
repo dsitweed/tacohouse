@@ -5,10 +5,10 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
+import { Rental } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type {
   CreateRentalRequest,
-  Rental,
   RentalListQuery,
   UpdateRentalRequest,
 } from '@/types';

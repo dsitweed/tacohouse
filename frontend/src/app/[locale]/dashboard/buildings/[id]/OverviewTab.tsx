@@ -247,7 +247,7 @@ export default function OverviewTab({
                   <TableCell>{item.category}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={MAINTENANCE_STATUS_MAP[item.status].variant}
+                      variant={MAINTENANCE_STATUS_MAP[item.status].badgeVariant}
                     >
                       {MAINTENANCE_STATUS_MAP[item.status].label}
                     </Badge>

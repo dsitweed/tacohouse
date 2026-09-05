@@ -135,12 +135,30 @@ export const queryKeys = {
   dashboard: {
     all: ['dashboard'] as const,
     revenueTrend: () => [...queryKeys.dashboard.all, 'revenueTrend'] as const,
+    tenants: () => [...queryKeys.dashboard.all, 'tenants'] as const,
+    tenant: (
+      tenantId: string,
+      query?: {
+        billsLimit?: number;
+        billsPage?: number;
+        paymentsLimit?: number;
+        paymentsPage?: number;
+        maintenanceLimit?: number;
+        maintenancePage?: number;
+        startDate?: string;
+        endDate?: string;
+        billStatus?: string;
+        paymentStatus?: string;
+        maintenanceStatus?: string;
+      },
+    ) => [...queryKeys.dashboard.tenants(), tenantId, query] as const,
   },
 
   uploads: {
     all: ['uploads'] as const,
     presignedUrls: () => [...queryKeys.uploads.all, 'presignedUrls'] as const,
     deleteObject: () => [...queryKeys.uploads.all, 'deleteObject'] as const,
-    deleteObjectsByPrefix: () => [...queryKeys.uploads.all, 'deleteObjectsByPrefix'] as const,
+    deleteObjectsByPrefix: () =>
+      [...queryKeys.uploads.all, 'deleteObjectsByPrefix'] as const,
   },
 } as const;

@@ -5,23 +5,23 @@ export const MAINTENANCE_STATUS_MAP: Record<
   MaintenanceStatus,
   {
     label: string;
-    variant: BadgeVariantType;
+    badgeVariant: BadgeVariantType;
   }
 > = {
   PENDING: {
     label: 'Chờ xử lý',
-    variant: 'pending',
+    badgeVariant: 'pending',
   },
   IN_PROGRESS: {
     label: 'Đang tiến hành',
-    variant: 'default',
+    badgeVariant: 'default',
   },
   COMPLETED: {
     label: 'Hoàn thành',
-    variant: 'successLight',
+    badgeVariant: 'successLight',
   },
   CANCELLED: {
     label: 'Đã hủy',
-    variant: 'destructive',
+    badgeVariant: 'destructive',
   },
 };

@@ -5,12 +5,14 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { MaintenanceControllerFindAllParams } from '@/generated/model';
+import {
+  MaintenanceControllerFindAllParams,
+  MaintenanceRequest,
+} from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
 import type {
   CreateMaintenanceRequest,
   MaintenanceListQuery,
-  MaintenanceRequest,
   UpdateMaintenanceRequest,
 } from '@/types';
 
