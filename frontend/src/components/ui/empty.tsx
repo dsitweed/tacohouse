@@ -100,7 +100,9 @@ function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
 function NoDataEmptyState({
   title = 'Không tìm thấy dữ liệu',
   subTitle = 'Không có dữ liệu để hiển thị. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu vấn đề vẫn tiếp diễn.',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   className,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props
 }: React.ComponentProps<'div'> & { title?: string; subTitle?: string }) {
   return (

@@ -174,30 +174,92 @@ function usePlaceSearch({
 }: {
   debounceMs: number;
 } & PlaceSearchOptions) {
-  const [results, setResults] = React.useState<PlaceFeature[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<Error | null>(null);
-  const [hasSearched, setHasSearched] = React.useState(false);
+  type SearchState = {
+    results: PlaceFeature[];
+    isLoading: boolean;
+    error: Error | null;
+    hasSearched: boolean;
+  };
+
+  const [state, dispatch] = React.useReducer(
+    (state: SearchState, action: any): SearchState => {
+      switch (action.type) {
+        case 'CLEAR':
+          return {
+            results: [],
+            isLoading: false,
+            error: null,
+            hasSearched: false,
+          };
+        case 'START_FETCH':
+          return {
+            ...state,
+            isLoading: true,
+            error: null,
+            hasSearched: true,
+          };
+        case 'FETCH_SUCCESS':
+          return {
+            ...state,
+            results: action.payload,
+            isLoading: false,
+          };
+        case 'FETCH_ERROR':
+          return {
+            ...state,
+            error: action.payload,
+            results: [],
+            isLoading: false,
+          };
+        default:
+          return state;
+      }
+    },
+    {
+      results: [],
+      isLoading: false,
+      error: null,
+      hasSearched: false,
+    },
+  );
 
   const debouncedQuery = useDebounce(query, debounceMs);
 
+  // Memoize the search options to avoid unnecessary re-renders and API calls.
+  const searchOptions = React.useMemo(
+    () => ({
+      lang: props.lang,
+      limit: props.limit,
+      bbox: props.bbox,
+      lat: props.lat,
+      lon: props.lon,
+      zoom: props.zoom,
+      locationBiasScale: props.locationBiasScale,
+    }),
+    [
+      props.lang,
+      props.limit,
+      props.bbox,
+      props.lat,
+      props.lon,
+      props.zoom,
+      props.locationBiasScale,
+    ],
+  );
+
   React.useEffect(() => {
     if (!debouncedQuery.trim()) {
-      setResults([]);
-      setIsLoading(false);
-      setHasSearched(false);
+      dispatch({ type: 'CLEAR' });
       return;
     }
 
     const abortController = new AbortController();
 
     async function fetchResults() {
-      setIsLoading(true);
-      setError(null);
-      setHasSearched(true);
+      dispatch({ type: 'START_FETCH' });
 
       try {
-        const url = buildSearchUrl({ query: debouncedQuery, ...props });
+        const url = buildSearchUrl({ query: debouncedQuery, ...searchOptions });
         const response = await fetch(url, {
           signal: abortController.signal,
         });
@@ -216,32 +278,25 @@ function usePlaceSearch({
           addressOsmIds.add(id);
           return true;
         });
-        setResults(dedupedFeatures);
+        dispatch({ type: 'FETCH_SUCCESS', payload: dedupedFeatures });
       } catch (err) {
         if (err instanceof Error && err.name !== 'AbortError') {
-          setError(err);
-          setResults([]);
+          dispatch({ type: 'FETCH_ERROR', payload: err });
         }
-      } finally {
-        setIsLoading(false);
       }
     }
 
     fetchResults();
 
     return () => abortController.abort();
-  }, [
-    debouncedQuery,
-    props.lang,
-    props.limit,
-    props.bbox,
-    props.lat,
-    props.lon,
-    props.zoom,
-    props.locationBiasScale,
-  ]);
+  }, [debouncedQuery, searchOptions]);
 
-  return { results, isLoading, error, hasSearched };
+  return {
+    results: state.results,
+    isLoading: state.isLoading,
+    error: state.error,
+    hasSearched: state.hasSearched,
+  };
 }
 
 function PlaceAutocomplete({
@@ -335,7 +390,7 @@ function PlaceAutocomplete({
           >
             {error && <CommandEmpty>Error: {error.message}</CommandEmpty>}
             {hasNoResults && (
-              <CommandEmpty>Can't find {displayValue}.</CommandEmpty>
+              <CommandEmpty>{`Can't find ${displayValue}.`}</CommandEmpty>
             )}
             {results.length > 0 && (
               <CommandGroup>

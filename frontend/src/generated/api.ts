@@ -153,6 +153,18 @@ const usersControllerUpdate = (
     }
 
 /**
+ * @summary Get user profile by ID
+ */
+const usersControllerGetUserById = (
+    id: string,
+ ) => {
+      return apiClient<User>(
+      {url: `/api/v1/users/${id}`, method: 'GET'
+    },
+      );
+    }
+
+/**
  * @summary Change user password
  */
 const usersControllerChangePassword = (
@@ -747,7 +759,7 @@ const uploadsControllerDeleteObjectsByPrefix = (
       );
     }
 
-return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,dashboardControllerGetTenantDashboard,uploadsControllerPresignedUrls,uploadsControllerDeleteObject,uploadsControllerDeleteObjectsByPrefix}};
+return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerGetUserById,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,dashboardControllerGetTenantDashboard,uploadsControllerPresignedUrls,uploadsControllerDeleteObject,uploadsControllerDeleteObjectsByPrefix}};
 export type AppControllerGetHelloResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['appControllerGetHello']>>>
 export type AuthControllerLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogin']>>>
 export type AuthControllerRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>>>
@@ -755,6 +767,7 @@ export type AuthControllerRefreshResult = NonNullable<Awaited<ReturnType<ReturnT
 export type AuthControllerLogoutResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogout']>>>
 export type UsersControllerGetCurrentUserResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerGetCurrentUser']>>>
 export type UsersControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerUpdate']>>>
+export type UsersControllerGetUserByIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerGetUserById']>>>
 export type UsersControllerChangePasswordResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['usersControllerChangePassword']>>>
 export type BuildingsControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerCreate']>>>
 export type BuildingsControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['buildingsControllerFindAll']>>>

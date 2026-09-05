@@ -345,6 +345,7 @@ export default function BuildingsPage() {
                   strokeWidth={2}
                   radius={8}
                   opacity={0.8}
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   shape={({ index, ...props }: BarShapeProps) => {
                     return (
                       <Rectangle

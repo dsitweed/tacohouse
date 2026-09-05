@@ -1,6 +1,6 @@
 import { cn } from '@/utils';
 
-import { Card, CardContent, CardFooter } from './ui';
+import { Card, CardContent } from './ui';
 
 type KpiCardProps = {
   label: string;

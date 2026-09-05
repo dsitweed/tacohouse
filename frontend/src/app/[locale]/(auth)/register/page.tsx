@@ -104,6 +104,7 @@ export default function RegisterPage() {
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
 
   const onSubmit = (data: z.infer<typeof registerFormSchema>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...rest } = data;
     const registerAuthDto = {
       ...rest,

@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Lock, Settings, User } from 'lucide-react';
+import { Bell, Lock, User } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';

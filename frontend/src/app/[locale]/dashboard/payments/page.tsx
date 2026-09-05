@@ -2,20 +2,22 @@
 
 import { CheckCircle, Clock, CreditCard, XCircle } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Badge,
+  BadgeVariantType,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui';
+import { PaymentStatus } from '@/generated/model';
 import { usePayments } from '@/hooks/api/usePayments';
-import { PaymentStatus } from '@/types';
 import { formatCurrency } from '@/utils';
 
-const statusColors: Record<
-  PaymentStatus,
-  'default' | 'success' | 'warning' | 'error'
-> = {
-  PENDING: 'warning',
+const statusColors: Record<PaymentStatus, BadgeVariantType> = {
+  PENDING: 'pending',
   COMPLETED: 'success',
-  FAILED: 'error',
+  FAILED: 'destructive',
   REFUNDED: 'default',
 };
 

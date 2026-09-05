@@ -58,6 +58,7 @@ import React, {
   type ReactNode,
   type Ref,
   Suspense,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -105,7 +106,7 @@ function createLazyComponent<T extends ComponentType<any>>(
 ) {
   const LazyComponent = lazy(factory);
 
-  return (props: React.ComponentProps<T>) => {
+  return function LazyWrapper(props: React.ComponentProps<T>) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -206,7 +207,11 @@ function Map({
   const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    const timeoutId = setTimeout(() => setIsMounted(true), 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const mapClassName = cn(
@@ -227,7 +232,7 @@ function Map({
 
       {/* Map container - always takes up space, loads when mounted */}
       {isMounted && (
-        <Suspense fallback={null}>
+        <Suspense fallback={fallback ?? null}>
           <LazyMapContainer
             zoom={zoom}
             maxZoom={maxZoom}
@@ -316,7 +321,7 @@ function MapTileLayer({
         attribution: resolvedAttribution,
       });
     }
-  }, [context, name, url, attribution]);
+  }, [context, name, resolvedUrl, resolvedAttribution]);
 
   if (context && context.selectedTileLayer !== name) {
     return null;
@@ -430,6 +435,8 @@ function MapLayers({
         tileLayers.some((layer) => layer.name === defaultTileLayer)
           ? defaultTileLayer
           : tileLayers[0].name;
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedTileLayer(validDefaultValue);
     }
 
@@ -907,15 +914,15 @@ function MapLocateControl({
     });
   }
 
-  function stopLocating() {
+  const stopLocating = useCallback(() => {
     map.stopLocate();
     map.off('locationfound');
     map.off('locationerror');
     setLocation(null);
     setIsLocating(false);
-  }
+  }, [map, setIsLocating]);
 
-  useEffect(() => () => stopLocating(), []);
+  useEffect(() => () => stopLocating(), [stopLocating]);
 
   return (
     <MapControlContainer className={cn(position, className)}>
@@ -1001,6 +1008,7 @@ function MapDrawControl({
   const deleteControlRef = useRef<EditToolbar.Delete | null>(null);
   const [activeMode, setActiveMode] = useState<MapDrawMode>(null);
   const [layersCount, setLayersCount] = useState(0);
+  const [featureGroup, setFeatureGroup] = useState<L.FeatureGroup | null>(null);
 
   function updateLayersCount() {
     if (featureGroupRef.current) {
@@ -1008,24 +1016,24 @@ function MapDrawControl({
     }
   }
 
-  function handleDrawCreated(event: DrawEvents.Created) {
-    if (!featureGroupRef.current) return;
-    const { layer } = event;
-    featureGroupRef.current.addLayer(layer);
-    onLayersChange?.(featureGroupRef.current);
-    updateLayersCount();
-    setActiveMode(null);
-  }
-
-  function handleDrawEditedOrDeleted() {
-    if (!featureGroupRef.current) return;
-    onLayersChange?.(featureGroupRef.current);
-    updateLayersCount();
-    setActiveMode(null);
-  }
-
   useEffect(() => {
     if (!L || !LeafletDraw || !map) return;
+
+    function handleDrawCreated(event: DrawEvents.Created) {
+      if (!featureGroupRef.current) return;
+      const { layer } = event;
+      featureGroupRef.current.addLayer(layer);
+      onLayersChange?.(featureGroupRef.current);
+      updateLayersCount();
+      setActiveMode(null);
+    }
+
+    function handleDrawEditedOrDeleted() {
+      if (!featureGroupRef.current) return;
+      onLayersChange?.(featureGroupRef.current);
+      updateLayersCount();
+      setActiveMode(null);
+    }
 
     map.on(L.Draw.Event.CREATED, handleDrawCreated as L.LeafletEventHandlerFn);
     map.on(L.Draw.Event.EDITED, handleDrawEditedOrDeleted);
@@ -1041,10 +1049,14 @@ function MapDrawControl({
     };
   }, [L, LeafletDraw, map, onLayersChange]);
 
+  useEffect(() => {
+    setFeatureGroup(featureGroupRef.current);
+  }, []);
+
   return (
     <MapDrawContext.Provider
       value={{
-        featureGroup: featureGroupRef.current,
+        featureGroup,
         activeMode,
         setActiveMode,
         editControlRef,
@@ -1293,7 +1305,7 @@ function MapDrawActionButton<T extends EditToolbar.Edit | EditToolbar.Delete>({
       control.disable?.();
       controlRef.current = null;
     };
-  }, [L, map, isActive, featureGroup, createDrawTool]);
+  }, [L, map, isActive, featureGroup, createDrawTool, controlRef]);
 
   function handleClick() {
     controlRef.current?.save();
@@ -1346,6 +1358,8 @@ function MapDrawEdit({
       touchMoveIcon: mapDrawHandleIcon,
       touchResizeIcon: mapDrawHandleIcon,
     });
+
+    // eslint-disable-next-line react-hooks/immutability
     L.drawLocal.edit.handlers.edit.tooltip = {
       text: 'Drag handles or markers to edit.',
       subtext: '',
@@ -1353,7 +1367,7 @@ function MapDrawEdit({
     L.drawLocal.edit.handlers.remove.tooltip = {
       text: 'Click on a shape to remove.',
     };
-  }, [mapDrawHandleIcon]);
+  }, [mapDrawHandleIcon, L]);
 
   return (
     <MapDrawActionButton
@@ -1515,6 +1529,8 @@ function useDebounceLoadingState(delay = 200) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowLoading(false);
     }
 

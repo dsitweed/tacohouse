@@ -23,7 +23,7 @@ interface DialogStore {
 
 export const useDialogStore = create<DialogStore>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       isOpen: false,
       data: null,
       type: null,

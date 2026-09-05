@@ -1,20 +1,16 @@
 'use client';
 
-import { AlertCircle, CheckCircle, Clock, Plus, Wrench } from 'lucide-react';
-import { useState } from 'react';
+import { Plus, Wrench } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeVariantType } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMaintenanceRequests } from '@/hooks/api/useMaintenance';
 import { useAuthStore } from '@/stores/authStore';
 import { MaintenanceStatus, PriorityType, UserRole } from '@/types';
 
-const statusColors: Record<
-  MaintenanceStatus,
-  'default' | 'success' | 'warning' | 'error'
-> = {
-  PENDING: 'warning',
+const statusColors: Record<MaintenanceStatus, BadgeVariantType> = {
+  PENDING: 'pending',
   IN_PROGRESS: 'default',
   COMPLETED: 'success',
   CANCELLED: 'default',
@@ -27,11 +23,11 @@ const statusLabels: Record<MaintenanceStatus, string> = {
   CANCELLED: 'Đã hủy',
 };
 
-const priorityColors: Record<PriorityType, 'default' | 'warning' | 'error'> = {
+const priorityColors: Record<PriorityType, BadgeVariantType> = {
   LOW: 'default',
-  MEDIUM: 'warning',
-  HIGH: 'error',
-  URGENT: 'error',
+  MEDIUM: 'pending',
+  HIGH: 'destructiveLight',
+  URGENT: 'destructive',
 };
 
 const priorityLabels: Record<PriorityType, string> = {
