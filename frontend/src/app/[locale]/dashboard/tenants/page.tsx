@@ -19,6 +19,7 @@ import {
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -302,14 +303,17 @@ export default function TenantsPage() {
               </div>
 
               {/* Search Input */}
-              <div className="relative min-w-[220px]">
-                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <Input
-                  placeholder="Tìm người thuê, phòng..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="h-9 pl-9 text-xs"
-                />
+              <div className="min-w-xs">
+                <InputGroup className="">
+                  <InputGroupAddon>
+                    <Search className="size-4" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    placeholder="Tìm người thuê, phòng..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </InputGroup>
               </div>
             </div>
 
