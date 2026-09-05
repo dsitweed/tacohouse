@@ -12,10 +12,13 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { UploadsControllerDeleteObjectPurpose } from './uploadsControllerDeleteObjectPurpose';
 
-export type UploadsControllerDeleteObjectParams = {
-key: string;
-purpose: UploadsControllerDeleteObjectPurpose;
-resourceId: string;
-};
+export type PaymentMetricsDtoPaymentTrend = typeof PaymentMetricsDtoPaymentTrend[keyof typeof PaymentMetricsDtoPaymentTrend];
+
+
+export const PaymentMetricsDtoPaymentTrend = {
+  EXCELLENT: 'EXCELLENT',
+  GOOD: 'GOOD',
+  FAIR: 'FAIR',
+  POOR: 'POOR',
+} as const;

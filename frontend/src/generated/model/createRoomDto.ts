@@ -23,9 +23,9 @@ export interface CreateRoomDto {
   /** @minimum 1 */
   monthlyRent: number;
   /** @minimum 0 */
-  deposit: number;
+  deposit?: number;
   /** @minimum 1 */
-  maxTenants: number;
+  maxTenants?: number;
   roomType: CreateRoomDtoRoomType;
   description?: string;
   images?: string[];

@@ -12,10 +12,22 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { UploadsControllerDeleteObjectPurpose } from './uploadsControllerDeleteObjectPurpose';
+import type { PaymentMetricsDtoPaymentTrend } from './paymentMetricsDtoPaymentTrend';
 
-export type UploadsControllerDeleteObjectParams = {
-key: string;
-purpose: UploadsControllerDeleteObjectPurpose;
-resourceId: string;
-};
+export interface PaymentMetricsDto {
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  paymentScore: number;
+  /** @minimum 0 */
+  totalPaid: number;
+  /** @minimum 0 */
+  totalOutstanding: number;
+  /** @minimum 0 */
+  consecutiveOnTimePayments: number;
+  /** @minimum 0 */
+  latePaymentCount: number;
+  lastPaymentDate?: string;
+  paymentTrend: PaymentMetricsDtoPaymentTrend;
+}

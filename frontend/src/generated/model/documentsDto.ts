@@ -12,10 +12,10 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { UploadsControllerDeleteObjectPurpose } from './uploadsControllerDeleteObjectPurpose';
 
-export type UploadsControllerDeleteObjectParams = {
-key: string;
-purpose: UploadsControllerDeleteObjectPurpose;
-resourceId: string;
-};
+export interface DocumentsDto {
+  idCardFront?: string;
+  idCardBack?: string;
+  portrait?: string;
+  contractImages: string[];
+}

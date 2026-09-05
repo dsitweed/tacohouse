@@ -12,10 +12,5 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { UploadsControllerDeleteObjectPurpose } from './uploadsControllerDeleteObjectPurpose';
 
-export type UploadsControllerDeleteObjectParams = {
-key: string;
-purpose: UploadsControllerDeleteObjectPurpose;
-resourceId: string;
-};
+export type TenantDashboardResponseDtoPaymentsItem = { [key: string]: unknown };

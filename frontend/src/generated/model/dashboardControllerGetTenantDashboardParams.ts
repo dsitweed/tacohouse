@@ -12,10 +12,36 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { UploadsControllerDeleteObjectPurpose } from './uploadsControllerDeleteObjectPurpose';
+import type { Object } from './object';
 
-export type UploadsControllerDeleteObjectParams = {
-key: string;
-purpose: UploadsControllerDeleteObjectPurpose;
-resourceId: string;
+export type DashboardControllerGetTenantDashboardParams = {
+/**
+ * @minimum 1
+ */
+billsLimit?: Object;
+/**
+ * @minimum 1
+ */
+billsPage?: Object;
+/**
+ * @minimum 1
+ */
+paymentsLimit?: Object;
+/**
+ * @minimum 1
+ */
+paymentsPage?: Object;
+/**
+ * @minimum 1
+ */
+maintenanceLimit?: Object;
+/**
+ * @minimum 1
+ */
+maintenancePage?: Object;
+startDate?: string;
+endDate?: string;
+billStatus?: string;
+paymentStatus?: string;
+maintenanceStatus?: string;
 };

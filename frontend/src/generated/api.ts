@@ -32,6 +32,7 @@ import type {
   CreateRoomDto,
   DashboardControllerGetRevenueTrend200Item,
   DashboardControllerGetRevenueTrendParams,
+  DashboardControllerGetTenantDashboardParams,
   LoginAuthDto,
   MaintenanceControllerFindAllParams,
   MaintenanceRequest,
@@ -48,6 +49,7 @@ import type {
   Room,
   RoomsControllerFindAllParams,
   SendMessageDto,
+  TenantDashboardResponseDto,
   UpdateBillDto,
   UpdateBuildingDto,
   UpdateDashboardDto,
@@ -691,6 +693,21 @@ const dashboardControllerRemove = (
     }
 
 /**
+ * Get comprehensive tenant information including rentals, bills, payments, and maintenance requests
+ * @summary Get tenant dashboard details. Accessible to landlords (for their own buildings) and admins
+ */
+const dashboardControllerGetTenantDashboard = (
+    tenantId: string,
+    params: DashboardControllerGetTenantDashboardParams,
+ ) => {
+      return apiClient<TenantDashboardResponseDto>(
+      {url: `/api/v1/dashboard/tenants/${tenantId}`, method: 'GET',
+        params
+    },
+      );
+    }
+
+/**
  * @summary Tạo presigned URL để upload file trực tiếp lên storage
  */
 const uploadsControllerPresignedUrls = (
@@ -730,7 +747,7 @@ const uploadsControllerDeleteObjectsByPrefix = (
       );
     }
 
-return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,uploadsControllerPresignedUrls,uploadsControllerDeleteObject,uploadsControllerDeleteObjectsByPrefix}};
+return {appControllerGetHello,authControllerLogin,authControllerRegister,authControllerRefresh,authControllerLogout,usersControllerGetCurrentUser,usersControllerUpdate,usersControllerChangePassword,buildingsControllerCreate,buildingsControllerFindAll,buildingsControllerFindOne,buildingsControllerUpdate,buildingsControllerRemove,roomsControllerGetAvailableRooms,roomsControllerCreate,roomsControllerFindAll,roomsControllerFindOne,roomsControllerUpdate,roomsControllerRemove,rentalsControllerCreate,rentalsControllerFindAll,rentalsControllerFindOne,rentalsControllerUpdate,rentalsControllerRemove,billsControllerCreate,billsControllerFindAll,billsControllerFindOne,billsControllerUpdate,billsControllerRemove,billsControllerConfirmPayment,paymentsControllerCreate,paymentsControllerFindAll,paymentsControllerFindOne,maintenanceControllerCreate,maintenanceControllerFindAll,maintenanceControllerFindOne,maintenanceControllerUpdate,maintenanceControllerRespond,chatControllerGetGroups,chatControllerGetGroup,chatControllerGetMessages,chatControllerSendMessage,chatControllerGetDirectMessages,chatControllerSendDirectMessage,notificationsControllerCreate,notificationsControllerFindAll,notificationsControllerGetUnreadCount,notificationsControllerFindOne,notificationsControllerMarkAsRead,notificationsControllerMarkAllAsRead,dashboardControllerGetRevenueTrend,dashboardControllerCreate,dashboardControllerFindAll,dashboardControllerFindOne,dashboardControllerUpdate,dashboardControllerRemove,dashboardControllerGetTenantDashboard,uploadsControllerPresignedUrls,uploadsControllerDeleteObject,uploadsControllerDeleteObjectsByPrefix}};
 export type AppControllerGetHelloResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['appControllerGetHello']>>>
 export type AuthControllerLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerLogin']>>>
 export type AuthControllerRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['authControllerRegister']>>>
@@ -787,6 +804,7 @@ export type DashboardControllerFindAllResult = NonNullable<Awaited<ReturnType<Re
 export type DashboardControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerFindOne']>>>
 export type DashboardControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerUpdate']>>>
 export type DashboardControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerRemove']>>>
+export type DashboardControllerGetTenantDashboardResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['dashboardControllerGetTenantDashboard']>>>
 export type UploadsControllerPresignedUrlsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerPresignedUrls']>>>
 export type UploadsControllerDeleteObjectResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerDeleteObject']>>>
 export type UploadsControllerDeleteObjectsByPrefixResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getTacoHouseAPI>['uploadsControllerDeleteObjectsByPrefix']>>>
