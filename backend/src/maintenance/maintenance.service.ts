@@ -6,7 +6,10 @@ import {
 import type { MaintenanceRequest, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
 import { MaintenanceStatus, UserRole } from 'generated/prisma/enums';
-import { RoomWhereInput } from 'generated/prisma/models';
+import {
+  MaintenanceRequestUpdateInput,
+  RoomWhereInput,
+} from 'generated/prisma/models';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationMeta } from 'types';
 
@@ -211,6 +214,7 @@ export class MaintenanceService {
         );
       }
       // Tenants cannot change status
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { status, ...tenantUpdateData } = updateMaintenanceDto;
       return this.prisma.maintenanceRequest.update({
         where: { id },
@@ -219,7 +223,9 @@ export class MaintenanceService {
     }
 
     // Landlord and Admin can update all fields
-    const updateData: any = { ...updateMaintenanceDto };
+    const updateData: MaintenanceRequestUpdateInput = {
+      ...updateMaintenanceDto,
+    };
     if (updateMaintenanceDto.status === MaintenanceStatus.COMPLETED) {
       updateData.completedAt = new Date();
     }

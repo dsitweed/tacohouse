@@ -5,29 +5,19 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { Rental } from '@/generated/model';
+import {
+  CreateRentalDto,
+  Rental,
+  RentalsControllerFindAllParams,
+  UpdateRentalDto,
+} from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type {
-  CreateRentalRequest,
-  RentalListQuery,
-  UpdateRentalRequest,
-} from '@/types';
 
-// Rental API functions
 const rentalsApi = {
-  getAll: async (query?: RentalListQuery) => {
-    const response = await apiClient.get<{
-      data: Rental[];
-      pagination?: any;
-    }>('/rentals', {
+  getAll: async (query?: RentalsControllerFindAllParams) => {
+    return apiClient.get<Rental>('/rentals', {
       params: query,
     });
-    const result = response.data;
-    // Handle paginated response
-    if (result && typeof result === 'object' && 'data' in result) {
-      return result as { data: Rental[]; pagination?: any };
-    }
-    return { data: Array.isArray(result) ? result : [], pagination: undefined };
   },
 
   getById: async (id: string) => {
@@ -35,12 +25,12 @@ const rentalsApi = {
     return response.data;
   },
 
-  create: async (data: CreateRentalRequest) => {
+  create: async (data: CreateRentalDto) => {
     const response = await apiClient.post<Rental>('/rentals', data);
     return response.data;
   },
 
-  update: async (id: string, data: UpdateRentalRequest) => {
+  update: async (id: string, data: UpdateRentalDto) => {
     const response = await apiClient.patch<Rental>(`/rentals/${id}`, data);
     return response.data;
   },
@@ -52,7 +42,7 @@ const rentalsApi = {
 };
 
 // Hooks
-export function useRentals(query?: RentalListQuery) {
+export function useRentals(query?: RentalsControllerFindAllParams) {
   return useQuery({
     queryKey: queryKeys.rentals.list(query),
     queryFn: () => rentalsApi.getAll(query),
@@ -61,30 +51,30 @@ export function useRentals(query?: RentalListQuery) {
 }
 
 export function useRental(
-  id: string | undefined,
+  id: string,
   options?: Omit<UseQueryOptions<Rental>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery({
-    queryKey: queryKeys.rentals.detail(id!),
-    queryFn: () => rentalsApi.getById(id!),
+    queryKey: queryKeys.rentals.detail(id),
+    queryFn: () => rentalsApi.getById(id),
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });
 }
 
-export function useRentalsByTenant(tenantId: string | undefined) {
+export function useRentalsByTenant(tenantId: string) {
   return useQuery({
-    queryKey: queryKeys.rentals.byTenant(tenantId!),
+    queryKey: queryKeys.rentals.byTenant(tenantId),
     queryFn: () => rentalsApi.getAll({ tenantId }),
     enabled: !!tenantId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }
 
-export function useRentalsByRoom(roomId: string | undefined) {
+export function useRentalsByRoom(roomId: string) {
   return useQuery({
-    queryKey: queryKeys.rentals.byRoom(roomId!),
+    queryKey: queryKeys.rentals.byRoom(roomId),
     queryFn: () => rentalsApi.getAll({ roomId }),
     enabled: !!roomId,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -116,7 +106,7 @@ export function useUpdateRental() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateRentalRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateRentalDto }) =>
       rentalsApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(queryKeys.rentals.detail(variables.id), data);

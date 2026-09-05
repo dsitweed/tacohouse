@@ -21,7 +21,7 @@ export class FindAllMaintenanceDto {
 
   @IsOptional()
   @IsString()
-  buildingId: string;
+  buildingId?: string;
 
   @IsOptional()
   @IsEnum(MaintenanceStatus)

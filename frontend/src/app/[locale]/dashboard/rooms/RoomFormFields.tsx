@@ -27,8 +27,6 @@ import {
 import { Building, RoomStatus, RoomType } from '@/generated/model';
 import { useBuildings } from '@/hooks/api';
 import {
-  ApiResponse,
-  ExistingImageItem,
   imageItemSchema,
   ROOM_STATUS_MAP,
   ROOM_TYPES_MAPS,

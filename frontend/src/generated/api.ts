@@ -469,7 +469,7 @@ const maintenanceControllerCreate = (
     }
 
 const maintenanceControllerFindAll = (
-    params: MaintenanceControllerFindAllParams,
+    params?: MaintenanceControllerFindAllParams,
  ) => {
       return apiClient<MaintenanceRequest[]>(
       {url: `/api/v1/maintenance`, method: 'GET',

@@ -1,25 +1,21 @@
 'use client';
 
-import { CheckCircle, Eye, Plus, Receipt, XCircle } from 'lucide-react';
+import { CheckCircle, Eye, Plus, Receipt } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeVariantType } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BillStatus, UserRole } from '@/generated/model';
 import { useBills } from '@/hooks/api/useBills';
 import { useAuthStore } from '@/stores/authStore';
-import { BillStatus, UserRole } from '@/types';
 import { formatCurrency } from '@/utils';
 
-const statusColors: Record<
-  BillStatus,
-  'default' | 'success' | 'warning' | 'error'
-> = {
-  PENDING: 'warning',
+const statusColors: Record<BillStatus, BadgeVariantType> = {
+  PENDING: 'pending',
   PAID: 'success',
-  TENANT_CONFIRMED: 'warning',
-  OVERDUE: 'error',
+  TENANT_CONFIRMED: 'secondary',
+  OVERDUE: 'destructive',
   LANDLORD_CONFIRMED: 'success',
 };
 
@@ -153,7 +149,7 @@ export default function BillsPage() {
                   </Link>
                   {bill.status === BillStatus.PENDING &&
                     user?.role === UserRole.TENANT && (
-                      <Button variant="primary" size="sm" className="flex-1">
+                      <Button size="sm" className="flex-1">
                         <CheckCircle className="mr-2 h-4 w-4" />
                         Xác nhận
                       </Button>
