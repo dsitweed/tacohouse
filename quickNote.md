@@ -8,3 +8,5 @@ FE màn chính:
 - detail room
 - detail lanlord
 - Phải có baged (yêu thích, đã xác thực, top đầu vv cho user và cho landlord, cho phòng để tăng uy tín)
+
+- Create tenants roots for BE

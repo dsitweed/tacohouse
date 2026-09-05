@@ -8,4 +8,5 @@ export * from './useNotifications';
 export * from './usePayments';
 export * from './useRentals';
 export * from './useRooms';
+export * from './useTenantDashboard';
 export * from './useUploads';

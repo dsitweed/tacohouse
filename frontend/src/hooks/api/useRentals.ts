@@ -15,7 +15,7 @@ import { apiClient, handleApiError, queryKeys } from '@/libs';
 
 const rentalsApi = {
   getAll: async (query?: RentalsControllerFindAllParams) => {
-    return apiClient.get<Rental>('/rentals', {
+    return apiClient.get<Rental[]>('/rentals', {
       params: query,
     });
   },

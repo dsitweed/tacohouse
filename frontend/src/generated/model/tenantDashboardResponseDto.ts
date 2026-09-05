@@ -12,19 +12,21 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
+import type { Bill } from './bill';
 import type { DocumentsDto } from './documentsDto';
+import type { MaintenanceRequest } from './maintenanceRequest';
+import type { Payment } from './payment';
 import type { PaymentMetricsDto } from './paymentMetricsDto';
-import type { TenantDashboardResponseDtoCurrentRental } from './tenantDashboardResponseDtoCurrentRental';
-import type { TenantDashboardResponseDtoPaymentsItem } from './tenantDashboardResponseDtoPaymentsItem';
-import type { TenantDashboardResponseDtoTenant } from './tenantDashboardResponseDtoTenant';
+import type { Rental } from './rental';
+import type { User } from './user';
 
 export interface TenantDashboardResponseDto {
-  tenant: TenantDashboardResponseDtoTenant;
-  currentRental?: TenantDashboardResponseDtoCurrentRental;
-  rentalHistory: string[];
-  bills: string[];
-  payments: TenantDashboardResponseDtoPaymentsItem[];
-  maintenanceRequests: string[];
+  tenant: User;
+  currentRental?: Rental;
+  rentalHistory: Rental[];
+  bills: Bill[];
+  payments: Payment[];
+  maintenanceRequests: MaintenanceRequest[];
   paymentMetrics: PaymentMetricsDto;
   documents: DocumentsDto;
 }

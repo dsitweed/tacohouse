@@ -4,6 +4,7 @@
  */
 
 import {
+  DashboardControllerGetTenantDashboardParams,
   MaintenanceControllerFindAllParams,
   RoomsControllerFindAllParams,
 } from '@/generated/model';
@@ -138,19 +139,7 @@ export const queryKeys = {
     tenants: () => [...queryKeys.dashboard.all, 'tenants'] as const,
     tenant: (
       tenantId: string,
-      query?: {
-        billsLimit?: number;
-        billsPage?: number;
-        paymentsLimit?: number;
-        paymentsPage?: number;
-        maintenanceLimit?: number;
-        maintenancePage?: number;
-        startDate?: string;
-        endDate?: string;
-        billStatus?: string;
-        paymentStatus?: string;
-        maintenanceStatus?: string;
-      },
+      query?: DashboardControllerGetTenantDashboardParams,
     ) => [...queryKeys.dashboard.tenants(), tenantId, query] as const,
   },
 

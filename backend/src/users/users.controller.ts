@@ -1,19 +1,29 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CurrentUser } from 'common/decorators';
+import { CurrentUser, Roles } from 'common/decorators';
+import { JwtAuthGuard, RolesGuard } from 'common/guards';
 import { User as UserEntity } from 'generated/nestjs-dto';
-import type { User } from 'generated/prisma/client';
+import { type User, UserRole } from 'generated/prisma/client';
 
 import { UpdatePasswordDto, UpdateUserProfileDto } from './dto';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -29,6 +39,18 @@ export class UsersController {
   })
   getCurrentUser(@CurrentUser() user: User) {
     return user;
+  }
+
+  @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({ summary: 'Get user profile by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved',
+    type: UserEntity,
+  })
+  getUserById(@CurrentUser() currentUser: User, @Param('id') id: string) {
+    return this.usersService.findOne(currentUser, id);
   }
 
   @Patch('me')

@@ -189,7 +189,7 @@ export default function RoomsPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Breadcrumbs & Page Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
@@ -383,8 +383,8 @@ export default function RoomsPage() {
         ) : (
           <Card className="p-0">
             <Table>
-              <TableHeader>
-                <TableRow className="bg-blue-50 font-semibold tracking-wider uppercase">
+              <TableHeader className="bg-slate-50">
+                <TableRow className="text-xs tracking-wider text-slate-600 uppercase [&>th]:font-bold">
                   <TableHead className="pl-4">Phòng #</TableHead>
                   <TableHead>Tầng</TableHead>
                   <TableHead>Tòa nhà</TableHead>

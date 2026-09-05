@@ -228,8 +228,8 @@ export default function OverviewTab({
         <CardContent>
           {/* TODO: Update table with pagination and data table */}
           <Table>
-            <TableHeader>
-              <TableRow className="bg-blue-50 font-semibold tracking-wider uppercase">
+            <TableHeader className="bg-slate-50">
+              <TableRow className="text-xs tracking-wider text-slate-600 uppercase [&>th]:font-bold">
                 <TableHead>Title</TableHead>
                 <TableHead>Unit</TableHead>
                 <TableHead>Priority</TableHead>

@@ -10,16 +10,12 @@ import {
   Min,
 } from 'class-validator';
 import {
-  Bill,
-  Building,
-  MaintenanceRequest,
-  Payment,
-  PaymentConfirmation,
-  Rental,
-  Room,
-  User,
-  UserProfile,
-} from 'generated/prisma/client';
+  Bill as BillEntity,
+  MaintenanceRequest as MaintenanceRequestEntity,
+  Payment as PaymentEntity,
+  Rental as RentalEntity,
+  User as UserEntity,
+} from 'generated/nestjs-dto';
 
 export class CreateDashboardDto {}
 
@@ -122,6 +118,7 @@ export class DocumentsDto {
   @IsOptional()
   @IsString()
   idCardFront?: string;
+
   @IsOptional()
   @IsString()
   idCardBack?: string;
@@ -136,30 +133,20 @@ export class DocumentsDto {
 }
 
 export class TenantDashboardResponseDto {
-  tenant: User & { profile: UserProfile | null };
+  tenant: UserEntity;
 
   // Current Rental Information
-  currentRental?: Rental & {
-    room: Room & {
-      building: Building;
-    };
-  };
+  currentRental?: RentalEntity;
 
-  @IsArray()
-  rentalHistory: Rental[];
+  rentalHistory: RentalEntity[];
 
   // Bills for Current Rental
-  @IsArray()
-  bills: Bill[];
+  bills: BillEntity[];
 
-  // Payment History with Confirmations
-  payments: (Payment & {
-    paymentConfirmation?: PaymentConfirmation;
-  })[];
+  payments: PaymentEntity[];
 
   // Maintenance Requests by Tenant
-  @IsArray()
-  maintenanceRequests: MaintenanceRequest[];
+  maintenanceRequests: MaintenanceRequestEntity[];
   paymentMetrics: PaymentMetricsDto;
   documents: DocumentsDto;
 }

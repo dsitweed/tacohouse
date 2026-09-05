@@ -3,7 +3,6 @@
 import { LatLngExpression } from 'leaflet';
 import { ArrowLeft, Edit, FileText, MapPin, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 
 import {
   Breadcrumb,
@@ -15,6 +14,7 @@ import {
   Button,
   Card,
   CardContent,
+  NoDataEmptyState,
   SkeletonPage,
   Tabs,
   TabsContent,
@@ -24,12 +24,13 @@ import {
 import { Building, UserRole } from '@/generated/model';
 import { useBuilding } from '@/hooks/api';
 import { useAuthStore } from '@/stores/authStore';
+import { DialogType, useDialogStore } from '@/stores/dialogStore';
 
 import OverviewTab from './OverviewTab';
 import RoomsTab from './RoomsTab';
 import UpdateBuildingDialog from './UpdateBuildingDialog';
 
-const TabBar = {
+const TAB_BAR = {
   overview: 'Tổng quan',
   rooms: 'Danh sách phòng',
   incomeStatistics: 'Thống kê thu nhập',
@@ -43,7 +44,7 @@ type BuildingDetailProps = {
   initialBuilding: Building;
 };
 
-// TODO: add building address to Building model
+// TODO: use real building coordinates
 const buildingCoordinates = [43.6532, -79.3832] satisfies LatLngExpression;
 
 export default function BuildingDetail({
@@ -51,14 +52,18 @@ export default function BuildingDetail({
   initialBuilding,
 }: BuildingDetailProps) {
   const { user } = useAuthStore();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { openDialog } = useDialogStore();
 
   const { data: building, isLoading } = useBuilding(id, {
     initialData: initialBuilding,
   });
 
-  if (isLoading || !building) {
+  if (isLoading) {
     return <SkeletonPage />;
+  }
+
+  if (!building) {
+    return <NoDataEmptyState />;
   }
 
   const canEdit =
@@ -105,7 +110,7 @@ export default function BuildingDetail({
             <Button
               className=""
               variant="outline"
-              onClick={() => setIsEditModalOpen(true)}
+              onClick={() => openDialog(DialogType.UPDATE_BUILDING)}
             >
               <Edit className="size-4" />
               <span>Chỉnh sửa</span>
@@ -122,25 +127,25 @@ export default function BuildingDetail({
       </div>
 
       {/* Tab Navigation Bar */}
-      <Tabs defaultValue={TabBar.overview}>
+      <Tabs defaultValue={TAB_BAR.overview}>
         <TabsList variant="line" className="gap-3">
-          {Object.entries(TabBar).map(([key, value]) => (
+          {Object.entries(TAB_BAR).map(([key, value]) => (
             <TabsTrigger key={key} value={value}>
               {value}
             </TabsTrigger>
           ))}
         </TabsList>
-        <TabsContent value={TabBar.overview}>
+        <TabsContent value={TAB_BAR.overview}>
           <OverviewTab
             buildingId={id}
             buildingName={building.name}
             buildingCoordinates={buildingCoordinates}
           />
         </TabsContent>
-        <TabsContent value={TabBar.rooms}>
+        <TabsContent value={TAB_BAR.rooms}>
           <RoomsTab buildingId={id} />
         </TabsContent>
-        <TabsContent value={TabBar.maintenance}>
+        <TabsContent value={TAB_BAR.maintenance}>
           <Card>
             <CardContent className="items-center text-center">
               <FileText className="text-primary size-12" />
@@ -150,7 +155,7 @@ export default function BuildingDetail({
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value={TabBar.incomeStatistics}>
+        <TabsContent value={TAB_BAR.incomeStatistics}>
           <Card>
             <CardContent className="items-center text-center">
               <FileText className="text-primary size-12" />
@@ -160,7 +165,7 @@ export default function BuildingDetail({
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value={TabBar.expenses}>
+        <TabsContent value={TAB_BAR.expenses}>
           <Card>
             <CardContent className="items-center text-center">
               <FileText className="text-primary size-12" />
@@ -170,7 +175,7 @@ export default function BuildingDetail({
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value={TabBar.documents}>
+        <TabsContent value={TAB_BAR.documents}>
           <Card>
             <CardContent className="items-center text-center">
               <FileText className="text-primary size-12" />
@@ -183,11 +188,7 @@ export default function BuildingDetail({
       </Tabs>
 
       {/* Edit Building Dialog */}
-      <UpdateBuildingDialog
-        open={isEditModalOpen}
-        setOpen={setIsEditModalOpen}
-        buildingId={id}
-      />
+      <UpdateBuildingDialog buildingId={id} />
     </div>
   );
 }

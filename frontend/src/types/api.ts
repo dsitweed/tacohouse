@@ -138,32 +138,6 @@ export interface UpdateRoomRequest {
   availableFrom?: string;
 }
 
-// Rental API Types
-export interface CreateRentalRequest {
-  roomId: string;
-  tenantId: string;
-  startDate: string;
-  endDate?: string;
-  monthlyRent: number;
-  depositPaid: number;
-  contractImages?: string[];
-}
-
-export interface UpdateRentalRequest {
-  endDate?: string;
-  monthlyRent?: number;
-  status?: 'ACTIVE' | 'NOTICE_GIVEN' | 'TERMINATED';
-  noticeDate?: string;
-}
-
-export interface RentalListQuery {
-  page?: number;
-  limit?: number;
-  roomId?: string;
-  tenantId?: string;
-  status?: string;
-}
-
 // Bill API Types
 export interface CreateBillRequest {
   roomId: string;

@@ -98,18 +98,17 @@ function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
  * Custom NoDataEmptyState component to display when there is no data available.
  */
 function NoDataEmptyState({
+  title = 'Không tìm thấy dữ liệu',
+  subTitle = 'Không có dữ liệu để hiển thị. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu vấn đề vẫn tiếp diễn.',
   className,
   ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<'div'> & { title?: string; subTitle?: string }) {
   return (
     <div className="flex items-center justify-center">
       <Empty className="bg-muted">
         <EmptyHeader>
-          <EmptyTitle>Không tìm thấy dữ liệu</EmptyTitle>
-          <EmptyDescription>
-            Không có dữ liệu để hiển thị. Vui lòng thử lại sau hoặc liên hệ với
-            bộ phận hỗ trợ nếu vấn đề vẫn tiếp diễn.
-          </EmptyDescription>
+          <EmptyTitle>{title}</EmptyTitle>
+          <EmptyDescription>{subTitle}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <Button onClick={() => window.location.reload()}>Thử lại</Button>

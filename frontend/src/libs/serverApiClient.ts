@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 import type { ApiError, ApiResponse } from '@/types';
 
-const API_BASE_URL = `${process.env.API_ORIGIN || process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.API_PREFIX || process.env.NEXT_PUBLIC_API_PREFIX}`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
 
 type RequestOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;

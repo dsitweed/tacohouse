@@ -173,6 +173,42 @@
         ]
       }
     },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get user profile by ID",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/api/v1/users/me/change-password": {
       "post": {
         "operationId": "UsersController_changePassword",
@@ -4937,33 +4973,33 @@
         "type": "object",
         "properties": {
           "tenant": {
-            "type": "object"
+            "$ref": "#/components/schemas/User"
           },
           "currentRental": {
-            "type": "object"
+            "$ref": "#/components/schemas/Rental"
           },
           "rentalHistory": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Rental"
             }
           },
           "bills": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Bill"
             }
           },
           "payments": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/Payment"
             }
           },
           "maintenanceRequests": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/MaintenanceRequest"
             }
           },
           "paymentMetrics": {

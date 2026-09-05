@@ -19,7 +19,12 @@ import {
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  NoDataEmptyState,
+} from '@/components/ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,7 +35,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -66,13 +70,14 @@ export default function TenantsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RentalStatusFilter>('ALL');
 
+  // FIXME: use direct API get tenants instead of fetching all rentals
   const { data: rentalsData, isLoading } = useRentals({
     page: 1,
     limit: 100,
   });
 
-  // TODO: Need push this logic to the BE for better performance
   // Process & filter tenants
+  // FIXME: Need push this logic to the BE for better performance
   const { tenants, stats } = useMemo(() => {
     if (!rentalsData?.data) {
       return {
@@ -88,7 +93,7 @@ export default function TenantsPage() {
 
     const allRentals = rentalsData.data;
 
-    const mapped = allRentals.map((rental) => {
+    const mappedTenants = allRentals.map((rental) => {
       const firstName = rental.tenant?.profile?.firstName || '';
       const lastName = rental.tenant?.profile?.lastName || '';
       const fullName = `${firstName} ${lastName}`.trim() || 'Người thuê';
@@ -109,8 +114,8 @@ export default function TenantsPage() {
       const createdAtFormatted = toDateOnlyString(new Date(rental.createdAt));
 
       return {
-        id: rental.id,
-        tenantId: rental.tenantId,
+        id: rental.tenantId,
+        rentalId: rental.id,
         fullName,
         initials,
         avatar: rental.tenant?.profile?.avatar || null,
@@ -126,20 +131,41 @@ export default function TenantsPage() {
       };
     });
 
+    // Deduplicate: one row per tenant, prefer active rental then newest
+    const tenantMap = new Map<string, (typeof mappedTenants)[number]>();
+    for (const tenant of mappedTenants) {
+      const existing = tenantMap.get(tenant.id);
+      if (!existing) {
+        tenantMap.set(tenant.id, tenant);
+        continue;
+      }
+
+      const isActive = tenant.status === RentalStatus.ACTIVE;
+      const existingIsActive = existing.status === RentalStatus.ACTIVE;
+      if (
+        (isActive && !existingIsActive) ||
+        (isActive === existingIsActive &&
+          new Date(tenant.startDate) > new Date(existing.startDate))
+      ) {
+        tenantMap.set(tenant.id, tenant);
+      }
+    }
+    const uniqueTenants = Array.from(tenantMap.values());
+
     // Calculate dynamic stats
-    const totalCount = mapped.length;
-    const activeCount = mapped.filter(
+    const totalCount = uniqueTenants.length;
+    const activeCount = uniqueTenants.filter(
       (t) => t.status === RentalStatus.ACTIVE,
     ).length;
-    const pendingPaymentCount = mapped.filter(
+    const pendingPaymentCount = uniqueTenants.filter(
       (t) => t.paymentStatus === 'FAILED' || t.paymentStatus === 'PENDING',
     ).length;
-    const renewalsCount = mapped.filter(
+    const renewalsCount = uniqueTenants.filter(
       (t) => t.status === RentalStatus.NOTICE_GIVEN,
     ).length;
 
     // Filter by Tab and Search string
-    const filtered = mapped.filter((tenant) => {
+    const filtered = uniqueTenants.filter((tenant) => {
       // Tab filter
       if (statusFilter === 'ACTIVE' && tenant.status !== RentalStatus.ACTIVE) {
         return false;
@@ -177,19 +203,17 @@ export default function TenantsPage() {
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
-  // TODO: Update with Empty State component for users who cannot view this page
   if (!canView) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <p className="text-gray-600">Bạn không có quyền truy cập trang này</p>
-        </CardContent>
-      </Card>
+      <NoDataEmptyState
+        title="Không có quyền truy cập"
+        subTitle="Bạn không có quyền truy cập vào trang này."
+      />
     );
   }
 
   return (
-    <div className="space-y-6 p-2 md:p-4">
+    <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -339,7 +363,7 @@ export default function TenantsPage() {
           ) : tenants.length > 0 ? (
             <Table>
               <TableHeader className="bg-slate-50">
-                <TableRow className="border-b border-slate-200 text-xs font-bold tracking-wider text-slate-600 uppercase">
+                <TableRow className="text-xs tracking-wider text-slate-600 uppercase [&>th]:font-bold">
                   <TableHead className="pl-4">NGƯỜI THUÊ</TableHead>
                   <TableHead>LIÊN HỆ</TableHead>
                   <TableHead>TÒA NHÀ</TableHead>

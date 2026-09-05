@@ -5,7 +5,6 @@ export function toDateOnlyString(
   locale: SUPPORTED_LOCALES_TYPE = 'vi',
   options: Intl.DateTimeFormatOptions = {
     dateStyle: 'medium',
-    timeStyle: 'short',
   },
 ): string {
   return date.toLocaleString(LOCALE_CONFIG_MAP[locale].locale, {
