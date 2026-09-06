@@ -7,6 +7,7 @@ export enum DialogType {
   CREATE_ROOM = 'CREATE_ROOM',
   UPDATE_ROOM = 'UPDATE_ROOM',
   DELETE_CONFIRM = 'DELETE_CONFIRM',
+  SHOW_IMAGES_GALLERY = 'SHOW_IMAGES_GALLERY',
 }
 
 interface DialogStore {

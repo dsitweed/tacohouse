@@ -14,6 +14,7 @@ import {
   Spinner,
 } from '@/components/ui';
 import { useCreateBuilding } from '@/hooks/api';
+import { DialogType } from '@/stores/dialogStore';
 import { useDialogStore } from '@/stores/dialogStore';
 
 import {
@@ -28,7 +29,7 @@ export default function CreateBuildingDialog({}: CreateBuildingDialogProps) {
   // Radix Dialog blocks pointer events outside its content, so Base UI Combobox must portal into it
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  const { isOpen, isLoading, closeDialog, setLoading } = useDialogStore();
+  const { isOpen, isLoading, type, closeDialog, setLoading } = useDialogStore();
   const createBuildingMutation = useCreateBuilding();
 
   const form = useForm<BuildingFormFieldsType>({
@@ -75,7 +76,7 @@ export default function CreateBuildingDialog({}: CreateBuildingDialogProps) {
 
   return (
     <Dialog
-      open={isOpen}
+      open={isOpen && type === DialogType.CREATE_BUILDING}
       onOpenChange={(open) => {
         if (!open && !isLoading) {
           closeDialog();

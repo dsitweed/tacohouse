@@ -23,7 +23,7 @@ import {
   useRoom,
   useUpdateRoom,
 } from '@/hooks/api';
-import { useDialogStore } from '@/stores/dialogStore';
+import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { toApiDateString } from '@/utils';
 
 import { uploadImages } from '../createRoom.utils';
@@ -40,7 +40,7 @@ type UpdateRoomDialogType = {
 export default function UpdateRoomDialog({ roomId }: UpdateRoomDialogType) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  const { isOpen, isLoading, closeDialog, setLoading } = useDialogStore();
+  const { isOpen, isLoading, type, closeDialog, setLoading } = useDialogStore();
   const createPresignedUrlMutation = usePresignedUrls();
   const deleteObjectMutation = useDeleteObject();
   const updateRoomMutation = useUpdateRoom();
@@ -196,7 +196,7 @@ export default function UpdateRoomDialog({ roomId }: UpdateRoomDialogType) {
 
   return (
     <Dialog
-      open={isOpen}
+      open={isOpen && type === DialogType.UPDATE_ROOM}
       onOpenChange={(open) => {
         if (!open && !isLoading) {
           closeDialog();

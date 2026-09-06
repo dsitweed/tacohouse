@@ -2,7 +2,6 @@
 
 import { LatLngTuple } from 'leaflet';
 import { DollarSign, ExternalLink, TrendingUp, Wrench } from 'lucide-react';
-import { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import KpiCard from '@/components/KpiCard';
@@ -28,7 +27,7 @@ import { useMaintenanceRequests } from '@/hooks/api';
 import { MAINTENANCE_STATUS_MAP } from '@/types';
 import { toDateOnlyString } from '@/utils';
 
-import BuildingGalleryModal from './BuildingGalleryModal';
+import BuildingGalleryCard from './BuildingGalleryModal';
 
 const revenueChartConfig = {
   gross: {
@@ -67,8 +66,6 @@ export default function OverviewTab({
   buildingName,
   buildingCoordinates,
 }: OverviewTabProps) {
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-
   const { data: maintenanceData } = useMaintenanceRequests({
     buildingId,
   });
@@ -193,26 +190,9 @@ export default function OverviewTab({
         </Card>
 
         {/* Recent Photos Gallery Card */}
-        <Card className="lg:col-span-4">
-          <CardHeader className="flex items-center justify-between gap-4">
-            <h3 className="text-lg font-bold text-gray-900">Recent Photos</h3>
-            <Button
-              variant="ghost"
-              className="text-primary text-xs font-bold"
-              onClick={() => setIsGalleryOpen(true)}
-            >
-              View Gallery
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {/* Gallery lightbox modal */}
-            <BuildingGalleryModal
-              buildingId={buildingId}
-              open={isGalleryOpen}
-              setOpen={setIsGalleryOpen}
-            />
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-4">
+          <BuildingGalleryCard buildingId={buildingId} />
+        </div>
       </div>
 
       {/* Active Maintenance Table */}

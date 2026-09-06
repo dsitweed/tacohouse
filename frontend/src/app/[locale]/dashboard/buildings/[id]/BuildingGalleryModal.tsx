@@ -1,23 +1,23 @@
 import Autoplay from 'embla-carousel-autoplay';
 import Image from 'next/image';
-import { useState } from 'react';
 
+import GalleryModal from '@/components/GalleryModal';
 import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  Dialog,
-  DialogContent,
   NoDataEmptyState,
 } from '@/components/ui';
 import { useBuilding } from '@/hooks/api';
+import { DialogType } from '@/stores/dialogStore';
+import { useDialogStore } from '@/stores/dialogStore';
 
 type BuildingGalleryModalProps = {
   buildingId: string;
-  open: boolean;
-  setOpen: (value: boolean) => void;
 };
 
 const GALLERY_IMAGES = Array.from({ length: 5 }).map(
@@ -26,12 +26,10 @@ const GALLERY_IMAGES = Array.from({ length: 5 }).map(
 
 // TODO 1: make this component to generic Component UI
 // TODO 2: Update UI of this component for more beautiful and user-friendly
-export default function BuildingGalleryModal({
+export default function BuildingGalleryCard({
   buildingId,
-  open,
-  setOpen,
 }: BuildingGalleryModalProps) {
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const { openDialog, data: dialogData } = useDialogStore();
   const { data: building } = useBuilding(buildingId);
 
   if (!building) {
@@ -39,68 +37,65 @@ export default function BuildingGalleryModal({
   }
 
   return (
-    <div className="flex justify-center">
-      <Carousel
-        plugins={[
-          Autoplay({
-            delay: 2000,
-          }),
-        ]}
-        opts={{
-          align: 'start',
-        }}
-        orientation="vertical"
-        className="w-full max-w-xs"
-      >
-        <CarouselContent className="-mt-1 h-60">
-          {GALLERY_IMAGES.map((imageUrl, index) => (
-            <CarouselItem
-              key={index}
-              className="basis-1/2 pt-2"
-              onClick={() => setOpen(true)}
-            >
-              <div className="relative h-full w-full overflow-hidden rounded-xl">
-                <Image
-                  src={imageUrl}
-                  alt="Gallery image"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+    <Card>
+      <CardHeader className="flex items-center justify-between gap-4">
+        <h3 className="text-lg font-bold text-gray-900">Recent Photos</h3>
+        <Button
+          variant="ghost"
+          className="text-primary text-xs font-bold"
+          onClick={() =>
+            openDialog(DialogType.SHOW_IMAGES_GALLERY, {
+              selectedImageIndex: 0,
+            })
+          }
+        >
+          View Gallery
+        </Button>
+      </CardHeader>
+      <CardContent className="flex-row justify-center">
+        <Carousel
+          plugins={[
+            Autoplay({
+              delay: 2000,
+            }),
+          ]}
+          opts={{
+            align: 'start',
+          }}
+          orientation="vertical"
+          className="w-full max-w-xs"
+        >
+          <CarouselContent className="-mt-1 h-60">
+            {GALLERY_IMAGES.map((imageUrl, index) => (
+              <CarouselItem
+                key={index}
+                className="basis-1/2 pt-2"
+                onClick={() =>
+                  openDialog(DialogType.SHOW_IMAGES_GALLERY, {
+                    selectedImageIndex: index,
+                  })
+                }
+              >
+                <div className="relative h-full w-full overflow-hidden rounded-xl">
+                  <Image
+                    src={imageUrl}
+                    alt="Gallery image"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </CardContent>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-2xl">
-          <h3 className="pr-8 text-xl font-bold">
-            Thư viện ảnh tòa nhà {building.name}
-          </h3>
-          <Carousel
-            opts={{
-              align: 'start',
-            }}
-          >
-            <CarouselContent className="h-80">
-              {GALLERY_IMAGES.map((imageUrl, index) => (
-                <CarouselItem key={index} className="pl-4">
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
-                    <Image
-                      src={imageUrl}
-                      alt="Gallery image"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-2 hidden sm:inline-flex" />
-            <CarouselNext className="right-2 hidden sm:inline-flex" />
-          </Carousel>
-        </DialogContent>
-      </Dialog>
-    </div>
+      {/* Gallery lightbox modal */}
+      <GalleryModal
+        title={`Tòa nhà ${building.name}`}
+        imageUrls={GALLERY_IMAGES}
+        selectedImageIndex={dialogData?.selectedImageIndex || 0}
+      />
+    </Card>
   );
 }
