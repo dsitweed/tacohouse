@@ -150,7 +150,7 @@ export class ChatService {
     sendMessageDto: SendMessageDto,
   ): Promise<Message> {
     // Verify user has access to group
-    const group = await this.getGroup(currentUser, groupId);
+    // const group = await this.getGroup(currentUser, groupId);
 
     // Check if user is member (for tenants)
     if (currentUser.role === UserRole.TENANT) {

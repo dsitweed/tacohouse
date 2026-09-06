@@ -67,6 +67,7 @@ export class R2StorageService {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async createPresignedDownloadUrl(key: string) {}
 
   async deleteObject(objectKey: string, isPublic: boolean) {
@@ -114,5 +115,6 @@ export class R2StorageService {
     } while (continuationToken);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async exists(key: string) {}
 }

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Response } from 'express';
 import { UserRole } from 'generated/prisma/enums';
 
 import { AuthController } from './auth.controller';
@@ -39,6 +40,11 @@ describe('AuthController', () => {
     register: jest.fn(),
     refresh: jest.fn(),
   };
+
+  const mockResponse = {
+    cookie: jest.fn(),
+    clearCookie: jest.fn(),
+  } as unknown as Response;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -83,10 +89,10 @@ describe('AuthController', () => {
 
       mockAuthService.login.mockResolvedValue(loginResult);
 
-      const result = await controller.login(mockUser);
+      const result = await controller.login(mockUser, mockResponse);
 
       expect(mockAuthService.login).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual(loginResult);
+      expect(result).toEqual({ user: loginResult.user });
     });
   });
 
@@ -138,10 +144,10 @@ describe('AuthController', () => {
 
       mockAuthService.refresh.mockResolvedValue(refreshResult);
 
-      const result = await controller.create(mockUser);
+      const result = await controller.refresh(mockUser, mockResponse);
 
       expect(mockAuthService.refresh).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual(refreshResult);
+      expect(result).toEqual({ message: 'Token refreshed successfully' });
     });
   });
 });

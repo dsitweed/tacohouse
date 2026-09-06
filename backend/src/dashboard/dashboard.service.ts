@@ -92,6 +92,7 @@ export class DashboardService {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(createDashboardDto: CreateDashboardDto) {
     return 'This action adds a new dashboard';
   }
@@ -104,6 +105,7 @@ export class DashboardService {
     return `This action returns a #${id} dashboard`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updateDashboardDto: UpdateDashboardDto) {
     return `This action updates a #${id} dashboard`;
   }

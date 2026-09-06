@@ -241,7 +241,7 @@ export class MaintenanceService {
     id: string,
     respondDto: RespondMaintenanceDto,
   ): Promise<MaintenanceRequest> {
-    const request = await this.findOne(currentUser, id);
+    // const request = await this.findOne(currentUser, id);
 
     // Only Landlord and Admin can respond
     if (currentUser.role === UserRole.TENANT) {

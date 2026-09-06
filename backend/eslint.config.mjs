@@ -4,9 +4,11 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import { defineConfig } from 'eslint/config';
 
-export default tseslint.config(
+export default defineConfig(
   {
+    //  'src/generated/**'
     ignores: ['eslint.config.mjs', 'jest.config.js'],
   },
   eslint.configs.recommended,
