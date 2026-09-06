@@ -14,7 +14,7 @@
  */
 
 export type ChatControllerGetMessagesParams = {
-page?: number;
-limit?: number;
-before?: string;
+  page?: number;
+  limit?: number;
+  before?: string;
 };

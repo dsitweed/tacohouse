@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SendMessageDtoMessageType = typeof SendMessageDtoMessageType[keyof typeof SendMessageDtoMessageType];
-
+export type SendMessageDtoMessageType =
+  (typeof SendMessageDtoMessageType)[keyof typeof SendMessageDtoMessageType];
 
 export const SendMessageDtoMessageType = {
   TEXT: 'TEXT',

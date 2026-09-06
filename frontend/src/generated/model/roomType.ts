@@ -13,8 +13,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RoomType = typeof RoomType[keyof typeof RoomType];
-
+export type RoomType = (typeof RoomType)[keyof typeof RoomType];
 
 export const RoomType = {
   FULL_RIGHTS: 'FULL_RIGHTS',

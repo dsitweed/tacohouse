@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type MaintenanceStatus = typeof MaintenanceStatus[keyof typeof MaintenanceStatus];
-
+export type MaintenanceStatus =
+  (typeof MaintenanceStatus)[keyof typeof MaintenanceStatus];
 
 export const MaintenanceStatus = {
   PENDING: 'PENDING',

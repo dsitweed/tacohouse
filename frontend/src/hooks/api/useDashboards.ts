@@ -1,26 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 
+import {
+  DashboardControllerGetRevenueTrendParams,
+  RevenueTrendResponseDto,
+} from '@/generated/model';
 import { apiClient, queryKeys } from '@/libs';
 
-// TODO: use generated type form BE instead
-type RevenueTrendQueryDto = {
-  months: number;
-};
-
-type RevenueTrendResponse = {
-  month: string;
-  total: number;
-};
-
 const dashboardsApi = {
-  getRevenueTrend: async (query: RevenueTrendQueryDto) => {
-    return apiClient.get<RevenueTrendResponse[]>('/dashboard/revenue-trend', {
-      params: query,
-    });
+  getRevenueTrend: async (query: DashboardControllerGetRevenueTrendParams) => {
+    return apiClient.get<RevenueTrendResponseDto[]>(
+      '/dashboard/revenue-trend',
+      {
+        params: query,
+      },
+    );
   },
 };
 
-export function useDashboardRevenueTrend(query: RevenueTrendQueryDto) {
+export function useDashboardRevenueTrend(
+  query: DashboardControllerGetRevenueTrendParams,
+) {
   return useQuery({
     queryKey: queryKeys.dashboard.revenueTrend(),
     queryFn: () => dashboardsApi.getRevenueTrend(query),

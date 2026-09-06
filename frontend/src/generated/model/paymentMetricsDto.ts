@@ -16,9 +16,9 @@ import type { PaymentMetricsDtoPaymentTrend } from './paymentMetricsDtoPaymentTr
 
 export interface PaymentMetricsDto {
   /**
-     * @minimum 0
-     * @maximum 100
-     */
+   * @minimum 0
+   * @maximum 100
+   */
   paymentScore: number;
   /** @minimum 0 */
   totalPaid: number;

@@ -15,19 +15,19 @@
 
 export interface UpdatePasswordDto {
   /**
-     * @minLength 6
-     * @maxLength 50
-     * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
-     */
+   * @minLength 6
+   * @maxLength 50
+   * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
+   */
   password: string;
   /**
-     * @minLength 6
-     * @maxLength 50
-     */
+   * @minLength 6
+   * @maxLength 50
+   */
   currentPassword: string;
   /**
-     * @minLength 6
-     * @maxLength 50
-     */
+   * @minLength 6
+   * @maxLength 50
+   */
   confirmPassword: string;
 }

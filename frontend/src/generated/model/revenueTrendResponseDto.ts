@@ -13,4 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type DashboardControllerGetRevenueTrend200Item = { [key: string]: unknown };
+export interface RevenueTrendResponseDto {
+  month: string;
+  /** @minimum 0 */
+  total: number;
+}

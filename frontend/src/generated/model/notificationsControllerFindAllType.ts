@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type NotificationsControllerFindAllType = typeof NotificationsControllerFindAllType[keyof typeof NotificationsControllerFindAllType];
-
+export type NotificationsControllerFindAllType =
+  (typeof NotificationsControllerFindAllType)[keyof typeof NotificationsControllerFindAllType];
 
 export const NotificationsControllerFindAllType = {
   BILL_GENERATED: 'BILL_GENERATED',

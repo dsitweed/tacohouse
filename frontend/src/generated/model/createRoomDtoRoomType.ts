@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CreateRoomDtoRoomType = typeof CreateRoomDtoRoomType[keyof typeof CreateRoomDtoRoomType];
-
+export type CreateRoomDtoRoomType =
+  (typeof CreateRoomDtoRoomType)[keyof typeof CreateRoomDtoRoomType];
 
 export const CreateRoomDtoRoomType = {
   FULL_RIGHTS: 'FULL_RIGHTS',

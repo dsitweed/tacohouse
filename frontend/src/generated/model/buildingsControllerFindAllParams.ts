@@ -14,14 +14,14 @@
  */
 
 export type BuildingsControllerFindAllParams = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- */
-limit?: number;
-landlordId?: string;
-search?: string;
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+  landlordId?: string;
+  search?: string;
 };

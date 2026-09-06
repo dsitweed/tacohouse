@@ -13,8 +13,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RoomStatus = typeof RoomStatus[keyof typeof RoomStatus];
-
+export type RoomStatus = (typeof RoomStatus)[keyof typeof RoomStatus];
 
 export const RoomStatus = {
   AVAILABLE: 'AVAILABLE',

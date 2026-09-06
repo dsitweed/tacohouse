@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type EquipmentCondition = typeof EquipmentCondition[keyof typeof EquipmentCondition];
-
+export type EquipmentCondition =
+  (typeof EquipmentCondition)[keyof typeof EquipmentCondition];
 
 export const EquipmentCondition = {
   EXCELLENT: 'EXCELLENT',

@@ -16,8 +16,7 @@
 /**
  * Mục đích upload. Quyết định thư mục lưu trữ, quyền truy cập, giới hạn dung lượng và định dạng file cho phép.
  */
-export type UploadPurpose = typeof UploadPurpose[keyof typeof UploadPurpose];
-
+export type UploadPurpose = (typeof UploadPurpose)[keyof typeof UploadPurpose];
 
 export const UploadPurpose = {
   BUILDING_IMAGE: 'BUILDING_IMAGE',

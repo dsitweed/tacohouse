@@ -12,11 +12,10 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { Object } from './object';
 
 export type DashboardControllerGetRevenueTrendParams = {
-/**
- * @minimum 1
- */
-months?: Object;
+  /**
+   * @minimum 1
+   */
+  months?: number;
 };

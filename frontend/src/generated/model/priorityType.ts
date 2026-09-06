@@ -13,8 +13,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PriorityType = typeof PriorityType[keyof typeof PriorityType];
-
+export type PriorityType = (typeof PriorityType)[keyof typeof PriorityType];
 
 export const PriorityType = {
   LOW: 'LOW',

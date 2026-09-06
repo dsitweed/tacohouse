@@ -17,10 +17,10 @@ import type { UploadPurpose } from './uploadPurpose';
 
 export interface CreatePresignedUrlsDto {
   /**
-     * Danh sách file cần upload. Tối đa 10 file mỗi request.
-     * @minItems 1
-     * @maxItems 10
-     */
+   * Danh sách file cần upload. Tối đa 10 file mỗi request.
+   * @minItems 1
+   * @maxItems 10
+   */
   files: FileInfoDto[];
   /** ID của resource mà file thuộc về (roomId, buildingId, userId, paymentId...). Dùng để kiểm tra quyền và tạo đường dẫn lưu trữ. */
   resourceId: string;

@@ -719,9 +719,9 @@ const AdminLandlordDashboard = () => {
             <CardContent>
               {stats.expiringRentals.slice(0, 3).map((rental) => {
                 const endDate = new Date(rental.endDate!);
-                const tenantName = rental.tenant?.user?.profile
-                  ? `${rental.tenant.user.profile.lastName} ${rental.tenant.user.profile.firstName}`
-                  : (rental.tenant?.user?.email ?? 'Người thuê');
+                const tenantName = rental.tenant?.profile
+                  ? `${rental.tenant.profile.lastName} ${rental.tenant.profile.firstName}`
+                  : (rental.tenant?.email ?? 'Người thuê');
 
                 return (
                   <div

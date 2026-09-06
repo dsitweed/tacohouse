@@ -14,14 +14,14 @@
  */
 
 export type RoomsControllerFindAllParams = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- */
-limit?: number;
-landlordId?: string;
-buildingId?: string;
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+  landlordId?: string;
+  buildingId?: string;
 };

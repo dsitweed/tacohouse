@@ -25,7 +25,16 @@ export class RevenueTrendQueryDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-  months = 6;
+  months: number = 6;
+}
+
+export class RevenueTrendResponseDto {
+  @IsString()
+  month: string;
+
+  @IsNumber()
+  @Min(0)
+  total: number;
 }
 
 export class GetTenantDashboardQueryDto {
@@ -33,37 +42,37 @@ export class GetTenantDashboardQueryDto {
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  billsLimit = 12;
+  billsLimit: number = 12;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  billsPage = 1;
+  billsPage: number = 1;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  paymentsLimit = 10;
+  paymentsLimit: number = 10;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  paymentsPage = 1;
+  paymentsPage: number = 1;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  maintenanceLimit = 10;
+  maintenanceLimit: number = 10;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  maintenancePage = 1;
+  maintenancePage: number = 1;
 
   @IsOptional()
   @IsDateString()

@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UpdateRentalDtoStatus = typeof UpdateRentalDtoStatus[keyof typeof UpdateRentalDtoStatus];
-
+export type UpdateRentalDtoStatus =
+  (typeof UpdateRentalDtoStatus)[keyof typeof UpdateRentalDtoStatus];
 
 export const UpdateRentalDtoStatus = {
   ACTIVE: 'ACTIVE',

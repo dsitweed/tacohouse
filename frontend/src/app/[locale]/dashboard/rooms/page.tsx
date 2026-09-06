@@ -399,11 +399,13 @@ export default function RoomsPage() {
                 {filteredRooms.map((room) => (
                   <TableRow key={room.id}>
                     <TableCell className="pl-4">
-                      <p className="font-bold">{room.number}</p>
-                      <div className="text-xs text-gray-500">
-                        <p>{room.buildingName}</p>
-                        <p>{room.details}</p>
-                      </div>
+                      <Link href={`/dashboard/rooms/${room.id}`}>
+                        <p className="font-bold">{room.number}</p>
+                        <div className="text-xs text-gray-500">
+                          <p>{room.buildingName}</p>
+                          <p>{room.details}</p>
+                        </div>
+                      </Link>
                     </TableCell>
                     <TableCell>{room.floor}</TableCell>
                     <TableCell>{room.buildingName}</TableCell>

@@ -15,9 +15,9 @@
 import type { BillsControllerFindAllStatus } from './billsControllerFindAllStatus';
 
 export type BillsControllerFindAllParams = {
-page?: number;
-limit?: number;
-roomId?: string;
-rentalId?: string;
-status?: BillsControllerFindAllStatus;
+  page?: number;
+  limit?: number;
+  roomId?: string;
+  rentalId?: string;
+  status?: BillsControllerFindAllStatus;
 };

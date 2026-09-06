@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type BillsControllerFindAllStatus = typeof BillsControllerFindAllStatus[keyof typeof BillsControllerFindAllStatus];
-
+export type BillsControllerFindAllStatus =
+  (typeof BillsControllerFindAllStatus)[keyof typeof BillsControllerFindAllStatus];
 
 export const BillsControllerFindAllStatus = {
   PENDING: 'PENDING',

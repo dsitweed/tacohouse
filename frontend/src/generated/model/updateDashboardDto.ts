@@ -13,4 +13,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateDashboardDto { [key: string]: unknown }
+export interface UpdateDashboardDto {
+  [key: string]: unknown;
+}

@@ -15,7 +15,7 @@
 import type { UploadsControllerDeleteObjectPurpose } from './uploadsControllerDeleteObjectPurpose';
 
 export type UploadsControllerDeleteObjectParams = {
-key: string;
-purpose: UploadsControllerDeleteObjectPurpose;
-resourceId: string;
+  key: string;
+  purpose: UploadsControllerDeleteObjectPurpose;
+  resourceId: string;
 };

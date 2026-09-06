@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
-
+export type NotificationType =
+  (typeof NotificationType)[keyof typeof NotificationType];
 
 export const NotificationType = {
   BILL_GENERATED: 'BILL_GENERATED',

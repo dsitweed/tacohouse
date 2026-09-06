@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CreateNotificationDtoType = typeof CreateNotificationDtoType[keyof typeof CreateNotificationDtoType];
-
+export type CreateNotificationDtoType =
+  (typeof CreateNotificationDtoType)[keyof typeof CreateNotificationDtoType];
 
 export const CreateNotificationDtoType = {
   BILL_GENERATED: 'BILL_GENERATED',

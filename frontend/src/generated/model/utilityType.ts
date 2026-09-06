@@ -13,8 +13,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UtilityType = typeof UtilityType[keyof typeof UtilityType];
-
+export type UtilityType = (typeof UtilityType)[keyof typeof UtilityType];
 
 export const UtilityType = {
   ELECTRICITY: 'ELECTRICITY',

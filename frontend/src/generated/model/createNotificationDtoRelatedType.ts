@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CreateNotificationDtoRelatedType = typeof CreateNotificationDtoRelatedType[keyof typeof CreateNotificationDtoRelatedType];
-
+export type CreateNotificationDtoRelatedType =
+  (typeof CreateNotificationDtoRelatedType)[keyof typeof CreateNotificationDtoRelatedType];
 
 export const CreateNotificationDtoRelatedType = {
   BILL: 'BILL',

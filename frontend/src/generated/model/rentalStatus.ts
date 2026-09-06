@@ -13,8 +13,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RentalStatus = typeof RentalStatus[keyof typeof RentalStatus];
-
+export type RentalStatus = (typeof RentalStatus)[keyof typeof RentalStatus];
 
 export const RentalStatus = {
   ACTIVE: 'ACTIVE',

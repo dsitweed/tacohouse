@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UploadsControllerDeleteObjectsByPrefixPurpose = typeof UploadsControllerDeleteObjectsByPrefixPurpose[keyof typeof UploadsControllerDeleteObjectsByPrefixPurpose];
-
+export type UploadsControllerDeleteObjectsByPrefixPurpose =
+  (typeof UploadsControllerDeleteObjectsByPrefixPurpose)[keyof typeof UploadsControllerDeleteObjectsByPrefixPurpose];
 
 export const UploadsControllerDeleteObjectsByPrefixPurpose = {
   BUILDING_IMAGE: 'BUILDING_IMAGE',

@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type MaintenanceControllerFindAllPriority = typeof MaintenanceControllerFindAllPriority[keyof typeof MaintenanceControllerFindAllPriority];
-
+export type MaintenanceControllerFindAllPriority =
+  (typeof MaintenanceControllerFindAllPriority)[keyof typeof MaintenanceControllerFindAllPriority];
 
 export const MaintenanceControllerFindAllPriority = {
   LOW: 'LOW',

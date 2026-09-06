@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UpdateBillDtoStatus = typeof UpdateBillDtoStatus[keyof typeof UpdateBillDtoStatus];
-
+export type UpdateBillDtoStatus =
+  (typeof UpdateBillDtoStatus)[keyof typeof UpdateBillDtoStatus];
 
 export const UpdateBillDtoStatus = {
   PENDING: 'PENDING',

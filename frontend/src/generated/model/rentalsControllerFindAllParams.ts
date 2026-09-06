@@ -15,9 +15,9 @@
 import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
 
 export type RentalsControllerFindAllParams = {
-page?: number;
-limit?: number;
-roomId?: string;
-tenantId?: string;
-status?: RentalsControllerFindAllStatus;
+  page?: number;
+  limit?: number;
+  roomId?: string;
+  tenantId?: string;
+  status?: RentalsControllerFindAllStatus;
 };

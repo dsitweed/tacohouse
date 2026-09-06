@@ -15,8 +15,8 @@
 import type { PaymentsControllerFindAllStatus } from './paymentsControllerFindAllStatus';
 
 export type PaymentsControllerFindAllParams = {
-page?: number;
-limit?: number;
-billId?: string;
-status?: PaymentsControllerFindAllStatus;
+  page?: number;
+  limit?: number;
+  billId?: string;
+  status?: PaymentsControllerFindAllStatus;
 };

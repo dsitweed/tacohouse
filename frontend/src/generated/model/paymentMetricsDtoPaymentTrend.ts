@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PaymentMetricsDtoPaymentTrend = typeof PaymentMetricsDtoPaymentTrend[keyof typeof PaymentMetricsDtoPaymentTrend];
-
+export type PaymentMetricsDtoPaymentTrend =
+  (typeof PaymentMetricsDtoPaymentTrend)[keyof typeof PaymentMetricsDtoPaymentTrend];
 
 export const PaymentMetricsDtoPaymentTrend = {
   EXCELLENT: 'EXCELLENT',

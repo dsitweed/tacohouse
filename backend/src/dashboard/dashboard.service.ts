@@ -21,15 +21,10 @@ import {
   DocumentsDto,
   GetTenantDashboardQueryDto,
   RevenueTrendQueryDto,
+  RevenueTrendResponseDto,
   TenantDashboardResponseDto,
   UpdateDashboardDto,
 } from './dashboard.dto';
-
-// TODO: replace RevenueTrendResponse to suitable file
-type RevenueTrendResponse = {
-  month: string;
-  total: number;
-};
 
 @Injectable()
 export class DashboardService {
@@ -38,7 +33,7 @@ export class DashboardService {
   async revenueTrend(
     userId: string,
     query: RevenueTrendQueryDto,
-  ): Promise<RevenueTrendResponse[]> {
+  ): Promise<RevenueTrendResponseDto[]> {
     const { months } = query;
     const now = new Date();
     const startDate = new Date(

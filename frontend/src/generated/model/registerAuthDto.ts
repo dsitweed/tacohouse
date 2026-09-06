@@ -17,10 +17,10 @@ import type { RegisterAuthDtoRole } from './registerAuthDtoRole';
 export interface RegisterAuthDto {
   email: string;
   /**
-     * @minLength 6
-     * @maxLength 50
-     * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
-     */
+   * @minLength 6
+   * @maxLength 50
+   * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
+   */
   password: string;
   role: RegisterAuthDtoRole;
   /** @maxLength 100 */

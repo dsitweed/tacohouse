@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RelatedEntityType = typeof RelatedEntityType[keyof typeof RelatedEntityType];
-
+export type RelatedEntityType =
+  (typeof RelatedEntityType)[keyof typeof RelatedEntityType];
 
 export const RelatedEntityType = {
   BILL: 'BILL',

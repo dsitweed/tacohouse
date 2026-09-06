@@ -12,6 +12,7 @@ import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CurrentUser, Roles } from 'common/decorators';
 import { type User, UserRole } from 'generated/prisma/client';
 
+import { RevenueTrendResponseDto } from './dashboard.dto';
 import {
   CreateDashboardDto,
   GetTenantDashboardQueryDto,
@@ -26,6 +27,11 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('revenue-trend')
+  @ApiResponse({
+    status: 200,
+    type: [RevenueTrendResponseDto],
+    description: 'Revenue trend data',
+  })
   getRevenueTrend(
     @CurrentUser() currentUser: User,
     @Query() query: RevenueTrendQueryDto,

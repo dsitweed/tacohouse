@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type MaintenanceCategory = typeof MaintenanceCategory[keyof typeof MaintenanceCategory];
-
+export type MaintenanceCategory =
+  (typeof MaintenanceCategory)[keyof typeof MaintenanceCategory];
 
 export const MaintenanceCategory = {
   PLUMBING: 'PLUMBING',

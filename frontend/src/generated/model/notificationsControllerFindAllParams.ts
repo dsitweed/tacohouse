@@ -15,8 +15,8 @@
 import type { NotificationsControllerFindAllType } from './notificationsControllerFindAllType';
 
 export type NotificationsControllerFindAllParams = {
-page?: number;
-limit?: number;
-isRead?: boolean;
-type?: NotificationsControllerFindAllType;
+  page?: number;
+  limit?: number;
+  isRead?: boolean;
+  type?: NotificationsControllerFindAllType;
 };

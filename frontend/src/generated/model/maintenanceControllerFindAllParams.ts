@@ -16,11 +16,11 @@ import type { MaintenanceControllerFindAllPriority } from './maintenanceControll
 import type { MaintenanceControllerFindAllStatus } from './maintenanceControllerFindAllStatus';
 
 export type MaintenanceControllerFindAllParams = {
-page?: number;
-limit?: number;
-tenantId?: string;
-roomId?: string;
-buildingId?: string;
-status?: MaintenanceControllerFindAllStatus;
-priority?: MaintenanceControllerFindAllPriority;
+  page?: number;
+  limit?: number;
+  tenantId?: string;
+  roomId?: string;
+  buildingId?: string;
+  status?: MaintenanceControllerFindAllStatus;
+  priority?: MaintenanceControllerFindAllPriority;
 };

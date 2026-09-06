@@ -15,7 +15,7 @@
 import type { UploadsControllerDeleteObjectsByPrefixPurpose } from './uploadsControllerDeleteObjectsByPrefixPurpose';
 
 export type UploadsControllerDeleteObjectsByPrefixParams = {
-prefix: string;
-purpose: UploadsControllerDeleteObjectsByPrefixPurpose;
-resourceId: string;
+  prefix: string;
+  purpose: UploadsControllerDeleteObjectsByPrefixPurpose;
+  resourceId: string;
 };

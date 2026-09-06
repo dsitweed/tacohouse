@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type MaintenanceControllerFindAllStatus = typeof MaintenanceControllerFindAllStatus[keyof typeof MaintenanceControllerFindAllStatus];
-
+export type MaintenanceControllerFindAllStatus =
+  (typeof MaintenanceControllerFindAllStatus)[keyof typeof MaintenanceControllerFindAllStatus];
 
 export const MaintenanceControllerFindAllStatus = {
   PENDING: 'PENDING',

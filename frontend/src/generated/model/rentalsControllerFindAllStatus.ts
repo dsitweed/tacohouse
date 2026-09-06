@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RentalsControllerFindAllStatus = typeof RentalsControllerFindAllStatus[keyof typeof RentalsControllerFindAllStatus];
-
+export type RentalsControllerFindAllStatus =
+  (typeof RentalsControllerFindAllStatus)[keyof typeof RentalsControllerFindAllStatus];
 
 export const RentalsControllerFindAllStatus = {
   ACTIVE: 'ACTIVE',

@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PaymentsControllerFindAllStatus = typeof PaymentsControllerFindAllStatus[keyof typeof PaymentsControllerFindAllStatus];
-
+export type PaymentsControllerFindAllStatus =
+  (typeof PaymentsControllerFindAllStatus)[keyof typeof PaymentsControllerFindAllStatus];
 
 export const PaymentsControllerFindAllStatus = {
   PENDING: 'PENDING',

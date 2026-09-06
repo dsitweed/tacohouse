@@ -13,8 +13,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CreateMaintenanceDtoPriority = typeof CreateMaintenanceDtoPriority[keyof typeof CreateMaintenanceDtoPriority];
-
+export type CreateMaintenanceDtoPriority =
+  (typeof CreateMaintenanceDtoPriority)[keyof typeof CreateMaintenanceDtoPriority];
 
 export const CreateMaintenanceDtoPriority = {
   LOW: 'LOW',
