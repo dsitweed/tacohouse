@@ -23,6 +23,8 @@ import { UserRole } from '@/generated/model';
 import { useAuthStore } from '@/stores/authStore';
 import { cn, getPathWithoutLocale } from '@/utils';
 
+import { BrandLogoCombined } from '../BrandKit';
+
 const NAV_GROUP = ['main', 'financial', 'system'] as const;
 type NavGroupType = (typeof NAV_GROUP)[number];
 
@@ -148,7 +150,7 @@ export default function Sidebar() {
           className={cn(
             'group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-100',
             isActive
-              ? 'bg-indigo-50 font-semibold text-indigo-600 shadow-2xs'
+              ? 'text-primary bg-indigo-50 font-semibold shadow-2xs'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
           )}
         >
@@ -161,22 +163,8 @@ export default function Sidebar() {
   return (
     <aside className="fixed top-0 left-0 z-40 h-screen w-64 border-r border-gray-200 bg-white">
       <div className="flex h-full flex-col p-4">
-        {/* Logo */}
-        {/* TODO: componentize this */}
-        <div className="mb-4 flex items-center p-2">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-600">
-              <Building2 className="size-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold tracking-tight text-indigo-600">
-                TacoHouse
-              </span>
-              <span className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                PREMIUM ASSETS
-              </span>
-            </div>
-          </Link>
+        <div>
+          <BrandLogoCombined className="mb-4" />
         </div>
 
         {/* Navigation */}

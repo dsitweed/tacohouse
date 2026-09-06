@@ -1,15 +1,11 @@
 'use client';
 
-import {
-  getHTMLTextDir,
-  getLocaleName,
-  getLocalizedUrl,
-  Locales,
-} from 'intlayer';
+import { getHTMLTextDir, getLocaleName, getLocalizedUrl } from 'intlayer';
+import { Languages } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale } from 'next-intlayer';
 
-import { Popover, PopoverContent, PopoverTrigger } from './ui';
+import { Button, Popover, PopoverContent, PopoverTrigger } from './ui';
 
 export default function LocaleSwitcher() {
   const { locale, pathWithoutLocale, availableLocales, setLocale } =
@@ -17,8 +13,13 @@ export default function LocaleSwitcher() {
 
   return (
     <Popover>
-      <PopoverTrigger>{getLocaleName(locale)}</PopoverTrigger>
-      <PopoverContent>
+      <PopoverTrigger asChild>
+        <Button variant="outline">
+          <Languages className="size-5" />
+          {getLocaleName(locale)}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="max-w-40">
         {availableLocales.map((localeItem) => (
           <Link
             href={getLocalizedUrl(pathWithoutLocale, localeItem)}
@@ -26,22 +27,18 @@ export default function LocaleSwitcher() {
             aria-current={locale === localeItem ? 'page' : undefined}
             onClick={() => setLocale(localeItem)}
           >
-            <span>
-              {/* Locale - e.g. FR */}
-              {localeItem}
-            </span>
-            <span>
-              {/* Language in its own Locale - e.g. Français */}
-              {getLocaleName(localeItem, locale)}
-            </span>
+            {/* Locale - e.g. FR */}
+            {/* <span>{localeItem}</span> */}
+            {/* Language in its own Locale - e.g. Français */}
+            {/* <span>{getLocaleName(localeItem, locale)}</span> */}
+            {/* Language in current Locale - e.g. Francés with current locale set to Locales.SPANISH */}
             <span dir={getHTMLTextDir(localeItem)} lang={localeItem}>
-              {/* Language in current Locale - e.g. Francés with current locale set to Locales.SPANISH */}
               {getLocaleName(localeItem)}
             </span>
-            <span dir="ltr" lang={Locales.ENGLISH}>
-              {/* Language in English - e.g. French */}
+            {/* Language in English - e.g. French */}
+            {/* <span dir="ltr" lang={Locales.ENGLISH}>
               {getLocaleName(localeItem, Locales.ENGLISH)}
-            </span>
+            </span> */}
           </Link>
         ))}
       </PopoverContent>

@@ -41,7 +41,7 @@ import { useBuildings } from '@/hooks/api/useBuildings';
 import { useAuthStore } from '@/stores/authStore';
 import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { UserRole } from '@/types';
-import { formatCurrency, typedEntries } from '@/utils';
+import { formatCurrency } from '@/utils';
 
 import CreateBuildingDialog from './CreateBuildingDialog';
 
@@ -155,15 +155,17 @@ export default function BuildingsPage() {
         <div>
           {/* TODO: Use Tabs components instead */}
           <ButtonGroup>
-            {typedEntries(BuildingTab).map(([tab, tabName]) => (
-              <Button
-                key={tab}
-                variant={activeTab === tab ? 'default' : 'outline'}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tabName}
-              </Button>
-            ))}
+            {Object.entries(BuildingTab).map(([tab, tabName]) => {
+              return (
+                <Button
+                  key={tab}
+                  variant={activeTab === tab ? 'default' : 'outline'}
+                  onClick={() => setActiveTab(tab as BuildingTabType)}
+                >
+                  {tabName}
+                </Button>
+              );
+            })}
             <Button variant="outline" disabled>
               <SlidersHorizontal className="size-3.5" />
               Bộ lọc

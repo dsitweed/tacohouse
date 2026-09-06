@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useLogout, useNotifications } from '@/hooks/api';
 import { useAuthStore } from '@/stores/authStore';
 
-import { Avatar, AvatarImage, Badge, Separator } from '../ui';
+import { Avatar, AvatarImage, Badge, Button, Separator } from '../ui';
 
 export function Header() {
   const { user } = useAuthStore();
@@ -81,13 +81,14 @@ export function Header() {
         </Avatar>
 
         {/* Logout Button */}
-        <button
+        <Button
+          variant="ghost"
           onClick={handleLogout}
           title="Đăng xuất"
-          className="flex size-9 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+          className="flex size-9 rounded-full text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
         >
           <LogOut className="size-4" />
-        </button>
+        </Button>
       </div>
     </header>
   );

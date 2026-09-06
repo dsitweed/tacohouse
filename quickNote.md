@@ -10,3 +10,4 @@ FE màn chính:
 - Phải có baged (yêu thích, đã xác thực, top đầu vv cho user và cho landlord, cho phòng để tăng uy tín)
 
 - Create tenants roots for BE
+- Chức năng copy và tạo phòng nhanh (building thì không cần vì building thì không lặp lại thường xuyên như room)
