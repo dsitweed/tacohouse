@@ -112,4 +112,40 @@ Based trên tài liệu dự án và code hiện tại, đây là những featur
 | Maintenance | 🟡 | ❌ | Needs UI |
 | Chat | 🟡 | ❌ | Needs work |
 
-Bạn muốn tôi **bắt đầu implement** feature nào trước? 🚀
+---
+
+## 🧠 AI Team cho solo founder TacoHouse
+| #      | Khâu / Vai trò                | Bạn cần AI làm gì?                    | AI duy nhất tôi chọn | Mức ưu tiên | TacoHouse dùng như thế nào?                                       |
+| ------ | ----------------------------- | ------------------------------------- | -------------------- | ----------- | ----------------------------------------------------------------- |
+| **1**  | 💡 Ý tưởng & Product Strategy | Brainstorm, định hình sản phẩm        | **ChatGPT**          | 🔥🔥🔥      | Phân tích vấn đề chủ trọ, tenant, feature, business model         |
+| **2**  | 🔎 Market Research            | Nghiên cứu thị trường, đối thủ        | **Perplexity**       | 🔥🔥🔥      | Tìm các app quản lý nhà trọ, đối thủ ở VN/Nhật, pricing, xu hướng |
+| **3**  | 🧑‍💼 Customer Discovery      | Chuẩn bị câu hỏi/phỏng vấn khách hàng | **ChatGPT**          | 🔥🔥🔥      | Tạo interview script để nói chuyện với chủ trọ                    |
+| **4**  | 📊 Phân tích feedback         | Phân tích hàng chục feedback          | **ChatGPT**          | 🔥🔥🔥      | Upload transcript → tìm pain point thực sự                        |
+| **5**  | 🎯 Product Strategy           | Xác định MVP / roadmap                | **ChatGPT**          | 🔥🔥🔥      | Quyết định cái gì build trước, cái gì bỏ                          |
+| **6**  | 🖌️ UI/UX                     | Từ ý tưởng → giao diện                | **Google Stitch**    | 🔥🔥🔥      | Generate dashboard, room detail, landlord profile, tenant UI      |
+| **7**  | 🎨 Design System              | Chuẩn hóa màu, spacing, component     | **Figma**            | 🔥🔥        | Biến concept Stitch thành design system thực                      |
+| **8**  | 💻 Frontend                   | Design → Next.js                      | **GitHub Copilot**   | 🔥🔥🔥      | Build Next.js/React/Tailwind/shadcn từ design                     |
+| **9**  | ⚙️ Backend                    | API, DB, business logic               | **GitHub Copilot**   | 🔥🔥🔥      | NestJS + Prisma/Postgres + API                                    |
+| **10** | 🧪 Testing                    | Unit/E2E/test case                    | **GitHub Copilot**   | 🔥🔥        | Generate test + fix lỗi                                           |
+| **11** | 🔐 Security / Code Review     | Tìm bug/security issue                | **GitHub Copilot**   | 🔥🔥        | Review PR, vulnerability, code quality                            |
+| **12** | 🚀 Deployment                 | CI/CD, infrastructure                 | **GitHub Copilot**   | 🔥🔥        | GitHub Actions, Docker, deployment config                         |
+| **13** | 📝 Landing Page               | Viết copy website                     | **ChatGPT**          | 🔥🔥🔥      | Hero, USP, pricing, CTA cho chủ trọ                               |
+| **14** | 🧠 Branding                   | Brand positioning / voice             | **ChatGPT**          | 🔥🔥        | TacoHouse nên nói chuyện thế nào với chủ trọ                      |
+| **15** | 🖼️ Marketing Visual          | Banner, social visual                 | **Canva AI**         | 🔥🔥        | Facebook post, banner, infographic                                |
+| **16** | 📹 Video Marketing            | Video quảng cáo/demo                  | **CapCut AI**        | 🔥🔥        | Video "Quản lý 50 phòng chỉ với..."                               |
+| **17** | 📱 Social Content             | Lên lịch/nội dung social              | **ChatGPT**          | 🔥🔥        | 30 ngày content Facebook/TikTok                                   |
+| **18** | 🧲 Lead Generation            | Tìm khách hàng tiềm năng              | **Clay**             | 🔥🔥🔥      | Tìm/thu thập danh sách chủ trọ, enrich data                       |
+| **19** | 💬 Sales Script               | Kịch bản gọi/nhắn chủ trọ             | **ChatGPT**          | 🔥🔥🔥      | Cold call, Messenger, Zalo, gặp trực tiếp                         |
+| **20** | 🤝 Sales                      | CRM + quản lý lead                    | **HubSpot**          | 🔥🔥🔥      | Lead → demo → trial → paid                                        |
+| **21** | 🎤 Sales Presentation         | Chuẩn bị nội dung pitching            | **ChatGPT**          | 🔥🔥🔥      | "Tại sao chủ trọ cần TacoHouse?"                                  |
+| **22** | 🖥️ Pitch Deck                | Từ nội dung → slide                   | **Gamma**            | 🔥🔥🔥      | Tạo deck demo/sales pitch                                         |
+| **23** | 🧑‍🏫 Demo Product            | Chuẩn bị demo flow                    | **ChatGPT**          | 🔥🔥🔥      | Kịch bản demo 5–10 phút                                           |
+| **24** | 📧 Email Marketing            | Email follow-up                       | **HubSpot**          | 🔥🔥        | Trial → reminder → conversion                                     |
+| **25** | 💬 Customer Support           | Trả lời khách hàng                    | **Intercom Fin**     | 🔥🔥        | FAQ, hướng dẫn sử dụng, support                                   |
+| **26** | 📈 Analytics                  | Hiểu hành vi người dùng               | **PostHog**          | 🔥🔥🔥      | Activation, retention, feature usage                              |
+| **27** | 💰 Financial Planning         | Pricing, revenue, burn rate           | **ChatGPT**          | 🔥🔥🔥      | Tính 100/500/1,000 chủ trọ → doanh thu                            |
+| **28** | 📋 Business Operations        | SOP, task, knowledge base             | **Notion AI**        | 🔥🔥        | Lưu toàn bộ business knowledge                                    |
+| **29** | ⚡ Automation                  | Tự động hóa workflow                  | **Zapier**           | 🔥🔥        | Lead → CRM → email → notification                                 |
+| **30** | 📑 Legal / Documents          | Draft hợp đồng, policy, ToS           | **ChatGPT**          | 🔥🔥        | Draft trước, sau đó lawyer kiểm tra                               |
+| **31** | 📊 KPI / Founder Dashboard    | Tổng hợp tình hình startup            | **Notion AI**        | 🔥🔥        | Weekly founder review                                             |
+| **32** | 🧭 Founder Assistant          | "CEO ảo"                              | **ChatGPT**          | 🔥🔥🔥      | Mỗi sáng: hôm nay phải làm gì để TacoHouse tiến lên?              |
