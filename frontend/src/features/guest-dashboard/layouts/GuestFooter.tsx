@@ -48,25 +48,27 @@ function GuestFooter() {
             </p>
           </div>
 
-          {columns.map((column) => (
-            <div key={column.title} className="lg:col-span-1">
-              <h4 className="text-sm font-bold text-slate-900">
-                {column.title}
-              </h4>
-              <ul className="mt-4 space-y-3 text-sm text-slate-600">
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="transition-colors hover:text-emerald-700"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="flex justify-between gap-2 lg:col-span-3">
+            {columns.map((column) => (
+              <div key={column.title}>
+                <h4 className="text-sm font-bold text-slate-900">
+                  {column.title}
+                </h4>
+                <ul className="mt-4 space-y-3 text-sm text-slate-600">
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="transition-colors hover:text-emerald-700"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Bar */}

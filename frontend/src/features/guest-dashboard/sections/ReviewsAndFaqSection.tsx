@@ -1,7 +1,8 @@
 import { ChevronDown, HelpCircle, Star } from 'lucide-react';
 import { useState } from 'react';
 
-import { Card } from '@/components/ui';
+import { Avatar, AvatarFallback, AvatarImage, Card } from '@/components/ui';
+import { Rating } from '@/components/ui/rating';
 
 const REVIEWS = [
   {
@@ -74,21 +75,20 @@ function ReviewsAndFaqSection() {
               key={i}
               className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs"
             >
-              <div className="flex gap-1 text-amber-400">
-                {[...Array(review.stars)].map((_, s) => (
-                  <Star key={s} className="h-4 w-4 fill-amber-400" />
-                ))}
-              </div>
+              <Rating
+                value={review.stars}
+                readOnly
+                size={17}
+                variant="yellow"
+              />
               <p className="mt-4 text-xs leading-relaxed text-slate-700 italic">
                 {review.content}
               </p>
               <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={review.avatar}
-                  alt={review.name}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
+                <Avatar size="lg">
+                  <AvatarImage src={review.avatar} alt={review.name} />
+                  <AvatarFallback>{review.name[0]}</AvatarFallback>
+                </Avatar>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900">
                     {review.name}

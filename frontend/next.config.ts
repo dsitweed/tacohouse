@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pub-99c2b55aa80e41ba9406bb8bf73aac87.r2.dev',
+        pathname: '/**',
+      },
     ],
   },
   reactCompiler: true,

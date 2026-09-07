@@ -9,8 +9,8 @@ function BenefitsSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="flex items-start gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
-              <CheckCircle2 className="h-6 w-6" />
+            <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
+              <CheckCircle2 className="size-6" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">
@@ -24,8 +24,8 @@ function BenefitsSection() {
           </div>
 
           <div className="flex items-start gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-              <ShieldCheck className="h-6 w-6" />
+            <div className="rounded-xl bg-emerald-100 p-3 text-emerald-600">
+              <ShieldCheck className="size-6" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">
@@ -39,8 +39,8 @@ function BenefitsSection() {
           </div>
 
           <div className="flex items-start gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
-              <Layers className="h-6 w-6" />
+            <div className="rounded-xl bg-amber-100 p-3 text-amber-600">
+              <Layers className="size-6" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">

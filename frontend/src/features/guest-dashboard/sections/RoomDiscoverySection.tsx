@@ -14,6 +14,7 @@ import {
   Wifi,
   Wind,
 } from 'lucide-react';
+import Image from 'next/image';
 
 import { Button, Card, CardContent, SkeletonPage } from '@/components/ui';
 import { useAvailableRooms } from '@/hooks/api/useRooms';
@@ -70,18 +71,21 @@ function RoomDiscoverySection() {
           {rooms.slice(0, 6).map((room, idx) => {
             const cardImage =
               room.images?.[0] ?? fallbackImages[idx % fallbackImages.length];
+            const imageUrl = cardImage.startsWith('http')
+              ? cardImage
+              : `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_DOMAIN}/${cardImage}`;
 
             return (
               <Card
                 key={room.id}
-                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50"
+                className="group p-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50"
               >
                 {/* Image / Header Preview */}
                 <div className="relative h-56 w-full overflow-hidden bg-slate-100">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={cardImage}
+                  <Image
+                    src={imageUrl}
                     alt={`Phòng ${room.number}`}
+                    fill
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/20" />

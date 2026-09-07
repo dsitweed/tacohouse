@@ -1,4 +1,5 @@
 import { ChevronRight, Link } from 'lucide-react';
+import Image from 'next/image';
 
 import { Card, CardContent } from '@/components/ui';
 
@@ -65,15 +66,12 @@ function RentalGuidesSection() {
 
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           {GUIDES.map((guide, i) => (
-            <Card
-              key={i}
-              className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition-all hover:shadow-lg"
-            >
+            <Card key={i} className="group p-0 transition-all hover:shadow-lg">
               <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={guide.image}
                   alt={guide.title}
+                  fill
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute top-3 left-3">

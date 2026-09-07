@@ -1,6 +1,13 @@
-import { CheckCircle2, ShieldCheck, Star } from 'lucide-react';
+import { BadgeCheck, CheckCircle2, ShieldCheck, Star } from 'lucide-react';
 
-import { Button, Card } from '@/components/ui';
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Card,
+} from '@/components/ui';
 
 const FEATURED_LANDLORDS = [
   {
@@ -79,15 +86,14 @@ function FeaturedLandlordsSection() {
             >
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={landlord.avatar}
-                    alt={landlord.name}
-                    className="h-16 w-16 rounded-full object-cover ring-2 ring-indigo-100"
-                  />
-                  <div className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xs">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </div>
+                  <Avatar className="size-20 ring-2 ring-indigo-100">
+                    <AvatarImage src={landlord.avatar} alt={landlord.name} />
+                    <AvatarFallback>{landlord.name.charAt(0)}</AvatarFallback>
+                    <span className="absolute -right-1.5 -bottom-1.5">
+                      <span className="sr-only">Verified</span>
+                      <BadgeCheck className="text-background size-7 fill-sky-500" />
+                    </span>
+                  </Avatar>
                 </div>
 
                 <div>
