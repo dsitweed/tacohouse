@@ -2,8 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { User } from 'generated/prisma/client';
 import { PrismaService } from 'core/prisma/prisma.service';
+import { User } from 'generated/prisma/client';
 
 import { LoginAuthDto, RegisterAuthDto } from './dto';
 import { JwtPayload } from './strategies';
@@ -111,6 +111,15 @@ export class AuthService {
     return null;
   }
 
+  async logout(userId: string, refreshTokenId?: string) {
+    if (refreshTokenId) {
+      await this.revokeSession(refreshTokenId);
+      return;
+    }
+
+    await this.prisma.session.deleteMany({ where: { userId } });
+  }
+
   async validateJwtUser(userId: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -121,7 +130,12 @@ export class AuthService {
     return user;
   }
 
+  private async revokeSession(refreshTokenId: string) {
+    await this.prisma.session.deleteMany({ where: { id: refreshTokenId } });
+  }
+
   private async getAuthTokens(payload: JwtPayload) {
+    const refreshTokenId = crypto.randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.config.get('JWT_SECRET'),
@@ -138,7 +152,7 @@ export class AuthService {
             'JWT_REFRESH_EXPIRES_IN',
             '7d',
           ) as JwtSignOptions['expiresIn'],
-          jwtid: crypto.randomUUID(), // JWT ID - unique identifier
+          jwtid: refreshTokenId, // JWT ID - unique identifier
         },
       ),
     ]);
@@ -146,6 +160,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+      refreshTokenId,
     };
   }
 }

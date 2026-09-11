@@ -1,8 +1,11 @@
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, Public } from 'core/common/decorators';
-import { JwtRefreshGuard, LocalAuthGuard } from 'core/common/guards';
+import {
+  JwtAuthGuard,
+  JwtRefreshGuard,
+  LocalAuthGuard,
+} from 'core/common/guards';
 import type { Response } from 'express';
 import type { User } from 'generated/prisma/client';
 
@@ -10,18 +13,15 @@ import { AuthService } from './auth.service';
 import { LoginAuthDto, RegisterAuthDto } from './dto';
 
 // TODO: Work with redis
-@Public()
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly config: ConfigService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   // TODO: Need update logic save and clear token
-  @UseGuards(LocalAuthGuard)
+  @Public()
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginAuthDto })
   @ApiResponse({ status: 200, description: 'Login successful' })
@@ -53,6 +53,7 @@ export class AuthController {
     return { user: returnUser };
   }
 
+  @Public()
   @Post('register')
   @ApiOperation({ summary: 'User registration' })
   @ApiResponse({ status: 201, description: 'Registration successful' })
@@ -62,8 +63,8 @@ export class AuthController {
   }
 
   // TODO: Need update logic save and clear refresh token
-  @UseGuards(JwtRefreshGuard)
   @Post('refresh')
+  @UseGuards(JwtRefreshGuard)
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
@@ -91,9 +92,15 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
-  logout(@Res({ passthrough: true }) res: Response) {
+  async logout(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.logout(user.id);
+
     // Clear auth cookies
     res.clearCookie('accessToken', {
       httpOnly: true,
