@@ -140,6 +140,7 @@ src/[feature]/
 - Delegate ALL business logic to services
 - Use pipes for validation (@Pipe decorators)
 - Example:
+
   ```typescript
   @Controller("rooms")
   export class RoomsController {
@@ -159,6 +160,7 @@ src/[feature]/
 - Use PrismaService for database operations
 - Never expose Prisma entities directly - transform DTOs if needed
 - Example:
+
   ```typescript
   @Injectable()
   export class RoomsService {
@@ -449,3 +451,11 @@ export class CreateBillDto {
   waterAmount?: number;
 }
 ```
+
+## Terminal Commands
+
+- Prefix terminal commands with `rtk` when running project commands, tests, builds, linting, formatting, package-manager commands, or git commands.
+- Prefer RTK wrappers such as `rtk pnpm`, `rtk jest`, `rtk tsc`, `rtk lint`, `rtk prettier`, and `rtk git` to keep command output concise.
+- In command chains, prefix each command with `rtk` (for example: `rtk git add . && rtk git diff --cached`).
+- Do not use `rtk` for interactive commands, long-running development servers, or commands that require unfiltered output unless needed for debugging.
+- Keep project-specific RTK output filters in `.rtk/filters.toml`.
