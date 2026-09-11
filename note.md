@@ -449,3 +449,7 @@ Nếu bạn muốn, tôi có thể viết tiếp phần **quan trọng nhất c�
 3️⃣ **Chiến lược đạt 10.000 rooms trong 12 tháng**
 
 Phần đó mới là **thứ quyết định startup sống hay chết**.
+
+# Hướng dẫn về SEO và Google My Business
+- (SEO Starter Guide) https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=vi
+- (Google My Business Guide) https://support.google.com/business/answer/3039617?hl=vi
