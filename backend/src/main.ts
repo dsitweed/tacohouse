@@ -6,11 +6,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { AppModule } from './app.module';
-import { PrismaClientExceptionFilter } from './common/filters';
+import { PrismaClientExceptionFilter } from './core/common/filters';
 import {
   LoggingInterceptor,
   TransformResponseInterceptor,
-} from './common/interceptors';
+} from './core/common/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

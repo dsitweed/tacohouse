@@ -1,4 +1,4 @@
-import { EnvConfig } from '../config/env.config';
+import { EnvConfig } from '../core/config/env.config';
 
 // Module augmentation to add type safety to ConfigService
 declare module '@nestjs/config' {
