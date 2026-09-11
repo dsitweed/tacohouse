@@ -3,13 +3,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { PrismaService } from 'core/prisma/prisma.service';
 import type { Room, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
-import { PrismaService } from 'core/prisma/prisma.service';
 import { R2StorageService } from 'infrastructure/storage/r2-storage.service';
+import {
+  UPLOAD_CONFIG,
+  UploadPurpose,
+} from 'infrastructure/uploads/upload.config';
 import { PaginationMeta } from 'types';
-import { UPLOAD_CONFIG, UploadPurpose } from 'uploads/upload.config';
 
 import { FindAllRoomsDto } from './dto';
 import { CreateRoomDto } from './dto/create-room.dto';

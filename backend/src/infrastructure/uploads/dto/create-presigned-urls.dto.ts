@@ -9,7 +9,8 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { UploadPurpose } from 'uploads/upload.config';
+
+import { UploadPurpose } from '../upload.config';
 
 class FileInfoDto {
   @ApiProperty({

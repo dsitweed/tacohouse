@@ -1,5 +1,6 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UploadPurpose } from 'uploads/upload.config';
+
+import { UploadPurpose } from '../upload.config';
 
 export class DeleteObjectsByPrefixDto {
   @IsNotEmpty()

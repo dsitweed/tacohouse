@@ -1,6 +1,6 @@
 import { PartialType, PickType } from '@nestjs/swagger';
-import { RegisterAuthDto, UserProfileDto } from 'auth/dto';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { RegisterAuthDto, UserProfileDto } from 'identify/auth/dto';
 
 export class UpdateUserProfileDto extends PartialType(UserProfileDto) {}
 

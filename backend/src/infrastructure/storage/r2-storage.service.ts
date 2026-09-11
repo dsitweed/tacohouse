@@ -9,7 +9,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PresignedUrl } from 'uploads/entities/presigned-url.entity';
+import { PresignedUrl } from 'infrastructure/uploads/entities/presigned-url.entity';
 
 @Injectable()
 export class R2StorageService {

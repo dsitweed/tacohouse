@@ -3,11 +3,12 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { User, UserRole } from 'generated/prisma/client';
-import { extname } from 'path';
 import { PrismaService } from 'core/prisma/prisma.service';
+import { randomUUID } from 'crypto';
+import { User } from 'generated/nestjs-dto';
+import { UserRole } from 'generated/prisma/enums';
 import { R2StorageService } from 'infrastructure/storage/r2-storage.service';
+import { extname } from 'path';
 
 import { CreatePresignedUrlsDto } from './dto/create-presigned-urls.dto';
 import { DeleteObjectDto } from './dto/delete-object.dto';

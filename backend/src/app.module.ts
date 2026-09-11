@@ -3,23 +3,18 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from 'app.controller';
 import { AppService } from 'app.service';
-import { AuthModule } from 'auth/auth.module';
-import { BillsModule } from 'bills/bills.module';
-import { BuildingsModule } from 'property/buildings/buildings.module';
-import { ChatModule } from 'chat/chat.module';
+import { CommunicationModule } from 'communication/communication.module';
 import { JwtAuthGuard, RolesGuard } from 'core/common/guards';
 import { validateEnv } from 'core/config';
-import { MaintenanceModule } from 'maintenance/maintenance.module';
-import { NotificationsModule } from 'notifications/notifications.module';
-import { PaymentsModule } from 'payments/payments.module';
-import { RentalsModule } from 'rentals/rentals.module';
-import { RoomsModule } from 'property/rooms/rooms.module';
-import { UsersModule } from 'identify/users/users.module';
+import { CoreModule } from 'core/core.module';
+import { FinanceModule } from 'finance/finance.module';
+import { IdentifyModule } from 'identify/indentify.module';
+import { InfrastructureModule } from 'infrastructure/infrastrucure.module';
+import { LeasingModule } from 'leasing/leasing.module';
+import { OperationsModule } from 'operations/operations.module';
+import { PropertyModule } from 'property/property.module';
 
-import { DashboardModule } from './analytics/dashboard/dashboard.module';
-import { PrismaModule } from './core/prisma/prisma.module';
-import { StorageModule } from './infrastructure/storage/storage.module';
-import { UploadsModule } from './uploads/uploads.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -27,20 +22,15 @@ import { UploadsModule } from './uploads/uploads.module';
       isGlobal: true,
       validate: validateEnv,
     }),
-    PrismaModule,
-    AuthModule,
-    UsersModule,
-    BuildingsModule,
-    RoomsModule,
-    RentalsModule,
-    BillsModule,
-    PaymentsModule,
-    MaintenanceModule,
-    ChatModule,
-    NotificationsModule,
-    DashboardModule,
-    UploadsModule,
-    StorageModule,
+    AnalyticsModule,
+    CommunicationModule,
+    CoreModule,
+    FinanceModule,
+    IdentifyModule,
+    InfrastructureModule,
+    LeasingModule,
+    OperationsModule,
+    PropertyModule,
   ],
   controllers: [AppController],
   providers: [
