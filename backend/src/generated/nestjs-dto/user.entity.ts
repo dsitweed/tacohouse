@@ -31,6 +31,12 @@ export class User {
   })
   isActive: boolean;
   @ApiProperty({
+    type: 'string',
+    format: 'date-time',
+    nullable: true,
+  })
+  emailVerifiedAt: Date | null;
+  @ApiProperty({
     type: () => UserProfile,
     required: false,
     nullable: true,

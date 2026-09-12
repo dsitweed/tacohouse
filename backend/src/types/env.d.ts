@@ -13,5 +13,6 @@ declare namespace NodeJS {
     CLOUDFLARE_R2_PRIVATE_BUCKET_NAME: string;
     CLOUDFLARE_R2_PUBLIC_BUCKET_NAME: string;
     CLOUDFLARE_R2_PUBLIC_DOMAIN: string;
+    AUTH_EXPOSE_DEV_TOKENS: string;
   }
 }

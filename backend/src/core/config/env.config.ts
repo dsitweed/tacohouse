@@ -17,6 +17,10 @@ const envSchema = z.object({
   CLOUDFLARE_R2_PRIVATE_BUCKET_NAME: z.string(),
   CLOUDFLARE_R2_PUBLIC_BUCKET_NAME: z.string(),
   CLOUDFLARE_R2_PUBLIC_DOMAIN: z.string(),
+  AUTH_EXPOSE_DEV_TOKENS: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
