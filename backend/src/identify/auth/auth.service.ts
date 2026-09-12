@@ -12,7 +12,7 @@ import { createHash } from 'crypto';
 import { User } from 'generated/prisma/client';
 import { ACTIVE_USER_WHERE } from 'identify/users/users.constants';
 
-import { LoginAuthDto, RegisterAuthDto } from './dto';
+import { LoginAuthDto, RegisterAuthDto, RequestEmailDto } from './dto';
 import { JwtPayload } from './strategies';
 import {
   VerificationIdentifier,
@@ -100,6 +100,33 @@ export class AuthService {
     );
 
     return { ...newUser, ...(developmentToken ?? {}) };
+  }
+
+  async requestEmailVerification(requestEmailDto: RequestEmailDto) {
+    const { email } = requestEmailDto;
+
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    const replyMessage =
+      'If the account exists, a verification email has been sent. Please check your inbox';
+
+    if (!user || user.emailVerifiedAt || !user.isActive || user.deletedAt) {
+      return {
+        message: replyMessage,
+      };
+    }
+
+    const verification = await this.createVerification(
+      VerificationIdentifier.create(VerificationIdentifierType.VERIFY, email),
+    );
+    const developmentToken = await this.emailService.sendVerificationEmail(
+      email,
+      verification.token,
+    );
+
+    return {
+      message: replyMessage,
+      ...(developmentToken ?? {}),
+    };
   }
 
   async refresh(user: User & { refreshTokenId?: string }) {

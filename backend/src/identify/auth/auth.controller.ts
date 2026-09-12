@@ -10,7 +10,7 @@ import type { Response } from 'express';
 import type { User } from 'generated/prisma/client';
 
 import { AuthService } from './auth.service';
-import { LoginAuthDto, RegisterAuthDto } from './dto';
+import { LoginAuthDto, RegisterAuthDto, RequestEmailDto } from './dto';
 
 // TODO: Work with redis
 @ApiTags('Auth')
@@ -60,6 +60,12 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Invalid input' })
   register(@Body() registerAuthDto: RegisterAuthDto) {
     return this.authService.register(registerAuthDto);
+  }
+
+  @Public()
+  @Post('verify-email/request')
+  requestEmailVerification(@Body() requestEmailDto: RequestEmailDto) {
+    return this.authService.requestEmailVerification(requestEmailDto);
   }
 
   @Post('refresh')
