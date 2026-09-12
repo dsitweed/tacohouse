@@ -12,7 +12,12 @@ import { createHash } from 'crypto';
 import { User } from 'generated/prisma/client';
 import { ACTIVE_USER_WHERE } from 'identify/users/users.constants';
 
-import { LoginAuthDto, RegisterAuthDto, RequestEmailDto } from './dto';
+import {
+  LoginAuthDto,
+  RegisterAuthDto,
+  RequestEmailDto,
+  VerifyEmailDto,
+} from './dto';
 import { JwtPayload } from './strategies';
 import {
   VerificationIdentifier,
@@ -127,6 +132,23 @@ export class AuthService {
       message: replyMessage,
       ...(developmentToken ?? {}),
     };
+  }
+
+  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
+    const { token } = verifyEmailDto;
+
+    const verification = await this.consumeVerificationToken(
+      token,
+      VerificationIdentifierType.VERIFY,
+    );
+    const { email } = VerificationIdentifier.parse(verification.identifier);
+
+    await this.prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+
+    return { message: 'Email verified successfully' };
   }
 
   async refresh(user: User & { refreshTokenId?: string }) {
@@ -254,6 +276,27 @@ export class AuthService {
     });
 
     return { token };
+  }
+
+  // TODO: Implement with Prisma TransactionClient to ensure just delete the verification when it has been successfully consumed
+  private async consumeVerificationToken(
+    token: string,
+    type: VerificationIdentifierType,
+  ) {
+    const verification = await this.prisma.verification.findFirst({
+      where: {
+        identifier: { startsWith: VerificationIdentifier.prefix(type) },
+        value: this.hashSessionToken(token),
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!verification) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+
+    await this.prisma.verification.delete({ where: { id: verification.id } });
+    return verification;
   }
 
   private async getAuthTokens(payload: JwtPayload) {

@@ -10,7 +10,12 @@ import type { Response } from 'express';
 import type { User } from 'generated/prisma/client';
 
 import { AuthService } from './auth.service';
-import { LoginAuthDto, RegisterAuthDto, RequestEmailDto } from './dto';
+import {
+  LoginAuthDto,
+  RegisterAuthDto,
+  RequestEmailDto,
+  VerifyEmailDto,
+} from './dto';
 
 // TODO: Work with redis
 @ApiTags('Auth')
@@ -66,6 +71,12 @@ export class AuthController {
   @Post('verify-email/request')
   requestEmailVerification(@Body() requestEmailDto: RequestEmailDto) {
     return this.authService.requestEmailVerification(requestEmailDto);
+  }
+
+  @Public()
+  @Post('verify-email')
+  verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+    return this.authService.verifyEmail(verifyEmailDto);
   }
 
   @Post('refresh')
