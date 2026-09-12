@@ -16,6 +16,7 @@ import {
   LoginAuthDto,
   RegisterAuthDto,
   RequestEmailDto,
+  ResetPasswordDto,
   VerifyEmailDto,
 } from './dto';
 import { JwtPayload } from './strategies';
@@ -173,6 +174,45 @@ export class AuthService {
     );
 
     return { message: replyMessage, ...(developmentToken ?? {}) };
+  }
+
+  async resetPassword({ token, password }: ResetPasswordDto) {
+    const verification = await this.consumeVerificationToken(
+      token,
+      VerificationIdentifierType.RESET,
+    );
+    const { email } = VerificationIdentifier.parse(verification.identifier);
+    const hashedPassword = await argon.hash(password);
+    const user = await this.prisma.user.findUnique({
+      where: { email, ...ACTIVE_USER_WHERE },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid password reset token');
+    }
+
+    const account = await this.prisma.account.findUnique({
+      where: {
+        providerId_accountId: {
+          providerId: 'credential',
+          accountId: user.id,
+        },
+      },
+    });
+
+    if (!account) {
+      throw new UnauthorizedException('Credential account not found');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.account.update({
+        where: { id: account.id },
+        data: { password: hashedPassword },
+      }),
+      this.prisma.session.deleteMany({ where: { userId: user.id } }),
+    ]);
+
+    return { message: 'Password reset successfully' };
   }
 
   async refresh(user: User & { refreshTokenId?: string }) {

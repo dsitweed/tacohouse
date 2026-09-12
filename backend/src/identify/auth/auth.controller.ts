@@ -14,6 +14,7 @@ import {
   LoginAuthDto,
   RegisterAuthDto,
   RequestEmailDto,
+  ResetPasswordDto,
   VerifyEmailDto,
 } from './dto';
 
@@ -83,6 +84,12 @@ export class AuthController {
   @Post('password/forgot')
   requestPasswordReset(@Body() requestEmailDto: RequestEmailDto) {
     return this.authService.requestPasswordReset(requestEmailDto);
+  }
+
+  @Public()
+  @Post('password/reset')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 
   @Post('refresh')
