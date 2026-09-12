@@ -79,6 +79,12 @@ export class AuthController {
     return this.authService.verifyEmail(verifyEmailDto);
   }
 
+  @Public()
+  @Post('password/forgot')
+  requestPasswordReset(@Body() requestEmailDto: RequestEmailDto) {
+    return this.authService.requestPasswordReset(requestEmailDto);
+  }
+
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
   @ApiOperation({ summary: 'Refresh access token' })

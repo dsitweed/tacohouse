@@ -151,6 +151,30 @@ export class AuthService {
     return { message: 'Email verified successfully' };
   }
 
+  async requestPasswordReset(requestEmailDto: RequestEmailDto) {
+    const { email } = requestEmailDto;
+
+    const replyMessage =
+      'If the account exists, a reset email was sent. Please check your inbox.';
+    const user = await this.prisma.user.findUnique({
+      where: { email, ...ACTIVE_USER_WHERE },
+    });
+
+    if (!user) {
+      return { message: replyMessage };
+    }
+
+    const verification = await this.createVerification(
+      VerificationIdentifier.create(VerificationIdentifierType.RESET, email),
+    );
+    const developmentToken = await this.emailService.sendPasswordResetEmail(
+      email,
+      verification.token,
+    );
+
+    return { message: replyMessage, ...(developmentToken ?? {}) };
+  }
+
   async refresh(user: User & { refreshTokenId?: string }) {
     const payload: JwtPayload = {
       sub: user.id,
