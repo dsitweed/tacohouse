@@ -18,7 +18,7 @@ module.exports = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^src/(.*)$': '<rootDir>/src/$1',
-    '^(auth|common|config|generated|prisma|users|types|storage|uploads)/(.*)$':
+    '^(analytics|communication|core|finance|generated|identify|infrastructure|leasing|operations|property)/(.*)$':
       '<rootDir>/src/$1/$2',
   },
 };
