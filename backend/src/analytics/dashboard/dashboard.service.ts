@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { PrismaService } from 'core/prisma/prisma.service';
 import {
   Bill,
   BillStatus,
@@ -14,7 +15,6 @@ import {
   UserRole,
 } from 'generated/prisma/client';
 import { BillWhereInput } from 'generated/prisma/models';
-import { PrismaService } from 'core/prisma/prisma.service';
 
 import {
   CreateDashboardDto,

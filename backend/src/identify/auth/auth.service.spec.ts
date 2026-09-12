@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as argon from 'argon2';
+import { PrismaService } from 'core/prisma/prisma.service';
 import { User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
-import { PrismaService } from 'core/prisma/prisma.service';
 import { UsersService } from 'identify/users/users.service';
 
 import { AuthService } from './auth.service';

@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { PrismaService } from 'core/prisma/prisma.service';
 import type { Notification, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
-import { PrismaService } from 'core/prisma/prisma.service';
 import { PaginationMeta } from 'types';
 
 import { CreateNotificationDto, FindAllNotificationsDto } from './dto';

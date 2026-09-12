@@ -4,10 +4,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { PrismaService } from 'core/prisma/prisma.service';
 import type { ChatGroup, Message, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
 import { MessageType, UserRole } from 'generated/prisma/enums';
-import { PrismaService } from 'core/prisma/prisma.service';
 import { PaginationMeta } from 'types';
 
 import { FindAllMessagesDto, SendMessageDto } from './dto';
