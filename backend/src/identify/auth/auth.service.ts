@@ -10,6 +10,7 @@ import { EmailService } from 'communication/email/email.service';
 import { PrismaService } from 'core/prisma/prisma.service';
 import { createHash } from 'crypto';
 import { User } from 'generated/prisma/client';
+import { TransactionClient } from 'generated/prisma/internal/prismaNamespace';
 import { ACTIVE_USER_WHERE } from 'identify/users/users.constants';
 
 import {
@@ -138,15 +139,18 @@ export class AuthService {
   async verifyEmail(verifyEmailDto: VerifyEmailDto) {
     const { token } = verifyEmailDto;
 
-    const verification = await this.consumeVerificationToken(
-      token,
-      VerificationIdentifierType.VERIFY,
-    );
-    const { email } = VerificationIdentifier.parse(verification.identifier);
+    await this.prisma.$transaction(async (transactionClient) => {
+      const verification = await this.consumeVerificationToken(
+        token,
+        VerificationIdentifierType.VERIFY,
+        transactionClient,
+      );
+      const { email } = VerificationIdentifier.parse(verification.identifier);
 
-    await this.prisma.user.update({
-      where: { email },
-      data: { emailVerifiedAt: new Date() },
+      await transactionClient.user.update({
+        where: { email },
+        data: { emailVerifiedAt: new Date() },
+      });
     });
 
     return { message: 'Email verified successfully' };
@@ -177,40 +181,47 @@ export class AuthService {
   }
 
   async resetPassword({ token, password }: ResetPasswordDto) {
-    const verification = await this.consumeVerificationToken(
-      token,
-      VerificationIdentifierType.RESET,
-    );
-    const { email } = VerificationIdentifier.parse(verification.identifier);
     const hashedPassword = await argon.hash(password);
-    const user = await this.prisma.user.findUnique({
-      where: { email, ...ACTIVE_USER_WHERE },
-    });
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid password reset token');
-    }
+    await this.prisma.$transaction(async (transactionClient) => {
+      const verification = await this.consumeVerificationToken(
+        token,
+        VerificationIdentifierType.RESET,
+        transactionClient,
+      );
 
-    const account = await this.prisma.account.findUnique({
-      where: {
-        providerId_accountId: {
-          providerId: 'credential',
-          accountId: user.id,
+      const { email } = VerificationIdentifier.parse(verification.identifier);
+
+      const user = await transactionClient.user.findUnique({
+        where: { email, ...ACTIVE_USER_WHERE },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid password reset token');
+      }
+
+      const account = await transactionClient.account.findUnique({
+        where: {
+          providerId_accountId: {
+            providerId: 'credential',
+            accountId: user.id,
+          },
         },
-      },
-    });
+      });
 
-    if (!account) {
-      throw new UnauthorizedException('Credential account not found');
-    }
+      if (!account) {
+        throw new UnauthorizedException('Credential account not found');
+      }
 
-    await this.prisma.$transaction([
-      this.prisma.account.update({
+      await transactionClient.account.update({
         where: { id: account.id },
         data: { password: hashedPassword },
-      }),
-      this.prisma.session.deleteMany({ where: { userId: user.id } }),
-    ]);
+      });
+
+      await transactionClient.account.deleteMany({
+        where: { userId: user.id },
+      });
+    });
 
     return { message: 'Password reset successfully' };
   }
@@ -342,12 +353,12 @@ export class AuthService {
     return { token };
   }
 
-  // TODO: Implement with Prisma TransactionClient to ensure just delete the verification when it has been successfully consumed
   private async consumeVerificationToken(
     token: string,
     type: VerificationIdentifierType,
+    prisma: TransactionClient,
   ) {
-    const verification = await this.prisma.verification.findFirst({
+    const verification = await prisma.verification.findFirst({
       where: {
         identifier: { startsWith: VerificationIdentifier.prefix(type) },
         value: this.hashSessionToken(token),
@@ -359,7 +370,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
-    await this.prisma.verification.delete({ where: { id: verification.id } });
+    await prisma.verification.delete({ where: { id: verification.id } });
     return verification;
   }
 

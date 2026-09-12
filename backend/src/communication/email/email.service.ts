@@ -5,10 +5,12 @@ import { ConfigService } from '@nestjs/config';
 export class EmailService {
   constructor(private readonly config: ConfigService) {}
 
+  // TODO: Move this logic to Auth module; EmailService should only handle email delivery.
   async sendVerificationEmail(email: string, token: string) {
     return this.getDevelopmentToken(email, token);
   }
 
+  // TODO: Move this logic to Auth module; EmailService should only handle email delivery.
   async sendPasswordResetEmail(email: string, token: string) {
     return this.getDevelopmentToken(email, token);
   }
