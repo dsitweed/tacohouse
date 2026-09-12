@@ -62,7 +62,6 @@ export class AuthController {
     return this.authService.register(registerAuthDto);
   }
 
-  // TODO: Need update logic save and clear refresh token
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
   @ApiOperation({ summary: 'Refresh access token' })
@@ -101,7 +100,6 @@ export class AuthController {
   ) {
     await this.authService.logout(user.id);
 
-    // Clear auth cookies
     res.clearCookie('accessToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

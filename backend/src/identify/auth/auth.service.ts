@@ -1,19 +1,36 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as argon from 'argon2';
+import { EmailService } from 'communication/email/email.service';
 import { PrismaService } from 'core/prisma/prisma.service';
+import { createHash } from 'crypto';
 import { User } from 'generated/prisma/client';
+import { ACTIVE_USER_WHERE } from 'identify/users/users.constants';
 
 import { LoginAuthDto, RegisterAuthDto } from './dto';
 import { JwtPayload } from './strategies';
+import {
+  VerificationIdentifier,
+  VerificationIdentifierType,
+} from './verification-identifier';
+
+export enum AUTH_TOKEN_TYPE {
+  ACCESS = 'access',
+  REFRESH = 'refresh',
+}
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async login(user: User) {
@@ -23,7 +40,10 @@ export class AuthService {
       role: user.role,
     };
 
-    const { accessToken, refreshToken } = await this.getAuthTokens(payload);
+    const { accessToken, refreshToken, refreshTokenId } =
+      await this.getAuthTokens(payload);
+
+    await this.createSession(user.id, refreshTokenId);
 
     return {
       accessToken,
@@ -67,17 +87,39 @@ export class AuthService {
       },
     });
 
-    return newUser;
+    const verification = await this.createVerification(
+      VerificationIdentifier.create(
+        VerificationIdentifierType.VERIFY,
+        newUser.email,
+      ),
+    );
+    // FIXME: Need to implement actual email sending logic for production environment
+    const developmentToken = await this.emailService.sendVerificationEmail(
+      newUser.email,
+      verification.token,
+    );
+
+    return { ...newUser, ...(developmentToken ?? {}) };
   }
 
-  async refresh(user: User) {
+  async refresh(user: User & { refreshTokenId?: string }) {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       role: user.role,
     };
 
-    return this.getAuthTokens(payload);
+    if (!user.refreshTokenId) {
+      throw new UnauthorizedException('Invalid refresh session');
+    }
+
+    await this.revokeSession(user.refreshTokenId);
+
+    const { accessToken, refreshToken, refreshTokenId } =
+      await this.getAuthTokens(payload);
+    await this.createSession(user.id, refreshTokenId);
+
+    return { accessToken, refreshToken };
   }
 
   async validateLocalUser({
@@ -124,14 +166,67 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
+        ...ACTIVE_USER_WHERE,
       },
     });
 
     return user;
   }
 
+  async validateRefreshSession(userId: string, refreshTokenId: string) {
+    const session = await this.prisma.session.findFirst({
+      where: {
+        id: refreshTokenId,
+        userId,
+        expiresAt: { gt: new Date() },
+        token: this.hashSessionToken(refreshTokenId),
+        user: {
+          ...ACTIVE_USER_WHERE,
+        },
+      },
+      include: { user: true },
+    });
+
+    return session?.user ? session.user : null;
+  }
+
+  private async createSession(userId: string, refreshTokenId: string) {
+    const expiresAt = new Date();
+    // session expires = refresh token expiration (7 days)
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await this.prisma.session.create({
+      data: {
+        id: refreshTokenId,
+        userId,
+        token: this.hashSessionToken(refreshTokenId),
+        expiresAt,
+      },
+    });
+  }
+
   private async revokeSession(refreshTokenId: string) {
     await this.prisma.session.deleteMany({ where: { id: refreshTokenId } });
+  }
+
+  private hashSessionToken(value: string) {
+    return createHash('sha256').update(value).digest('hex');
+  }
+
+  private async createVerification(identifier: string) {
+    const token = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
+
+    await this.prisma.verification.deleteMany({ where: { identifier } });
+    await this.prisma.verification.create({
+      data: {
+        identifier,
+        value: this.hashSessionToken(token),
+        expiresAt,
+      },
+    });
+
+    return { token };
   }
 
   private async getAuthTokens(payload: JwtPayload) {
@@ -145,7 +240,7 @@ export class AuthService {
         ) as JwtSignOptions['expiresIn'],
       }),
       this.jwtService.signAsync(
-        { ...payload, type: 'refresh' },
+        { ...payload, type: AUTH_TOKEN_TYPE.REFRESH },
         {
           secret: this.config.get('JWT_REFRESH_SECRET'),
           expiresIn: this.config.get(

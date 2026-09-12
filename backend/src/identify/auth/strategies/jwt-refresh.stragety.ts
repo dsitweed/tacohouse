@@ -4,14 +4,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { AuthService } from '../auth.service';
+import { AUTH_TOKEN_TYPE, AuthService } from '../auth.service';
 import { AuthCookies, JwtPayload } from './jwt.strategy';
 
 const extractRefreshTokenFromCookie = (request: Request): string | null => {
   const cookies = request.cookies as AuthCookies;
-  console.log({
-    request,
-  });
   return cookies?.refreshToken ?? null;
 };
 
@@ -34,13 +31,19 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: JwtPayload & { type: string }) {
-    const user = await this.authService.validateJwtUser(payload.sub);
+  async validate(payload: JwtPayload & { type: AUTH_TOKEN_TYPE; jti: string }) {
+    if (payload.type !== AUTH_TOKEN_TYPE.REFRESH) {
+      throw new UnauthorizedException();
+    }
+    const user = await this.authService.validateRefreshSession(
+      payload.sub,
+      payload.jti,
+    );
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    return user;
+    return { ...user, refreshTokenId: payload.jti };
   }
 }
