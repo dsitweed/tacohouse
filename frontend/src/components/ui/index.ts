@@ -19,6 +19,7 @@ export * from './input';
 export * from './input-group';
 export * from './label';
 export * from './map';
+export * from './pagination';
 export * from './place-autocomplete';
 export * from './popover';
 export * from './progress';

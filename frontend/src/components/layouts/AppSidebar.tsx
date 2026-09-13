@@ -36,7 +36,7 @@ import { UserRole } from '@/generated/model';
 import { useAuthStore } from '@/stores/authStore';
 import { getPathWithoutLocale } from '@/utils';
 
-import { BrandLogoCombined, BrandLogoIcon, BrandLogoText } from '../BrandKit';
+import { BrandLogoIcon, BrandLogoText } from '../BrandKit';
 
 type SidebarProps = {
   className?: string;
