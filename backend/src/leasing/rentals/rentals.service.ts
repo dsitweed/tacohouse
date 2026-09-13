@@ -95,7 +95,15 @@ export class RentalsService {
     data: Rental[];
     pagination: PaginationMeta;
   }> {
-    const { limit = 10, page = 1, roomId, tenantId, status } = query;
+    const {
+      limit = 10,
+      page = 1,
+      roomId,
+      tenantId,
+      status,
+      search,
+      expiringSoon,
+    } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.RentalWhereInput = {};
@@ -104,6 +112,52 @@ export class RentalsService {
     if (roomId) where.roomId = roomId;
     if (tenantId) where.tenantId = tenantId;
     if (status) where.status = status;
+    if (search?.trim()) {
+      const searchTerm = search.trim();
+      where.AND = [
+        {
+          OR: [
+            {
+              tenant: {
+                email: { contains: searchTerm, mode: 'insensitive' },
+              },
+            },
+            {
+              tenant: {
+                profile: {
+                  firstName: { contains: searchTerm, mode: 'insensitive' },
+                },
+              },
+            },
+            {
+              tenant: {
+                profile: {
+                  lastName: { contains: searchTerm, mode: 'insensitive' },
+                },
+              },
+            },
+            {
+              room: {
+                number: { contains: searchTerm, mode: 'insensitive' },
+              },
+            },
+            {
+              room: {
+                building: {
+                  name: { contains: searchTerm, mode: 'insensitive' },
+                },
+              },
+            },
+          ],
+        },
+      ];
+    }
+    if (expiringSoon) {
+      const now = new Date();
+      const expiryLimit = new Date(now);
+      expiryLimit.setDate(expiryLimit.getDate() + 30);
+      where.endDate = { gte: now, lte: expiryLimit };
+    }
 
     // Authorization logic
     if (currentUser.role === UserRole.ADMIN) {
