@@ -2,7 +2,7 @@ import { LocalesValues } from 'intlayer';
 import { IntlayerClientProvider } from 'next-intlayer';
 import { ReactNode } from 'react';
 
-import { Toaster } from '../ui';
+import { SidebarProvider, Toaster, TooltipProvider } from '../ui';
 import { QueryProvider } from './queryProvider';
 
 export const AppProvider = ({
@@ -15,8 +15,12 @@ export const AppProvider = ({
   return (
     <QueryProvider>
       <IntlayerClientProvider locale={locale}>
-        {children}
-        <Toaster />
+        <SidebarProvider>
+          <TooltipProvider>
+            {children}
+            <Toaster />
+          </TooltipProvider>
+        </SidebarProvider>
       </IntlayerClientProvider>
     </QueryProvider>
   );

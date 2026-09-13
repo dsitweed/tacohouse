@@ -6,9 +6,17 @@ import Link from 'next/link';
 import { useLogout, useNotifications } from '@/hooks/api';
 import { useAuthStore } from '@/stores/authStore';
 
-import { Avatar, AvatarImage, Badge, Button, Separator } from '../ui';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Badge,
+  Button,
+  Separator,
+  SidebarTrigger,
+} from '../ui';
 
-export function Header() {
+export default function AppHeader() {
   const { user } = useAuthStore();
   const logoutMutation = useLogout();
   const { data: notificationsData } = useNotifications({
@@ -28,16 +36,20 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200/80 bg-slate-50/90 px-6 backdrop-blur-md">
-      {/* Search Bar */}
-      {/* TODO: Fix and add logic for search bar */}
-      <div className="max-w-md flex-1">
-        <div className="relative">
-          <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Tìm kiếm nhà trọ, phòng, người thuê, hóa đơn..."
-            className="h-10 w-full rounded-xl border border-gray-200 bg-white pr-4 pl-10 text-sm text-gray-900 shadow-2xs transition-all placeholder:text-gray-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-          />
+      {/* Left controls */}
+      <div className="flex items-center gap-2">
+        <SidebarTrigger />
+        {/* Search Bar */}
+        {/* TODO: Fix and add logic for search bar */}
+        <div className="max-w-md flex-1">
+          <div className="relative">
+            <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Tìm kiếm nhà trọ, phòng, người thuê, hóa đơn..."
+              className="h-10 w-full rounded-xl border border-gray-200 bg-white pr-4 pl-10 text-sm text-gray-900 shadow-2xs transition-all placeholder:text-gray-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
+            />
+          </div>
         </div>
       </div>
 

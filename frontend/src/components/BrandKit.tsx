@@ -2,9 +2,9 @@ import { cn } from 'cn';
 import { Building2 } from 'lucide-react';
 import Link from 'next/link';
 
-function BrandLogoIcon() {
+function BrandLogoIcon({ className }: { className?: string }) {
   return (
-    <div className="bg-primary rounded-lg p-3">
+    <div className={cn('bg-primary rounded-lg p-3', className)}>
       <Building2 className="size-5 text-white" />
     </div>
   );
