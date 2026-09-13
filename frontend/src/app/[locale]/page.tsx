@@ -10,7 +10,7 @@ import {
   RentalGuidesSection,
   ReviewsAndFaqSection,
   RoomDiscoverySection,
-} from '@/features/guest-dashboard';
+} from '@/features/public-home';
 
 export default function HomePage() {
   return (

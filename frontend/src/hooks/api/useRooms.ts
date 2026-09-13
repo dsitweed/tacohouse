@@ -9,9 +9,9 @@ import {
   CreateRoomDto,
   Room,
   RoomsControllerFindAllParams,
+  UpdateRoomDto,
 } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type { UpdateRoomRequest } from '@/types';
 
 // Room API functions
 export const roomsApi = {
@@ -43,7 +43,7 @@ export const roomsApi = {
     return response.data;
   },
 
-  update: async (id: string, data: UpdateRoomRequest) => {
+  update: async (id: string, data: UpdateRoomDto) => {
     const response = await apiClient.patch<Room>(`/rooms/${id}`, data);
     return response.data;
   },
@@ -112,7 +112,7 @@ export function useUpdateRoom() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateRoomRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateRoomDto }) =>
       roomsApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(queryKeys.rooms.detail(variables.id), data);

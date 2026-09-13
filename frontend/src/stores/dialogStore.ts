@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
+import type { JsonValue } from '@/types';
+
 export enum DialogType {
   CREATE_BUILDING = 'CREATE_BUILDING',
   UPDATE_BUILDING = 'UPDATE_BUILDING',
@@ -12,11 +14,14 @@ export enum DialogType {
 
 interface DialogStore {
   isOpen: boolean;
-  data: Record<string, any> | null;
+  data: Record<string, JsonValue> | null;
   type: DialogType | null;
   isLoading: boolean;
 
-  openDialog: (type: DialogType, data?: Record<string, any> | null) => void;
+  openDialog: (
+    type: DialogType,
+    data?: Record<string, JsonValue> | null,
+  ) => void;
   closeDialog: () => void;
   setLoading: (loading: boolean) => void;
   resetDialog: () => void;

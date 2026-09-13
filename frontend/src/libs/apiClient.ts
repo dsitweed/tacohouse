@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 
 import { authLogout } from '@/stores/authStore';
-import { ApiError, ApiResponse } from '@/types';
+import { ApiError, ApiResponse, JsonRequestBody, JsonValue } from '@/types';
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
 
@@ -11,27 +11,27 @@ type UnwrappedApiClient = Omit<
   AxiosInstance,
   'get' | 'post' | 'put' | 'patch' | 'delete'
 > & {
-  <T = unknown>(config: AxiosRequestConfig): Promise<ApiResponse<T>>;
-  get<T = unknown>(
+  <T = JsonValue>(config: AxiosRequestConfig): Promise<ApiResponse<T>>;
+  get<T = JsonValue>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>>;
-  post<T = unknown>(
+  post<T = JsonValue>(
     url: string,
-    data?: unknown,
+    data?: JsonRequestBody,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>>;
-  put<T = unknown>(
+  put<T = JsonValue>(
     url: string,
-    data?: unknown,
+    data?: JsonRequestBody,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>>;
-  patch<T = unknown>(
+  patch<T = JsonValue>(
     url: string,
-    data?: unknown,
+    data?: JsonRequestBody,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>>;
-  delete<T = unknown>(
+  delete<T = JsonValue>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>>;
@@ -48,6 +48,7 @@ export const apiClient = axios.create({
 
 // Dedupe concurrent refresh calls
 let refreshPromise: Promise<void> | null = null;
+let logoutPromise: Promise<void> | null = null;
 
 const AUTH_ENDPOINTS = [
   '/auth/login',
@@ -55,6 +56,8 @@ const AUTH_ENDPOINTS = [
   '/auth/refresh',
   '/auth/logout',
 ];
+
+type ApiErrorInput = AxiosError<ApiError> | ApiError | Error | string;
 
 /**
  * Refresh access token using httpOnly cookie
@@ -67,6 +70,21 @@ async function refreshAccessToken(): Promise<void> {
     {},
     { withCredentials: true },
   );
+}
+
+async function clearSession() {
+  // TODO: Now just clear cookies through backend logout, need clear cookies on client side as well
+  logoutPromise ??= apiClient
+    .post('/auth/logout', {})
+    .then(() => undefined)
+    .catch(() => undefined)
+    .finally(() => {
+      logoutPromise = null;
+    });
+
+  await logoutPromise;
+  // Clear auth state and redirect to login
+  authLogout();
 }
 
 // Response interceptor to handle token refresh and unwrap response
@@ -110,8 +128,7 @@ apiClient.interceptors.response.use(
       return apiClient(originalRequest);
     } catch {
       // TODO: add more logic logout
-      // Clear auth state and redirect to login
-      authLogout();
+      clearSession();
       return Promise.reject(error);
     }
   },
@@ -120,7 +137,7 @@ apiClient.interceptors.response.use(
 /**
  * Handle API errors with toast notification
  */
-export function handleApiError(error: unknown): ApiError {
+export function handleApiError(error: ApiErrorInput): ApiError {
   const apiError = parseApiError(error);
 
   toast.error(apiError.message, {
@@ -133,7 +150,7 @@ export function handleApiError(error: unknown): ApiError {
 /**
  * Parse error into ApiError format (without showing toast)
  */
-export function parseApiError(error: unknown): ApiError {
+export function parseApiError(error: ApiErrorInput): ApiError {
   if (axios.isAxiosError(error)) {
     const responseError = error.response?.data as ApiError;
 

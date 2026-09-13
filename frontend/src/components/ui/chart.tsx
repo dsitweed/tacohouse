@@ -329,13 +329,9 @@ function ChartLegendContent({
 
 function getPayloadConfigFromPayload(
   config: ChartConfig,
-  payload: unknown,
+  payload: object,
   key: string,
 ) {
-  if (typeof payload !== 'object' || payload === null) {
-    return undefined;
-  }
-
   const payloadPayload =
     'payload' in payload &&
     typeof payload.payload === 'object' &&
@@ -345,22 +341,24 @@ function getPayloadConfigFromPayload(
 
   let configLabelKey: string = key;
 
-  if (
-    key in payload &&
-    typeof payload[key as keyof typeof payload] === 'string'
-  ) {
-    configLabelKey = payload[key as keyof typeof payload] as string;
-  } else if (
-    payloadPayload &&
-    key in payloadPayload &&
-    typeof payloadPayload[key as keyof typeof payloadPayload] === 'string'
-  ) {
-    configLabelKey = payloadPayload[
-      key as keyof typeof payloadPayload
-    ] as string;
+  const payloadLabel = getStringProperty(payload, key);
+  const nestedPayloadLabel = payloadPayload
+    ? getStringProperty(payloadPayload, key)
+    : undefined;
+
+  if (payloadLabel) {
+    configLabelKey = payloadLabel;
+  } else if (nestedPayloadLabel) {
+    configLabelKey = nestedPayloadLabel;
   }
 
   return configLabelKey in config ? config[configLabelKey] : config[key];
+}
+
+function getStringProperty(value: object, key: string): string | undefined {
+  const record = value as Record<string, string | undefined>;
+  const property = record[key];
+  return typeof property === 'string' ? property : undefined;
 }
 
 export {

@@ -5,27 +5,23 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
+import {
+  CreatePaymentDto,
+  Payment,
+  PaymentsControllerFindAllParams,
+} from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type { CreatePaymentRequest, Payment, PaymentListQuery } from '@/types';
-
-export type PaymentsListResult = { data: Payment[]; pagination?: unknown };
 
 // Payment API functions
 const paymentsApi = {
-  getAll: async (query?: PaymentListQuery) => {
-    const response = await apiClient.get<unknown>('/payments', {
+  getAll: async (query?: PaymentsControllerFindAllParams) => {
+    const response = await apiClient.get<Payment[]>('/payments', {
       params: query,
     });
     const result = response.data;
-
-    if (result && typeof result === 'object' && 'data' in result) {
-      return result as PaymentsListResult;
-    }
-
-    return {
-      data: Array.isArray(result) ? (result as Payment[]) : [],
-      pagination: undefined,
-    };
+    return Array.isArray(result)
+      ? { data: result, pagination: undefined }
+      : result;
   },
 
   getById: async (id: string) => {
@@ -33,15 +29,15 @@ const paymentsApi = {
     return response.data;
   },
 
-  create: async (data: CreatePaymentRequest) => {
+  create: async (data: CreatePaymentDto) => {
     const response = await apiClient.post<Payment>('/payments', data);
     return response.data;
   },
 };
 
 // Hooks
-export function usePayments(query?: PaymentListQuery) {
-  return useQuery<PaymentsListResult>({
+export function usePayments(query?: PaymentsControllerFindAllParams) {
+  return useQuery({
     queryKey: queryKeys.payments.list(query),
     queryFn: () => paymentsApi.getAll(query),
     staleTime: 2 * 60 * 1000, // 2 minutes

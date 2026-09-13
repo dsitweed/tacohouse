@@ -1,12 +1,12 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import type { ApiError, ApiResponse } from '@/types';
+import type { ApiError, ApiResponse, JsonRequestBody } from '@/types';
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_ORIGIN}${process.env.NEXT_PUBLIC_API_PREFIX}`;
 
 type RequestOptions = Omit<RequestInit, 'body'> & {
-  body?: unknown;
+  body?: JsonRequestBody;
   skipAuth?: boolean;
 };
 
@@ -90,14 +90,23 @@ export const serverApi = {
   get: <T>(endpoint: string, options?: RequestOptions) =>
     serverFetch<T>(endpoint, { ...options, method: 'GET' }),
 
-  post: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
-    serverFetch<T>(endpoint, { ...options, method: 'POST', body }),
+  post: <T>(
+    endpoint: string,
+    body?: JsonRequestBody,
+    options?: RequestOptions,
+  ) => serverFetch<T>(endpoint, { ...options, method: 'POST', body }),
 
-  put: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
-    serverFetch<T>(endpoint, { ...options, method: 'PUT', body }),
+  put: <T>(
+    endpoint: string,
+    body?: JsonRequestBody,
+    options?: RequestOptions,
+  ) => serverFetch<T>(endpoint, { ...options, method: 'PUT', body }),
 
-  patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
-    serverFetch<T>(endpoint, { ...options, method: 'PATCH', body }),
+  patch: <T>(
+    endpoint: string,
+    body?: JsonRequestBody,
+    options?: RequestOptions,
+  ) => serverFetch<T>(endpoint, { ...options, method: 'PATCH', body }),
 
   delete: <T>(endpoint: string, options?: RequestOptions) =>
     serverFetch<T>(endpoint, { ...options, method: 'DELETE' }),

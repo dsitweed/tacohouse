@@ -6,29 +6,19 @@ import {
 } from '@tanstack/react-query';
 
 import {
+  CreateMaintenanceDto,
   MaintenanceControllerFindAllParams,
   MaintenanceRequest,
+  UpdateMaintenanceDto,
 } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type {
-  CreateMaintenanceRequest,
-  MaintenanceListQuery,
-  UpdateMaintenanceRequest,
-} from '@/types';
 
 // Maintenance API functions
 const maintenanceApi = {
-  getAll: async (query?: MaintenanceListQuery) => {
-    const response = await apiClient.get<{
-      data: MaintenanceRequest[];
-      pagination?: any;
-    }>('/maintenance', { params: query });
-    const result = response.data;
-    // Handle paginated response
-    if (result && typeof result === 'object' && 'data' in result) {
-      return result as { data: MaintenanceRequest[]; pagination?: any };
-    }
-    return { data: Array.isArray(result) ? result : [], pagination: undefined };
+  getAll: async (query?: MaintenanceControllerFindAllParams) => {
+    return apiClient.get<MaintenanceRequest[]>('/maintenance', {
+      params: query,
+    });
   },
 
   getById: async (id: string) => {
@@ -38,7 +28,7 @@ const maintenanceApi = {
     return response.data;
   },
 
-  create: async (data: CreateMaintenanceRequest) => {
+  create: async (data: CreateMaintenanceDto) => {
     const response = await apiClient.post<MaintenanceRequest>(
       '/maintenance',
       data,
@@ -46,7 +36,7 @@ const maintenanceApi = {
     return response.data;
   },
 
-  update: async (id: string, data: UpdateMaintenanceRequest) => {
+  update: async (id: string, data: UpdateMaintenanceDto) => {
     const response = await apiClient.patch<MaintenanceRequest>(
       `/maintenance/${id}`,
       data,
@@ -111,13 +101,8 @@ export function useUpdateMaintenance() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: UpdateMaintenanceRequest;
-    }) => maintenanceApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateMaintenanceDto }) =>
+      maintenanceApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(
         queryKeys.maintenance.detail(variables.id),

@@ -68,6 +68,7 @@ import { renderToString } from 'react-dom/server';
 import {
   type CircleMarkerProps,
   type CircleProps,
+  type FeatureGroupProps,
   type LayerGroupProps,
   type MapContainerProps,
   type MarkerProps,
@@ -100,13 +101,13 @@ import {
 } from '@/components/ui/place-autocomplete';
 import { cn } from '@/utils';
 
-function createLazyComponent<T extends ComponentType<any>>(
-  factory: () => Promise<{ default: T }>,
+function createLazyComponent<Props extends object>(
+  factory: () => Promise<{ default: ComponentType<Props> }>,
   fallback: ReactNode = null,
 ) {
-  const LazyComponent = lazy(factory);
+  const LazyComponent = lazy(factory) as ComponentType<Props>;
 
-  return function LazyWrapper(props: React.ComponentProps<T>) {
+  return function LazyWrapper(props: Props) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -131,65 +132,68 @@ const LazyMapContainer = lazy(() =>
     default: mod.MapContainer,
   })),
 );
-const LeafletTileLayer = createLazyComponent(() =>
+const LeafletTileLayer = createLazyComponent<TileLayerProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.TileLayer,
   })),
 );
-const LeafletMarker = createLazyComponent(() =>
+const LeafletMarker = createLazyComponent<MarkerProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Marker,
   })),
 );
-const LeafletPopup = createLazyComponent(() =>
+const LeafletPopup = createLazyComponent<PopupProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Popup,
   })),
 );
-const LeafletTooltip = createLazyComponent(() =>
+const LeafletTooltip = createLazyComponent<TooltipProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Tooltip,
   })),
 );
-const LeafletCircle = createLazyComponent(() =>
+const LeafletCircle = createLazyComponent<CircleProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Circle,
   })),
 );
-const LeafletCircleMarker = createLazyComponent(() =>
+const LeafletCircleMarker = createLazyComponent<CircleMarkerProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.CircleMarker,
   })),
 );
-const LeafletPolyline = createLazyComponent(() =>
+const LeafletPolyline = createLazyComponent<PolylineProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Polyline,
   })),
 );
-const LeafletPolygon = createLazyComponent(() =>
+const LeafletPolygon = createLazyComponent<PolygonProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Polygon,
   })),
 );
-const LeafletRectangle = createLazyComponent(() =>
+const LeafletRectangle = createLazyComponent<RectangleProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.Rectangle,
   })),
 );
-const LeafletLayerGroup = createLazyComponent(() =>
+const LeafletLayerGroup = createLazyComponent<LayerGroupProps>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.LayerGroup,
   })),
 );
-const LeafletFeatureGroup = createLazyComponent(() =>
+const LeafletFeatureGroup = createLazyComponent<
+  FeatureGroupProps & React.RefAttributes<FeatureGroup>
+>(() =>
   import('react-leaflet').then((mod) => ({
     default: mod.FeatureGroup,
   })),
 );
-const LeafletMarkerClusterGroup = createLazyComponent(async () =>
-  import('react-leaflet-markercluster').then((mod) => ({
-    default: mod.default,
-  })),
+const LeafletMarkerClusterGroup = createLazyComponent<MarkerClusterGroupProps>(
+  async () =>
+    import('react-leaflet-markercluster').then((mod) => ({
+      default: mod.default,
+    })),
 );
 
 function Map({

@@ -7,15 +7,15 @@ import {
 
 import {
   Building,
+  BuildingsControllerFindAllParams,
   CreateBuildingDto,
   UpdateBuildingDto,
 } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type { BuildingListQuery } from '@/types';
 
 // Building API functions
 export const buildingsApi = {
-  getAll: async (query?: BuildingListQuery) => {
+  getAll: async (query?: BuildingsControllerFindAllParams) => {
     return apiClient.get<Building[]>('/buildings', {
       params: query,
     });
@@ -48,7 +48,7 @@ export const buildingsApi = {
 };
 
 // Hooks
-export function useBuildings(query?: BuildingListQuery) {
+export function useBuildings(query?: BuildingsControllerFindAllParams) {
   return useQuery({
     queryKey: queryKeys.buildings.list(query),
     queryFn: () => buildingsApi.getAll(query),

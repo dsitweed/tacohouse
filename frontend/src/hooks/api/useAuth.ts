@@ -1,19 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { RegisterAuthDto } from '@/generated/model';
+import {
+  LoginAuthDto,
+  RegisterAuthDto,
+  UpdateUserProfileDto,
+  User,
+} from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
 import { authLogout, useAuthStore } from '@/stores/authStore';
-import type {
-  ChangePasswordRequest,
-  LoginRequest,
-  LoginResponse,
-  UpdateUserProfileRequest,
-  User,
-} from '@/types';
+import { ChangePasswordRequest, LoginResponse } from '@/types';
 
 // Auth API functions
 const authApi = {
-  login: async (data: LoginRequest) => {
+  login: async (data: LoginAuthDto) => {
     const response = await apiClient.post<LoginResponse>('/auth/login', data);
     return response.data;
   },
@@ -32,7 +31,7 @@ const authApi = {
     return response.data;
   },
 
-  updateProfile: async (data: UpdateUserProfileRequest) => {
+  updateProfile: async (data: UpdateUserProfileDto) => {
     const response = await apiClient.patch<User>('/users/me', data);
     return response.data;
   },

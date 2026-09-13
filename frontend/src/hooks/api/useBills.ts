@@ -5,30 +5,19 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
-import { apiClient, handleApiError, queryKeys } from '@/libs';
-import type {
+import {
   Bill,
-  BillListQuery,
-  ConfirmPaymentRequest,
-  CreateBillRequest,
-  UpdateBillRequest,
-} from '@/types';
+  BillsControllerFindAllParams,
+  ConfirmPaymentDto,
+  CreateBillDto,
+  UpdateBillDto,
+} from '@/generated/model';
+import { apiClient, handleApiError, queryKeys } from '@/libs';
 
 // Bill API functions
 const billsApi = {
-  getAll: async (query?: BillListQuery) => {
-    const response = await apiClient.get<{
-      data: Bill[];
-      pagination?: any;
-    }>('/bills', {
-      params: query,
-    });
-    const result = response.data;
-    // Handle paginated response
-    if (result && typeof result === 'object' && 'data' in result) {
-      return result as { data: Bill[]; pagination?: any };
-    }
-    return { data: Array.isArray(result) ? result : [], pagination: undefined };
+  getAll: async (query?: BillsControllerFindAllParams) => {
+    return apiClient.get<Bill[]>('/bills', { params: query });
   },
 
   getById: async (id: string) => {
@@ -41,17 +30,17 @@ const billsApi = {
     return response.data;
   },
 
-  create: async (data: CreateBillRequest) => {
+  create: async (data: CreateBillDto) => {
     const response = await apiClient.post<Bill>('/bills', data);
     return response.data;
   },
 
-  update: async (id: string, data: UpdateBillRequest) => {
+  update: async (id: string, data: UpdateBillDto) => {
     const response = await apiClient.patch<Bill>(`/bills/${id}`, data);
     return response.data;
   },
 
-  confirmPayment: async (id: string, data: ConfirmPaymentRequest) => {
+  confirmPayment: async (id: string, data: ConfirmPaymentDto) => {
     const response = await apiClient.post<Bill>(`/bills/${id}/confirm`, data);
     return response.data;
   },
@@ -63,7 +52,7 @@ const billsApi = {
 };
 
 // Hooks
-export function useBills(query?: BillListQuery) {
+export function useBills(query?: BillsControllerFindAllParams) {
   return useQuery({
     queryKey: queryKeys.bills.list(query),
     queryFn: () => billsApi.getAll(query),
@@ -112,7 +101,7 @@ export function useUpdateBill() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateBillRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateBillDto }) =>
       billsApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(queryKeys.bills.detail(variables.id), data);
@@ -126,7 +115,7 @@ export function useConfirmBillPayment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ConfirmPaymentRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: ConfirmPaymentDto }) =>
       billsApi.confirmPayment(id, data),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(queryKeys.bills.detail(variables.id), data);

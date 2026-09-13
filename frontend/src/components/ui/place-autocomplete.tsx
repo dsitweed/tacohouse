@@ -181,8 +181,14 @@ function usePlaceSearch({
     hasSearched: boolean;
   };
 
+  type SearchAction =
+    | { type: 'CLEAR' }
+    | { type: 'START_FETCH' }
+    | { type: 'FETCH_SUCCESS'; payload: PlaceFeature[] }
+    | { type: 'FETCH_ERROR'; payload: Error };
+
   const [state, dispatch] = React.useReducer(
-    (state: SearchState, action: any): SearchState => {
+    (state: SearchState, action: SearchAction): SearchState => {
       switch (action.type) {
         case 'CLEAR':
           return {
