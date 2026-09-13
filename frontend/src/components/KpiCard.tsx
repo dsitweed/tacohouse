@@ -12,7 +12,9 @@ type KpiCardProps = {
   };
   iconClassName?: string;
   textClassName?: string;
+  labelClassName?: string;
   description?: React.ReactNode;
+  className?: string;
 };
 
 // TODO: update this component. Now using iconClassName and textClassName. But should use variant instead
@@ -24,13 +26,20 @@ export default function KpiCard({
   delta,
   iconClassName,
   textClassName,
+  labelClassName,
   description,
+  className,
 }: KpiCardProps) {
   return (
-    <Card>
+    <Card className={className}>
       <CardContent className="flex h-full flex-col justify-between">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
+          <p
+            className={cn(
+              'text-xs font-semibold tracking-wide text-gray-500 uppercase',
+              labelClassName,
+            )}
+          >
             {label}
           </p>
           <Icon className={cn('size-5 text-gray-400', iconClassName)} />
