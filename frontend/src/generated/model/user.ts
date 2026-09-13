@@ -30,6 +30,8 @@ export interface User {
   role: UserRole;
   isActive: boolean;
   /** @nullable */
+  emailVerifiedAt: string | null;
+  /** @nullable */
   profile?: UserProfile | null;
   sessions?: Session[];
   accounts?: Account[];

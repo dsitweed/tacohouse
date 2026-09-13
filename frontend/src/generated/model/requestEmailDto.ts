@@ -12,14 +12,7 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
 
-export type RentalsControllerFindAllParams = {
-  page?: number;
-  limit?: number;
-  roomId?: string;
-  tenantId?: string;
-  status?: RentalsControllerFindAllStatus;
-  search?: string;
-  expiringSoon?: boolean;
-};
+export interface RequestEmailDto {
+  email: string;
+}
