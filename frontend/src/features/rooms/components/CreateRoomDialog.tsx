@@ -23,7 +23,7 @@ import {
 import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { toApiDateString } from '@/utils';
 
-import { uploadImages } from './createRoom.utils';
+import { uploadImages } from '../rooms.utils';
 import RoomFormFields, {
   RoomFormFieldsType,
   roomSchema,

@@ -11,6 +11,7 @@ import {
   DialogContent,
   Spinner,
 } from '@/components/ui';
+import { uploadImages } from '@/features/rooms/rooms.utils';
 import {
   PresignedUrl,
   RoomStatus,
@@ -26,7 +27,6 @@ import {
 import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { toApiDateString } from '@/utils';
 
-import { uploadImages } from '../createRoom.utils';
 import RoomFormFields, {
   RoomFormFieldsType,
   roomSchema,

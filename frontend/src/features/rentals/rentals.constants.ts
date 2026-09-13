@@ -1,0 +1,1 @@
+export const DAYS_REMAINING_THRESHOLD = 30;
