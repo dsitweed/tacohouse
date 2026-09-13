@@ -334,6 +334,27 @@ pnpm orval
   - Output: `frontend/src/generated/model/`
   - Run after backend API changes
 
+## Codebase Discovery with codebase-memory
+
+Use `codebase-memory` for tasks that depend on the structure or relationships of the codebase, especially:
+
+- Understanding architecture, modules, and ownership boundaries
+- Finding callers and callees of a function, service, controller, hook, or component
+- Tracing request or data flow across modules and services
+- Assessing change impact, dependencies, high fan-out, or possible dead code
+- Finding symbols by name or relationship rather than searching literal text
+
+Follow this workflow:
+
+1. Check whether the repository is indexed with `list_projects` or `index_status` before structural exploration. Index it only when it is not indexed or when an immediate refresh is needed after a large external update.
+2. Use `get_architecture` or `get_graph_schema` for orientation when the task spans multiple modules.
+3. Use `search_graph` to find symbols, then `trace_path` for callers/callees and `get_code_snippet` to inspect the exact implementation.
+4. Use `detect_changes` to understand the impact of local edits. For cross-service or multi-hop questions, use `query_graph` with a bounded `LIMIT`.
+5. Call `check_index_coverage` for every path used as evidence. If coverage is partial, stale, skipped, excluded, pending, or unknown, verify the affected scope with source reads or `rg` before relying on the graph.
+6. Check `has_more` or `nextCursor` and paginate all relevant graph results before making exhaustive or negative claims.
+
+Use `rg` or `search_code` for literal text, comments, configuration, generated output, or when graph coverage is insufficient. Do not infer that a symbol is unused or absent from a partial graph result.
+
 ---
 
 ## Common Patterns & Examples
