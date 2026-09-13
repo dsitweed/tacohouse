@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from 'cn';
 import {
   BarChart3,
   Bell,
@@ -21,7 +22,7 @@ import { usePathname } from 'next/navigation';
 import { Avatar, AvatarImage, Separator } from '@/components/ui';
 import { UserRole } from '@/generated/model';
 import { useAuthStore } from '@/stores/authStore';
-import { cn, getPathWithoutLocale } from '@/utils';
+import { getPathWithoutLocale } from '@/utils';
 
 import { BrandLogoCombined } from '../BrandKit';
 

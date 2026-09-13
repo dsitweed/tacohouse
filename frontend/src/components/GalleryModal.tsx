@@ -1,9 +1,9 @@
+import { cn } from 'cn';
 import { Download, Share } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
 import { DialogType, useDialogStore } from '@/stores/dialogStore';
-import { cn } from '@/utils';
 
 import {
   Button,

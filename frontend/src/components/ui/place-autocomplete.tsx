@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from 'cn';
 import type { BBox, Feature, FeatureCollection, Point } from 'geojson';
 import { MapPinIcon, SearchIcon } from 'lucide-react';
 import * as React from 'react';
@@ -17,7 +18,6 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 import { Spinner } from '@/components/ui/spinner';
-import { cn } from '@/utils';
 
 interface PlaceFeatureProperties {
   osm_id: number;

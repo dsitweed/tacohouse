@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from 'cn';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
@@ -64,7 +65,7 @@ import {
 } from '@/hooks/api';
 import { useDashboardRevenueTrend } from '@/hooks/api/useDashboards';
 import { useAuthStore } from '@/stores/authStore';
-import { cn, formatCurrency } from '@/utils';
+import { formatCurrency } from '@/utils';
 
 const revenueChartConfig = {
   total: {

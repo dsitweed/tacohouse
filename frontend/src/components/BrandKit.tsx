@@ -1,7 +1,6 @@
+import { cn } from 'cn';
 import { Building2 } from 'lucide-react';
 import Link from 'next/link';
-
-import { cn } from '@/utils';
 
 function BrandLogoIcon() {
   return (

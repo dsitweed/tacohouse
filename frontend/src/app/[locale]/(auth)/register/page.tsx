@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { cn } from 'cn';
 import {
   ArrowRight,
   Building2,
@@ -47,7 +48,6 @@ import {
 } from '@/components/ui';
 import { RegisterAuthDto, UserRole } from '@/generated/model';
 import { useRegister } from '@/hooks/api/useAuth';
-import { cn } from '@/utils';
 import { toApiDateString } from '@/utils';
 
 const registerFormSchema = z

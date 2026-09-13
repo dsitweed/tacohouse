@@ -67,9 +67,7 @@ export function BillsPage() {
             <Card key={bill.id} className="transition-shadow hover:shadow-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">
-                    Hóa đơn #{bill.billNumber}
-                  </CardTitle>
+                  <CardTitle className="text-lg">Hóa đơn #{bill.id}</CardTitle>
                   <Badge variant={statusColors[bill.status]}>
                     {statusLabels[bill.status]}
                   </Badge>

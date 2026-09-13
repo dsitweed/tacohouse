@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from 'cn';
 import {
   AlertTriangle,
   Building,
@@ -47,7 +48,7 @@ import { PaymentStatus, RentalStatus, UserRole } from '@/generated/model';
 import { useRentals } from '@/hooks/api/useRentals';
 import { useAuthStore } from '@/stores/authStore';
 import { PAYMENT_STATUS_MAP, RENTAL_STATUS_MAP } from '@/types';
-import { cn, toDateOnlyString } from '@/utils';
+import { toDateOnlyString } from '@/utils';
 
 const RENTAL_STATUS_FILTER = [
   {

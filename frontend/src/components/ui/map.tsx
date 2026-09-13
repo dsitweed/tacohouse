@@ -6,6 +6,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet/dist/leaflet.css';
 
+import { cn } from 'cn';
 import type {
   Circle,
   CircleMarker,
@@ -99,7 +100,6 @@ import {
   PlaceAutocomplete,
   type PlaceAutocompleteProps,
 } from '@/components/ui/place-autocomplete';
-import { cn } from '@/utils';
 
 function createLazyComponent<Props extends object>(
   factory: () => Promise<{ default: ComponentType<Props> }>,
