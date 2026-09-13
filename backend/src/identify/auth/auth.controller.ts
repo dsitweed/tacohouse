@@ -6,7 +6,7 @@ import {
   JwtRefreshGuard,
   LocalAuthGuard,
 } from 'core/common/guards';
-import type { Response } from 'express';
+import type { CookieOptions, Response } from 'express';
 import type { User } from 'generated/prisma/client';
 
 import { AuthService } from './auth.service';
@@ -104,19 +104,7 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken } = await this.authService.refresh(user);
 
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
 
     return { message: 'Token refreshed successfully' };
   }
@@ -130,19 +118,34 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     await this.authService.logout(user.id);
-
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
-
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
+    clearAuthCookies(res);
 
     return { message: 'Logout successful' };
   }
+}
+
+const authCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+};
+
+function setAuthCookies(
+  res: Response,
+  accessToken: string,
+  refreshToken: string,
+) {
+  res.cookie('accessToken', accessToken, {
+    ...authCookieOptions,
+    maxAge: 15 * 60 * 1000,
+  });
+  res.cookie('refreshToken', refreshToken, {
+    ...authCookieOptions,
+    maxAge: 15 * 60 * 1000,
+  });
+}
+
+function clearAuthCookies(res: Response) {
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
 }

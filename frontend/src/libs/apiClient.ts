@@ -73,7 +73,6 @@ async function refreshAccessToken(): Promise<void> {
 }
 
 async function clearSession() {
-  // TODO: Now just clear cookies through backend logout, need clear cookies on client side as well
   logoutPromise ??= apiClient
     .post('/auth/logout', {})
     .then(() => undefined)
@@ -128,7 +127,7 @@ apiClient.interceptors.response.use(
       return apiClient(originalRequest);
     } catch {
       // TODO: add more logic logout
-      clearSession();
+      await clearSession();
       return Promise.reject(error);
     }
   },
