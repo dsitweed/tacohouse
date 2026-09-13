@@ -41,8 +41,9 @@ describe('AuthController', () => {
     refresh: jest.fn(),
   };
 
+  const mockCookie = jest.fn();
   const mockResponse = {
-    cookie: jest.fn(),
+    cookie: mockCookie,
     clearCookie: jest.fn(),
   } as unknown as Response;
 
@@ -148,6 +149,18 @@ describe('AuthController', () => {
 
       expect(mockAuthService.refresh).toHaveBeenCalledWith(mockUser);
       expect(result).toEqual({ message: 'Token refreshed successfully' });
+      expect(mockCookie).toHaveBeenNthCalledWith(
+        1,
+        'accessToken',
+        'new-access-token',
+        expect.objectContaining({ maxAge: 15 * 60 * 1000 }),
+      );
+      expect(mockCookie).toHaveBeenNthCalledWith(
+        2,
+        'refreshToken',
+        'new-refresh-token',
+        expect.objectContaining({ maxAge: 7 * 24 * 60 * 60 * 1000 }),
+      );
     });
   });
 });

@@ -9,6 +9,10 @@ import {
 import type { CookieOptions, Response } from 'express';
 import type { User } from 'generated/prisma/client';
 
+import {
+  ACCESS_TOKEN_COOKIE_MAX_AGE,
+  REFRESH_TOKEN_COOKIE_MAX_AGE,
+} from './auth.constants';
 import { AuthService } from './auth.service';
 import {
   LoginAuthDto,
@@ -42,19 +46,7 @@ export class AuthController {
       user: returnUser,
     } = await this.authService.login(user);
 
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000, // TODO: also have JWT_EXPIRES_IN in .env fix 2 defined
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
 
     return { user: returnUser };
   }
@@ -137,11 +129,11 @@ function setAuthCookies(
 ) {
   res.cookie('accessToken', accessToken, {
     ...authCookieOptions,
-    maxAge: 15 * 60 * 1000,
+    maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE,
   });
   res.cookie('refreshToken', refreshToken, {
     ...authCookieOptions,
-    maxAge: 15 * 60 * 1000,
+    maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
   });
 }
 
