@@ -24,6 +24,7 @@ function isExpiringSoon(endDate: string | null, now: number) {
   return daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 30;
 }
 
+// FIXME: fix stats logic, fix pagination logic
 export function RentalsPage() {
   const user = useAuthStore((state) => state.user);
   const [page, setPage] = useState(1);
