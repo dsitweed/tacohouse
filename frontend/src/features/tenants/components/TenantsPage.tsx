@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   Clock,
   Eye,
+  FileText,
+  History,
   Home,
   Mail,
   MessageSquare,
@@ -203,6 +205,41 @@ export function TenantsPage() {
 
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
+
+  const handleExportCsv = () => {
+    const headers = [
+      'Tên người thuê',
+      'Điện thoại',
+      'Email',
+      'Tòa nhà',
+      'Phòng',
+      'Hợp đồng',
+      'Thanh toán',
+    ];
+    const rows = tenants.map((tenant) => [
+      tenant.fullName,
+      tenant.phone,
+      tenant.email,
+      tenant.buildingName,
+      tenant.roomNumber,
+      RENTAL_STATUS_MAP[tenant.status].label,
+      PAYMENT_STATUS_MAP[tenant.paymentStatus].title,
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) =>
+        row.map((value) => `"${value.replaceAll('"', '""')}"`).join(','),
+      )
+      .join('\n');
+    const blob = new Blob([`\uFEFF${csv}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'tenants.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (!canView) {
     return (
@@ -497,6 +534,68 @@ export function TenantsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Action buttons for tenants page */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Button
+          type="button"
+          variant="outline"
+          asChild
+          className="group h-auto min-h-28 justify-start gap-4 rounded-xl border-slate-200 bg-white/80 p-6 text-left shadow-none backdrop-blur-sm hover:bg-white hover:shadow-md"
+        >
+          <Link href="/dashboard/chat">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 transition-transform group-hover:scale-110">
+              <Mail className="size-5" />
+            </span>
+            <span className="flex flex-col items-start gap-1">
+              <span className="text-sm font-semibold text-slate-900">
+                Bulk Message
+              </span>
+              <span className="text-sm font-normal text-slate-500">
+                Send updates to all tenants
+              </span>
+            </span>
+          </Link>
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleExportCsv}
+          className="group h-auto min-h-28 justify-start gap-4 rounded-xl border-slate-200 bg-white/80 p-6 text-left shadow-none backdrop-blur-sm hover:bg-white hover:shadow-md"
+        >
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition-transform group-hover:scale-110">
+            <FileText className="size-5" />
+          </span>
+          <span className="flex flex-col items-start gap-1">
+            <span className="text-sm font-semibold text-slate-900">
+              Export CSV
+            </span>
+            <span className="text-sm font-normal text-slate-500">
+              Generate tenant data report
+            </span>
+          </span>
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          asChild
+          className="group h-auto min-h-28 justify-start gap-4 rounded-xl border-slate-200 bg-white/80 p-6 text-left shadow-none backdrop-blur-sm hover:bg-white hover:shadow-md"
+        >
+          <Link href="/dashboard/notifications">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 transition-transform group-hover:scale-110">
+              <History className="size-5" />
+            </span>
+            <span className="flex flex-col items-start gap-1">
+              <span className="text-sm font-semibold text-slate-900">
+                Activity Log
+              </span>
+              <span className="text-sm font-normal text-slate-500">
+                View recent profile changes
+              </span>
+            </span>
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
