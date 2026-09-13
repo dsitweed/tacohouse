@@ -189,12 +189,12 @@ export default function AppSidebar({ className }: SidebarProps) {
   return (
     <Sidebar collapsible="icon" className={className}>
       <SidebarHeader className="justify-center border-b border-gray-200/80">
-        <div className="flex h-12 min-w-0 items-center gap-2">
+        <Link href="/" className="flex h-12 min-w-0 items-center gap-2">
           <BrandLogoIcon className="p-1.5" />
           <div className="group-data-[collapsible=icon]:hidden">
             <BrandLogoText />
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         {NAV_GROUP.map((nav, index) => {

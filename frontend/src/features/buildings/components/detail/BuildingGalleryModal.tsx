@@ -63,13 +63,13 @@ export default function BuildingGalleryCard({
             align: 'start',
           }}
           orientation="vertical"
-          className="w-full max-w-xs"
+          className="w-full max-w-xs 2xl:max-w-2xl"
         >
           <CarouselContent className="-mt-1 h-60">
             {GALLERY_IMAGES.map((imageUrl, index) => (
               <CarouselItem
                 key={index}
-                className="basis-1/2 pt-2"
+                className="basis-1/2 pt-2 2xl:basis-full"
                 onClick={() =>
                   openDialog(DialogType.SHOW_IMAGES_GALLERY, {
                     selectedImageIndex: index,

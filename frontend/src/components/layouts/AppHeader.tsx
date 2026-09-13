@@ -8,7 +8,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 import {
   Avatar,
-  AvatarFallback,
   AvatarImage,
   Badge,
   Button,
