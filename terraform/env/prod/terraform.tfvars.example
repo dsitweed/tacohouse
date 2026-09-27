@@ -1,7 +1,7 @@
-aws_region      = "ap-southeast-1"
+aws_region      = "ap-northeast-1"
 project_name    = "tacohouse"
 frontend_url    = "https://app.example.com"
-app_secrets_arn = "arn:aws:secretsmanager:ap-southeast-1:123456789012:secret:tacohouse/backend-EXAMPLE"
+app_secrets_arn = "arn:aws:secretsmanager:ap-northeast-1:264053230144:secret:tacohouse/backend-EXAMPLE"
 
 # Set an ACM certificate ARN to enable HTTPS and redirect HTTP to HTTPS.
-# certificate_arn = "arn:aws:acm:ap-southeast-1:123456789012:certificate/EXAMPLE"
+certificate_arn = "arn:aws:acm:ap-northeast-1:264053230144:certificate/5feef144-7b6a-4fed-8c81-63055f9ec7a2"

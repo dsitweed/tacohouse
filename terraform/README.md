@@ -37,7 +37,7 @@ Run Terraform commands from `terraform/env/prod` (or use `terraform -chdir=terra
 
    ```sh
    ECR_URL=$(terraform -chdir=terraform/env/prod output -raw ecr_repository_url)
-   AWS_REGION=ap-southeast-1
+   AWS_REGION=ap-northeast-1
    AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
    aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
    docker build -f backend/Dockerfile.prod -t "$ECR_URL:latest" backend
@@ -77,3 +77,10 @@ For later releases, run `pnpm prisma migrate deploy` as a one-off task before de
 - This starter stack uses one NAT-free public ECS service and one RDS instance. For higher availability, increase `desired_count`; for private ECS networking, add NAT Gateways or VPC endpoints for ECR, Secrets Manager, and CloudWatch Logs.
 - RDS deletion protection is enabled, storage is encrypted, and automated backups are retained for 7 days. Changing or deleting the database requires a deliberate Terraform change.
 - RDS credentials and Terraform-managed secrets are in state. Store state in a private encrypted backend, restrict access, and enable state locking.
+
+
+```
+aws login
+aws sts get-caller-identity      
+eval "$(aws configure export-credentials --format env)" && terraform -chdir=terraform/env/prod plan
+```
