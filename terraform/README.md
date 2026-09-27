@@ -40,8 +40,8 @@ Run Terraform commands from `terraform/env/prod` (or use `terraform -chdir=terra
    AWS_REGION=ap-northeast-1
    AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
    aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-   docker build -f backend/Dockerfile.prod -t "$ECR_URL:latest" backend
-   docker push "$ECR_URL:latest"
+   docker build -f backend/Dockerfile.prod -t "${ECR_URL}:latest" backend
+   docker push "${ECR_URL}:latest"
    ```
 
 4. Provision the remaining infrastructure and start the service:
@@ -75,7 +75,7 @@ For later releases, run `pnpm prisma migrate deploy` as a one-off task before de
 - The API is reachable at the `api_url` output from `terraform/env/prod`; endpoints are under `/api/v1`, with Swagger at `/api/docs`.
 - Without `certificate_arn`, the load balancer serves HTTP. Configure ACM before sending sensitive production traffic.
 - This starter stack uses one NAT-free public ECS service and one RDS instance. For higher availability, increase `desired_count`; for private ECS networking, add NAT Gateways or VPC endpoints for ECR, Secrets Manager, and CloudWatch Logs.
-- RDS deletion protection is enabled, storage is encrypted, and automated backups are retained for 7 days. Changing or deleting the database requires a deliberate Terraform change.
+- Cost-conscious defaults use RDS `db.t4g.micro` with 20 GiB storage, one-day backups, Fargate 0.25 vCPU/1 GiB, no Container Insights, 7-day log retention, and at most 3 ECR images. Free Tier eligibility depends on the AWS account plan, region, service offer, and usage; this stack is not guaranteed to be free. The ALB and Fargate can incur charges, and the ALB remains deployed even while the ECS desired count is zero. Check AWS Billing before leaving the stack running. Changing or deleting the database requires a deliberate Terraform change.
 - RDS credentials and Terraform-managed secrets are in state. Store state in a private encrypted backend, restrict access, and enable state locking.
 
 

@@ -25,7 +25,7 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids          = [var.security_group_id]
   publicly_accessible             = false
   storage_encrypted               = true
-  backup_retention_period         = 7
+  backup_retention_period         = var.backup_retention_days
   auto_minor_version_upgrade      = true
   deletion_protection             = true
   skip_final_snapshot             = false

@@ -23,6 +23,11 @@ variable "allocated_storage" {
   type        = number
 }
 
+variable "backup_retention_days" {
+  description = "Automated backup retention period in days."
+  type        = number
+}
+
 variable "tags" {
   description = "Tags applied to database resources."
   type        = map(string)

@@ -19,7 +19,7 @@ resource "aws_ecr_lifecycle_policy" "backend" {
       selection = {
         tagStatus   = "any"
         countType   = "imageCountMoreThan"
-        countNumber = 10
+        countNumber = 3
       }
       action = { type = "expire" }
     }]
@@ -99,7 +99,7 @@ resource "aws_lb_listener" "https" {
 
 resource "aws_cloudwatch_log_group" "backend" {
   name              = "/ecs/${var.project_name}-backend"
-  retention_in_days = 30
+  retention_in_days = 7
 
   tags = var.tags
 }
@@ -143,7 +143,7 @@ resource "aws_ecs_cluster" "main" {
 
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = "disabled"
   }
 
   tags = var.tags
