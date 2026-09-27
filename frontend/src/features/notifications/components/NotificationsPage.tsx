@@ -5,7 +5,6 @@ import { AlertCircle, Bell, CheckCircle, Info } from 'lucide-react';
 import { Badge, BadgeVariantType } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import type { NotificationsListResult } from '@/hooks/api/useNotifications';
 import { useNotifications } from '@/hooks/api/useNotifications';
 import { NotificationType } from '@/types';
 
@@ -42,7 +41,7 @@ export function NotificationsPage() {
     limit: 50,
   });
 
-  const list = data as NotificationsListResult | undefined;
+  const notifyList = data?.data ?? [];
 
   return (
     <div className="space-y-6">
@@ -66,9 +65,9 @@ export function NotificationsPage() {
             Đang tải...
           </CardContent>
         </Card>
-      ) : list?.data && list.data.length > 0 ? (
+      ) : notifyList.length > 0 ? (
         <div className="space-y-3">
-          {list.data.map((notification) => {
+          {notifyList.map((notification) => {
             const Icon = typeIcons[notification.type];
             return (
               <Card
