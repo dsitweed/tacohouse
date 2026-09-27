@@ -20,12 +20,13 @@ module "network" {
 module "database" {
   source = "../../modules/database"
 
-  project_name       = var.project_name
-  private_subnet_ids = module.network.private_subnet_ids
-  security_group_id  = module.network.database_security_group_id
-  instance_class     = var.db_instance_class
-  allocated_storage  = var.db_allocated_storage
-  tags               = local.tags
+  project_name          = var.project_name
+  private_subnet_ids    = module.network.private_subnet_ids
+  security_group_id     = module.network.database_security_group_id
+  instance_class        = var.db_instance_class
+  allocated_storage     = var.db_allocated_storage
+  backup_retention_days = var.db_backup_retention_days
+  tags                  = local.tags
 }
 
 module "backend" {

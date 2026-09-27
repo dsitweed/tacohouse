@@ -45,10 +45,16 @@ variable "db_allocated_storage" {
   default     = 20
 }
 
+variable "db_backup_retention_days" {
+  description = "RDS automated backup retention in days. Free Tier accounts may be limited to 1 day."
+  type        = number
+  default     = 1
+}
+
 variable "task_cpu" {
   description = "Fargate task CPU units."
   type        = number
-  default     = 512
+  default     = 256
 }
 
 variable "task_memory" {
