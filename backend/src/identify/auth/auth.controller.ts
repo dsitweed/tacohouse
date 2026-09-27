@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, Public } from 'core/common/decorators';
 import {
@@ -26,7 +27,10 @@ import {
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly authService: AuthService,
+  ) {}
 
   // TODO: Need update logic save and clear token
   @Public()
@@ -46,7 +50,7 @@ export class AuthController {
       user: returnUser,
     } = await this.authService.login(user);
 
-    setAuthCookies(res, accessToken, refreshToken);
+    this.setAuthCookies(res, accessToken, refreshToken);
 
     return { user: returnUser };
   }
@@ -96,7 +100,7 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken } = await this.authService.refresh(user);
 
-    setAuthCookies(res, accessToken, refreshToken);
+    this.setAuthCookies(res, accessToken, refreshToken);
 
     return { message: 'Token refreshed successfully' };
   }
@@ -110,34 +114,41 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     await this.authService.logout(user.id);
-    clearAuthCookies(res);
+    this.clearAuthCookies(res);
 
     return { message: 'Logout successful' };
   }
-}
 
-const authCookieOptions: CookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-};
+  private setAuthCookies(
+    res: Response,
+    accessToken: string,
+    refreshToken: string,
+  ): void {
+    const options = this.getAuthCookieOptions();
 
-function setAuthCookies(
-  res: Response,
-  accessToken: string,
-  refreshToken: string,
-) {
-  res.cookie('accessToken', accessToken, {
-    ...authCookieOptions,
-    maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE,
-  });
-  res.cookie('refreshToken', refreshToken, {
-    ...authCookieOptions,
-    maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
-  });
-}
+    res.cookie('accessToken', accessToken, {
+      ...options,
+      maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE,
+    });
+    res.cookie('refreshToken', refreshToken, {
+      ...options,
+      maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
+    });
+  }
 
-function clearAuthCookies(res: Response) {
-  res.clearCookie('accessToken');
-  res.clearCookie('refreshToken');
+  private clearAuthCookies(res: Response): void {
+    const options = this.getAuthCookieOptions();
+
+    res.clearCookie('accessToken', options);
+    res.clearCookie('refreshToken', options);
+  }
+
+  private getAuthCookieOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      secure: this.config.get('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      domain: this.config.get('AUTH_COOKIE_DOMAIN'),
+    };
+  }
 }

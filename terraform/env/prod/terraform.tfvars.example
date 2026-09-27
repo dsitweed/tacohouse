@@ -1,8 +1,10 @@
-aws_region      = "ap-northeast-1"
-project_name    = "tacohouse"
-frontend_url    = "https://www.brain.io.vn"
-app_secrets_arn = "arn:aws:secretsmanager:ap-northeast-1:264053230144:secret:prod/tacohouse-VD14dG"
+aws_region         = "ap-northeast-1"
+project_name       = "tacohouse"
+api_domain         = "api.brain.io.vn"
+frontend_url       = "https://www.brain.io.vn"
+auth_cookie_domain = ".brain.io.vn"
+app_secrets_arn    = "arn:aws:secretsmanager:ap-northeast-1:264053230144:secret:prod/tacohouse-VD14dG"
 
 # Set an ACM certificate ARN to enable HTTPS and redirect HTTP to HTTPS.
 certificate_arn = "arn:aws:acm:ap-northeast-1:264053230144:certificate/5feef144-7b6a-4fed-8c81-63055f9ec7a2"
-desired_count = 1
+desired_count   = 1

@@ -1,6 +1,6 @@
 output "api_url" {
   description = "Public base URL for the backend API."
-  value       = "${var.certificate_arn == null ? "http" : "https"}://${aws_lb.main.dns_name}"
+  value       = "${var.certificate_arn == null ? "http" : "https"}://${var.api_domain == null ? aws_lb.main.dns_name : var.api_domain}"
 }
 
 output "ecr_repository_url" {

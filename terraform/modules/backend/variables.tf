@@ -3,6 +3,13 @@ variable "project_name" {
   type        = string
 }
 
+variable "api_domain" {
+  description = "Optional custom DNS hostname for the API."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
 variable "aws_region" {
   description = "AWS region used by the backend and log driver."
   type        = string
@@ -10,6 +17,11 @@ variable "aws_region" {
 
 variable "frontend_url" {
   description = "Comma-separated allowed browser origins for the API."
+  type        = string
+}
+
+variable "auth_cookie_domain" {
+  description = "Shared parent domain for authentication cookies."
   type        = string
 }
 
