@@ -33,8 +33,10 @@ module "backend" {
   source = "../../modules/backend"
 
   project_name              = var.project_name
+  api_domain                = var.api_domain
   aws_region                = var.aws_region
   frontend_url              = var.frontend_url
+  auth_cookie_domain        = var.auth_cookie_domain
   app_secrets_arn           = var.app_secrets_arn
   certificate_arn           = var.certificate_arn
   task_cpu                  = var.task_cpu

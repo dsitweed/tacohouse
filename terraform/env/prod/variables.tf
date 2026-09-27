@@ -10,6 +10,12 @@ variable "project_name" {
   default     = "tacohouse"
 }
 
+variable "api_domain" {
+  description = "Custom DNS hostname configured for the API load balancer."
+  type        = string
+  default     = "api.brain.io.vn"
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the deployment VPC."
   type        = string
@@ -19,6 +25,12 @@ variable "vpc_cidr" {
 variable "frontend_url" {
   description = "Comma-separated allowed browser origins for the API."
   type        = string
+}
+
+variable "auth_cookie_domain" {
+  description = "Parent domain shared by the frontend and API auth cookies."
+  type        = string
+  default     = ".brain.io.vn"
 }
 
 variable "app_secrets_arn" {

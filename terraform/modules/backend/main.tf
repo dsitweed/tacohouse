@@ -170,6 +170,7 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "NODE_ENV", value = "production" },
       { name = "PORT", value = "3000" },
       { name = "FRONTEND_URL", value = var.frontend_url },
+      { name = "AUTH_COOKIE_DOMAIN", value = var.auth_cookie_domain },
       { name = "JWT_EXPIRES_IN", value = "15m" },
       { name = "JWT_REFRESH_EXPIRES_IN", value = "7d" },
       { name = "AUTH_EXPOSE_DEV_TOKENS", value = "false" }
