@@ -40,7 +40,7 @@ Run Terraform commands from `terraform/env/prod` (or use `terraform -chdir=terra
    AWS_REGION=ap-northeast-1
    AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
    aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-   docker build -f backend/Dockerfile.prod -t "${ECR_URL}:latest" backend
+   docker build --platform linux/amd64 -f backend/Dockerfile.prod -t "${ECR_URL}:latest" backend
    docker push "${ECR_URL}:latest"
    ```
 

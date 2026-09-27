@@ -5,3 +5,4 @@ app_secrets_arn = "arn:aws:secretsmanager:ap-northeast-1:264053230144:secret:pro
 
 # Set an ACM certificate ARN to enable HTTPS and redirect HTTP to HTTPS.
 certificate_arn = "arn:aws:acm:ap-northeast-1:264053230144:certificate/5feef144-7b6a-4fed-8c81-63055f9ec7a2"
+desired_count = 1
