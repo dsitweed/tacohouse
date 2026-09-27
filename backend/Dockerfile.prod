@@ -2,6 +2,10 @@ FROM node:22-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache ca-certificates curl \
+        && curl -fsSL https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
+            -o /etc/ssl/certs/aws-rds-global-bundle.pem
+
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -17,6 +21,7 @@ RUN DATABASE_URL=postgresql://build:build@localhost:5432/build \
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/aws-rds-global-bundle.pem
 EXPOSE 3000
 
 CMD ["node", "dist/src/main.js"]
