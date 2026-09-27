@@ -75,6 +75,7 @@ export * from './relatedEntityType';
 export * from './rental';
 export * from './rentalsControllerFindAllParams';
 export * from './rentalsControllerFindAllStatus';
+export * from './rentalStatsResponseDto';
 export * from './rentalStatus';
 export * from './requestEmailDto';
 export * from './resetPasswordDto';

@@ -9,6 +9,7 @@ import {
   CreateRentalDto,
   Rental,
   RentalsControllerFindAllParams,
+  RentalStatsResponseDto,
   UpdateRentalDto,
 } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
@@ -37,6 +38,12 @@ const rentalsApi = {
 
   terminate: async (id: string) => {
     const response = await apiClient.delete<void>(`/rentals/${id}`);
+    return response.data;
+  },
+
+  getStats: async () => {
+    const response =
+      await apiClient.get<RentalStatsResponseDto>('/rentals/stats');
     return response.data;
   },
 };
@@ -126,5 +133,13 @@ export function useTerminateRental() {
       queryClient.invalidateQueries({ queryKey: queryKeys.rentals.lists() });
     },
     onError: handleApiError,
+  });
+}
+
+export function useRentalStats() {
+  return useQuery({
+    queryKey: queryKeys.rentals.stats(),
+    queryFn: () => rentalsApi.getStats(),
+    staleTime: 2 * 60 * 1000,
   });
 }

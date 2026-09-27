@@ -1,51 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-
-import { NoDataEmptyState, SkeletonPage } from '@/components/ui';
-import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
-import { RentalStatus } from '@/generated/model';
-import { useRentals } from '@/hooks/api/useRentals';
+import { NoDataEmptyState, Spinner } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { UserRole } from '@/types';
-import { formatCurrency } from '@/utils';
 
-import { type RentalFilter, RentalFilters } from './RentalFilters';
-import { RentalStats } from './RentalStats';
-import { RentalTable } from './RentalTable';
-
-function getDaysRemaining(endDate: string | null, now: number) {
-  if (!endDate) return null;
-  return Math.ceil((new Date(endDate).getTime() - now) / 86400000);
-}
-
-function isExpiringSoon(endDate: string | null, now: number) {
-  const daysRemaining = getDaysRemaining(endDate, now);
-  return daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 30;
-}
+import { RentalStatsContainer } from './RentalStats';
 
 // FIXME: fix stats logic, fix pagination logic
 export function RentalsPage() {
-  const user = useAuthStore((state) => state.user);
-  const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState<RentalFilter>('ALL');
-  const [search, setSearch] = useState('');
-  const [now] = useState(() => Date.now());
-
-  const rentalQuery = {
-    page,
-    limit: DEFAULT_PAGE_SIZE,
-    ...(filter === 'ACTIVE' ? { status: RentalStatus.ACTIVE } : {}),
-    ...(filter === 'EXPIRED' ? { status: RentalStatus.TERMINATED } : {}),
-    ...(filter === 'EXPIRING' ? { expiringSoon: true } : {}),
-    ...(search ? { search } : {}),
-  };
-  const { data: rentalsData, isLoading } = useRentals(rentalQuery);
-
-  const rentals = rentalsData?.data ?? [];
+  const { user, isHydrated } = useAuthStore((state) => state);
 
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
+
+  if (!isHydrated) {
+    return <Spinner className="mx-auto my-10 size-6" />;
+  }
 
   if (!canView) {
     return (
@@ -55,33 +25,6 @@ export function RentalsPage() {
       />
     );
   }
-
-  if (isLoading) return <SkeletonPage />;
-
-  const activeCount = rentals.filter(
-    (rental) => rental.status === RentalStatus.ACTIVE,
-  ).length;
-  const expiringCount = rentals.filter((rental) =>
-    isExpiringSoon(rental.endDate, now),
-  ).length;
-  const averageTerm = rentals.length
-    ? Math.round(
-        (rentals.reduce((total, rental) => {
-          const endDate = rental.endDate
-            ? new Date(rental.endDate).getTime()
-            : now;
-          return total + (endDate - new Date(rental.startDate).getTime());
-        }, 0) /
-          rentals.length /
-          (30.44 * 24 * 60 * 60 * 1000)) *
-          10,
-      ) / 10
-    : 0;
-  const monthlyRevenue = rentals
-    .filter((rental) => rental.status === RentalStatus.ACTIVE)
-    .reduce((total, rental) => total + Number(rental.monthlyRent), 0);
-
-  const pagination = rentalsData?.pagination;
 
   return (
     <div className="min-h-screen space-y-8 bg-slate-50/60 pb-10">
@@ -102,14 +45,9 @@ export function RentalsPage() {
         </p>
       </header>
 
-      <RentalStats
-        activeCount={activeCount}
-        expiringCount={expiringCount}
-        averageTerm={averageTerm}
-        monthlyRevenue={formatCurrency(monthlyRevenue.toString())}
-      />
+      <RentalStatsContainer />
 
-      <section className="space-y-4" aria-labelledby="rental-list-title">
+      {/* <section className="space-y-4" aria-labelledby="rental-list-title">
         <div>
           <h2
             id="rental-list-title"
@@ -146,7 +84,7 @@ export function RentalsPage() {
             subTitle="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
           />
         )}
-      </section>
+      </section> */}
     </div>
   );
 }

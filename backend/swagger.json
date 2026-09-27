@@ -1870,6 +1870,32 @@
         ]
       }
     },
+    "/api/v1/rentals/stats": {
+      "get": {
+        "operationId": "RentalsController_stats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalStatsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "tags": [
+          "Rentals"
+        ]
+      }
+    },
     "/api/v1/rentals/{id}": {
       "get": {
         "operationId": "RentalsController_findOne",
@@ -4935,6 +4961,29 @@
           "tenantId",
           "startDate",
           "monthlyRent"
+        ]
+      },
+      "RentalStatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "activeCount": {
+            "type": "number"
+          },
+          "expiringCount": {
+            "type": "number"
+          },
+          "averageTerm": {
+            "type": "number"
+          },
+          "monthlyRevenue": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "activeCount",
+          "expiringCount",
+          "averageTerm",
+          "monthlyRevenue"
         ]
       },
       "UpdateRentalDto": {

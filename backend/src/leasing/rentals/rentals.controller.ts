@@ -14,7 +14,12 @@ import { Rental as RentalEntity } from 'generated/nestjs-dto';
 import type { Rental, User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
 
-import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
+import {
+  CreateRentalDto,
+  FindAllRentalsDto,
+  RentalStatsResponseDto,
+  UpdateRentalDto,
+} from './dto';
 import { RentalsService } from './rentals.service';
 
 @ApiTags('Rentals')
@@ -37,6 +42,13 @@ export class RentalsController {
   @ApiResponse({ status: 200, type: RentalEntity, isArray: true })
   findAll(@CurrentUser() currentUser: User, @Query() query: FindAllRentalsDto) {
     return this.rentalsService.findAll(currentUser, query);
+  }
+
+  @Get('stats')
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiResponse({ status: 200, type: RentalStatsResponseDto })
+  stats(@CurrentUser() currentUser: User) {
+    return this.rentalsService.getStats(currentUser);
   }
 
   @Get(':id')

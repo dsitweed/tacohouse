@@ -58,6 +58,7 @@ export const queryKeys = {
       [...queryKeys.rentals.all, 'tenant', tenantId] as const,
     byRoom: (roomId: string) =>
       [...queryKeys.rentals.all, 'room', roomId] as const,
+    stats: () => [...queryKeys.rentals.all, 'stats'] as const,
   },
 
   // Bill queries

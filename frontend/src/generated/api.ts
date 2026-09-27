@@ -43,6 +43,7 @@ import type {
   PresignedUrl,
   RegisterAuthDto,
   Rental,
+  RentalStatsResponseDto,
   RentalsControllerFindAllParams,
   RequestEmailDto,
   ResetPasswordDto,
@@ -506,6 +507,13 @@ export const getTacoHouseAPI = () => {
     });
   };
 
+  const rentalsControllerStats = () => {
+    return apiClient<RentalStatsResponseDto>({
+      url: `/api/v1/rentals/stats`,
+      method: 'GET',
+    });
+  };
+
   const rentalsControllerFindOne = (id: string) => {
     return apiClient<Rental>({ url: `/api/v1/rentals/${id}`, method: 'GET' });
   };
@@ -725,6 +733,7 @@ export const getTacoHouseAPI = () => {
     uploadsControllerDeleteObjectsByPrefix,
     rentalsControllerCreate,
     rentalsControllerFindAll,
+    rentalsControllerStats,
     rentalsControllerFindOne,
     rentalsControllerUpdate,
     rentalsControllerRemove,
@@ -1018,6 +1027,11 @@ export type RentalsControllerCreateResult = NonNullable<
 export type RentalsControllerFindAllResult = NonNullable<
   Awaited<
     ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerFindAll']>
+  >
+>;
+export type RentalsControllerStatsResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getTacoHouseAPI>['rentalsControllerStats']>
   >
 >;
 export type RentalsControllerFindOneResult = NonNullable<

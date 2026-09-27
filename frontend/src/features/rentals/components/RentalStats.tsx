@@ -1,6 +1,8 @@
 import { AlertTriangle, FileText, Percent, Wallet } from 'lucide-react';
 
 import KpiCard from '@/components/KpiCard';
+import { useRentalStats } from '@/hooks/api/useRentals';
+import { formatCurrency } from '@/utils';
 
 type RentalStatsProps = {
   activeCount: number;
@@ -16,7 +18,20 @@ const statItems = [
   { key: 'revenue', label: 'Doanh thu hàng tháng', icon: Wallet },
 ] as const;
 
-export function RentalStats({
+export function RentalStatsContainer() {
+  const { data } = useRentalStats();
+
+  return (
+    <RentalStats
+      activeCount={data?.activeCount ?? 0}
+      expiringCount={data?.expiringCount ?? 0}
+      averageTerm={data?.averageTerm ?? 0}
+      monthlyRevenue={data?.monthlyRevenue ?? '0'}
+    />
+  );
+}
+
+function RentalStats({
   activeCount,
   expiringCount,
   averageTerm,
@@ -26,7 +41,7 @@ export function RentalStats({
     active: activeCount.toString(),
     expiring: expiringCount.toString(),
     term: `${averageTerm} tháng`,
-    revenue: monthlyRevenue,
+    revenue: formatCurrency(monthlyRevenue),
   };
 
   return (

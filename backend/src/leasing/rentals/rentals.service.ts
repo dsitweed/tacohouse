@@ -328,4 +328,66 @@ export class RentalsService {
       },
     });
   }
+
+  async getStats(currentUser: User) {
+    const rentalAccessWhere: Prisma.RentalWhereInput =
+      currentUser.role === UserRole.LANDLORD
+        ? {
+            room: {
+              building: {
+                landlordId: currentUser.id,
+              },
+            },
+          }
+        : {};
+
+    const now = new Date();
+    const expiryLimit = new Date(now);
+    expiryLimit.setDate(expiryLimit.getDate() + 30);
+    const rentals = await this.prisma.rental.findMany({
+      where: {
+        ...rentalAccessWhere,
+      },
+      select: {
+        startDate: true,
+        endDate: true,
+        monthlyRent: true,
+        status: true,
+      },
+    });
+    const activeRentals = rentals.filter(
+      (rental) => rental.status === 'ACTIVE',
+    );
+    const activeCount = activeRentals.length;
+    const expiringCount = activeRentals.filter(
+      (rental) => rental.endDate !== null && rental.endDate <= expiryLimit,
+    ).length;
+
+    const totalRentalDurationMs = rentals.reduce((total, rental) => {
+      const endDate = rental.endDate ?? now;
+      return total + endDate.getTime() - rental.startDate.getTime();
+    }, 0);
+    const millisecondsPerMonth = 30.44 * 24 * 60 * 60 * 1000;
+    const averageTerm =
+      rentals.length === 0
+        ? 0
+        : Math.round(
+            (totalRentalDurationMs / rentals.length / millisecondsPerMonth) *
+              10,
+          ) / 10;
+
+    const monthlyRevenue = rentals
+      .reduce(
+        (total, rental) => total.plus(rental.monthlyRent),
+        new Prisma.Decimal(0),
+      )
+      .toFixed(2);
+
+    return {
+      activeCount,
+      expiringCount,
+      averageTerm,
+      monthlyRevenue,
+    };
+  }
 }
