@@ -46,6 +46,6 @@ resource "aws_secretsmanager_secret" "database_url" {
 resource "aws_secretsmanager_secret_version" "database_url" {
   secret_id = aws_secretsmanager_secret.database_url.id
   secret_string = jsonencode({
-    DATABASE_URL = "postgresql://tacohouse:${random_password.database.result}@${aws_db_instance.main.address}:${aws_db_instance.main.port}/tacohouse?schema=public"
+    DATABASE_URL = "postgresql://tacohouse:${random_password.database.result}@${aws_db_instance.main.address}:${aws_db_instance.main.port}/tacohouse?schema=public&sslmode=require"
   })
 }

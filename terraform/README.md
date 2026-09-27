@@ -84,3 +84,37 @@ aws login
 aws sts get-caller-identity      
 eval "$(aws configure export-credentials --format env)" && terraform -chdir=terraform/env/prod plan
 ```
+
+
+```bash
+# Run the following commands to execute the database migration on the ECS Fargate task.
+REGION=ap-northeast-1
+CLUSTER=$(terraform -chdir=terraform/env/prod output -raw ecs_cluster_name)
+TASK_DEF=$(terraform -chdir=terraform/env/prod output -raw ecs_task_definition_arn)
+SUBNETS=$(terraform -chdir=terraform/env/prod output -json backend_subnet_ids | jq -r 'join(",")')
+BACKEND_SG=$(terraform -chdir=terraform/env/prod output -raw backend_security_group_id)
+
+TASK_ARN=$(aws ecs run-task \
+  --region "$REGION" \
+  --cluster "$CLUSTER" \
+  --task-definition "$TASK_DEF" \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$BACKEND_SG],assignPublicIp=ENABLED}" \
+  --overrides '{"containerOverrides":[{"name":"backend","command":["pnpm","prisma","migrate","deploy"]}]}' \
+  --query 'tasks[0].taskArn' \
+  --output text)
+
+echo "Migration task: $TASK_ARN"
+```
+
+```bash
+# Wait for the migration task to stop and then describe its status.
+aws ecs wait tasks-stopped --region "$REGION" --cluster "$CLUSTER" --tasks "$TASK_ARN"
+
+aws ecs describe-tasks \
+  --region "$REGION" \
+  --cluster "$CLUSTER" \
+  --tasks "$TASK_ARN" \
+  --query 'tasks[0].{exitCode:containers[0].exitCode,reason:containers[0].reason,stoppedReason:stoppedReason}' \
+  --output table
+```
