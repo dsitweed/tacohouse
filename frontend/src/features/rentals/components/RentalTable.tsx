@@ -54,13 +54,6 @@ export function RentalTable({
   const rentals = data?.data ?? [];
   const pagination = data?.pagination;
 
-  const limit = pagination?.limit ?? 0;
-  const total = pagination?.total ?? 0;
-  const totalPages = pagination?.totalPages ?? 0;
-
-  const firstItem = total === 0 ? 0 : (page - 1) * limit + 1;
-  const lastItem = limit === 0 ? 0 : Math.min(page * limit, total);
-
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <Table>
@@ -172,27 +165,36 @@ export function RentalTable({
           })}
         </TableBody>
       </Table>
-      {total > 0 && (
+      {pagination && pagination.total > 0 && (
         <PaginationContainer
           variant="plain"
-          page={page}
-          totalPages={totalPages}
+          page={pagination.page}
+          totalPages={pagination.totalPages}
           onPageChange={onPageChange}
           disabled={isPending}
           previousText="Trước"
           nextText="Sau"
           summary={
             <span className="text-xs text-slate-500">
-              Hiển thị {firstItem} đến {lastItem} trên tổng số {total} hợp đồng
+              Hiển thị {pagination.firstItem} đến {pagination.lastItem} trên
+              tổng số {pagination.total} hợp đồng
             </span>
           }
           className="border-t border-slate-200 bg-slate-50 px-5 py-4"
         />
       )}
-      {total === 0 && !isPending && (
+      {pagination?.total === 0 && !isPending && (
         <NoDataEmptyState
-          title="Không tìm thấy hợp đồng"
-          subTitle="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+          title={
+            search || activeFilter !== 'ALL'
+              ? 'Không tìm thấy hợp đồng phù hợp'
+              : 'Chưa có hợp đồng nào'
+          }
+          subTitle={
+            search || activeFilter !== 'ALL'
+              ? 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.'
+              : 'Hợp đồng thuê sẽ hiển thị ở đây sau khi được tạo.'
+          }
         />
       )}
     </div>

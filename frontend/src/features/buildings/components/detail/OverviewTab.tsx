@@ -16,6 +16,8 @@ import {
   MapMarker,
   MapPopup,
   MapTileLayer,
+  NoDataEmptyState,
+  PaginationContainer,
   Table,
   TableBody,
   TableCell,
@@ -24,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui';
 import { useMaintenanceRequests } from '@/hooks/api';
+import { usePagination } from '@/hooks/use-pagination';
 import { MAINTENANCE_STATUS_MAP } from '@/types';
 import { toDateOnlyString } from '@/utils';
 
@@ -66,11 +69,16 @@ export default function OverviewTab({
   buildingName,
   buildingCoordinates,
 }: OverviewTabProps) {
-  const { data: maintenanceData } = useMaintenanceRequests({
+  const { page, setPage, limit } = usePagination(buildingId);
+
+  const { data: maintenanceData, isPending } = useMaintenanceRequests({
     buildingId,
+    page,
+    limit,
   });
 
   const maintenance = maintenanceData?.data ?? [];
+  const pagination = maintenanceData?.pagination;
 
   return (
     <div className="space-y-6">
@@ -206,7 +214,6 @@ export default function OverviewTab({
           </Button>
         </CardHeader>
         <CardContent>
-          {/* TODO: Update table with pagination and data table */}
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow className="text-xs tracking-wider text-slate-600 uppercase [&>th]:font-bold">
@@ -237,18 +244,27 @@ export default function OverviewTab({
                   </TableCell>
                 </TableRow>
               ))}
-
-              {maintenance.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    <p className="mt-4 text-sm font-bold">
-                      No active maintenance requests.
-                    </p>
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
+          {!isPending && maintenance.length === 0 && (
+            <NoDataEmptyState
+              title="Không có yêu cầu bảo trì"
+              subTitle="Tòa nhà này hiện chưa có yêu cầu bảo trì nào."
+            />
+          )}
+          {pagination && pagination.total > 0 && (
+            <PaginationContainer
+              variant="plain"
+              page={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+              disabled={isPending}
+              previousText="Trước"
+              nextText="Sau"
+              summary={`Hiển thị ${pagination.firstItem} đến ${pagination.lastItem} trên tổng số ${pagination.total} yêu cầu`}
+              className="mt-4 border-t border-slate-200 pt-4"
+            />
+          )}
         </CardContent>
       </Card>
     </div>

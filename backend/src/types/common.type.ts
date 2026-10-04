@@ -5,6 +5,8 @@ export type PaginationMeta = {
   totalPages: number;
   hasNext: boolean;
   hasPrev: boolean;
+  firstItem: number;
+  lastItem: number;
 };
 
 // Standard API Response

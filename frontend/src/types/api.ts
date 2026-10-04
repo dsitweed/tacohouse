@@ -27,6 +27,8 @@ export interface PaginationMeta {
   totalPages: number;
   hasNext: boolean;
   hasPrev: boolean;
+  firstItem: number;
+  lastItem: number;
 }
 
 export interface LoginResponse {

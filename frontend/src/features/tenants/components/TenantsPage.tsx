@@ -17,7 +17,6 @@ import {
   Search,
   TrendingUp,
   UserPlus,
-  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
@@ -27,6 +26,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
   NoDataEmptyState,
+  PaginationContainer,
 } from '@/components/ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -46,8 +46,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PaymentStatus, RentalStatus, UserRole } from '@/generated/model';
+import { DEFAULT_LIMIT_SIZE } from '@/constants/pagination';
+import {
+  PaymentStatus,
+  Rental,
+  RentalStatus,
+  UserRole,
+} from '@/generated/model';
 import { useRentals } from '@/hooks/api/useRentals';
+import { usePagination } from '@/hooks/use-pagination';
 import { useAuthStore } from '@/stores/authStore';
 import { PAYMENT_STATUS_MAP, RENTAL_STATUS_MAP } from '@/types';
 import { toDateOnlyString } from '@/utils';
@@ -68,140 +75,122 @@ const RENTAL_STATUS_FILTER = [
 ] as const;
 type RentalStatusFilter = (typeof RENTAL_STATUS_FILTER)[number]['value'];
 
+// FIXME: use direct API get tenants instead of fetching all rentals
+function mapRentalToTenant(rental: Rental) {
+  const firstName = rental.tenant?.profile?.firstName || '';
+  const lastName = rental.tenant?.profile?.lastName || '';
+  const fullName = `${firstName} ${lastName}`.trim() || 'Người thuê';
+  const initials =
+    (firstName[0] || '') + (lastName[0] || '') || fullName[0] || 'T';
+
+  // TODO: Replace with real data
+  // Mock contract/payment status for UI demonstration matching Figma
+  const isPendingPayment = rental.status === RentalStatus.NOTICE_GIVEN;
+  // TODO: Status for payment not have overdue (Confusing with bill status)
+  const paymentStatus: PaymentStatus =
+    rental.status === 'ACTIVE'
+      ? 'COMPLETED'
+      : isPendingPayment
+        ? 'PENDING'
+        : 'FAILED';
+
+  const createdAtFormatted = toDateOnlyString(new Date(rental.createdAt));
+
+  return {
+    id: rental.tenantId,
+    rentalId: rental.id,
+    fullName,
+    initials,
+    avatar: rental.tenant?.profile?.avatar || null,
+    phone: rental.tenant?.profile?.phone || 'Chưa cập nhật',
+    email: rental.tenant?.email || 'N/A',
+    roomNumber: rental.room?.number || 'N/A',
+    buildingName: rental.room?.building?.name || 'Tòa nhà N/A',
+    status: rental.status,
+    paymentStatus,
+    createdAtFormatted,
+    startDate: rental.startDate,
+    endDate: rental.endDate,
+  };
+}
+
+type TenantRow = ReturnType<typeof mapRentalToTenant>;
+
+// One row per tenant, prefer the active rental then the newest
+function dedupeTenants(rows: TenantRow[]) {
+  const tenantMap = new Map<string, TenantRow>();
+
+  for (const tenant of rows) {
+    const existing = tenantMap.get(tenant.id);
+    if (!existing) {
+      tenantMap.set(tenant.id, tenant);
+      continue;
+    }
+
+    const isActive = tenant.status === RentalStatus.ACTIVE;
+    const existingIsActive = existing.status === RentalStatus.ACTIVE;
+    if (
+      (isActive && !existingIsActive) ||
+      (isActive === existingIsActive &&
+        new Date(tenant.startDate) > new Date(existing.startDate))
+    ) {
+      tenantMap.set(tenant.id, tenant);
+    }
+  }
+
+  return Array.from(tenantMap.values());
+}
+
 export function TenantsPage() {
   const { user } = useAuthStore();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RentalStatusFilter>('ALL');
 
-  // FIXME: use direct API get tenants instead of fetching all rentals
-  const { data: rentalsData, isLoading } = useRentals({
+  const { page, setPage, limit } = usePagination(
+    `${search.trim()}|${statusFilter}`,
+  );
+
+  // FIXME: replace with a dedicated tenants endpoint; stats still need the
+  // unfiltered set, so they come from a separate non-paginated query.
+  const { data: statsData } = useRentals({
     page: 1,
-    limit: 100,
+    limit: DEFAULT_LIMIT_SIZE,
   });
 
-  // Process & filter tenants
-  // FIXME: Need push this logic to the BE for better performance
-  const { tenants, stats } = useMemo(() => {
-    if (!rentalsData?.data) {
-      return {
-        tenants: [],
-        stats: {
-          total: 0,
-          active: 0,
-          pendingPayment: 0,
-          renewalsDue: 0,
-        },
-      };
-    }
+  const { data: rentalsData, isLoading } = useRentals({
+    page,
+    limit,
+    search: search.trim() || undefined,
+    status:
+      statusFilter === 'ALL'
+        ? undefined
+        : statusFilter === 'ACTIVE'
+          ? 'ACTIVE'
+          : 'NOTICE_GIVEN',
+  });
 
-    const allRentals = rentalsData.data;
+  const pagination = rentalsData?.pagination;
 
-    const mappedTenants = allRentals.map((rental) => {
-      const firstName = rental.tenant?.profile?.firstName || '';
-      const lastName = rental.tenant?.profile?.lastName || '';
-      const fullName = `${firstName} ${lastName}`.trim() || 'Người thuê';
-      const initials =
-        (firstName[0] || '') + (lastName[0] || '') || fullName[0] || 'T';
+  const tenants = useMemo(
+    () => dedupeTenants((rentalsData?.data ?? []).map(mapRentalToTenant)),
+    [rentalsData],
+  );
 
-      // TODO: Replace with real data
-      // Mock contract/payment status for UI demonstration matching Figma
-      const isPendingPayment = rental.status === RentalStatus.NOTICE_GIVEN;
-      // TODO: Status for payment not have overdue (Confusing with bill status)
-      const paymentStatus: PaymentStatus =
-        rental.status === 'ACTIVE'
-          ? 'COMPLETED'
-          : isPendingPayment
-            ? 'PENDING'
-            : 'FAILED';
-
-      const createdAtFormatted = toDateOnlyString(new Date(rental.createdAt));
-
-      return {
-        id: rental.tenantId,
-        rentalId: rental.id,
-        fullName,
-        initials,
-        avatar: rental.tenant?.profile?.avatar || null,
-        phone: rental.tenant?.profile?.phone || 'Chưa cập nhật',
-        email: rental.tenant?.email || 'N/A',
-        roomNumber: rental.room?.number || 'N/A',
-        buildingName: rental.room?.building?.name || 'Tòa nhà N/A',
-        status: rental.status,
-        paymentStatus,
-        createdAtFormatted,
-        startDate: rental.startDate,
-        endDate: rental.endDate,
-      };
-    });
-
-    // Deduplicate: one row per tenant, prefer active rental then newest
-    const tenantMap = new Map<string, (typeof mappedTenants)[number]>();
-    for (const tenant of mappedTenants) {
-      const existing = tenantMap.get(tenant.id);
-      if (!existing) {
-        tenantMap.set(tenant.id, tenant);
-        continue;
-      }
-
-      const isActive = tenant.status === RentalStatus.ACTIVE;
-      const existingIsActive = existing.status === RentalStatus.ACTIVE;
-      if (
-        (isActive && !existingIsActive) ||
-        (isActive === existingIsActive &&
-          new Date(tenant.startDate) > new Date(existing.startDate))
-      ) {
-        tenantMap.set(tenant.id, tenant);
-      }
-    }
-    const uniqueTenants = Array.from(tenantMap.values());
-
-    // Calculate dynamic stats
-    const totalCount = uniqueTenants.length;
-    const activeCount = uniqueTenants.filter(
-      (t) => t.status === RentalStatus.ACTIVE,
-    ).length;
-    const pendingPaymentCount = uniqueTenants.filter(
-      (t) => t.paymentStatus === 'FAILED' || t.paymentStatus === 'PENDING',
-    ).length;
-    const renewalsCount = uniqueTenants.filter(
-      (t) => t.status === RentalStatus.NOTICE_GIVEN,
-    ).length;
-
-    // Filter by Tab and Search string
-    const filtered = uniqueTenants.filter((tenant) => {
-      // Tab filter
-      if (statusFilter === 'ACTIVE' && tenant.status !== RentalStatus.ACTIVE) {
-        return false;
-      }
-      if (
-        statusFilter === 'NOTICE' &&
-        tenant.status !== RentalStatus.NOTICE_GIVEN
-      ) {
-        return false;
-      }
-
-      // Search filter
-      if (!search) return true;
-      const s = search.toLowerCase();
-      return (
-        tenant.fullName.toLowerCase().includes(s) ||
-        tenant.email.toLowerCase().includes(s) ||
-        tenant.phone.includes(s) ||
-        tenant.roomNumber.toLowerCase().includes(s) ||
-        tenant.buildingName.toLowerCase().includes(s)
-      );
-    });
+  const stats = useMemo(() => {
+    const unique = dedupeTenants(
+      (statsData?.data ?? []).map(mapRentalToTenant),
+    );
 
     return {
-      tenants: filtered,
-      stats: {
-        total: totalCount,
-        active: activeCount,
-        pendingPayment: pendingPaymentCount,
-        renewalsDue: renewalsCount,
-      },
+      total: unique.length,
+      active: unique.filter((t) => t.status === RentalStatus.ACTIVE).length,
+      pendingPayment: unique.filter(
+        (t) => t.paymentStatus === 'FAILED' || t.paymentStatus === 'PENDING',
+      ).length,
+      renewalsDue: unique.filter((t) => t.status === RentalStatus.NOTICE_GIVEN)
+        .length,
     };
-  }, [rentalsData, search, statusFilter]);
+  }, [statsData]);
 
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
@@ -518,19 +507,33 @@ export function TenantsPage() {
               </TableBody>
             </Table>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-              <Users className="size-12 text-slate-300" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-600">
-                  {search
+            <div className="py-8">
+              <NoDataEmptyState
+                title={
+                  search || statusFilter !== 'ALL'
                     ? 'Không tìm thấy người thuê phù hợp'
-                    : 'Chưa có dữ liệu người thuê'}
-                </p>
-                <p className="text-xs text-slate-400">
-                  Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
-                </p>
-              </div>
+                    : 'Chưa có dữ liệu người thuê'
+                }
+                subTitle={
+                  search || statusFilter !== 'ALL'
+                    ? 'Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc.'
+                    : 'Dữ liệu người thuê sẽ hiển thị khi có hợp đồng thuê.'
+                }
+              />
             </div>
+          )}
+          {pagination && pagination.total > 0 && (
+            <PaginationContainer
+              variant="plain"
+              page={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+              disabled={isLoading}
+              previousText="Trước"
+              nextText="Sau"
+              summary={`Hiển thị ${pagination.firstItem} đến ${pagination.lastItem} trên tổng số ${pagination.total} hợp đồng`}
+              className="border-t border-slate-200 px-4 py-3"
+            />
           )}
         </CardContent>
       </Card>

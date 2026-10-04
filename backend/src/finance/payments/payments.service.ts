@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { buildPaginationMeta } from 'core/common/utils/pagination.util';
 import { PrismaService } from 'core/prisma/prisma.service';
 import type { Payment, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
@@ -161,18 +162,9 @@ export class PaymentsService {
       this.prisma.payment.count({ where }),
     ]);
 
-    const totalPages = Math.ceil(total / limit);
-
     return {
       data,
-      pagination: {
-        page: page,
-        limit: limit,
-        total,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
-      },
+      pagination: buildPaginationMeta({ page, limit, total }),
     };
   }
 

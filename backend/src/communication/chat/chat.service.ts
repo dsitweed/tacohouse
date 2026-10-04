@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { buildPaginationMeta } from 'core/common/utils/pagination.util';
 import { PrismaService } from 'core/prisma/prisma.service';
 import type { ChatGroup, Message, User } from 'generated/prisma/client';
 import { Prisma } from 'generated/prisma/client';
@@ -133,14 +134,12 @@ export class ChatService {
 
     return {
       data: data.reverse(), // Return in chronological order
-      pagination: {
-        page: page,
-        limit: limit,
+      pagination: buildPaginationMeta({
+        page,
+        limit,
         total,
-        totalPages,
         hasNext: before ? data.length === limit : page < totalPages,
-        hasPrev: page > 1,
-      },
+      }),
     };
   }
 
@@ -239,14 +238,12 @@ export class ChatService {
 
     return {
       data: data.reverse(),
-      pagination: {
-        page: page,
-        limit: limit,
+      pagination: buildPaginationMeta({
+        page,
+        limit,
         total,
-        totalPages,
         hasNext: before ? data.length === limit : page < totalPages,
-        hasPrev: page > 1,
-      },
+      }),
     };
   }
 

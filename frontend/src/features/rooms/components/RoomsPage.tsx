@@ -11,8 +11,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 
 import KpiCard from '@/components/KpiCard';
 import {
@@ -36,6 +35,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
   NoDataEmptyState,
+  PaginationContainer,
   SkeletonPage,
   Table,
   TableBody,
@@ -47,9 +47,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DEFAULT_LIMIT_SIZE } from '@/constants/pagination';
 import { Building, UserRole } from '@/generated/model';
 import { useBuildings } from '@/hooks/api';
 import { useRooms } from '@/hooks/api/useRooms';
+import { usePagination } from '@/hooks/use-pagination';
 import { useAuthStore } from '@/stores/authStore';
 import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { ROOM_STATUS_MAP, RoomStatusMapsType } from '@/types';
@@ -62,13 +64,6 @@ function RoomsPageContent() {
   const { openDialog } = useDialogStore();
   const searchParams = useSearchParams();
   const initialBuildingId = searchParams.get('buildingId') ?? ''; // If not have buildingId search for all building
-  const { data: roomData, isLoading: isRoomsLoading } = useRooms({
-    page: 1,
-    limit: 20,
-  });
-  const rooms = useMemo(() => roomData?.data ?? [], [roomData]);
-  const { data: buildingsData } = useBuildings({ page: 1, limit: 100 });
-  const buildings = buildingsData?.data ?? [];
 
   // Local sate
   const [search, setSearch] = useState('');
@@ -76,6 +71,25 @@ function RoomsPageContent() {
   const [floorFilter, setFloorFilter] = useState('ALL');
   const [selectedBuildingId, setSelectedBuildingId] =
     useState(initialBuildingId);
+
+  const { page, setPage, limit } = usePagination(
+    `${search}|${statusFilter}|${floorFilter}|${selectedBuildingId}`,
+  );
+
+  const { data: roomData, isLoading: isRoomsLoading } = useRooms({
+    page,
+    limit,
+    buildingId: selectedBuildingId || undefined,
+  });
+  const rooms = useMemo(() => roomData?.data ?? [], [roomData]);
+  const pagination = roomData?.pagination;
+
+  // TODO: FIX hardcode limit size, should be dynamic based on user preference
+  const { data: buildingsData } = useBuildings({
+    page: 1,
+    limit: DEFAULT_LIMIT_SIZE,
+  });
+  const buildings = buildingsData?.data ?? [];
 
   const maxFloorData = [
     ...new Set(rooms.map((room) => getFloorNumber(room.number))),
@@ -434,17 +448,35 @@ function RoomsPageContent() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {filteredRooms.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={8}>
-                      {/* TODO: add pagination */}
-                      {/* TODO: use empty sate for table filter data */}
-                      <NoDataEmptyState />
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
+            {filteredRooms.length === 0 && (
+              <NoDataEmptyState
+                title={
+                  pagination?.total
+                    ? 'Không tìm thấy phòng phù hợp'
+                    : 'Chưa có phòng nào'
+                }
+                subTitle={
+                  pagination?.total
+                    ? 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.'
+                    : 'Chọn tòa nhà khác hoặc thêm phòng mới để bắt đầu.'
+                }
+              />
+            )}
+            {pagination && pagination.total > 0 && (
+              <PaginationContainer
+                variant="plain"
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                onPageChange={setPage}
+                disabled={isRoomsLoading}
+                previousText="Trước"
+                nextText="Sau"
+                summary={`Hiển thị ${pagination.firstItem} đến ${pagination.lastItem} trên tổng số ${pagination.total} phòng`}
+                className="border-t border-slate-200 bg-slate-50 px-5 py-4"
+              />
+            )}
           </Card>
         )}
       </div>
