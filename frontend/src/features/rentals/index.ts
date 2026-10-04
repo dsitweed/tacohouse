@@ -1,2 +1,2 @@
-export * from './components/detail/RentalDetail';
-export * from './components/RentalsPage';
+export * from './RentalDetailPage';
+export * from './RentalsPage';

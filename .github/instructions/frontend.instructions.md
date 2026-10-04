@@ -143,9 +143,12 @@ export function RoomForm() {
 
 - Use Tailwind CSS utility classes
 - Maintain visual consistency with existing components
+- Prefer existing semantic palette tokens such as `primary`, `secondary`, `tertiary`, `neutral`, `accent`, `muted`, `foreground`, `background`, and `border` wherever they are defined.
+- Do not hardcode color literals (for example, `#434655`, `rgb()`, `hsl()`, or `oklch()`) in TS/TSX styles. If no existing token fits, define or update a named design token centrally in `src/app/globals.css`, expose it through `@theme` when needed, and use the corresponding utility class.
+- Avoid introducing one-off colors when an existing palette token can express the same intent.
 - Example:
   ```typescript
-  <div className="flex gap-4 p-6 bg-white rounded-lg shadow">
+  <div className="flex gap-4 rounded-lg bg-background p-6 text-foreground shadow">
     <Button>Click me</Button>
   </div>
   ```

@@ -1,14 +1,21 @@
 'use client';
 
+import { useState } from 'react';
+
 import { NoDataEmptyState, Spinner } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { UserRole } from '@/types';
 
-import { RentalStatsContainer } from './RentalStats';
+import { RentalActiveFilter, RentalFilters } from './components/RentalFilters';
+import { RentalFooter } from './components/RentalFooter';
+import { RentalStatsContainer } from './components/RentalStats';
+import { RentalTable } from './components/RentalTable';
 
-// FIXME: fix stats logic, fix pagination logic
 export function RentalsPage() {
   const { user, isHydrated } = useAuthStore((state) => state);
+  const [filter, setFilter] = useState<RentalActiveFilter>('ALL');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
@@ -28,7 +35,7 @@ export function RentalsPage() {
 
   return (
     <div className="min-h-screen space-y-8 bg-slate-50/60 pb-10">
-      <header className="flex flex-col gap-5 border-b border-slate-200 pb-6 xl:flex-row xl:items-end xl:justify-between">
+      <section className="flex flex-col gap-5 border-b border-slate-200 pb-6 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-sm font-semibold tracking-wide text-blue-700 uppercase">
             Danh mục tài sản
@@ -43,11 +50,11 @@ export function RentalsPage() {
         <p className="text-sm text-slate-500">
           Cập nhật từ hệ thống quản lý TacoHouse
         </p>
-      </header>
+      </section>
 
       <RentalStatsContainer />
 
-      {/* <section className="space-y-4" aria-labelledby="rental-list-title">
+      <section className="space-y-4" aria-labelledby="rental-list-title">
         <div>
           <h2
             id="rental-list-title"
@@ -71,20 +78,15 @@ export function RentalsPage() {
             setPage(1);
           }}
         />
-        {rentals.length > 0 && pagination ? (
-          <RentalTable
-            rentals={rentals}
-            page={page}
-            pagination={pagination}
-            onPageChange={setPage}
-          />
-        ) : (
-          <NoDataEmptyState
-            title="Không tìm thấy hợp đồng"
-            subTitle="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
-          />
-        )}
-      </section> */}
+
+        <RentalTable
+          activeFilter={filter}
+          search={search}
+          page={page}
+          onPageChange={setPage}
+        />
+      </section>
+      <RentalFooter />
     </div>
   );
 }

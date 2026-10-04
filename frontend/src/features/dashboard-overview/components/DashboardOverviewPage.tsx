@@ -355,7 +355,7 @@ const AdminLandlordDashboard = () => {
       {/* KPI Grid */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         <KpiCard
-          label="Tổng nhà trọ"
+          label="Tổng toà nhà"
           value={buildingsData?.data.length}
           icon={Building2}
           delta={

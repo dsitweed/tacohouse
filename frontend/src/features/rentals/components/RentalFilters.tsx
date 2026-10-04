@@ -1,28 +1,37 @@
+import { zodResolver } from '@hookform/resolvers/zod/dist/zod.js';
 import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button, Input } from '@/components/ui';
+import {
+  Button,
+  FieldGroup,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui';
+import { RentalsControllerFindAllStatus } from '@/generated/model/rentalsControllerFindAllStatus';
 
-export type RentalFilter = 'ALL' | 'ACTIVE' | 'EXPIRING' | 'EXPIRED';
+export type RentalActiveFilter = 'ALL' | RentalsControllerFindAllStatus;
 
 type RentalFiltersProps = {
-  activeFilter: RentalFilter;
+  activeFilter: RentalActiveFilter;
   search: string;
-  onFilterChange: (filter: RentalFilter) => void;
+  onFilterChange: (filter: RentalActiveFilter) => void;
   onSearchChange: (search: string) => void;
 };
 
-type RentalSearchForm = {
-  search: string;
-};
-
-const filters: { value: RentalFilter; label: string }[] = [
+const filters: { value: RentalActiveFilter; label: string }[] = [
   { value: 'ALL', label: 'Tất cả' },
   { value: 'ACTIVE', label: 'Đang hoạt động' },
-  { value: 'EXPIRING', label: 'Sắp hết hạn' },
-  { value: 'EXPIRED', label: 'Đã kết thúc' },
+  { value: 'NOTICE_GIVEN', label: 'Sắp hết hạn' },
+  { value: 'TERMINATED', label: 'Đã kết thúc' },
 ];
+
+const formSchema = z.object({
+  search: z.string().optional(),
+});
 
 export function RentalFilters({
   activeFilter,
@@ -30,9 +39,15 @@ export function RentalFilters({
   onFilterChange,
   onSearchChange,
 }: RentalFiltersProps) {
-  const { register, handleSubmit } = useForm<RentalSearchForm>({
+  const { register, handleSubmit } = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: { search },
   });
+
+  const handleSearchSubmit = (data: z.infer<typeof formSchema>) => {
+    const nextSearch = data.search?.trim() ?? '';
+    onSearchChange(nextSearch);
+  };
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -55,20 +70,22 @@ export function RentalFilters({
       <div className="flex flex-col gap-3 sm:flex-row">
         <form
           className="relative min-w-0 sm:w-72"
-          onSubmit={handleSubmit(({ search: nextSearch }) =>
-            onSearchChange(nextSearch.trim()),
-          )}
+          onSubmit={handleSubmit(handleSearchSubmit)}
         >
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
-          {/* TODO: Check search input field */}
-          <Input
-            {...register('search')}
-            placeholder="Tìm người thuê, phòng..."
-            aria-label="Tìm kiếm hợp đồng"
-            className="h-10 rounded-xl border-slate-200 bg-white pl-9"
-          />
+          <FieldGroup>
+            <InputGroup>
+              <InputGroupAddon>
+                <Search className="size-4" />
+              </InputGroupAddon>
+              <InputGroupInput
+                {...register('search')}
+                placeholder="Tìm người thuê, phòng..."
+                aria-label="Tìm kiếm hợp đồng"
+              />
+            </InputGroup>
+          </FieldGroup>
         </form>
-        <Button asChild className="rounded-xl bg-blue-700 hover:bg-blue-800">
+        <Button asChild>
           <Link href="/dashboard/rentals/new">
             <Plus className="size-4" />
             Tạo hợp đồng

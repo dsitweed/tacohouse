@@ -55,8 +55,8 @@ export default function LoginPage() {
   const content = useIntlayer('loginPage');
 
   const loginFormSchema = z.object({
-    email: z.email(String(content.validation.emailInvalid)),
-    password: z.string().min(6, String(content.validation.passwordMin)),
+    email: z.email(content.validation.emailInvalid),
+    password: z.string().min(6, content.validation.passwordMin),
     remember: z.boolean(),
   });
 

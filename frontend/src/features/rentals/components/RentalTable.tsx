@@ -11,13 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+  PaginationContainer,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -26,13 +21,16 @@ import {
   TableRow,
 } from '@/components/ui';
 import type { Rental } from '@/generated/model';
-import { PaginationMeta, RENTAL_STATUS_MAP } from '@/types';
+import { useRentals } from '@/hooks/api';
+import { RENTAL_STATUS_MAP } from '@/types';
 import { toDateOnlyString } from '@/utils';
 
+import { RentalActiveFilter } from './RentalFilters';
+
 type RentalTableProps = {
-  rentals: Rental[];
+  activeFilter: RentalActiveFilter;
+  search: string;
   page: number;
-  pagination: PaginationMeta;
   onPageChange: (page: number) => void;
 };
 
@@ -56,44 +54,27 @@ function getRoomLabel(rental: Rental) {
   return `Phòng ${rental.room.number} - ${rental.room.building?.name ?? 'Chưa có tòa nhà'}`;
 }
 
-function getPageNumbers(page: number, totalPages: number) {
-  if (totalPages <= 5) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-
-  if (page <= 3) return [1, 2, 3, 4, 'ellipsis', totalPages] as const;
-  if (page >= totalPages - 2) {
-    return [
-      1,
-      'ellipsis',
-      totalPages - 3,
-      totalPages - 2,
-      totalPages - 1,
-      totalPages,
-    ] as const;
-  }
-
-  return [
-    1,
-    'ellipsis',
-    page - 1,
-    page,
-    page + 1,
-    'ellipsis',
-    totalPages,
-  ] as const;
-}
-
 export function RentalTable({
-  rentals,
+  activeFilter,
+  search,
   page,
-  pagination,
   onPageChange,
 }: RentalTableProps) {
-  const { limit, total, totalPages, hasNext, hasPrev } = pagination;
+  const { data, isPending } = useRentals({
+    status: activeFilter === 'ALL' ? undefined : activeFilter,
+    search,
+    page,
+  });
+
+  const rentals = data?.data ?? [];
+  const pagination = data?.pagination;
+
+  const limit = pagination?.limit ?? 0;
+  const total = pagination?.total ?? 0;
+  const totalPages = pagination?.totalPages ?? 0;
+
   const firstItem = total === 0 ? 0 : (page - 1) * limit + 1;
-  const lastItem = Math.min(page * limit, total);
-  const pageNumbers = getPageNumbers(page, totalPages);
+  const lastItem = limit === 0 ? 0 : Math.min(page * limit, total);
 
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -121,6 +102,13 @@ export function RentalTable({
           </TableRow>
         </TableHeader>
         <TableBody>
+          {isPending && (
+            <TableRow className="hover:bg-transparent">
+              <TableCell colSpan={6} className="h-40 text-center">
+                <Spinner className="mx-auto size-6" />
+              </TableCell>
+            </TableRow>
+          )}
           {rentals.map((rental) => {
             const tenantName = getTenantName(rental);
             const status = RENTAL_STATUS_MAP[rental.status];
@@ -200,59 +188,21 @@ export function RentalTable({
         </TableBody>
       </Table>
       {total > 0 && (
-        <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-slate-500">
-            Hiển thị {firstItem} đến {lastItem} trên tổng số {total} hợp đồng
-          </p>
-          <Pagination className="mx-0 w-auto justify-end">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  text="Trước"
-                  aria-disabled={!hasPrev}
-                  className={!hasPrev ? 'pointer-events-none opacity-50' : ''}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (hasPrev) onPageChange(page - 1);
-                  }}
-                />
-              </PaginationItem>
-              {pageNumbers.map((pageNumber, index) =>
-                pageNumber === 'ellipsis' ? (
-                  <PaginationItem key={`ellipsis-${index}`}>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                ) : (
-                  <PaginationItem key={pageNumber}>
-                    <PaginationLink
-                      href="#"
-                      isActive={pageNumber === page}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        onPageChange(pageNumber);
-                      }}
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                ),
-              )}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  text="Sau"
-                  aria-disabled={!hasNext}
-                  className={!hasNext ? 'pointer-events-none opacity-50' : ''}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (hasNext) onPageChange(page + 1);
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        <PaginationContainer
+          variant="plain"
+          page={page}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          disabled={isPending}
+          previousText="Trước"
+          nextText="Sau"
+          summary={
+            <span className="text-xs text-slate-500">
+              Hiển thị {firstItem} đến {lastItem} trên tổng số {total} hợp đồng
+            </span>
+          }
+          className="border-t border-slate-200 bg-slate-50 px-5 py-4"
+        />
       )}
     </div>
   );

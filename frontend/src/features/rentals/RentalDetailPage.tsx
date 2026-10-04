@@ -20,11 +20,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { RENTAL_STATUS_MAP, UserRole } from '@/types';
 import { toDateOnlyString } from '@/utils';
 
-import { FinancialSummary } from './FinancialSummary';
-import { LeaseTimeline } from './LeaseTimeline';
-import { QuickActions } from './QuickActions';
-import { RoomDetails } from './RoomDetails';
-import { TenantInformation } from './TenantInformation';
+import { FinancialSummary } from './components/detail/FinancialSummary';
+import { LeaseTimeline } from './components/detail/LeaseTimeline';
+import { QuickActions } from './components/detail/QuickActions';
+import { RoomDetails } from './components/detail/RoomDetails';
+import { TenantInformation } from './components/detail/TenantInformation';
 
 type RentalDetailProps = {
   id: string;
