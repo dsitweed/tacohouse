@@ -21,5 +21,4 @@ export type RentalsControllerFindAllParams = {
   tenantId?: string;
   status?: RentalsControllerFindAllStatus;
   search?: string;
-  expiringSoon?: boolean;
 };

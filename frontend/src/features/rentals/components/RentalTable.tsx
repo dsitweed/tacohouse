@@ -11,6 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  NoDataEmptyState,
   PaginationContainer,
   Spinner,
   Table,
@@ -186,6 +187,12 @@ export function RentalTable({
             </span>
           }
           className="border-t border-slate-200 bg-slate-50 px-5 py-4"
+        />
+      )}
+      {total === 0 && !isPending && (
+        <NoDataEmptyState
+          title="Không tìm thấy hợp đồng"
+          subTitle="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
         />
       )}
     </div>

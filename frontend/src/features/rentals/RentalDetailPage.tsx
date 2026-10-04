@@ -60,7 +60,7 @@ export function RentalDetail({ id, initialRental }: RentalDetailProps) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard/contracts">
+                <BreadcrumbLink href="/dashboard/rentals">
                   Hợp đồng
                 </BreadcrumbLink>
               </BreadcrumbItem>

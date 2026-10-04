@@ -95,15 +95,7 @@ export class RentalsService {
     data: Rental[];
     pagination: PaginationMeta;
   }> {
-    const {
-      limit = 10,
-      page = 1,
-      roomId,
-      tenantId,
-      status,
-      search,
-      expiringSoon,
-    } = query;
+    const { limit = 10, page = 1, roomId, tenantId, status, search } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.RentalWhereInput = {};
@@ -151,12 +143,6 @@ export class RentalsService {
           ],
         },
       ];
-    }
-    if (expiringSoon) {
-      const now = new Date();
-      const expiryLimit = new Date(now);
-      expiryLimit.setDate(expiryLimit.getDate() + 30);
-      where.endDate = { gte: now, lte: expiryLimit };
     }
 
     // Authorization logic
@@ -359,8 +345,8 @@ export class RentalsService {
       (rental) => rental.status === 'ACTIVE',
     );
     const activeCount = activeRentals.length;
-    const expiringCount = activeRentals.filter(
-      (rental) => rental.endDate !== null && rental.endDate <= expiryLimit,
+    const expiringCount = rentals.filter(
+      (rental) => rental.status === 'NOTICE_GIVEN',
     ).length;
 
     const totalRentalDurationMs = rentals.reduce((total, rental) => {
