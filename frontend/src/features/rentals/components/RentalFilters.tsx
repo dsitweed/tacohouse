@@ -1,7 +1,8 @@
-import { zodResolver } from '@hookform/resolvers/zod/dist/zod.js';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { useDebouncedCallback } from 'use-debounce';
 import { z } from 'zod';
 
 import {
@@ -30,7 +31,7 @@ const filters: { value: RentalActiveFilter; label: string }[] = [
 ];
 
 const formSchema = z.object({
-  search: z.string().optional(),
+  search: z.string(),
 });
 
 export function RentalFilters({
@@ -39,15 +40,15 @@ export function RentalFilters({
   onFilterChange,
   onSearchChange,
 }: RentalFiltersProps) {
-  const { register, handleSubmit } = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { search },
   });
 
-  const handleSearchSubmit = (data: z.infer<typeof formSchema>) => {
-    const nextSearch = data.search?.trim() ?? '';
+  const handleSearchChange = useDebouncedCallback((value: string) => {
+    const nextSearch = value.trim();
     onSearchChange(nextSearch);
-  };
+  }, 300);
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -68,21 +69,27 @@ export function RentalFilters({
         ))}
       </div>
       <div className="flex flex-col gap-3 sm:flex-row">
-        <form
-          className="relative min-w-0 sm:w-72"
-          onSubmit={handleSubmit(handleSearchSubmit)}
-        >
+        <form className="relative min-w-0 sm:w-72">
           <FieldGroup>
-            <InputGroup>
-              <InputGroupAddon>
-                <Search className="size-4" />
-              </InputGroupAddon>
-              <InputGroupInput
-                {...register('search')}
-                placeholder="Tìm người thuê, phòng..."
-                aria-label="Tìm kiếm hợp đồng"
-              />
-            </InputGroup>
+            <Controller
+              name="search"
+              control={form.control}
+              render={({ field }) => (
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Search className="size-4 text-slate-400" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    {...field}
+                    placeholder="Tìm kiếm hợp đồng..."
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleSearchChange(e.target.value);
+                    }}
+                  />
+                </InputGroup>
+              )}
+            />
           </FieldGroup>
         </form>
         <Button asChild>
