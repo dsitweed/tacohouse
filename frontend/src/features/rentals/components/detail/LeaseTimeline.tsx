@@ -2,8 +2,7 @@ import { AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-react';
 
 import { Button, Card, CardContent } from '@/components/ui';
 import { DAYS_REMAINING_THRESHOLD } from '@/features/rentals/rentals.constants';
-import { getDaysRemaining } from '@/features/rentals/rentals.utils';
-import { toDateOnlyString } from '@/utils';
+import { getDaysRemaining, toDateOnlyString } from '@/utils';
 
 type LeaseTimelineProps = {
   startDate: string;

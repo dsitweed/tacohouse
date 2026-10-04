@@ -18,7 +18,7 @@ import type { Rental } from '@/generated/model';
 import { useRental } from '@/hooks/api/useRentals';
 import { useAuthStore } from '@/stores/authStore';
 import { RENTAL_STATUS_MAP, UserRole } from '@/types';
-import { toDateOnlyString } from '@/utils';
+import { getTenantName, toDateOnlyString } from '@/utils';
 
 import { FinancialSummary } from './components/detail/FinancialSummary';
 import { LeaseTimeline } from './components/detail/LeaseTimeline';
@@ -30,7 +30,6 @@ type RentalDetailProps = {
   id: string;
   initialRental: Rental;
 };
-import { getTenantName } from '@/features/rentals/rentals.utils';
 
 export function RentalDetail({ id, initialRental }: RentalDetailProps) {
   const user = useAuthStore((state) => state.user);

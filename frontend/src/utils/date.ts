@@ -23,3 +23,10 @@ export function toApiDateString(date: Date | undefined): string | undefined {
   const day = String(date.getDate()).padStart(2, '0');
   return `${date.getFullYear()}-${month}-${day}`;
 }
+
+export function getDaysRemaining(endDate: string | null) {
+  if (!endDate) return null;
+  return Math.ceil(
+    (new Date(endDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
+  );
+}

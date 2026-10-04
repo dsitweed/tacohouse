@@ -20,10 +20,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui';
-import type { Rental } from '@/generated/model';
 import { useRentals } from '@/hooks/api';
 import { RENTAL_STATUS_MAP } from '@/types';
-import { toDateOnlyString } from '@/utils';
+import {
+  getInitName,
+  getRentalRoomLabel,
+  getTenantName,
+  toDateOnlyString,
+} from '@/utils';
 
 import { RentalActiveFilter } from './RentalFilters';
 
@@ -33,26 +37,6 @@ type RentalTableProps = {
   page: number;
   onPageChange: (page: number) => void;
 };
-
-function getTenantName(rental: Rental) {
-  const profile = rental.tenant?.profile;
-  const name = `${profile?.firstName ?? ''} ${profile?.lastName ?? ''}`.trim();
-  return name || rental.tenant?.email || 'Người thuê';
-}
-
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-function getRoomLabel(rental: Rental) {
-  if (!rental.room) return 'Chưa gán phòng';
-  return `Phòng ${rental.room.number} - ${rental.room.building?.name ?? 'Chưa có tòa nhà'}`;
-}
 
 export function RentalTable({
   activeFilter,
@@ -110,7 +94,7 @@ export function RentalTable({
             </TableRow>
           )}
           {rentals.map((rental) => {
-            const tenantName = getTenantName(rental);
+            const tenantName = getTenantName(rental.tenant);
             const status = RENTAL_STATUS_MAP[rental.status];
 
             return (
@@ -126,7 +110,7 @@ export function RentalTable({
                     <Avatar className="size-9 rounded-lg">
                       <AvatarImage src={rental.tenant?.profile?.avatar ?? ''} />
                       <AvatarFallback className="rounded-lg bg-blue-100 text-xs font-semibold text-blue-700">
-                        {getInitials(tenantName)}
+                        {getInitName(tenantName)}
                       </AvatarFallback>
                     </Avatar>
                     <span className="min-w-0">
@@ -145,7 +129,7 @@ export function RentalTable({
                     className="flex items-center gap-2 text-sm text-slate-700 hover:text-blue-700"
                   >
                     <DoorOpen className="size-4 shrink-0 text-slate-400" />
-                    {getRoomLabel(rental)}
+                    {getRentalRoomLabel(rental)}
                   </Link>
                 </TableCell>
                 <TableCell className="px-5 py-4 text-sm text-slate-600">
