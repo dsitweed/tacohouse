@@ -118,3 +118,10 @@ aws ecs describe-tasks \
   --query 'tasks[0].{exitCode:containers[0].exitCode,reason:containers[0].reason,stoppedReason:stoppedReason}' \
   --output table
 ```
+
+```bash
+eval "$(aws configure export-credentials --format env)" && rtk terraform -chdir=terraform/env/prod plan -input=false
+
+rtk terraform -chdir=terraform/env/prod destroy -input=false -auto-approve
+```
+
