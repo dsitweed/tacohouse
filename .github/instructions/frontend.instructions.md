@@ -155,6 +155,62 @@ export function RoomForm() {
 
 ---
 
+## Tables & Lists
+
+### Any table that lists data must paginate and handle the empty state
+
+When a component renders a `<Table>` to display a list of data, it **must**:
+
+- Use the shared `PaginationContainer` from `components/ui` and drive it with the `pagination` (`PaginationMeta`) returned by the API.
+- Never derive `total`, `totalPages`, `firstItem` or `lastItem` from the length of `data`. The API returns only the current page, so `data.length` is not the number of matching records.
+- Read the display range directly from the metadata: `pagination.total`, `pagination.firstItem`, `pagination.lastItem`.
+- Pass `page` and `limit` to the query hook (`limit` defaults to `DEFAULT_PAGE_SIZE` from `constants/pagination.ts`) and let the server paginate.
+- Reset to page 1 when filters or search change — use `usePagination` from `hooks/use-pagination.ts`, which takes a `filtersKey` string.
+- Render `NoDataEmptyState` when the list is empty, and only when it is not loading.
+- Keep the pagination controls hidden while `pagination.total === 0`.
+
+```typescript
+const { page, setPage, limit } = usePagination(
+  `${search}|${statusFilter}`,
+);
+const { data, isPending } = useMaintenanceRequests({
+  buildingId,
+  page,
+  limit,
+});
+const pagination = data?.pagination;
+
+return (
+  <>
+    <Table>{/* ... */}</Table>
+
+    {pagination && pagination.total > 0 && (
+      <PaginationContainer
+        variant="plain"
+        page={pagination.page}
+        totalPages={pagination.totalPages}
+        onPageChange={setPage}
+        disabled={isPending}
+        previousText="Trước"
+        nextText="Sau"
+        summary={`Hiển thị ${pagination.firstItem} đến ${pagination.lastItem} trên tổng số ${pagination.total} yêu cầu`}
+      />
+    )}
+
+    {!isPending && pagination?.total === 0 && (
+      <NoDataEmptyState
+        title="Không tìm thấy dữ liệu phù hợp"
+        subTitle="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+      />
+    )}
+  </>
+);
+```
+
+For small fixed lists that render a table without pagination (for example a preview of the latest items), still render `NoDataEmptyState` when there is nothing to show.
+
+---
+
 ## Data Fetching Patterns
 
 ### ✅ Correct - Hook-based data fetching
