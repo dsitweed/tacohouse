@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Response } from 'express';
 import { UserRole } from 'generated/prisma/enums';
@@ -16,6 +17,7 @@ describe('AuthController', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     isActive: true,
+    emailVerifiedAt: null,
     deletedAt: null,
     profile: {
       id: '1',
@@ -54,6 +56,10 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: mockAuthService,
+        },
+        {
+          provide: ConfigService,
+          useValue: { get: jest.fn(() => 'test-value') },
         },
       ],
     }).compile();

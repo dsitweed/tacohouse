@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { R2StorageService } from './r2-storage.service';
@@ -7,7 +8,13 @@ describe('StorageService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [R2StorageService],
+      providers: [
+        R2StorageService,
+        {
+          provide: ConfigService,
+          useValue: { get: jest.fn(() => 'test-value') },
+        },
+      ],
     }).compile();
 
     service = module.get<R2StorageService>(R2StorageService);

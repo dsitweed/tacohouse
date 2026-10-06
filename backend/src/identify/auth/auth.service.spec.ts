@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as argon from 'argon2';
+import { EmailService } from 'communication/email/email.service';
 import { PrismaService } from 'core/prisma/prisma.service';
 import { User } from 'generated/prisma/client';
 import { UserRole } from 'generated/prisma/enums';
@@ -23,6 +24,7 @@ describe('AuthService', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     isActive: true,
+    emailVerifiedAt: null,
     deletedAt: null,
     profile: {
       id: '1',
@@ -59,6 +61,16 @@ describe('AuthService', () => {
     account: {
       create: jest.fn(),
     },
+    session: {
+      create: jest.fn(),
+      delete: jest.fn(),
+      deleteMany: jest.fn(),
+      findFirst: jest.fn(),
+    },
+    verification: {
+      create: jest.fn(),
+      deleteMany: jest.fn(),
+    },
   };
 
   const mockUserService = {};
@@ -71,6 +83,10 @@ describe('AuthService', () => {
     get: jest.fn(),
   };
 
+  const mockEmailService = {
+    sendVerificationEmail: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -79,6 +95,7 @@ describe('AuthService', () => {
         { provide: UsersService, useValue: mockUserService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 
@@ -240,7 +257,10 @@ describe('AuthService', () => {
         .mockReturnValueOnce('refresh-secret')
         .mockReturnValueOnce('7d');
 
-      const result = await service.refresh(mockUser);
+      const result = await service.refresh({
+        ...mockUser,
+        refreshTokenId: 'session-1',
+      });
 
       expect(result).toEqual({
         accessToken,
@@ -248,6 +268,9 @@ describe('AuthService', () => {
       });
 
       expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
+      expect(mockPrismaService.session.deleteMany).toHaveBeenCalledWith({
+        where: { id: 'session-1' },
+      });
     });
   });
 
@@ -318,10 +341,10 @@ describe('AuthService', () => {
     it('should return user without password if user exists', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
 
-      const result = await service.validateJwtUser(jwtPayload);
+      const result = await service.validateJwtUser(jwtPayload.sub);
 
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { id: jwtPayload.sub },
+        where: { id: jwtPayload.sub, isActive: true, deletedAt: null },
       });
 
       expect(result).not.toHaveProperty('password');
@@ -337,7 +360,7 @@ describe('AuthService', () => {
     it('should return null if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.validateJwtUser(jwtPayload);
+      const result = await service.validateJwtUser(jwtPayload.sub);
 
       expect(result).toBeNull();
     });

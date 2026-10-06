@@ -9,7 +9,7 @@ describe('UploadsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UploadsController],
-      providers: [UploadsService],
+      providers: [{ provide: UploadsService, useValue: {} }],
     }).compile();
 
     controller = module.get<UploadsController>(UploadsController);
