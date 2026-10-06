@@ -5,6 +5,7 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 
+import { DEFAULT_LIMIT_SIZE } from '@/constants/pagination';
 import {
   Bill,
   BillsControllerFindAllParams,
@@ -14,9 +15,20 @@ import {
 } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
 
+/**
+ * The bills endpoint also accepts a `billingPeriod` (YYYY-MM) month filter that
+ * is not part of the generated DTO yet. Drop the intersection once
+ * `pnpm generate:api` picks it up from the backend swagger.
+ */
+export type BillsQueryParams = BillsControllerFindAllParams & {
+  billingPeriod?: string;
+};
+
+const MAX_EXPORT_PAGES = 100;
+
 // Bill API functions
 const billsApi = {
-  getAll: async (query?: BillsControllerFindAllParams) => {
+  getAll: async (query?: BillsQueryParams) => {
     return apiClient.get<Bill[]>('/bills', { params: query });
   },
 
@@ -52,12 +64,39 @@ const billsApi = {
 };
 
 // Hooks
-export function useBills(query?: BillsControllerFindAllParams) {
+export function useBills(query?: BillsQueryParams) {
   return useQuery({
     queryKey: queryKeys.bills.list(query),
     queryFn: () => billsApi.getAll(query),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
+}
+
+/**
+ * Fetches every bill matching the given filters by walking all pages.
+ * Intended for exports, where the caller needs the whole result set rather
+ * than a single page.
+ */
+export async function fetchAllBills(
+  query?: Omit<BillsQueryParams, 'page' | 'limit'>,
+): Promise<Bill[]> {
+  const bills: Bill[] = [];
+  let page = 1;
+  let hasNext = true;
+
+  // Guard against a runaway loop if the API ever reports a bad pagination state.
+  while (hasNext && page <= MAX_EXPORT_PAGES) {
+    const response = await billsApi.getAll({
+      ...query,
+      page,
+      limit: DEFAULT_LIMIT_SIZE,
+    });
+    bills.push(...response.data);
+    hasNext = response.pagination?.hasNext ?? false;
+    page += 1;
+  }
+
+  return bills;
 }
 
 export function useBill(

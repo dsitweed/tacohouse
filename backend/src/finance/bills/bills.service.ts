@@ -90,7 +90,7 @@ export class BillsService {
     data: Bill[];
     pagination: PaginationMeta;
   }> {
-    const { limit = 10, page = 1, roomId, status } = query;
+    const { limit = 10, page = 1, roomId, status, billingPeriod } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.BillWhereInput = {};
@@ -98,6 +98,14 @@ export class BillsService {
     // Apply filters
     if (roomId) where.roomId = roomId;
     if (status) where.status = status;
+    if (billingPeriod) {
+      // billingPeriod is a "YYYY-MM" month; match any date inside it
+      const [year, month] = billingPeriod.split('-').map(Number);
+      where.billingPeriod = {
+        gte: new Date(year, month - 1, 1),
+        lt: new Date(year, month, 1),
+      };
+    }
 
     // Authorization logic
     if (currentUser.role === UserRole.ADMIN) {

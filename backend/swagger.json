@@ -931,6 +931,15 @@
                 "OVERDUE"
               ]
             }
+          },
+          {
+            "name": "billingPeriod",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "type": "string"
+            }
           }
         ],
         "responses": {

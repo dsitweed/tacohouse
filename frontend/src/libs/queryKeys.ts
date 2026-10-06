@@ -69,6 +69,7 @@ export const queryKeys = {
       roomId?: string;
       rentalId?: string;
       status?: string;
+      billingPeriod?: string;
       page?: number;
       limit?: number;
     }) => [...queryKeys.bills.lists(), filters] as const,

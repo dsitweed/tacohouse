@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, Matches } from 'class-validator';
 import { BillStatus } from 'generated/prisma/enums';
 
 export class FindAllBillsDto {
@@ -22,4 +22,11 @@ export class FindAllBillsDto {
   @IsOptional()
   @IsEnum(BillStatus)
   status?: BillStatus;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\d{4}-(0[1-9]|1[0-2])$/, {
+    message: 'billingPeriod must be in YYYY-MM format',
+  })
+  billingPeriod?: string;
 }
