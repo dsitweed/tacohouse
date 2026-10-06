@@ -30,3 +30,14 @@ export function getDaysRemaining(endDate: string | null) {
     (new Date(endDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
   );
 }
+
+/**
+ * Formats a billing period date as a month label, e.g. "Tháng 11/2023".
+ */
+export function formatBillingPeriod(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `Tháng ${month}/${date.getFullYear()}`;
+}

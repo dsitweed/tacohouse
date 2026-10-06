@@ -18,7 +18,6 @@ import { toast } from 'sonner';
 
 import {
   Badge,
-  BadgeVariantType,
   Button,
   Card,
   CardContent,
@@ -60,45 +59,25 @@ import {
 } from '@/hooks/api/useBills';
 import { usePagination } from '@/hooks/use-pagination';
 import { useAuthStore } from '@/stores/authStore';
-import { formatCurrency } from '@/utils';
-
-const statusColors: Record<BillStatus, BadgeVariantType> = {
-  PENDING: 'pending',
-  PAID: 'success',
-  TENANT_CONFIRMED: 'secondary',
-  OVERDUE: 'destructive',
-  LANDLORD_CONFIRMED: 'success',
-};
-
-const statusLabels: Record<BillStatus, string> = {
-  PENDING: 'Chờ thanh toán',
-  PAID: 'Đã thanh toán',
-  TENANT_CONFIRMED: 'Người thuê đã xác nhận',
-  OVERDUE: 'Quá hạn',
-  LANDLORD_CONFIRMED: 'Đã xác nhận',
-};
+import { BILL_STATUS_MAP } from '@/types';
+import { formatBillingPeriod, formatCurrency } from '@/utils';
 
 const STATUS_FILTER_OPTIONS = [
   { value: 'ALL', label: 'Tất cả trạng thái' },
-  { value: BillStatus.PENDING, label: statusLabels.PENDING },
-  { value: BillStatus.PAID, label: statusLabels.PAID },
-  { value: BillStatus.TENANT_CONFIRMED, label: statusLabels.TENANT_CONFIRMED },
+  { value: BillStatus.PENDING, label: BILL_STATUS_MAP.PENDING.label },
+  { value: BillStatus.PAID, label: BILL_STATUS_MAP.PAID.label },
+  {
+    value: BillStatus.TENANT_CONFIRMED,
+    label: BILL_STATUS_MAP.TENANT_CONFIRMED.label,
+  },
   {
     value: BillStatus.LANDLORD_CONFIRMED,
-    label: statusLabels.LANDLORD_CONFIRMED,
+    label: BILL_STATUS_MAP.LANDLORD_CONFIRMED.label,
   },
-  { value: BillStatus.OVERDUE, label: statusLabels.OVERDUE },
+  { value: BillStatus.OVERDUE, label: BILL_STATUS_MAP.OVERDUE.label },
 ] as const;
 
 type StatusFilter = (typeof STATUS_FILTER_OPTIONS)[number]['value'];
-
-function formatBillingPeriod(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  return `Tháng ${month}/${date.getFullYear()}`;
-}
 
 function escapeCsvCell(value: string) {
   if (/[",\r\n]/.test(value)) {
@@ -122,7 +101,7 @@ function exportBillsToCsv(bills: Bill[]) {
     bill.room?.building?.name ?? '',
     formatBillingPeriod(bill.billingPeriod),
     bill.totalAmount,
-    statusLabels[bill.status],
+    BILL_STATUS_MAP[bill.status].label,
   ]);
 
   const csv = [headers, ...rows]
@@ -159,7 +138,7 @@ function exportBillsToPdf(bills: Bill[]) {
         <td>${escapeHtml(bill.room?.building?.name ?? '-')}</td>
         <td>${escapeHtml(formatBillingPeriod(bill.billingPeriod))}</td>
         <td class="amount">${escapeHtml(formatCurrency(bill.totalAmount))}</td>
-        <td>${escapeHtml(statusLabels[bill.status])}</td>
+        <td>${escapeHtml(BILL_STATUS_MAP[bill.status].label)}</td>
       </tr>`,
     )
     .join('');
@@ -531,8 +510,10 @@ export function BillsPage() {
                           {formatCurrency(bill.totalAmount)}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={statusColors[bill.status]}>
-                            {statusLabels[bill.status]}
+                          <Badge
+                            variant={BILL_STATUS_MAP[bill.status].badgeVariant}
+                          >
+                            {BILL_STATUS_MAP[bill.status].label}
                           </Badge>
                         </TableCell>
                         <TableCell className="pr-4 text-right">

@@ -1,6 +1,42 @@
+import { BadgeVariantType } from '@/components/ui';
 import { Room } from '@/generated/model';
 
 import type { BillStatus, PaymentMethod, PaymentStatus } from './EnumsTypes';
+
+export const BILL_STATUS_MAP: Record<
+  BillStatus,
+  {
+    label: string;
+    badgeVariant: BadgeVariantType;
+  }
+> = {
+  PENDING: {
+    label: 'Chờ thanh toán',
+    badgeVariant: 'pending',
+  },
+  PAID: {
+    label: 'Đã thanh toán',
+    badgeVariant: 'success',
+  },
+  TENANT_CONFIRMED: {
+    label: 'Người thuê đã xác nhận',
+    badgeVariant: 'secondary',
+  },
+  LANDLORD_CONFIRMED: {
+    label: 'Đã xác nhận',
+    badgeVariant: 'success',
+  },
+  OVERDUE: {
+    label: 'Quá hạn',
+    badgeVariant: 'destructive',
+  },
+};
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  CASH: 'Tiền mặt',
+  BANK_TRANSFER: 'Chuyển khoản',
+  STRIPE: 'Stripe',
+};
 
 export interface PaymentConfirmation {
   id: string;
