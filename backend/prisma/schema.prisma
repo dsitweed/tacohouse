@@ -254,6 +254,8 @@ model Rental {
   monthlyRent Decimal @db.Decimal(14, 2)
   depositPaid Decimal @default(0) @db.Decimal(14, 2) // Deposit amount paid by the tenant, can be deducted from future rent payments
 
+  numberOfTenants Int @default(1) // Number of people living in the room, used for per-person fees
+
   status         RentalStatus @default(ACTIVE)
   contractImages String[] // Array of key for contract document images in bucket
 

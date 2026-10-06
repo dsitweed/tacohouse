@@ -17,6 +17,10 @@ export class FindAllRentalsDto {
 
   @IsOptional()
   @IsString()
+  buildingId?: string;
+
+  @IsOptional()
+  @IsString()
   tenantId?: string;
 
   @IsOptional()

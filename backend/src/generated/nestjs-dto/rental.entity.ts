@@ -60,6 +60,11 @@ export class Rental {
   })
   depositPaid: Prisma.Decimal;
   @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+  })
+  numberOfTenants: number;
+  @ApiProperty({
     enum: RentalStatus,
     enumName: 'RentalStatus',
   })

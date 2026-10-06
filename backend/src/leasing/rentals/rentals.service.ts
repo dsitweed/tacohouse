@@ -96,13 +96,23 @@ export class RentalsService {
     data: Rental[];
     pagination: PaginationMeta;
   }> {
-    const { limit = 10, page = 1, roomId, tenantId, status, search } = query;
+    const {
+      limit = 10,
+      page = 1,
+      roomId,
+      buildingId,
+      tenantId,
+      status,
+      search,
+    } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.RentalWhereInput = {};
+    const roomFilter: Prisma.RoomWhereInput = {};
 
     // Apply filters
     if (roomId) where.roomId = roomId;
+    if (buildingId) roomFilter.buildingId = buildingId;
     if (tenantId) where.tenantId = tenantId;
     if (status) where.status = status;
     if (search?.trim()) {
@@ -151,14 +161,16 @@ export class RentalsService {
       // Admin can see all rentals
     } else if (currentUser.role === UserRole.LANDLORD) {
       // Landlord can only see rentals in their buildings
-      where.room = {
-        building: {
-          landlordId: currentUser.id,
-        },
+      roomFilter.building = {
+        landlordId: currentUser.id,
       };
     } else if (currentUser.role === UserRole.TENANT) {
       // Tenant can only see their own rentals
       where.tenantId = currentUser.id;
+    }
+
+    if (Object.keys(roomFilter).length > 0) {
+      where.room = roomFilter;
     }
 
     const [data, total] = await Promise.all([

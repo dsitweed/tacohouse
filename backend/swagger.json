@@ -1285,6 +1285,210 @@
         ]
       }
     },
+    "/api/v1/utility-records": {
+      "post": {
+        "operationId": "UtilityRecordsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUtilityRecordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UtilityRecord"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Record a utility meter reading",
+        "tags": [
+          "Utility Records"
+        ]
+      },
+      "get": {
+        "operationId": "UtilityRecordsController_findAll",
+        "parameters": [
+          {
+            "name": "roomId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "buildingId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "utilityType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ELECTRICITY",
+                "WATER",
+                "GAS"
+              ]
+            }
+          },
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "description": "Month to filter by, in `YYYY-MM` format.",
+            "schema": {
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UtilityRecord"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "List utility meter readings",
+        "tags": [
+          "Utility Records"
+        ]
+      }
+    },
+    "/api/v1/utility-records/bulk": {
+      "post": {
+        "description": "Upserts readings for a whole building/period. previousReading and unitRate are derived automatically when omitted.",
+        "operationId": "UtilityRecordsController_createBulk",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkCreateUtilityRecordsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UtilityRecord"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Record many utility meter readings at once",
+        "tags": [
+          "Utility Records"
+        ]
+      }
+    },
+    "/api/v1/utility-records/latest": {
+      "get": {
+        "description": "Pass `period` (YYYY-MM) to get the readings from before that month, which seed the next billing period.",
+        "operationId": "UtilityRecordsController_findLatest",
+        "parameters": [
+          {
+            "name": "roomId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "buildingId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "description": "When provided, returns the latest reading *before* this month (`YYYY-MM`),\nwhich is the value used to seed the next billing period.",
+            "schema": {
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UtilityRecord"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get the latest reading per utility type",
+        "tags": [
+          "Utility Records"
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "AuthController_login",
@@ -1810,6 +2014,14 @@
           },
           {
             "name": "roomId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "buildingId",
             "required": false,
             "in": "query",
             "schema": {
@@ -3093,6 +3305,10 @@
             "type": "string",
             "format": "Decimal.js"
           },
+          "numberOfTenants": {
+            "type": "integer",
+            "format": "int32"
+          },
           "status": {
             "allOf": [
               {
@@ -3125,6 +3341,7 @@
           "noticeDate",
           "monthlyRent",
           "depositPaid",
+          "numberOfTenants",
           "status",
           "contractImages",
           "createdAt",
@@ -4620,6 +4837,61 @@
           "billId",
           "amount",
           "paymentMethod"
+        ]
+      },
+      "CreateUtilityRecordDto": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "utilityType": {
+            "type": "string",
+            "enum": [
+              "ELECTRICITY",
+              "WATER",
+              "GAS"
+            ]
+          },
+          "recordDate": {
+            "type": "string",
+            "description": "Any date inside the billing month; normalized to the first day of that month."
+          },
+          "previousReading": {
+            "type": "number",
+            "description": "When omitted, it is derived from the latest reading of the same room + type.",
+            "minimum": 0
+          },
+          "currentReading": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unitRate": {
+            "type": "number",
+            "description": "When omitted, it is taken from the building rate for this utility type.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "roomId",
+          "utilityType",
+          "recordDate",
+          "currentReading"
+        ]
+      },
+      "BulkCreateUtilityRecordsDto": {
+        "type": "object",
+        "properties": {
+          "records": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateUtilityRecordDto"
+            }
+          }
+        },
+        "required": [
+          "records"
         ]
       },
       "LoginAuthDto": {
