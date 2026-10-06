@@ -21,7 +21,7 @@ export function useDashboardRevenueTrend(
   query: DashboardControllerGetRevenueTrendParams,
 ) {
   return useQuery({
-    queryKey: queryKeys.dashboard.revenueTrend(),
+    queryKey: queryKeys.dashboard.revenueTrend(query),
     queryFn: () => dashboardsApi.getRevenueTrend(query),
   });
 }

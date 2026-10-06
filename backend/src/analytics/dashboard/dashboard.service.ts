@@ -31,7 +31,7 @@ export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
   async revenueTrend(
-    userId: string,
+    currentUser: User,
     query: RevenueTrendQueryDto,
   ): Promise<RevenueTrendResponseDto[]> {
     const { months } = query;
@@ -42,19 +42,24 @@ export class DashboardService {
       1,
     );
 
-    const bills = await this.prisma.bill.findMany({
-      take: months,
-      where: {
-        room: {
-          building: {
-            landlordId: userId,
-          },
-        },
-        billingPeriod: {
-          gte: startDate,
-        },
-        status: BillStatus.PAID,
+    const where: BillWhereInput = {
+      billingPeriod: {
+        gte: startDate,
       },
+      status: BillStatus.PAID,
+    };
+
+    // Landlords only see revenue from their own buildings; admins see all.
+    if (currentUser.role === UserRole.LANDLORD) {
+      where.room = {
+        building: {
+          landlordId: currentUser.id,
+        },
+      };
+    }
+
+    const bills = await this.prisma.bill.findMany({
+      where,
       select: {
         billingPeriod: true,
         totalAmount: true,

@@ -36,7 +36,7 @@ export class DashboardController {
     @CurrentUser() currentUser: User,
     @Query() query: RevenueTrendQueryDto,
   ) {
-    return this.dashboardService.revenueTrend(currentUser.id, query);
+    return this.dashboardService.revenueTrend(currentUser, query);
   }
 
   @Post()

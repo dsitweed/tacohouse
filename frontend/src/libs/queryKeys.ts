@@ -4,6 +4,7 @@
  */
 
 import {
+  DashboardControllerGetRevenueTrendParams,
   DashboardControllerGetTenantDashboardParams,
   MaintenanceControllerFindAllParams,
   RoomsControllerFindAllParams,
@@ -137,7 +138,8 @@ export const queryKeys = {
 
   dashboard: {
     all: ['dashboard'] as const,
-    revenueTrend: () => [...queryKeys.dashboard.all, 'revenueTrend'] as const,
+    revenueTrend: (query?: DashboardControllerGetRevenueTrendParams) =>
+      [...queryKeys.dashboard.all, 'revenueTrend', query] as const,
     tenants: () => [...queryKeys.dashboard.all, 'tenants'] as const,
     tenant: (
       tenantId: string,
