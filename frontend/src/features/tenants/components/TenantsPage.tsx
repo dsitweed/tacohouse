@@ -27,6 +27,7 @@ import {
   InputGroupInput,
   NoDataEmptyState,
   PaginationContainer,
+  Spinner,
 } from '@/components/ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -46,18 +47,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { DEFAULT_LIMIT_SIZE } from '@/constants/pagination';
 import {
+  Bill,
   PaymentStatus,
   Rental,
   RentalStatus,
   UserRole,
 } from '@/generated/model';
-import { useRentals } from '@/hooks/api/useRentals';
+import { useBills } from '@/hooks/api/useBills';
+import { useRentals,useRentalStats } from '@/hooks/api/useRentals';
 import { usePagination } from '@/hooks/use-pagination';
 import { useAuthStore } from '@/stores/authStore';
 import { PAYMENT_STATUS_MAP, RENTAL_STATUS_MAP } from '@/types';
-import { toDateOnlyString } from '@/utils';
+import { formatCurrency, toDateOnlyString } from '@/utils';
 
 const RENTAL_STATUS_FILTER = [
   {
@@ -75,24 +77,24 @@ const RENTAL_STATUS_FILTER = [
 ] as const;
 type RentalStatusFilter = (typeof RENTAL_STATUS_FILTER)[number]['value'];
 
-// FIXME: use direct API get tenants instead of fetching all rentals
-function mapRentalToTenant(rental: Rental) {
+// Tenants are derived from rentals because the API exposes no dedicated
+// tenants endpoint; payment status comes from each room's latest bill.
+function mapRentalToTenant(
+  rental: Rental,
+  billsByRoom: Map<string, Bill[]>,
+) {
   const firstName = rental.tenant?.profile?.firstName || '';
   const lastName = rental.tenant?.profile?.lastName || '';
   const fullName = `${firstName} ${lastName}`.trim() || 'Người thuê';
   const initials =
     (firstName[0] || '') + (lastName[0] || '') || fullName[0] || 'T';
 
-  // TODO: Replace with real data
-  // Mock contract/payment status for UI demonstration matching Figma
-  const isPendingPayment = rental.status === RentalStatus.NOTICE_GIVEN;
-  // TODO: Status for payment not have overdue (Confusing with bill status)
+  // Real payment status: the most recent bill for this room, falling back to
+  // PENDING when the tenant has no payment recorded yet.
+  const roomBills = billsByRoom.get(rental.roomId) ?? [];
+  const latestBill = roomBills[0];
   const paymentStatus: PaymentStatus =
-    rental.status === 'ACTIVE'
-      ? 'COMPLETED'
-      : isPendingPayment
-        ? 'PENDING'
-        : 'FAILED';
+    latestBill?.payment?.status ?? PaymentStatus.PENDING;
 
   const createdAtFormatted = toDateOnlyString(new Date(rental.createdAt));
 
@@ -142,7 +144,7 @@ function dedupeTenants(rows: TenantRow[]) {
 }
 
 export function TenantsPage() {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore((state) => state);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RentalStatusFilter>('ALL');
 
@@ -150,12 +152,14 @@ export function TenantsPage() {
     `${search.trim()}|${statusFilter}`,
   );
 
-  // FIXME: replace with a dedicated tenants endpoint; stats still need the
-  // unfiltered set, so they come from a separate non-paginated query.
+  // Tenants are derived from rentals; the stats endpoint gives authoritative
+  // active/expiring counts, and bills give real payment status per tenant.
   const { data: statsData } = useRentals({
     page: 1,
-    limit: DEFAULT_LIMIT_SIZE,
+    limit: 1000,
   });
+  const { data: rentalStats } = useRentalStats();
+  const { data: billsData } = useBills({ page: 1, limit: 1000 });
 
   const { data: rentalsData, isLoading } = useRentals({
     page,
@@ -171,29 +175,78 @@ export function TenantsPage() {
 
   const pagination = rentalsData?.pagination;
 
+  const billsByRoom = useMemo(() => {
+    const map = new Map<string, Bill[]>();
+    for (const bill of billsData?.data ?? []) {
+      const list = map.get(bill.roomId) ?? [];
+      list.push(bill);
+      map.set(bill.roomId, list);
+    }
+    for (const list of map.values()) {
+      list.sort(
+        (a, b) =>
+          new Date(b.billingPeriod).getTime() -
+          new Date(a.billingPeriod).getTime(),
+      );
+    }
+    return map;
+  }, [billsData]);
+
   const tenants = useMemo(
-    () => dedupeTenants((rentalsData?.data ?? []).map(mapRentalToTenant)),
-    [rentalsData],
+    () =>
+      dedupeTenants(
+        (rentalsData?.data ?? []).map((rental) =>
+          mapRentalToTenant(rental, billsByRoom),
+        ),
+      ),
+    [rentalsData, billsByRoom],
   );
 
   const stats = useMemo(() => {
     const unique = dedupeTenants(
-      (statsData?.data ?? []).map(mapRentalToTenant),
+      (statsData?.data ?? []).map((rental) =>
+        mapRentalToTenant(rental, billsByRoom),
+      ),
     );
+
+    const now = new Date();
+    const newThisMonth = unique.filter((tenant) => {
+      const started = new Date(tenant.startDate);
+      return (
+        started.getMonth() === now.getMonth() &&
+        started.getFullYear() === now.getFullYear()
+      );
+    }).length;
+
+    const active =
+      rentalStats?.activeCount ??
+      unique.filter((tenant) => tenant.status === RentalStatus.ACTIVE).length;
+    const renewalsDue =
+      rentalStats?.expiringCount ??
+      unique.filter((tenant) => tenant.status === RentalStatus.NOTICE_GIVEN)
+        .length;
+    const pendingPayment = unique.filter(
+      (tenant) =>
+        tenant.paymentStatus === PaymentStatus.PENDING ||
+        tenant.paymentStatus === PaymentStatus.FAILED,
+    ).length;
 
     return {
       total: unique.length,
-      active: unique.filter((t) => t.status === RentalStatus.ACTIVE).length,
-      pendingPayment: unique.filter(
-        (t) => t.paymentStatus === 'FAILED' || t.paymentStatus === 'PENDING',
-      ).length,
-      renewalsDue: unique.filter((t) => t.status === RentalStatus.NOTICE_GIVEN)
-        .length,
+      active,
+      newThisMonth,
+      pendingPayment,
+      renewalsDue,
+      monthlyRevenue: Number(rentalStats?.monthlyRevenue ?? 0),
     };
-  }, [statsData]);
+  }, [statsData, billsByRoom, rentalStats]);
 
   const canView =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
+
+  if (!isHydrated) {
+    return <Spinner className="mx-auto my-10 size-6" />;
+  }
 
   const handleExportCsv = () => {
     const headers = [
@@ -272,7 +325,7 @@ export function TenantsPage() {
             </div>
             <div className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-600">
               <TrendingUp className="size-4" />
-              <span>+12 tháng này</span>
+              <span>+{stats.newThisMonth} tháng này</span>
             </div>
           </CardContent>
         </Card>
@@ -288,8 +341,9 @@ export function TenantsPage() {
             </div>
             <div className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-600">
               <CheckCircle2 className="size-4" />
-              {/* TODO: fill with actual data */}
-              <span>90.2% tỷ lệ lấp đầy</span>
+              <span>
+                Doanh thu tháng: {formatCurrency(stats.monthlyRevenue)}
+              </span>
             </div>
           </CardContent>
         </Card>

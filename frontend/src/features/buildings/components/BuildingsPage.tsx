@@ -2,25 +2,18 @@
 
 import {
   ArrowRight,
+  Building2,
   Calendar,
   MapPin,
   MoreVertical,
   Plus,
   Search,
-  SlidersHorizontal,
   Sparkles,
+  TrendingUp,
 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
-import {
-  Bar,
-  BarChart,
-  BarShapeProps,
-  CartesianGrid,
-  Rectangle,
-  XAxis,
-} from 'recharts';
+import { useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
   ButtonGroup,
@@ -32,12 +25,16 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  NoDataEmptyState,
   SkeletonPage,
 } from '@/components/ui';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { BillStatus, RoomStatus } from '@/generated/model';
+import { useBills } from '@/hooks/api/useBills';
 import { useBuildings } from '@/hooks/api/useBuildings';
+import { useDashboardRevenueTrend } from '@/hooks/api/useDashboards';
+import { useRooms } from '@/hooks/api/useRooms';
 import { useAuthStore } from '@/stores/authStore';
 import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { UserRole } from '@/types';
@@ -45,33 +42,15 @@ import { formatCurrency } from '@/utils';
 
 import CreateBuildingDialog from './CreateBuildingDialog';
 
-// Revenue Forecast mock chart data
-const REVENUE_FORECAST = [
-  { month: 'Tháng 7', revenue: 68000, heightPct: 65 },
-  { month: 'Tháng 8', revenue: 72000, heightPct: 72 },
-  { month: 'Tháng 9', revenue: 71000, heightPct: 70 },
-  { month: 'Tháng 10', revenue: 84000, heightPct: 92 }, // Best revenue month
-  { month: 'Tháng 11', revenue: 79000, heightPct: 82 },
-  { month: 'Tháng 12', revenue: 82000, heightPct: 88 },
-];
-
-const IMAGES_LIST = [
-  '/images/buildings/sunset-heights.png',
-  '/images/buildings/azure-bay.png',
-  '/images/buildings/oakwood-lofts.png',
-  '/images/buildings/emerald-garden.png',
-  'https://images.pexels.com/photos/9864028/pexels-photo-9864028.jpeg',
-];
-
-const BuildingTab = {
-  all: 'Tất cả',
-  residential: 'Nhà ở',
-  commercial: 'Thương mại',
-};
-type BuildingTabType = keyof typeof BuildingTab;
+const OCCUPANCY_FILTER = [
+  { value: 'all', label: 'Tất cả' },
+  { value: 'available', label: 'Còn phòng trống' },
+  { value: 'full', label: 'Đã lấp đầy' },
+] as const;
+type OccupancyFilterType = (typeof OCCUPANCY_FILTER)[number]['value'];
 
 const revenueChartConfig = {
-  revenue: {
+  total: {
     label: 'Doanh thu',
   },
 } satisfies ChartConfig;
@@ -79,41 +58,97 @@ const revenueChartConfig = {
 export function BuildingsPage() {
   const user = useAuthStore((state) => state.user);
   const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<BuildingTabType>('all');
+  const [occupancyFilter, setOccupancyFilter] =
+    useState<OccupancyFilterType>('all');
 
-  // TODO: add pagination and infinite scroll
   const { openDialog } = useDialogStore();
   const { data: buildingsData, isLoading } = useBuildings({
     page: 1,
     limit: 20,
     search,
   });
-  const buildings = buildingsData?.data ?? [];
+  const { data: roomsData } = useRooms({ page: 1, limit: 1000 });
+  const { data: billsData } = useBills({ page: 1, limit: 1000 });
+  const { data: revenueTrendData } = useDashboardRevenueTrend({ months: 6 });
 
   const canCreate =
     user?.role === UserRole.ADMIN || user?.role === UserRole.LANDLORD;
 
-  const displayBuildings = buildings.map((building, index) => ({
-    id: building.id,
-    name: building.name,
-    address: building.address,
-    roomsCount: building.rooms?.length ?? 0,
-    occupancy: '80%',
-    monthlyRevenue: 10000000,
-    status: 'ACTIVE', // TODO: fix this logic
-    image: IMAGES_LIST[index % IMAGES_LIST.length], // TODO: fix this logic
-    type: index % 2 === 0 ? 'residential' : 'commercial', // TODO: fix this logic
-    verified: true, // TODO: fix this logic (like Facebook verified badge)
-  }));
+  const displayBuildings = useMemo(() => {
+    const buildings = buildingsData?.data ?? [];
+    const rooms = roomsData?.data ?? [];
+    const bills = billsData?.data ?? [];
 
-  // TODO: fix this logic
-  const filteredBuildings = displayBuildings.filter(
-    (item) => activeTab === 'all' || item.type === activeTab,
-  );
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  const maxRevenueMonth = REVENUE_FORECAST.reduce((max, item) =>
-    max.revenue > item.revenue ? max : item,
-  );
+    return buildings.map((building) => {
+      const buildingRooms = rooms.filter(
+        (room) => room.buildingId === building.id,
+      );
+      const occupiedRooms = buildingRooms.filter(
+        (room) => room.status === RoomStatus.OCCUPIED,
+      );
+      const occupancyPct =
+        buildingRooms.length > 0
+          ? Math.round((occupiedRooms.length / buildingRooms.length) * 100)
+          : 0;
+
+      const monthlyRevenue = bills
+        .filter((bill) => {
+          if (bill.room?.buildingId !== building.id) return false;
+          if (bill.status !== BillStatus.PAID) return false;
+          const period = new Date(bill.billingPeriod);
+          return period >= currentMonthStart && period < nextMonthStart;
+        })
+        .reduce((sum, bill) => sum + Number(bill.totalAmount), 0);
+
+      return {
+        id: building.id,
+        name: building.name,
+        address: building.address,
+        roomsCount: buildingRooms.length,
+        occupiedCount: occupiedRooms.length,
+        occupancyPct,
+        monthlyRevenue,
+      };
+    });
+  }, [buildingsData, roomsData, billsData]);
+
+  const filteredBuildings = displayBuildings.filter((building) => {
+    if (occupancyFilter === 'available') {
+      return building.roomsCount > building.occupiedCount;
+    }
+    if (occupancyFilter === 'full') {
+      return (
+        building.roomsCount > 0 &&
+        building.occupiedCount === building.roomsCount
+      );
+    }
+    return true;
+  });
+
+  const portfolio = useMemo(() => {
+    const totalRooms = displayBuildings.reduce(
+      (sum, building) => sum + building.roomsCount,
+      0,
+    );
+    const occupiedRooms = displayBuildings.reduce(
+      (sum, building) => sum + building.occupiedCount,
+      0,
+    );
+
+    return {
+      totalRooms,
+      occupiedRooms,
+      vacantRooms: totalRooms - occupiedRooms,
+      occupancyPct:
+        totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0,
+    };
+  }, [displayBuildings]);
+
+  const revenueTrend = revenueTrendData?.data ?? [];
 
   return (
     <div className="space-y-8">
@@ -151,64 +186,40 @@ export function BuildingsPage() {
           </p>
         </div>
 
-        <div>
-          {/* TODO: Use Tabs components instead */}
-          <ButtonGroup>
-            {Object.entries(BuildingTab).map(([tab, tabName]) => {
-              return (
-                <Button
-                  key={tab}
-                  variant={activeTab === tab ? 'default' : 'outline'}
-                  onClick={() => setActiveTab(tab as BuildingTabType)}
-                >
-                  {tabName}
-                </Button>
-              );
-            })}
-            <Button variant="outline" disabled>
-              <SlidersHorizontal className="size-3.5" />
-              Bộ lọc
+        <ButtonGroup>
+          {OCCUPANCY_FILTER.map((filter) => (
+            <Button
+              key={filter.value}
+              variant={occupancyFilter === filter.value ? 'default' : 'outline'}
+              onClick={() => setOccupancyFilter(filter.value)}
+            >
+              {filter.label}
             </Button>
-          </ButtonGroup>
-        </div>
+          ))}
+        </ButtonGroup>
       </div>
 
       {/* Buildings Bento Grid */}
       {isLoading ? (
         <SkeletonPage className="max-w-full" />
+      ) : filteredBuildings.length === 0 && !canCreate ? (
+        <NoDataEmptyState
+          title="Không tìm thấy tòa nhà phù hợp"
+          subTitle="Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc lấp đầy."
+        />
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {filteredBuildings.map((building) => (
             <Card key={building.id} className="p-0">
               <CardContent className="group h-full p-0">
-                {/* Card Image Banner */}
-                {/* TODO: use Aspect Ratio of Shadcn */}
-                <div className="relative h-48 w-full overflow-hidden">
+                {/* Card Banner */}
+                <div className="relative flex h-40 w-full items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700">
                   <Link
                     href={`/dashboard/buildings/${building.id}`}
-                    className="relative block h-full w-full"
+                    className="flex h-full w-full items-center justify-center"
                   >
-                    <Image
-                      src={building.image}
-                      alt={building.name}
-                      fill
-                      // TODO: fix size dependent on screen size
-                      sizes="50vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+                    <Building2 className="size-14 text-white/80" />
                   </Link>
-
-                  {/* Active Status Badge */}
-                  <Badge
-                    variant={
-                      building.status === 'ACTIVE' ? 'success' : 'destructive'
-                    }
-                    className="absolute top-3 left-3 rounded-md text-[10px] font-bold"
-                  >
-                    {building.status}
-                  </Badge>
-
-                  {/* Overlay Action */}
                   <Button
                     variant="secondary"
                     size="icon-sm"
@@ -247,7 +258,7 @@ export function BuildingsPage() {
                           Lấp đầy
                         </p>
                         <p className="mt-1 text-2xl font-bold tracking-tight text-emerald-800">
-                          {building.occupancy}
+                          {building.occupancyPct}%
                         </p>
                       </div>
                     </div>
@@ -305,63 +316,56 @@ export function BuildingsPage() {
 
       {/* Portfolio Analytics Widgets */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Revenue Forecast Bar Chart Widget */}
+        {/* Monthly Revenue Bar Chart Widget */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-gray-900">
-              Dự báo doanh thu <span className="text-xs">(VNĐ)</span>
+              Doanh thu theo tháng <span className="text-xs">(VNĐ)</span>
             </h3>
             <div className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-gray-500">
               <Calendar className="size-3.5 text-blue-800" />
-              <span>6 tháng tới</span>
+              <span>6 tháng gần nhất</span>
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={revenueChartConfig} className="h-52">
-              <BarChart accessibilityLayer data={REVENUE_FORECAST}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={
-                    <ChartTooltipContent
-                      hideIndicator
-                      // labelFormatter={(_, payload) =>
-                      //   payload[0]?.payload?.month ?? ''
-                      // }
-                      // formatter={(value) => [
-                      //   formatCurrency(value as number),
-                      //   '',
-                      // ]}
-                    />
-                  }
-                />
-                <Bar
-                  dataKey="revenue"
-                  strokeWidth={2}
-                  radius={8}
-                  opacity={0.8}
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  shape={({ index, ...props }: BarShapeProps) => {
-                    return (
-                      <Rectangle
-                        {...props}
-                        fill={
-                          props.payload.month === maxRevenueMonth.month
-                            ? '#1e40af'
-                            : '#93C5FD'
-                        }
+            {revenueTrend.length > 0 ? (
+              <ChartContainer config={revenueChartConfig} className="h-52">
+                <BarChart accessibilityLayer data={revenueTrend}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                    tickFormatter={(value: string) => {
+                      const month = value.split('-')[1];
+                      return month ? `T${Number(month)}` : value;
+                    }}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        hideIndicator
+                        formatter={(value) => formatCurrency(Number(value))}
                       />
-                    );
-                  }}
-                />
-              </BarChart>
-            </ChartContainer>
+                    }
+                  />
+                  <Bar
+                    dataKey="total"
+                    strokeWidth={2}
+                    radius={8}
+                    fill="var(--chart-1)"
+                    opacity={0.9}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <NoDataEmptyState
+                title="Chưa có dữ liệu doanh thu"
+                subTitle="Doanh thu sẽ hiển thị khi có hóa đơn đã thanh toán."
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -372,17 +376,26 @@ export function BuildingsPage() {
               <Sparkles className="size-6 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-white">
-              Phân tích hiệu suất
+              Tổng quan danh mục
             </h3>
-            <p className="text-sm leading-relaxed text-white/90">
-              Tỷ lệ lấp đầy tổng thể của bạn <strong>cao hơn 4%</strong> so với
-              mức trung bình của thị trường khu vực. Bạn có thể cân nhắc tăng
-              giá tại <strong>thêm 2,5%</strong> vào tháng tới.
-            </p>
+            <div className="space-y-2 text-sm leading-relaxed text-white/90">
+              <p className="flex items-center gap-2">
+                <TrendingUp className="size-4" />
+                Tỷ lệ lấp đầy trung bình:{' '}
+                <strong>{portfolio.occupancyPct}%</strong>
+              </p>
+              <p>
+                {portfolio.occupiedRooms}/{portfolio.totalRooms} phòng đang
+                thuê • {portfolio.vacantRooms} phòng còn trống
+              </p>
+            </div>
           </CardHeader>
           <CardContent>
-            <Button className="bg-white font-bold text-blue-800 hover:bg-blue-50">
-              Xem kế hoạch tối ưu hóa
+            <Button
+              asChild
+              className="bg-white font-bold text-blue-800 hover:bg-blue-50"
+            >
+              <Link href="/dashboard/reports">Xem báo cáo chi tiết</Link>
             </Button>
           </CardContent>
         </Card>
