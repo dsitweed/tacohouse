@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'core/prisma/prisma.service';
 import { Prisma } from 'generated/prisma/client';
@@ -11,7 +12,21 @@ describe('RentalsService', () => {
     rental: {
       count: jest.fn(),
       findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
     },
+    room: {
+      update: jest.fn(),
+    },
+  };
+
+  const mockRental = {
+    id: 'rental-1',
+    tenantId: 'tenant-1',
+    roomId: 'room-1',
+    status: 'ACTIVE',
+    room: { id: 'room-1', building: { landlordId: 'landlord-1' } },
+    tenant: { id: 'tenant-1', profile: {} },
   };
 
   beforeEach(async () => {
@@ -114,5 +129,52 @@ describe('RentalsService', () => {
     expect(result.expiringSoonCount).toBe(1);
     expect(result.noticeGivenCount).toBe(1);
     jest.useRealTimers();
+  });
+
+  describe('update (tenant notice)', () => {
+    const tenant = { id: 'tenant-1', role: UserRole.TENANT } as never;
+
+    it('rejects a notice date less than 30 days away', async () => {
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-15T00:00:00.000Z'));
+      prisma.rental.findUnique.mockResolvedValue(mockRental);
+
+      // 29 days away.
+      const tooSoon = new Date('2024-02-13T00:00:00.000Z');
+
+      await expect(
+        service.update(tenant, 'rental-1', {
+          noticeDate: tooSoon.toISOString(),
+        }),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(prisma.room.update).not.toHaveBeenCalled();
+      expect(prisma.rental.update).not.toHaveBeenCalled();
+      jest.useRealTimers();
+    });
+
+    it('accepts a notice date exactly 30 days away', async () => {
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-15T00:00:00.000Z'));
+      prisma.rental.findUnique.mockResolvedValue(mockRental);
+      prisma.rental.update.mockResolvedValue(mockRental);
+      prisma.room.update.mockResolvedValue({ id: 'room-1' });
+
+      // Exactly 30 days away: the old `setMonth(+1)` rule (2024-02-15) would
+      // have wrongly rejected this.
+      const exactly30 = new Date('2024-02-14T00:00:00.000Z');
+
+      await service.update(tenant, 'rental-1', {
+        noticeDate: exactly30.toISOString(),
+      });
+
+      expect(prisma.room.update).toHaveBeenCalledWith({
+        where: { id: 'room-1' },
+        data: { status: 'PENDING_CHECKOUT', availableFrom: exactly30 },
+      });
+      expect(prisma.rental.update).toHaveBeenCalledWith({
+        where: { id: 'rental-1' },
+        data: { noticeDate: exactly30, status: 'NOTICE_GIVEN' },
+      });
+      jest.useRealTimers();
+    });
   });
 });

@@ -15,9 +15,16 @@ import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
 
 /**
  * Window used to flag a contract as "expiring soon".
- * Note: this is a *derived* condition, not a rental status.
+ * Derived purely from `endDate` — unrelated to the rental status lifecycle.
  */
 const EXPIRING_SOON_DAYS = 30;
+
+/**
+ * Minimum advance notice (in days) a tenant must give before moving out.
+ * Only governs the `NOTICE_GIVEN` flow — it has nothing to do with how close
+ * a contract is to its `endDate`.
+ */
+const NOTICE_PERIOD_DAYS = 30;
 
 @Injectable()
 export class RentalsService {
@@ -259,11 +266,11 @@ export class RentalsService {
       if (updateRentalDto.noticeDate) {
         const noticeDate = new Date(updateRentalDto.noticeDate);
         const minNoticeDate = new Date();
-        minNoticeDate.setMonth(minNoticeDate.getMonth() + 1); // 30 days from now
+        minNoticeDate.setDate(minNoticeDate.getDate() + NOTICE_PERIOD_DAYS);
 
         if (noticeDate < minNoticeDate) {
           throw new BadRequestException(
-            'Notice date must be at least 30 days from now',
+            `Notice date must be at least ${NOTICE_PERIOD_DAYS} days from now`,
           );
         }
 
