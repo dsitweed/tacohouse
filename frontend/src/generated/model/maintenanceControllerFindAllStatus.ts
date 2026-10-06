@@ -18,7 +18,7 @@ export type MaintenanceControllerFindAllStatus =
 
 export const MaintenanceControllerFindAllStatus = {
   PENDING: 'PENDING',
-  IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
+  IN_PROGRESS: 'IN_PROGRESS',
   CANCELLED: 'CANCELLED',
 } as const;

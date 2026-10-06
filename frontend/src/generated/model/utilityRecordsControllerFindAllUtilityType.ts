@@ -12,14 +12,12 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
 
-export type RentalsControllerFindAllParams = {
-  page?: number;
-  limit?: number;
-  roomId?: string;
-  buildingId?: string;
-  tenantId?: string;
-  status?: RentalsControllerFindAllStatus;
-  search?: string;
-};
+export type UtilityRecordsControllerFindAllUtilityType =
+  (typeof UtilityRecordsControllerFindAllUtilityType)[keyof typeof UtilityRecordsControllerFindAllUtilityType];
+
+export const UtilityRecordsControllerFindAllUtilityType = {
+  ELECTRICITY: 'ELECTRICITY',
+  WATER: 'WATER',
+  GAS: 'GAS',
+} as const;

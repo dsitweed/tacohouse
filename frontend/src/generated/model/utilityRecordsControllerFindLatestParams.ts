@@ -12,14 +12,14 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
 
-export type RentalsControllerFindAllParams = {
-  page?: number;
-  limit?: number;
+export type UtilityRecordsControllerFindLatestParams = {
   roomId?: string;
   buildingId?: string;
-  tenantId?: string;
-  status?: RentalsControllerFindAllStatus;
-  search?: string;
+  /**
+   * When provided, returns the latest reading *before* this month (`YYYY-MM`),
+   * which is the value used to seed the next billing period.
+   * @pattern ^\d{4}-(0[1-9]|1[0-2])$
+   */
+  period?: string;
 };

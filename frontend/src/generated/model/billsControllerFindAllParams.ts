@@ -20,4 +20,8 @@ export type BillsControllerFindAllParams = {
   roomId?: string;
   rentalId?: string;
   status?: BillsControllerFindAllStatus;
+  /**
+   * @pattern ^\d{4}-(0[1-9]|1[0-2])$
+   */
+  billingPeriod?: string;
 };

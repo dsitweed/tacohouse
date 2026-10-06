@@ -5240,10 +5240,16 @@
         "type": "object",
         "properties": {
           "activeCount": {
-            "type": "number"
+            "type": "number",
+            "description": "Rentals currently in the `ACTIVE` lifecycle state."
           },
-          "expiringCount": {
-            "type": "number"
+          "noticeGivenCount": {
+            "type": "number",
+            "description": "Rentals in the `NOTICE_GIVEN` state — the tenant explicitly notified the\nlandlord they are moving out (`noticeDate` is set)."
+          },
+          "expiringSoonCount": {
+            "type": "number",
+            "description": "`ACTIVE` rentals whose contract `endDate` falls within the next 30 days\nand that have not given notice yet. Derived from `endDate`, not a status."
           },
           "averageTerm": {
             "type": "number"
@@ -5254,7 +5260,8 @@
         },
         "required": [
           "activeCount",
-          "expiringCount",
+          "noticeGivenCount",
+          "expiringSoonCount",
           "averageTerm",
           "monthlyRevenue"
         ]

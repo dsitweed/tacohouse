@@ -31,6 +31,7 @@ export interface Rental {
   noticeDate: string | null;
   monthlyRent: string;
   depositPaid: string;
+  numberOfTenants: number;
   status: RentalStatus;
   contractImages: string[];
   createdAt: string;

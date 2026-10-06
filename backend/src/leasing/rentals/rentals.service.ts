@@ -13,6 +13,12 @@ import { PaginationMeta } from 'types';
 
 import { CreateRentalDto, FindAllRentalsDto, UpdateRentalDto } from './dto';
 
+/**
+ * Window used to flag a contract as "expiring soon".
+ * Note: this is a *derived* condition, not a rental status.
+ */
+const EXPIRING_SOON_DAYS = 30;
+
 @Injectable()
 export class RentalsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -332,8 +338,9 @@ export class RentalsService {
         : {};
 
     const now = new Date();
-    const expiryLimit = new Date(now);
-    expiryLimit.setDate(expiryLimit.getDate() + 30);
+    const expiringSoonLimit = new Date(now);
+    expiringSoonLimit.setDate(expiringSoonLimit.getDate() + EXPIRING_SOON_DAYS);
+
     const rentals = await this.prisma.rental.findMany({
       where: {
         ...rentalAccessWhere,
@@ -349,8 +356,19 @@ export class RentalsService {
       (rental) => rental.status === 'ACTIVE',
     );
     const activeCount = activeRentals.length;
-    const expiringCount = rentals.filter(
+
+    // Tenant-driven event: the tenant notified the landlord they are leaving.
+    const noticeGivenCount = rentals.filter(
       (rental) => rental.status === 'NOTICE_GIVEN',
+    ).length;
+
+    // Time-derived condition: an active contract ends soon and the tenant has
+    // not given notice yet, so the landlord should follow up.
+    const expiringSoonCount = activeRentals.filter(
+      (rental) =>
+        rental.endDate !== null &&
+        rental.endDate.getTime() >= now.getTime() &&
+        rental.endDate.getTime() <= expiringSoonLimit.getTime(),
     ).length;
 
     const totalRentalDurationMs = rentals.reduce((total, rental) => {
@@ -375,7 +393,8 @@ export class RentalsService {
 
     return {
       activeCount,
-      expiringCount,
+      noticeGivenCount,
+      expiringSoonCount,
       averageTerm,
       monthlyRevenue,
     };

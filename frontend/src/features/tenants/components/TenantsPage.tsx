@@ -221,10 +221,19 @@ export function TenantsPage() {
     const active =
       rentalStats?.activeCount ??
       unique.filter((tenant) => tenant.status === RentalStatus.ACTIVE).length;
+    // "Sắp hết hạn" is time-derived (endDate within 30 days) and is a
+    // different concept from the NOTICE_GIVEN lifecycle state.
+    const in30Days = new Date(now);
+    in30Days.setDate(in30Days.getDate() + 30);
     const renewalsDue =
-      rentalStats?.expiringCount ??
-      unique.filter((tenant) => tenant.status === RentalStatus.NOTICE_GIVEN)
-        .length;
+      rentalStats?.expiringSoonCount ??
+      unique.filter(
+        (tenant) =>
+          tenant.status === RentalStatus.ACTIVE &&
+          tenant.endDate !== null &&
+          new Date(tenant.endDate).getTime() >= now.getTime() &&
+          new Date(tenant.endDate).getTime() <= in30Days.getTime(),
+      ).length;
     const pendingPayment = unique.filter(
       (tenant) =>
         tenant.paymentStatus === PaymentStatus.PENDING ||

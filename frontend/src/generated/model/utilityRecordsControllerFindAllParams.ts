@@ -12,14 +12,15 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
+import type { UtilityRecordsControllerFindAllUtilityType } from './utilityRecordsControllerFindAllUtilityType';
 
-export type RentalsControllerFindAllParams = {
-  page?: number;
-  limit?: number;
+export type UtilityRecordsControllerFindAllParams = {
   roomId?: string;
   buildingId?: string;
-  tenantId?: string;
-  status?: RentalsControllerFindAllStatus;
-  search?: string;
+  utilityType?: UtilityRecordsControllerFindAllUtilityType;
+  /**
+   * Month to filter by, in `YYYY-MM` format.
+   * @pattern ^\d{4}-(0[1-9]|1[0-2])$
+   */
+  period?: string;
 };

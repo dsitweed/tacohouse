@@ -17,6 +17,7 @@ import type {
   BillsControllerFindAllParams,
   Building,
   BuildingsControllerFindAllParams,
+  BulkCreateUtilityRecordsDto,
   ChatControllerGetDirectMessagesParams,
   ChatControllerGetMessagesParams,
   ChatGroup,
@@ -30,6 +31,7 @@ import type {
   CreatePresignedUrlsDto,
   CreateRentalDto,
   CreateRoomDto,
+  CreateUtilityRecordDto,
   DashboardControllerGetRevenueTrendParams,
   DashboardControllerGetTenantDashboardParams,
   LoginAuthDto,
@@ -64,6 +66,9 @@ import type {
   UploadsControllerDeleteObjectParams,
   UploadsControllerDeleteObjectsByPrefixParams,
   User,
+  UtilityRecord,
+  UtilityRecordsControllerFindAllParams,
+  UtilityRecordsControllerFindLatestParams,
   VerifyEmailDto,
 } from './model';
 
@@ -326,6 +331,62 @@ export const getTacoHouseAPI = () => {
 
   const paymentsControllerFindOne = (id: string) => {
     return apiClient<Payment>({ url: `/api/v1/payments/${id}`, method: 'GET' });
+  };
+
+  /**
+   * @summary Record a utility meter reading
+   */
+  const utilityRecordsControllerCreate = (
+    createUtilityRecordDto: CreateUtilityRecordDto,
+  ) => {
+    return apiClient<UtilityRecord>({
+      url: `/api/v1/utility-records`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createUtilityRecordDto,
+    });
+  };
+
+  /**
+   * @summary List utility meter readings
+   */
+  const utilityRecordsControllerFindAll = (
+    params?: UtilityRecordsControllerFindAllParams,
+  ) => {
+    return apiClient<UtilityRecord[]>({
+      url: `/api/v1/utility-records`,
+      method: 'GET',
+      params,
+    });
+  };
+
+  /**
+   * Upserts readings for a whole building/period. previousReading and unitRate are derived automatically when omitted.
+   * @summary Record many utility meter readings at once
+   */
+  const utilityRecordsControllerCreateBulk = (
+    bulkCreateUtilityRecordsDto: BulkCreateUtilityRecordsDto,
+  ) => {
+    return apiClient<UtilityRecord[]>({
+      url: `/api/v1/utility-records/bulk`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: bulkCreateUtilityRecordsDto,
+    });
+  };
+
+  /**
+   * Pass `period` (YYYY-MM) to get the readings from before that month, which seed the next billing period.
+   * @summary Get the latest reading per utility type
+   */
+  const utilityRecordsControllerFindLatest = (
+    params?: UtilityRecordsControllerFindLatestParams,
+  ) => {
+    return apiClient<UtilityRecord[]>({
+      url: `/api/v1/utility-records/latest`,
+      method: 'GET',
+      params,
+    });
   };
 
   /**
@@ -716,6 +777,10 @@ export const getTacoHouseAPI = () => {
     paymentsControllerCreate,
     paymentsControllerFindAll,
     paymentsControllerFindOne,
+    utilityRecordsControllerCreate,
+    utilityRecordsControllerFindAll,
+    utilityRecordsControllerCreateBulk,
+    utilityRecordsControllerFindLatest,
     authControllerLogin,
     authControllerRegister,
     authControllerRequestEmailVerification,
@@ -924,6 +989,34 @@ export type PaymentsControllerFindAllResult = NonNullable<
 export type PaymentsControllerFindOneResult = NonNullable<
   Awaited<
     ReturnType<ReturnType<typeof getTacoHouseAPI>['paymentsControllerFindOne']>
+  >
+>;
+export type UtilityRecordsControllerCreateResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['utilityRecordsControllerCreate']
+    >
+  >
+>;
+export type UtilityRecordsControllerFindAllResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['utilityRecordsControllerFindAll']
+    >
+  >
+>;
+export type UtilityRecordsControllerCreateBulkResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['utilityRecordsControllerCreateBulk']
+    >
+  >
+>;
+export type UtilityRecordsControllerFindLatestResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['utilityRecordsControllerFindLatest']
+    >
   >
 >;
 export type AuthControllerLoginResult = NonNullable<

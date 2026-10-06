@@ -12,14 +12,9 @@
  * - **pagination**: (Optional) Pagination metadata for list endpoints
  * OpenAPI spec version: 1.0.0
  */
-import type { RentalsControllerFindAllStatus } from './rentalsControllerFindAllStatus';
+import type { CreateUtilityRecordDto } from './createUtilityRecordDto';
 
-export type RentalsControllerFindAllParams = {
-  page?: number;
-  limit?: number;
-  roomId?: string;
-  buildingId?: string;
-  tenantId?: string;
-  status?: RentalsControllerFindAllStatus;
-  search?: string;
-};
+export interface BulkCreateUtilityRecordsDto {
+  /** @minItems 1 */
+  records: CreateUtilityRecordDto[];
+}
