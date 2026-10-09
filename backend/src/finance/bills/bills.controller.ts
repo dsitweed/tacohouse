@@ -22,9 +22,12 @@ import { UserRole } from 'generated/prisma/enums';
 
 import { BillsService } from './bills.service';
 import {
+  BillGenerationPreviewDto,
+  BillGenerationResultDto,
   ConfirmPaymentDto,
   CreateBillDto,
   FindAllBillsDto,
+  GenerateBillsDto,
   UpdateBillDto,
 } from './dto';
 
@@ -48,6 +51,40 @@ export class BillsController {
     @Body() createBillDto: CreateBillDto,
   ): Promise<Bill> {
     return this.billsService.create(currentUser, createBillDto);
+  }
+
+  @Post('generate/preview')
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({
+    summary: 'Preview a monthly bill run for a building',
+    description:
+      'Dry run: computes every room bill and returns warnings without writing anything.',
+  })
+  @ApiResponse({ status: 201, type: BillGenerationPreviewDto })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Building not found' })
+  previewGeneration(
+    @CurrentUser() currentUser: User,
+    @Body() generateBillsDto: GenerateBillsDto,
+  ): Promise<BillGenerationPreviewDto> {
+    return this.billsService.previewGeneration(currentUser, generateBillsDto);
+  }
+
+  @Post('generate')
+  @Roles(UserRole.ADMIN, UserRole.LANDLORD)
+  @ApiOperation({
+    summary: 'Generate monthly bills for a building',
+    description:
+      'Creates one bill per occupied room. Idempotent: an existing bill for the same room and period is skipped unless `overwrite` is true.',
+  })
+  @ApiResponse({ status: 201, type: BillGenerationResultDto })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Building not found' })
+  generateBills(
+    @CurrentUser() currentUser: User,
+    @Body() generateBillsDto: GenerateBillsDto,
+  ): Promise<BillGenerationResultDto> {
+    return this.billsService.generateBills(currentUser, generateBillsDto);
   }
 
   @Get()

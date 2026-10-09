@@ -15,6 +15,17 @@
 
 export * from './account';
 export * from './bill';
+export * from './billGenerationFailureDto';
+export * from './billGenerationMeterDto';
+export * from './billGenerationMeterDtoUtilityType';
+export * from './billGenerationPreviewDto';
+export * from './billGenerationReadingDto';
+export * from './billGenerationReadingDtoUtilityType';
+export * from './billGenerationResultDto';
+export * from './billGenerationRowDto';
+export * from './billGenerationRowDtoRoomType';
+export * from './billGenerationRowDtoStatus';
+export * from './billGenerationSummaryDto';
 export * from './billsControllerFindAllParams';
 export * from './billsControllerFindAllStatus';
 export * from './billStatus';
@@ -49,6 +60,7 @@ export * from './dashboardControllerGetTenantDashboardParams';
 export * from './documentsDto';
 export * from './equipmentCondition';
 export * from './fileInfoDto';
+export * from './generateBillsDto';
 export * from './loginAuthDto';
 export * from './maintenanceCategory';
 export * from './maintenanceControllerFindAllParams';

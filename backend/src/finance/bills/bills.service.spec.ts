@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotificationsService } from 'communication/notifications/notifications.service';
 import { PrismaService } from 'core/prisma/prisma.service';
 
 import { BillsService } from './bills.service';
@@ -12,6 +13,10 @@ describe('BillsService', () => {
         BillsService,
         {
           provide: PrismaService,
+          useValue: {},
+        },
+        {
+          provide: NotificationsService,
           useValue: {},
         },
       ],

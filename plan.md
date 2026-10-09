@@ -76,11 +76,11 @@
 - `BillsService.calculateForRoom()` — hàm thuần tính tiền (unit-testable).
 - Thêm filter `buildingId` cho `GET /rentals`.
 
-### Phase 1 — 🔥 Tạo hóa đơn cuối tháng hàng loạt (4–6 ngày) ← **ƯU TIÊN #1**
+### Phase 1 — 🔥 Tạo hóa đơn cuối tháng hàng loạt (4–6 ngày) ← **ƯU TIÊN #1** — ✅ DONE
 
-- `POST /bills/generate/preview` (dry-run) + `POST /bills/generate` (bulk, idempotent).
-- FE wizard 3 bước: chọn tòa nhà/kỳ/hạn → nhập chỉ số → preview → tạo.
-- Gửi notification cho tenant sau khi tạo.
+- ✅ `POST /bills/generate/preview` (dry-run) + `POST /bills/generate` (bulk, idempotent).
+- ✅ FE wizard 3 bước: chọn tòa nhà/kỳ/hạn → nhập chỉ số → preview → tạo.
+- ✅ Gửi notification cho tenant sau khi tạo.
 
 ### Phase 2 — Vòng thu tiền (4–5 ngày)
 

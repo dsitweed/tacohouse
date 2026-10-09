@@ -8,9 +8,12 @@ import {
 import { DEFAULT_LIMIT_SIZE } from '@/constants/pagination';
 import {
   Bill,
+  BillGenerationPreviewDto,
+  BillGenerationResultDto,
   BillsControllerFindAllParams,
   ConfirmPaymentDto,
   CreateBillDto,
+  GenerateBillsDto,
   UpdateBillDto,
 } from '@/generated/model';
 import { apiClient, handleApiError, queryKeys } from '@/libs';
@@ -59,6 +62,22 @@ const billsApi = {
 
   cancel: async (id: string) => {
     const response = await apiClient.delete<void>(`/bills/${id}`);
+    return response.data;
+  },
+
+  previewGeneration: async (data: GenerateBillsDto) => {
+    const response = await apiClient.post<BillGenerationPreviewDto>(
+      '/bills/generate/preview',
+      data,
+    );
+    return response.data;
+  },
+
+  generate: async (data: GenerateBillsDto) => {
+    const response = await apiClient.post<BillGenerationResultDto>(
+      '/bills/generate',
+      data,
+    );
     return response.data;
   },
 };
@@ -171,6 +190,27 @@ export function useCancelBill() {
     mutationFn: billsApi.cancel,
     onSuccess: (_, id) => {
       queryClient.removeQueries({ queryKey: queryKeys.bills.detail(id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.bills.lists() });
+    },
+    onError: handleApiError,
+  });
+}
+
+/** Dry-run of a monthly bill run: computes amounts without writing anything. */
+export function usePreviewBillGeneration() {
+  return useMutation({
+    mutationFn: billsApi.previewGeneration,
+    onError: handleApiError,
+  });
+}
+
+/** Creates one bill per occupied room for a building and period. */
+export function useGenerateBills() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: billsApi.generate,
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bills.lists() });
     },
     onError: handleApiError,

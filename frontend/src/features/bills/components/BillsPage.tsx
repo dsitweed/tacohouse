@@ -59,8 +59,11 @@ import {
 } from '@/hooks/api/useBills';
 import { usePagination } from '@/hooks/use-pagination';
 import { useAuthStore } from '@/stores/authStore';
+import { DialogType, useDialogStore } from '@/stores/dialogStore';
 import { BILL_STATUS_MAP } from '@/types';
 import { formatBillingPeriod, formatCurrency } from '@/utils';
+
+import GenerateBillsDialog from './GenerateBillsDialog';
 
 const STATUS_FILTER_OPTIONS = [
   { value: 'ALL', label: 'Tất cả trạng thái' },
@@ -190,6 +193,7 @@ function exportBillsToPdf(bills: Bill[]) {
 
 export function BillsPage() {
   const user = useAuthStore((state) => state.user);
+  const { openDialog } = useDialogStore();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [monthFilter, setMonthFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -377,7 +381,7 @@ export function BillsPage() {
           </p>
         </div>
         {canCreate && (
-          <Button>
+          <Button onClick={() => openDialog(DialogType.GENERATE_BILLS)}>
             <Plus className="size-4" />
             Tạo hóa đơn
           </Button>
@@ -683,6 +687,9 @@ export function BillsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Monthly bulk bill generation wizard */}
+      <GenerateBillsDialog />
     </div>
   );
 }

@@ -968,6 +968,94 @@
         ]
       }
     },
+    "/api/v1/bills/generate/preview": {
+      "post": {
+        "description": "Dry run: computes every room bill and returns warnings without writing anything.",
+        "operationId": "BillsController_previewGeneration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateBillsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillGenerationPreviewDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Building not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Preview a monthly bill run for a building",
+        "tags": [
+          "Bills"
+        ]
+      }
+    },
+    "/api/v1/bills/generate": {
+      "post": {
+        "description": "Creates one bill per occupied room. Idempotent: an existing bill for the same room and period is skipped unless `overwrite` is true.",
+        "operationId": "BillsController_generateBills",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateBillsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillGenerationResultDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Building not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Generate monthly bills for a building",
+        "tags": [
+          "Bills"
+        ]
+      }
+    },
     "/api/v1/bills/{id}": {
       "get": {
         "operationId": "BillsController_findOne",
@@ -2308,8 +2396,8 @@
               "type": "string",
               "enum": [
                 "PENDING",
-                "COMPLETED",
                 "IN_PROGRESS",
+                "COMPLETED",
                 "CANCELLED"
               ]
             }
@@ -4767,6 +4855,309 @@
           "monthlyRent"
         ]
       },
+      "BillGenerationReadingDto": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "utilityType": {
+            "type": "string",
+            "enum": [
+              "ELECTRICITY",
+              "WATER",
+              "GAS"
+            ]
+          },
+          "currentReading": {
+            "type": "number",
+            "minimum": 0
+          },
+          "previousReading": {
+            "type": "number",
+            "description": "Derived from the latest reading of the same room + type when omitted.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "roomId",
+          "utilityType",
+          "currentReading"
+        ]
+      },
+      "GenerateBillsDto": {
+        "type": "object",
+        "properties": {
+          "buildingId": {
+            "type": "string"
+          },
+          "billingPeriod": {
+            "type": "string",
+            "description": "Billing month in `YYYY-MM` format; stored as the first day of that month.",
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Payment due date. Defaults to the building's `billingDate` in the month\nfollowing the billing period."
+          },
+          "readings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillGenerationReadingDto"
+            }
+          },
+          "overwrite": {
+            "type": "boolean",
+            "description": "When true, an existing bill for the same room + period is replaced instead\nof being skipped. Defaults to false (idempotent re-runs)."
+          }
+        },
+        "required": [
+          "buildingId",
+          "billingPeriod"
+        ]
+      },
+      "BillGenerationMeterDto": {
+        "type": "object",
+        "properties": {
+          "utilityType": {
+            "enum": [
+              "ELECTRICITY",
+              "WATER",
+              "GAS"
+            ],
+            "type": "string"
+          },
+          "previousReading": {
+            "type": "string",
+            "description": "Opening reading, derived from the latest record of the previous period."
+          },
+          "currentReading": {
+            "type": "string",
+            "nullable": true,
+            "description": "Closing reading supplied by the caller; null when not entered yet."
+          }
+        },
+        "required": [
+          "utilityType",
+          "previousReading",
+          "currentReading"
+        ]
+      },
+      "BillGenerationRowDto": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "roomNumber": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string",
+            "nullable": true
+          },
+          "tenantName": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomType": {
+            "enum": [
+              "FULL_RIGHTS",
+              "PARTIAL_RIGHTS"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "READY",
+              "WARNING",
+              "SKIPPED"
+            ],
+            "type": "string"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "existingBillId": {
+            "type": "string",
+            "nullable": true
+          },
+          "meters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillGenerationMeterDto"
+            }
+          },
+          "monthlyRent": {
+            "type": "string"
+          },
+          "electricityUsage": {
+            "type": "string"
+          },
+          "electricityAmount": {
+            "type": "string"
+          },
+          "waterUsage": {
+            "type": "string"
+          },
+          "waterAmount": {
+            "type": "string"
+          },
+          "gasUsage": {
+            "type": "string"
+          },
+          "gasAmount": {
+            "type": "string"
+          },
+          "managementFee": {
+            "type": "string"
+          },
+          "cleaningFee": {
+            "type": "string"
+          },
+          "lightingFee": {
+            "type": "string"
+          },
+          "previousDebt": {
+            "type": "string"
+          },
+          "totalAmount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "roomId",
+          "roomNumber",
+          "tenantId",
+          "tenantName",
+          "roomType",
+          "status",
+          "warnings",
+          "existingBillId",
+          "meters",
+          "monthlyRent",
+          "electricityUsage",
+          "electricityAmount",
+          "waterUsage",
+          "waterAmount",
+          "gasUsage",
+          "gasAmount",
+          "managementFee",
+          "cleaningFee",
+          "lightingFee",
+          "previousDebt",
+          "totalAmount"
+        ]
+      },
+      "BillGenerationSummaryDto": {
+        "type": "object",
+        "properties": {
+          "totalRooms": {
+            "type": "number"
+          },
+          "ready": {
+            "type": "number"
+          },
+          "warnings": {
+            "type": "number"
+          },
+          "skipped": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "totalRooms",
+          "ready",
+          "warnings",
+          "skipped",
+          "totalAmount"
+        ]
+      },
+      "BillGenerationPreviewDto": {
+        "type": "object",
+        "properties": {
+          "buildingId": {
+            "type": "string"
+          },
+          "buildingName": {
+            "type": "string"
+          },
+          "billingPeriod": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillGenerationRowDto"
+            }
+          },
+          "summary": {
+            "$ref": "#/components/schemas/BillGenerationSummaryDto"
+          }
+        },
+        "required": [
+          "buildingId",
+          "buildingName",
+          "billingPeriod",
+          "dueDate",
+          "rows",
+          "summary"
+        ]
+      },
+      "BillGenerationFailureDto": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string"
+          },
+          "roomNumber": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "roomId",
+          "roomNumber",
+          "reason"
+        ]
+      },
+      "BillGenerationResultDto": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "number"
+          },
+          "skipped": {
+            "type": "number"
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillGenerationFailureDto"
+            }
+          },
+          "totalAmount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "created",
+          "skipped",
+          "failed",
+          "totalAmount"
+        ]
+      },
       "UpdateBillDto": {
         "type": "object",
         "properties": {
@@ -5369,8 +5760,8 @@
             "type": "string",
             "enum": [
               "PENDING",
-              "COMPLETED",
               "IN_PROGRESS",
+              "COMPLETED",
               "CANCELLED"
             ]
           },

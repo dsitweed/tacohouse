@@ -14,6 +14,8 @@
  */
 import type {
   Bill,
+  BillGenerationPreviewDto,
+  BillGenerationResultDto,
   BillsControllerFindAllParams,
   Building,
   BuildingsControllerFindAllParams,
@@ -34,6 +36,7 @@ import type {
   CreateUtilityRecordDto,
   DashboardControllerGetRevenueTrendParams,
   DashboardControllerGetTenantDashboardParams,
+  GenerateBillsDto,
   LoginAuthDto,
   MaintenanceControllerFindAllParams,
   MaintenanceRequest,
@@ -267,6 +270,34 @@ export const getTacoHouseAPI = () => {
    */
   const billsControllerFindAll = (params?: BillsControllerFindAllParams) => {
     return apiClient<Bill[]>({ url: `/api/v1/bills`, method: 'GET', params });
+  };
+
+  /**
+   * Dry run: computes every room bill and returns warnings without writing anything.
+   * @summary Preview a monthly bill run for a building
+   */
+  const billsControllerPreviewGeneration = (
+    generateBillsDto: GenerateBillsDto,
+  ) => {
+    return apiClient<BillGenerationPreviewDto>({
+      url: `/api/v1/bills/generate/preview`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: generateBillsDto,
+    });
+  };
+
+  /**
+   * Creates one bill per occupied room. Idempotent: an existing bill for the same room and period is skipped unless `overwrite` is true.
+   * @summary Generate monthly bills for a building
+   */
+  const billsControllerGenerateBills = (generateBillsDto: GenerateBillsDto) => {
+    return apiClient<BillGenerationResultDto>({
+      url: `/api/v1/bills/generate`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: generateBillsDto,
+    });
   };
 
   /**
@@ -770,6 +801,8 @@ export const getTacoHouseAPI = () => {
     notificationsControllerMarkAllAsRead,
     billsControllerCreate,
     billsControllerFindAll,
+    billsControllerPreviewGeneration,
+    billsControllerGenerateBills,
     billsControllerFindOne,
     billsControllerUpdate,
     billsControllerRemove,
@@ -952,6 +985,20 @@ export type BillsControllerCreateResult = NonNullable<
 export type BillsControllerFindAllResult = NonNullable<
   Awaited<
     ReturnType<ReturnType<typeof getTacoHouseAPI>['billsControllerFindAll']>
+  >
+>;
+export type BillsControllerPreviewGenerationResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['billsControllerPreviewGeneration']
+    >
+  >
+>;
+export type BillsControllerGenerateBillsResult = NonNullable<
+  Awaited<
+    ReturnType<
+      ReturnType<typeof getTacoHouseAPI>['billsControllerGenerateBills']
+    >
   >
 >;
 export type BillsControllerFindOneResult = NonNullable<
